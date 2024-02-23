@@ -1,14 +1,22 @@
 package commons;
 
+import jakarta.persistence.*;
+
 import java.util.List;
 import java.util.Objects;
 
+@Entity
 public class Expenses {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public long id;
+    @ManyToOne
     private Person person;
     private String category;
     private int amount;
     private String currency;
     private String date;
+    @OneToMany
     private List<Person> splittingOption;
     private String expenseType;
 
@@ -31,6 +39,9 @@ public class Expenses {
         this.date = date;
         this.splittingOption = splittingOption;
         this.expenseType = expenseType;
+    }
+
+    public Expenses() {
     }
 
     /**
