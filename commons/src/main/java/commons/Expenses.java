@@ -45,6 +45,14 @@ public class Expenses {
     }
 
     /**
+     * id for the database
+     * @return id
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
      * Getter for person
      * @return the person who paid for the expense
      */
