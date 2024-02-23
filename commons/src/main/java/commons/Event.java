@@ -119,9 +119,6 @@ public class Event {
 
 
 
-
-
-
     /**
      * Equals method using EqualsBuilder
      * @param obj the object to check the equality with
