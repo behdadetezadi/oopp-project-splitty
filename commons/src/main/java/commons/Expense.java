@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Expenses {
+public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
@@ -30,8 +30,8 @@ public class Expenses {
      * @param splittingOption shows a list of people that are included in the splitting option
      * @param expenseType the type of category the expense belongs to
      */
-    public Expenses(Person person, String category, int amount, String currency,
-                    String date, List<Person> splittingOption, String expenseType) {
+    public Expense(Person person, String category, int amount, String currency,
+                   String date, List<Person> splittingOption, String expenseType) {
         this.person = person;
         this.category = category;
         this.amount = amount;
@@ -41,7 +41,7 @@ public class Expenses {
         this.expenseType = expenseType;
     }
 
-    public Expenses() {
+    public Expense() {
     }
 
     /**
@@ -164,16 +164,16 @@ public class Expenses {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Expenses expenses)) return false;
+        if (!(o instanceof Expense expense)) return false;
 
-        if (amount != expenses.amount) return false;
-        if (!Objects.equals(person, expenses.person)) return false;
-        if (!Objects.equals(category, expenses.category)) return false;
-        if (!Objects.equals(currency, expenses.currency)) return false;
-        if (!Objects.equals(date, expenses.date)) return false;
-        if (!Objects.equals(splittingOption, expenses.splittingOption))
+        if (amount != expense.amount) return false;
+        if (!Objects.equals(person, expense.person)) return false;
+        if (!Objects.equals(category, expense.category)) return false;
+        if (!Objects.equals(currency, expense.currency)) return false;
+        if (!Objects.equals(date, expense.date)) return false;
+        if (!Objects.equals(splittingOption, expense.splittingOption))
             return false;
-        return Objects.equals(expenseType, expenses.expenseType);
+        return Objects.equals(expenseType, expense.expenseType);
     }
 
     /**
