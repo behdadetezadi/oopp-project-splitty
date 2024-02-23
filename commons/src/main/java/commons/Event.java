@@ -54,6 +54,7 @@ public class Event {
      * Empty public constructor (required)
      */
     public Event() {
+        // for object mappers
     }
 
 
@@ -103,6 +104,12 @@ public class Event {
      * @return true if the Person was added successfully otherwise returns false
      */
     public boolean addPerson(Person person){
+        if(person == null){
+            return false;
+        }
+        if(people.contains(person)){
+            return false;
+        }
         return this.people.add(person);
     }
 
@@ -115,6 +122,33 @@ public class Event {
      */
     public boolean removePerson(Person person){
         return this.people.remove(person);
+    }
+
+
+    /**
+     * This method adds an expense to the list of Expenses in the Event
+     * @param expense the Expense to be added
+     * @return true if the Expense was added successfully otherwise returns false
+     */
+    public boolean addExpense(Expense expense){
+        if(expense == null){
+            return false;
+        }
+        if (expenses.contains(expense)){
+            return false;
+        }
+        return this.expenses.add(expense);
+    }
+
+
+    /**
+     *
+     * This method removes an expense from the list of Expenses in the Event
+     * @param expense the expense to be removed
+     * @return true if the expense was removed successfully otherwise returns false
+     */
+    public boolean removeExpense(Expense expense){
+        return this.expenses.remove(expense);
     }
 
 
