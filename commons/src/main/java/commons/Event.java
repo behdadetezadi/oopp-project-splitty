@@ -56,6 +56,72 @@ public class Event {
     public Event() {
     }
 
+
+    /**
+     * Getter for the ID
+     * @return the ID of the Event
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * Getter for the title of the Event
+     * @return the title of the Event
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * Getter for the Invite code of the Event
+     * @return the invite code of the Event
+     */
+    public long getInviteCode() {
+        return inviteCode;
+    }
+
+    /**
+     * Getter for the list of people involved in the Event
+     * @return list of people involved in the Event
+     */
+    public List<Person> getPeople() {
+        return people;
+    }
+
+    /**
+     * Getter for the list of Expenses in the Event
+     * @return List of Expenses in the Event
+     */
+    public List<Expense> getExpenses() {
+        return expenses;
+    }
+
+    /**
+     * This method adds a person to the list of Person s in the Event
+     * @param person the Person to be added
+     * @return true if the Person was added successfully otherwise returns false
+     */
+    public boolean addPerson(Person person){
+        return this.people.add(person);
+    }
+
+
+    /**
+     *
+     * This method removes a Person from the list of Person s in the Event
+     * @param person the person to be removed
+     * @return true if the Person was removed successfully otherwise returns false
+     */
+    public boolean removePerson(Person person){
+        return this.people.remove(person);
+    }
+
+
+
+
+
+
     /**
      * Equals method using EqualsBuilder
      * @param obj the object to check the equality with
