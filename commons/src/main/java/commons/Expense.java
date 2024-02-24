@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Expenses {
+public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
@@ -30,7 +30,7 @@ public class Expenses {
      * @param splittingOption shows a list of people that are included in the splitting option
      * @param expenseType the type of category the expense belongs to
      */
-    public Expenses(Person person, String category, int amount, String currency,
+    public Expense(Person person, String category, int amount, String currency,
                     String date, List<Person> splittingOption, String expenseType) {
         this.person = person;
         this.category = category;
@@ -41,7 +41,15 @@ public class Expenses {
         this.expenseType = expenseType;
     }
 
-    public Expenses() {
+    public Expense() {
+    }
+
+    /**
+     * id for the database
+     * @return id
+     */
+    public long getId() {
+        return id;
     }
 
     /**
@@ -164,7 +172,7 @@ public class Expenses {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Expenses expenses)) return false;
+        if (!(o instanceof Expense expenses)) return false;
 
         if (amount != expenses.amount) return false;
         if (!Objects.equals(person, expenses.person)) return false;

@@ -12,9 +12,9 @@ class ExpensesTest {
     Person person2 = new Person("John2", "Foo");
     List<Person> spiltOption = new ArrayList<>();
     List<Person> spiltOption2 = new ArrayList<>();
-    Expenses a = new Expenses(person, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
-    Expenses b = new Expenses(person, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
-    Expenses c = new Expenses(person, "dinner", 13, "Euros", "01-01-2024", spiltOption, "food");
+    Expense a = new Expense(person, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
+    Expense b = new Expense(person, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
+    Expense c = new Expense(person, "dinner", 13, "Euros", "01-01-2024", spiltOption, "food");
 
 
     @Test
