@@ -122,5 +122,7 @@ class EventTest {
         Expense a = new Expense(person, "lunch", 15, "USD", "01-02-2024", splitOption, "food");
         assertFalse(event.removeExpense(a));
     }
+
+    //TODO Unit Tests for Setters
 }
 

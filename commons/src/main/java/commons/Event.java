@@ -98,6 +98,47 @@ public class Event {
         return expenses;
     }
 
+
+    /**
+     * setter for the ID (might need to delete later)
+     * @param id Respective Events ID
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    /**
+     * setter for the title of the event
+     * @param title the title to be set as String
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * Setter for the invite code (might need to be edited)
+     * @param inviteCode the invite code of the Event
+     */
+    public void setInviteCode(long inviteCode) {
+        this.inviteCode = inviteCode;
+    }
+
+    /**
+     * Setter for the list of participating people
+     * @param people the list of Person s
+     */
+    public void setPeople(List<Person> people) {
+        this.people = people;
+    }
+
+    /**
+     * Setter for the list of Expenses present in the Event
+     * @param expenses a List of Expenses
+     */
+    public void setExpenses(List<Expense> expenses) {
+        this.expenses = expenses;
+    }
+
     /**
      * This method adds a person to the list of Person s in the Event
      * @param person the Person to be added
@@ -154,7 +195,7 @@ public class Event {
 
 
     /**
-     * Equals method using EqualsBuilder
+     * Equals method using EqualsBuilder (might need reimplementation)
      * @param obj the object to check the equality with
      * @return a boolean stating whether the object is equal to this or not (true if equal)
      */
@@ -164,7 +205,7 @@ public class Event {
     }
 
     /**
-     * Hash method using HashCodeBuilder
+     * Hash method using HashCodeBuilder (might need reimplementation)
      * @return type int as a hashcode for this
      */
     @Override
