@@ -197,6 +197,23 @@ public class Participant {
     }
 
     /**
+     * Get owed amount for a particular event in a hashmap
+     * @param event Event
+     * @return Integer
+     */
+    public Integer getOwedAmountForEvent(Event event) {
+        return owedAmount.getOrDefault(event, 0);
+    }
+    /**
+     * Get owed amount for a particular event in a hashmap
+     * @param event Event
+     * @return Integer
+     */
+    public Integer getPaidAmountForEvent(Event event) {
+        return payedAmount.getOrDefault(event, 0);
+    }
+
+    /**
      * equals method
      * @param o Object
      * @return boolean
@@ -238,4 +255,46 @@ public class Participant {
         result = 31 * result + (languageChoice != null ? languageChoice.hashCode() : 0);
         return result;
     }
+
+    /**
+     * default to string method
+     * @return String
+     */
+    @Override
+    public String toString() {
+        return "Participant{" +
+                "username='" + username + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", iban='" + iban + '\'' +
+                ", bic='" + bic + '\'' +
+                ", owedAmount=" + owedAmount +
+                ", payedAmount=" + payedAmount +
+                ", eventIds=" + eventIds +
+                ", languageChoice='" + languageChoice + '\'' +
+                '}';
+    }
+
+    /**
+     * adding into hahsmap owed amount
+     * @param event Event
+     * @param amount int
+     */
+    public void addOwedAmountForSpecificEvent(Event event, int amount) {
+        owedAmount.put(event, amount);
+    }
+    /**
+     * adding into hahsmap paid amount
+     * @param event Event
+     * @param amount int
+     */
+    public void addPaidAmountForSpecificEvent(Event event, int amount) {
+        payedAmount.put(event, amount);
+    }
+
+    
+
+
+
 }
