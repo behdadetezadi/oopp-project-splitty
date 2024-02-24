@@ -1,14 +1,10 @@
 package commons;
 
-import jakarta.persistence.*;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-@Entity
 public class Participant {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
     private String username;
     private String firstName;
@@ -16,11 +12,8 @@ public class Participant {
     private String email;
     private String iban; // international bank account number.
     private String bic; // bank identifier code. Similar to the iban, it is required in the backlog.
-    @OneToMany(mappedBy = "participant")
     private Map<Event, Integer> owedAmount; //at the time of the code (no Event class yet).
-    @OneToMany(mappedBy = "participant")
     private Map<Event, Integer> payedAmount; //at the time of the code (no Event class yet).
-    @ElementCollection
     private Set<Integer> eventIds;
     private String languageChoice;
 
@@ -62,13 +55,6 @@ public class Participant {
         this.firstName = firstName;
         this.lastName = lastName;
     }
-
-    /**
-     * default constructor to make it a persistent object
-     */
-    public Participant() {
-    }
-
 
     /**
      * username getter
