@@ -1,6 +1,7 @@
 package commons;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -44,6 +45,17 @@ public class Participant {
         this.eventIds = eventIds;
         this.languageChoice = languageChoice;
     }
+
+    /**
+     * basic constructor with only first and last names
+     * @param firstName String
+     * @param lastName String
+     */
+    public Participant(String firstName, String lastName){
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
 
     /**
      * username getter
@@ -118,5 +130,112 @@ public class Participant {
      */
     public String getLanguageChoice() {
         return languageChoice;
+    }
+
+    /**
+     * username setter
+     * @param username
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * email setter
+     * @param email
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * iban setter
+     * @param iban
+     */
+    public void setIban(String iban) {
+        this.iban = iban;
+    }
+
+    /**
+     * bic setter
+     * @param bic
+     */
+    public void setBic(String bic) {
+        this.bic = bic;
+    }
+
+    /**
+     * owed amount setter
+     * @param owedAmount
+     */
+    public void setOwedAmount(Map<Event, Integer> owedAmount) {
+        this.owedAmount = owedAmount;
+    }
+
+    /**
+     * payed amount setter
+     * @param payedAmount
+     */
+    public void setPayedAmount(Map<Event, Integer> payedAmount) {
+        this.payedAmount = payedAmount;
+    }
+
+    /**
+     * event ids setter
+     * @param eventIds
+     */
+    public void setEventIds(Set<Integer> eventIds) {
+        this.eventIds = eventIds;
+    }
+
+    /**
+     * language choice setter
+     * @param languageChoice
+     */
+    public void setLanguageChoice(String languageChoice) {
+        this.languageChoice = languageChoice;
+    }
+
+    /**
+     * equals method
+     * @param o Object
+     * @return boolean
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Participant that = (Participant) o;
+
+        if (!Objects.equals(username, that.username)) return false;
+        if (!Objects.equals(firstName, that.firstName)) return false;
+        if (!Objects.equals(lastName, that.lastName)) return false;
+        if (!Objects.equals(email, that.email)) return false;
+        if (!Objects.equals(iban, that.iban)) return false;
+        if (!Objects.equals(bic, that.bic)) return false;
+        if (!Objects.equals(owedAmount, that.owedAmount)) return false;
+        if (!Objects.equals(payedAmount, that.payedAmount)) return false;
+        if (!Objects.equals(eventIds, that.eventIds)) return false;
+        return Objects.equals(languageChoice, that.languageChoice);
+    }
+
+    /**
+     * private int hashcode
+     * @return unique hash
+     */
+    @Override
+    public int hashCode() {
+        int result = username != null ? username.hashCode() : 0;
+        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (iban != null ? iban.hashCode() : 0);
+        result = 31 * result + (bic != null ? bic.hashCode() : 0);
+        result = 31 * result + (owedAmount != null ? owedAmount.hashCode() : 0);
+        result = 31 * result + (payedAmount != null ? payedAmount.hashCode() : 0);
+        result = 31 * result + (eventIds != null ? eventIds.hashCode() : 0);
+        result = 31 * result + (languageChoice != null ? languageChoice.hashCode() : 0);
+        return result;
     }
 }
