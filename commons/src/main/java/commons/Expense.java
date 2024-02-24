@@ -172,7 +172,7 @@ public class Expense {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Expense expenses)) return false;
+        if (!(o instanceof Expense expense)) return false;
 
         if (amount != expense.amount) return false;
         if (!Objects.equals(person, expense.person)) return false;
