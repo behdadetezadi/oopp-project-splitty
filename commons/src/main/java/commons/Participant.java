@@ -1,10 +1,17 @@
 package commons;
 
+import jakarta.persistence.*;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+@SuppressWarnings("ALL")
+@Entity
 public class Participant {
+    //Participant ID
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
     private String username;
     private String firstName;
@@ -12,8 +19,11 @@ public class Participant {
     private String email;
     private String iban; // international bank account number.
     private String bic; // bank identifier code. Similar to the iban, it is required in the backlog.
+    @OneToMany
     private Map<Event, Integer> owedAmount; //at the time of the code (no Event class yet).
+    @OneToMany
     private Map<Event, Integer> payedAmount; //at the time of the code (no Event class yet).
+    @ElementCollection
     private Set<Integer> eventIds;
     private String languageChoice;
 
@@ -54,6 +64,13 @@ public class Participant {
     public Participant(String firstName, String lastName){
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    /**
+     * Default constructor for my entity.
+     */
+    public Participant() {
+
     }
 
     /**
@@ -273,13 +290,21 @@ public class Participant {
         sb.append("Language Choice: ").append(languageChoice).append("\n");
         sb.append("Events Owed Amount:\n");
         for (Map.Entry<Event, Integer> entry : owedAmount.entrySet()) {
-            sb.append("Owes for ").append(entry.getKey().getName()).append(": ").append(entry.getValue()).append("\n");
+            sb.append("Owes for ").
+                    append(entry.getKey().getName()).
+                    append(": ").append(entry.getValue()).
+                    append("\n");
         }
         sb.append("Events Paid Amount:\n");
         for (Map.Entry<Event, Integer> entry : payedAmount.entrySet()) {
-            sb.append("Paid for ").append(entry.getKey().getName()).append(": ").append(entry.getValue()).append("\n");
+            sb.append("Paid for ").
+                    append(entry.getKey().getName()).
+                    append(": ").append(entry.getValue()).
+                    append("\n");
         }
-        sb.append("Event IDs: ").append(eventIds).append("\n");
+        sb.append("Event IDs: ").
+                append(eventIds).
+                append("\n");
         return sb.toString();
     }
 
@@ -342,11 +367,4 @@ public class Participant {
         }
         return totalPaid;
     }
-
-
-
-
-
-
-
 }
