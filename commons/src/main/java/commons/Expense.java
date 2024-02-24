@@ -31,7 +31,7 @@ public class Expense {
      * @param expenseType the type of category the expense belongs to
      */
     public Expense(Person person, String category, int amount, String currency,
-                   String date, List<Person> splittingOption, String expenseType) {
+                    String date, List<Person> splittingOption, String expenseType) {
         this.person = person;
         this.category = category;
         this.amount = amount;
@@ -42,6 +42,14 @@ public class Expense {
     }
 
     public Expense() {
+    }
+
+    /**
+     * id for the database
+     * @return id
+     */
+    public long getId() {
+        return id;
     }
 
     /**
@@ -164,7 +172,7 @@ public class Expense {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Expense expense)) return false;
+        if (!(o instanceof Expense expenses)) return false;
 
         if (amount != expense.amount) return false;
         if (!Objects.equals(person, expense.person)) return false;
