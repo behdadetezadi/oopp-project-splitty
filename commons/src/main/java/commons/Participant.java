@@ -1,19 +1,26 @@
 package commons;
 
+import jakarta.persistence.*;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-
+@Entity
 public class Participant {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public long id;
     private String username;
     private String firstName;
     private String lastName;
     private String email;
     private String iban; // international bank account number.
     private String bic; // bank identifier code. Similar to the iban, it is required in the backlog.
+    @OneToMany(mappedBy = "participant")
     private Map<Event, Integer> owedAmount; //at the time of the code (no Event class yet).
+    @OneToMany(mappedBy = "participant")
     private Map<Event, Integer> payedAmount; //at the time of the code (no Event class yet).
+    @ElementCollection
     private Set<Integer> eventIds;
     private String languageChoice;
 
@@ -54,6 +61,12 @@ public class Participant {
     public Participant(String firstName, String lastName){
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    /**
+     * default constructor to make it a persistent object
+     */
+    public Participant() {
     }
 
 
@@ -257,24 +270,33 @@ public class Participant {
     }
 
     /**
-     * default to string method
+     * to string method that is human readable
      * @return String
      */
     @Override
     public String toString() {
-        return "Participant{" +
-                "username='" + username + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", iban='" + iban + '\'' +
-                ", bic='" + bic + '\'' +
-                ", owedAmount=" + owedAmount +
-                ", payedAmount=" + payedAmount +
-                ", eventIds=" + eventIds +
-                ", languageChoice='" + languageChoice + '\'' +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("Participant Info:\n");
+        sb.append("ID: ").append(id).append("\n");
+        sb.append("Username: ").append(username).append("\n");
+        sb.append("Name: ").append(firstName).append(" ").append(lastName).append("\n");
+        sb.append("Email: ").append(email).append("\n");
+        sb.append("Bank Info:\n");
+        sb.append("IBAN: ").append(iban).append("\n");
+        sb.append("BIC: ").append(bic).append("\n");
+        sb.append("Language Choice: ").append(languageChoice).append("\n");
+        sb.append("Events Owed Amount:\n");
+        for (Map.Entry<Event, Integer> entry : owedAmount.entrySet()) {
+            sb.append("Owes for ").append(entry.getKey().getName()).append(": ").append(entry.getValue()).append("\n");
+        }
+        sb.append("Events Paid Amount:\n");
+        for (Map.Entry<Event, Integer> entry : payedAmount.entrySet()) {
+            sb.append("Paid for ").append(entry.getKey().getName()).append(": ").append(entry.getValue()).append("\n");
+        }
+        sb.append("Event IDs: ").append(eventIds).append("\n");
+        return sb.toString();
     }
+
 
     /**
      * adding into hahsmap owed amount
