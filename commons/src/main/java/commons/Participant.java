@@ -293,7 +293,51 @@ public class Participant {
         payedAmount.put(event, amount);
     }
 
-    
+    /**
+     * boolean checker if someone owes for an event
+     * @param event Event
+     * @return boolean
+     */
+    public boolean owesForEvent(Event event) {
+        return owedAmount.containsKey(event) && owedAmount.get(event) > 0;
+    }
+
+    /**
+     * boolean event
+     * @param event
+     * @return boolean
+     */
+    public boolean hasPaidForEvent(Event event) {
+        return payedAmount.containsKey(event) && payedAmount.get(event) > 0;
+    }
+
+    /**
+     * calculates total owed amount
+     * @return int
+     */
+    public int calculateOwed() {
+        int totalOwed = 0;
+        for (int amount : owedAmount.values()) {
+            totalOwed = totalOwed +  amount;
+        }
+        return totalOwed;
+    }
+
+    /**
+     * calculates total paid amount
+     * @return int
+     */
+    public int calculatePaid() {
+        int totalPaid = 0;
+        for (int amount : payedAmount.values()) {
+            totalPaid = totalPaid + amount;
+        }
+        return totalPaid;
+    }
+
+
+
+
 
 
 
