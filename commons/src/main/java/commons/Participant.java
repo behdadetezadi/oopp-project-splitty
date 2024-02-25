@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-@SuppressWarnings("ALL")
 @Entity
 public class Participant {
     //Participant ID
@@ -19,10 +18,15 @@ public class Participant {
     private String email;
     private String iban; // international bank account number.
     private String bic; // bank identifier code. Similar to the iban, it is required in the backlog.
-    @OneToMany
+    @ElementCollection
+    @CollectionTable(name = "participant_owed_amount", joinColumns = @JoinColumn(name = "participant_id"))
+    @MapKeyJoinColumn(name = "event_id")
+    @Column(name = "owed_amount")
     private Map<Event, Integer> owedAmount; //at the time of the code (no Event class yet).
-    @OneToMany
-    private Map<Event, Integer> payedAmount; //at the time of the code (no Event class yet).
+    @ElementCollection
+    @CollectionTable(name = "participant_owed_amount", joinColumns = @JoinColumn(name = "participant_id"))
+    @MapKeyJoinColumn(name = "event_id")
+    @Column(name = "owed_amount")    private Map<Event, Integer> payedAmount; //at the time of the code (no Event class yet).
     @ElementCollection
     private Set<Integer> eventIds;
     private String languageChoice;
