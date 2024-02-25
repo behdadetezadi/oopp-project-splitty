@@ -1,36 +1,36 @@
 package server.api;
 import commons.Expense;
 
-import java.util.ArrayList;
+import jakarta.persistence.*;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import java.util.List;
 
-public class ExpenseModel {
-
-    private List<Expense> expensesList;
+public class ExpenseModel
+{
+    @PersistenceContext
+    private EntityManager entityManager;
 
     /**
-     * construct a ExpenseModel Object
-     * initialize the expensesList
+     * Add method for adding a new Expense Object
+     * @param expense the Expense object to be persisted
      */
-    public ExpenseModel() {
-        this.expensesList = new ArrayList<>();
+    @Transactional
+    public void addExpense(Expense expense)
+    {
+        entityManager.persist(expense);
     }
-    /**
-     * add method for adding new Expense Object
-     * @param expense the Expense object need to be filled
-     */
 
-    public void addExpense(Expense expense) {
-        expensesList.add(expense);
-    }
     /**
-     * show all Expense objects in the list
-     * @return return expenseList
+     * Retrieve all Expense objects from the database
+     * @return a list of Expense objects
      */
-    public List<Expense> getAllExpenses() {
-        return expensesList;
+    public List<Expense> getAllExpenses()
+    {
+        return entityManager.createQuery("SELECT e FROM Expense e", Expense.class).getResultList();
     }
 }
+
 
 
 

@@ -3,10 +3,11 @@ import commons.Expense;
 import commons.Person;
 import java.util.List;
 import java.util.stream.Collectors;
+import jakarta.transaction.Transactional;
 
 
-
-public class ExpenseController {
+public class ExpenseController 
+{
     private ExpenseModel expenseModel;
 
     /**
@@ -27,7 +28,7 @@ public class ExpenseController {
      * @param splittingOption shows a list of people that are included in the splitting option
      * @param expenseType the type of category the expense belongs to
      */
-
+    @Transactional
     public void addExpense(Person person, String category,
                            int amount, String currency, String date,
                            List<Person> splittingOption, String expenseType)
@@ -40,7 +41,8 @@ public class ExpenseController {
      * show all Expense objects in the list of expenseModel object
      * @return return expenseList of expenseModel object
      */
-    public List<Expense> getAllExpenses() {
+    public List<Expense> getAllExpenses()
+    {
         return expenseModel.getAllExpenses();
     }
     /**
