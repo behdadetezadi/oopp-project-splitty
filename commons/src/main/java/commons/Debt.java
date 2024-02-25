@@ -99,4 +99,68 @@ public class Debt {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    /**
+     * equals method
+     * @param o Object
+     * @return boolean
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Debt debt = (Debt) o;
+
+        if (Double.compare(amountOfMoney, debt.amountOfMoney) != 0) return false;
+        if (debtCollective != debt.debtCollective) return false;
+        if (!debtor.equals(debt.debtor)) return false;
+        if (!lender.equals(debt.lender)) return false;
+        return Objects.equals(description, debt.description);
+    }
+
+    /**
+     * unique hashcode generator
+     * @return  int
+     */
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = debtor.hashCode();
+        result = 31 * result + lender.hashCode();
+        temp = Double.doubleToLongBits(amountOfMoney);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (debtCollective ? 1 : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        String type;
+        if (debtCollective) {
+            type = "Collective";
+        } else {
+            type = "Partial";
+        }
+        String debtDescription;
+        if (description.isEmpty()) {
+            debtDescription = "No description provided";
+        } else {
+            debtDescription = description;
+        }
+
+        sb.append("Debt Details:\n");
+        sb.append("  Debtor: ").append(debtor).append("\n");
+        sb.append("  Creditor: ").append(lender).append("\n");
+        sb.append("  Amount: $").append(amountOfMoney).append("\n");
+        sb.append("  Debt Type: ").append(type).append("\n");
+        sb.append("  Description: ").append(debtDescription);
+
+        return sb.toString();
+    }
+
+
 }
