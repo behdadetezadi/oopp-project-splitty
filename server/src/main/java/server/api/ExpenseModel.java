@@ -29,6 +29,15 @@ public class ExpenseModel
     {
         return entityManager.createQuery("SELECT e FROM Expense e", Expense.class).getResultList();
     }
+    /**
+     * Retrieves an expense by its ID.
+     * @param id The ID of the expense to retrieve.
+     * @return The Expense object if found, or null otherwise.
+     */
+    public Expense getExpenseById(int id)
+    {
+        return entityManager.find(Expense.class, id);
+    }
 }
 
 

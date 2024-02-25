@@ -1,23 +1,20 @@
 package server.api;
+
 import commons.Expense;
 import commons.Person;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.stream.Collectors;
-import jakarta.transaction.Transactional;
 
-
-public class ExpenseController 
+@RestController
+@RequestMapping("/expenses")
+public class ExpenseController
 {
+
     private ExpenseModel expenseModel;
 
-    /**
-     * construct the ExpenseController object
-     * @param expenseModel the expenseModel object including a expenseList
-     */
-    public ExpenseController(ExpenseModel expenseModel)
-    {
-        this.expenseModel = expenseModel;
-    }
+
     /**
      * add an Expense object by passing individual parameters
      * @param person the person who paid
@@ -28,7 +25,7 @@ public class ExpenseController
      * @param splittingOption shows a list of people that are included in the splitting option
      * @param expenseType the type of category the expense belongs to
      */
-    @Transactional
+    @PostMapping("/add")
     public void addExpense(Person person, String category,
                            int amount, String currency, String date,
                            List<Person> splittingOption, String expenseType)
@@ -41,6 +38,7 @@ public class ExpenseController
      * show all Expense objects in the list of expenseModel object
      * @return return expenseList of expenseModel object
      */
+    @GetMapping("/all")
     public List<Expense> getAllExpenses()
     {
         return expenseModel.getAllExpenses();
@@ -49,7 +47,8 @@ public class ExpenseController
      * Display all expenses specific to that date.
      * @param date all the expenses of certain date that the user want to check
      */
-    public List<Expense> filterExpensesByDate(String date) {
+    @GetMapping("/filterByDate/{date}")
+    public List<Expense> filterExpensesByDate(@PathVariable String date) {
         return expenseModel.getAllExpenses().stream()
                 .filter(expense -> expense.getDate().equals(date))
                 .collect(Collectors.toList());
@@ -61,6 +60,7 @@ public class ExpenseController
      * @param currency the currency of the transfer
      * @param date the date of the transfer
      */
+    @PostMapping("/addMoneyTransfer")
     public void addMoneyTransfer(Person A, Person B, int amount, String currency, String date)
     {
         Expense transfer = new Expense(A, "Money Transfer", amount, currency, date, List.of(B), "Transfer");
@@ -70,8 +70,8 @@ public class ExpenseController
      * Display all expenses specific to the person.
      * @param person the expense of certain person that the user want to check
      */
-    public List<Expense> filterExpensesByPerson(Person person)
-    {
+    @GetMapping("/filterByPerson/{person}")
+    public List<Expense> filterExpensesByPerson(@PathVariable Person person) {
         return expenseModel.getAllExpenses().stream()
                 .filter(expense -> expense.getPerson().equals(person))
                 .collect(Collectors.toList());
@@ -80,18 +80,20 @@ public class ExpenseController
      * Display all expenses involving certain person.
      * @param person the expense of certain person that the user want to check
      */
-    public List<Expense> filterExpensesInvolvingSomeone(Person person) {
+    @GetMapping("/filterByInvolving/{person}")
+    public List<Expense> filterExpensesInvolvingSomeone(@PathVariable Person person) {
         return expenseModel.getAllExpenses().stream()
                 .filter(expense -> expense.getSplittingOption().contains(person))
                 .collect(Collectors.toList());
     }
     /**
      * Display all the details of certain expense.
-     * @param expense the expense that the user want to check details
+     * @param id The id of the expense we want to check
      */
-    public String getExpenseDetails(Expense expense)
-    {
-        return expense.toString();
+    @GetMapping("/details/{id}")
+    public String getExpenseDetails(@PathVariable("id") int id) {
+        Expense expense = expenseModel.getExpenseById(id);
+        return (expense != null) ? expense.toString() : "Expense not found";
     }
 
 }
