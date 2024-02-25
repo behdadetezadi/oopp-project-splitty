@@ -4,143 +4,96 @@ import commons.Expense;
 import commons.Person;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import server.database.ExpenseRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
-public class ExpenseControllerTest {
+class ExpenseControllerTest {
 
     private ExpenseController expenseController;
 
+    @Mock
+    private ExpenseRepository expenseRepository;
+
     @BeforeEach
-    void setUp()
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        expenseController = new ExpenseController(expenseRepository);
+    }
+
+    @Test
+    void addExpense()
     {
-        // Create a mock ExpenseModel
-        ExpenseModel expenseModel = new ExpenseModel()
-        {
-            private final List<Expense> expensesList = new ArrayList<>();
-
-            @Override
-            public void addExpense(Expense expense)
-            {
-                expensesList.add(expense);
-            }
-
-            @Override
-            public List<Expense> getAllExpenses()
-            {
-                return expensesList;
-            }
-        };
-
-        // Initialize the ExpenseController with the mock ExpenseModel
-        expenseController = new ExpenseController(expenseModel);
+        Expense expense=new Expense(new Person("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Person("Jodie","Zhao")),"Education");
+        ResponseEntity<Void> responseEntity = expenseController.addExpense(expense);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        verify(expenseRepository, times(1)).save(expense);
+        assertEquals(1, expenseController.getAllExpenses().size());
+        assertEquals("Jodie Zhao",expenseController.getAllExpenses().get(0).getPerson());
+        assertEquals(" CSE tution fee",expenseController.getAllExpenses().get(0).getCategory());
+        assertEquals(16000, expenseController.getAllExpenses().get(0).getAmount());
+        assertEquals("EUR", expenseController.getAllExpenses().get(0).getCurrency());
+        assertEquals("2023-08-27", expenseController.getAllExpenses().get(0).getDate());
+        assertEquals(List.of(new Person("Jodie","Zhao")), expenseController.getAllExpenses().get(0).getSplittingOption());
+        assertEquals("Education", expenseController.getAllExpenses().get(0).getExpenseType());
     }
 
     @Test
-    void testAddExpense()
+    void getAllExpenses() {
+        Expense expense=new Expense(new Person("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Person("Jodie","Zhao")),"Education");
+        when(expenseRepository.findAll()).thenReturn(List.of(expense));
+        assertEquals(List.of(expense), expenseController.getAllExpenses());
+    }
+
+    @Test
+    void filterExpensesByDate() {
+        Expense expense=new Expense(new Person("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Person("Jodie","Zhao")),"Education");
+        String date="2023-08-27";
+        when(expenseRepository.findAllByDate(date)).thenReturn(List.of(expense));
+        assertEquals(List.of(expense), expenseController.filterExpensesByDate(date));
+    }
+
+    @Test
+    void addMoneyTransfer()
     {
-        Person person = new Person("Jodie", "Zhao");
-        List<Person> splittingOption = new ArrayList<>();
-        splittingOption.add(person);
-        expenseController.addExpense(person, "tuition fee", 15900, "EUR", "2023-08-27", splittingOption, "Education");
-
-        List<Expense> expenses = expenseController.getAllExpenses();
-        assertEquals(1, expenses.size());
-
-        Expense addedExpense = expenses.get(0);
-        assertEquals(person, addedExpense.getPerson());
-        assertEquals("tuition fee", addedExpense.getCategory());
-        assertEquals(15900, addedExpense.getAmount());
-        assertEquals("EUR", addedExpense.getCurrency());
-        assertEquals("2023-08-27", addedExpense.getDate());
-        assertEquals(splittingOption, addedExpense.getSplittingOption());
-        assertEquals("Education", addedExpense.getExpenseType());
+        Expense transfer = new Expense();
+        ResponseEntity<Void> responseEntity = expenseController.addMoneyTransfer(transfer);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        verify(expenseRepository, times(1)).save(transfer);
     }
 
     @Test
-    void testFilterExpensesByDate() {
-        Person person = new Person("Jodie", "Zhao");
-        List<Person> splittingOption = new ArrayList<>();
-        splittingOption.add(person);
-        expenseController.addExpense(person, "Shopping", 100, "EUR", "2024-02-25", splittingOption, "Retail");
-        expenseController.addExpense(person, "Dining", 75, "EUR", "2024-02-26", splittingOption, "Food");
-        expenseController.addExpense(person, "Groceries", 50, "EUR", "2024-02-27", splittingOption, "Food");
-
-        List<Expense> filteredExpenses = expenseController.filterExpensesByDate("2024-02-26");
-        assertEquals(1, filteredExpenses.size());
-        assertEquals("Dining", filteredExpenses.get(0).getCategory());
+    void filterExpensesByPerson()
+    {
+        Expense expense=new Expense(new Person("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Person("Jodie","Zhao")),"Education");
+        Person person=new Person("Jodie","Zhao");
+        when(expenseRepository.findAllByPerson(person)).thenReturn(List.of(expense));
+        assertEquals(List.of(expense), expenseController.filterExpensesByPerson(person));
     }
 
     @Test
-    void testAddMoneyTransfer() {
-        Person personA = new Person("Yanran", "Zhao");
-        Person personB = new Person("Jodie", "Zhao");
-        expenseController.addMoneyTransfer(personA, personB, 1350, "EUR", "2024-02-25");
-
-        List<Expense> expenses = expenseController.getAllExpenses();
-        assertEquals(1, expenses.size());
-
-        Expense addedExpense = expenses.get(0);
-        assertEquals(personA, addedExpense.getPerson());
-        assertEquals(personB, addedExpense.getSplittingOption().get(0));
-        assertEquals("Money Transfer", addedExpense.getCategory());
-        assertEquals(1350, addedExpense.getAmount());
-        assertEquals("EUR", addedExpense.getCurrency());
-        assertEquals("2024-02-25", addedExpense.getDate());
-        assertEquals("Transfer", addedExpense.getExpenseType());
+    void filterExpensesInvolvingSomeone()
+    {
+        Expense expense=new Expense(new Person("Jodie","Zhao")," CSE tution fee",16000,"EUR","2023-08-27",List.of(new Person("Jodie","Zhao")),"Education");
+        Person person=new Person("Jodie","Zhao");
+        when(expenseRepository.findAllBySplittingOptionContaining(person)).thenReturn(List.of(expense));
+        assertEquals(List.of(expense), expenseController.filterExpensesInvolvingSomeone(person));
     }
 
     @Test
-    void testFilterExpensesByPerson() {
-        Person personA = new Person("Carlos", "Sainz");
-        Person personB = new Person("Jamel", "Musiala");
-        List<Person> splittingOption = new ArrayList<>();
-        splittingOption.add(personA);
-        splittingOption.add(personB);
-        expenseController.addExpense(personA, "Dining", 60, "USD", "2024-02-25", splittingOption, "Food");
-        expenseController.addExpense(personB, "Shopping", 100, "EUR", "2024-02-26", splittingOption, "Retail");
-
-        List<Expense> filteredExpenses = expenseController.filterExpensesByPerson(personA);
-        assertEquals(1, filteredExpenses.size());
-        assertEquals("Dining", filteredExpenses.get(0).getCategory());
-    }
-
-    @Test
-    void testFilterExpensesInvolvingSomeone() {
-        Person personA = new Person("Steph", "Curry");
-        Person personB = new Person("Lebron", "James");
-        Person personC = new Person("Klay", "Thompson");
-        List<Person> splittingOption1 = new ArrayList<>();
-        splittingOption1.add(personA);
-        splittingOption1.add(personB);
-        List<Person> splittingOption2 = new ArrayList<>();
-        splittingOption2.add(personB);
-        splittingOption2.add(personC);
-        expenseController.addExpense(personA, "Dining", 60, "USD", "2024-02-25", splittingOption1, "Food");
-        expenseController.addExpense(personB, "Shopping", 100, "EUR", "2024-02-26", splittingOption2, "Retail");
-
-        List<Expense> filteredExpenses = expenseController.filterExpensesInvolvingSomeone(personA);
-        assertEquals(1, filteredExpenses.size());
-        assertEquals("Dining", filteredExpenses.get(0).getCategory());
-    }
-
-    @Test
-    void testGetExpenseDetails() {
-        Person person = new Person("Jodie", "Foster");
-        List<Person> splittingOption = new ArrayList<>();
-        splittingOption.add(person);
-        expenseController.addExpense(person, "Groceries", 50, "USD", "2024-02-25", splittingOption, "Food");
-
-        List<Expense> expenses = expenseController.getAllExpenses();
-        assertEquals(1, expenses.size());
-
-        Expense addedExpense = expenses.get(0);
-        String expectedDetails = "Expense: " + person + " paid 50 USDfor Groceries on 2024-02-25. The bill is split between " + person;
-        assertEquals(expectedDetails, expenseController.getExpenseDetails(addedExpense));
+    void getExpenseDetails() {
+        long id = 1L;
+        Expense expense = new Expense();
+        when(expenseRepository.findById(id)).thenReturn(expense);
+        ResponseEntity<String> responseEntity = expenseController.getExpenseDetails(id);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(expense.toString(), responseEntity.getBody());
     }
 }
-
-

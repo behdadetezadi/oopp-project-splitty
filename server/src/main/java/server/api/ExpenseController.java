@@ -2,101 +2,95 @@ package server.api;
 
 import commons.Expense;
 import commons.Person;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import server.database.ExpenseRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/expenses")
-public class ExpenseController
-{
+@RequestMapping("/api/expenses")
+public class ExpenseController {
 
-    private ExpenseModel expenseModel;
+    private final ExpenseRepository repository;
 
+    @Autowired
+    public ExpenseController(ExpenseRepository repository)
+    {
+        this.repository = repository;
+    }
 
     /**
-     * add an Expense object by passing individual parameters
-     * @param person the person who paid
-     * @param category what the expense was for
-     * @param amount the amount that was spent
-     * @param currency what currency was used for the expense
-     * @param date when the expense was made
-     * @param splittingOption shows a list of people that are included in the splitting option
-     * @param expenseType the type of category the expense belongs to
+     * Add an expense to the repository.
+     * @param expense The expense to be added.
+     * @return ResponseEntity indicating the success of the operation.
      */
     @PostMapping("/add")
-    public void addExpense(Person person, String category,
-                           int amount, String currency, String date,
-                           List<Person> splittingOption, String expenseType)
-    {
-        Expense expense = new Expense(person, category, amount, currency, date, splittingOption, expenseType);
-        expenseModel.addExpense(expense);
+    public ResponseEntity<Void> addExpense(@RequestBody Expense expense) {
+        repository.save(expense);
+        return ResponseEntity.ok().build();
     }
 
     /**
-     * show all Expense objects in the list of expenseModel object
-     * @return return expenseList of expenseModel object
+     * Retrieve all expenses from the repository.
+     * @return A list of all expenses.
      */
     @GetMapping("/all")
-    public List<Expense> getAllExpenses()
-    {
-        return expenseModel.getAllExpenses();
+    public List<Expense> getAllExpenses() {
+        return repository.findAll();
     }
+
     /**
-     * Display all expenses specific to that date.
-     * @param date all the expenses of certain date that the user want to check
+     * Filter expenses by date.
+     * @param date The date to filter expenses.
+     * @return A list of expenses on the specified date.
      */
     @GetMapping("/filterByDate/{date}")
     public List<Expense> filterExpensesByDate(@PathVariable String date) {
-        return expenseModel.getAllExpenses().stream()
-                .filter(expense -> expense.getDate().equals(date))
-                .collect(Collectors.toList());
+        return repository.findAllByDate(date);
     }
-    /** add money transfer form person A to B(I'm not sure if the requirement is need to add the transfer in to the expenseList in the expenseModel)
-     * @param A the person who need to transfer the money
-     * @param B the person who receive the transfer
-     * @param amount the amount of transfer
-     * @param currency the currency of the transfer
-     * @param date the date of the transfer
+
+    /**
+     * Add a money transfer to the repository.
+     * @param transfer The money transfer to be added.
+     * @return ResponseEntity indicating the success of the operation.
      */
     @PostMapping("/addMoneyTransfer")
-    public void addMoneyTransfer(Person A, Person B, int amount, String currency, String date)
-    {
-        Expense transfer = new Expense(A, "Money Transfer", amount, currency, date, List.of(B), "Transfer");
-        expenseModel.getAllExpenses().add(transfer);
+    public ResponseEntity<Void> addMoneyTransfer(@RequestBody Expense transfer) {
+        repository.save(transfer);
+        return ResponseEntity.ok().build();
     }
+
     /**
-     * Display all expenses specific to the person.
-     * @param person the expense of certain person that the user want to check
+     * Filter expenses by person.
+     * @param person The person to filter expenses.
+     * @return A list of expenses associated with the specified person.
      */
     @GetMapping("/filterByPerson/{person}")
     public List<Expense> filterExpensesByPerson(@PathVariable Person person) {
-        return expenseModel.getAllExpenses().stream()
-                .filter(expense -> expense.getPerson().equals(person))
-                .collect(Collectors.toList());
+        return repository.findAllByPerson(person);
     }
+
     /**
-     * Display all expenses involving certain person.
-     * @param person the expense of certain person that the user want to check
+     * Filter expenses involving a specific person.
+     * @param person The person to filter expenses.
+     * @return A list of expenses involving the specified person.
      */
     @GetMapping("/filterByInvolving/{person}")
     public List<Expense> filterExpensesInvolvingSomeone(@PathVariable Person person) {
-        return expenseModel.getAllExpenses().stream()
-                .filter(expense -> expense.getSplittingOption().contains(person))
-                .collect(Collectors.toList());
+        return repository.findAllBySplittingOptionContaining(person);
     }
+
     /**
-     * Display all the details of certain expense.
-     * @param id The id of the expense we want to check
+     * Get details of an expense by its ID.
+     * @param id The ID of the expense to retrieve details.
+     * @return ResponseEntity containing the details of the expense, or an error message if not found.
      */
     @GetMapping("/details/{id}")
-    public String getExpenseDetails(@PathVariable("id") int id) {
-        Expense expense = expenseModel.getExpenseById(id);
-        return (expense != null) ? expense.toString() : "Expense not found";
+    public ResponseEntity<String> getExpenseDetails(@PathVariable("id") long id) {
+        Expense expense = repository.findById(id);
+        return ResponseEntity.ok((expense != null) ? expense.toString() : "Expense not found");
     }
-
 }
-
-
-
