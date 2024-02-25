@@ -7,7 +7,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ExpensesTest {
+class ExpenseTest {
     Person person = new Person("John", "Foo");
     Person person2 = new Person("John2", "Foo");
     List<Person> spiltOption = new ArrayList<>();

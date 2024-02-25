@@ -172,16 +172,16 @@ public class Expense {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Expense expenses)) return false;
+        if (!(o instanceof Expense expense)) return false;
 
-        if (amount != expenses.amount) return false;
-        if (!Objects.equals(person, expenses.person)) return false;
-        if (!Objects.equals(category, expenses.category)) return false;
-        if (!Objects.equals(currency, expenses.currency)) return false;
-        if (!Objects.equals(date, expenses.date)) return false;
-        if (!Objects.equals(splittingOption, expenses.splittingOption))
+        if (amount != expense.amount) return false;
+        if (!Objects.equals(person, expense.person)) return false;
+        if (!Objects.equals(category, expense.category)) return false;
+        if (!Objects.equals(currency, expense.currency)) return false;
+        if (!Objects.equals(date, expense.date)) return false;
+        if (!Objects.equals(splittingOption, expense.splittingOption))
             return false;
-        return Objects.equals(expenseType, expenses.expenseType);
+        return Objects.equals(expenseType, expense.expenseType);
     }
 
     /**
