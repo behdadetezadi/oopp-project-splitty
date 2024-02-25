@@ -1,7 +1,6 @@
 package server.database;
 
 import commons.Debt;
-import commons.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
