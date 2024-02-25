@@ -1,7 +1,15 @@
 package commons;
+import jakarta.persistence.*;
 import java.util.*;
+@Entity
 public class Debt {
+    //Debt id
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public long id;
+    @ManyToOne
     private Participant debtor;
+    @ManyToOne
     private Participant lender;
     private double amountOfMoney;
     private boolean debtCollective;
@@ -22,6 +30,13 @@ public class Debt {
         this.amountOfMoney = amountOfMoney;
         this.debtCollective = debtCollective;
         this.description = description;
+    }
+
+    /**
+     * empty constructor for the persistent object.
+     */
+    public Debt() {
+
     }
 
     /**
