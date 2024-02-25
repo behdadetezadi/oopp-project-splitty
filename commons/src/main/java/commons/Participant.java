@@ -291,14 +291,14 @@ public class Participant {
         sb.append("Events Owed Amount:\n");
         for (Map.Entry<Event, Integer> entry : owedAmount.entrySet()) {
             sb.append("Owes for ").
-                    append(entry.getKey().getName()).
+                    append(entry.getKey().getTitle()).
                     append(": ").append(entry.getValue()).
                     append("\n");
         }
         sb.append("Events Paid Amount:\n");
         for (Map.Entry<Event, Integer> entry : payedAmount.entrySet()) {
             sb.append("Paid for ").
-                    append(entry.getKey().getName()).
+                    append(entry.getKey().getTitle()).
                     append(": ").append(entry.getValue()).
                     append("\n");
         }
