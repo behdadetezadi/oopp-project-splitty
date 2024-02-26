@@ -8,24 +8,24 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExpenseTest {
-    Participant participant = new Participant("John", "Foo");
-    Participant participant2 = new Participant("John2", "Foo");
-    List<Participant> spiltOption = new ArrayList<>();
-    List<Participant> spiltOption2 = new ArrayList<>();
-    Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
-    Expense b = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
-    Expense c = new Expense(participant, "dinner", 13, "Euros", "01-01-2024", spiltOption, "food");
+    Person person = new Person("John", "Foo");
+    Person person2 = new Person("John2", "Foo");
+    List<Person> spiltOption = new ArrayList<>();
+    List<Person> spiltOption2 = new ArrayList<>();
+    Expense a = new Expense(person, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
+    Expense b = new Expense(person, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
+    Expense c = new Expense(person, "dinner", 13, "Euros", "01-01-2024", spiltOption, "food");
 
 
     @Test
     public void equalsTest(){
-        spiltOption.add(participant);
+        spiltOption.add(person);
         assertEquals(a, b);
     }
 
     @Test
     public void notEqualsTest(){
-        spiltOption.add(participant);
+        spiltOption.add(person);
         assertNotEquals(a, c);
     }
 
@@ -41,13 +41,13 @@ class ExpenseTest {
 
     @Test
     public void getPersonTest(){
-        assertEquals(participant, a.getParticipant());
+        assertEquals(person, a.getPerson());
     }
 
     @Test
     public void setPersonTest(){
-        a.setParticipant(participant2);
-        assertEquals(participant2, a.getParticipant());
+        a.setPerson(person2);
+        assertEquals(person2, a.getPerson());
     }
 
     @Test
