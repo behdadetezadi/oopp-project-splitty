@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import server.database.ExpenseRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/expenses")
@@ -28,7 +28,8 @@ public class ExpenseController {
      * @return ResponseEntity indicating the success of the operation.
      */
     @PostMapping("/add")
-    public ResponseEntity<Void> addExpense(@RequestBody Expense expense) {
+    public ResponseEntity<Void> addExpense(@RequestBody Expense expense)
+    {
         repository.save(expense);
         return ResponseEntity.ok().build();
     }
@@ -38,7 +39,8 @@ public class ExpenseController {
      * @return A list of all expenses.
      */
     @GetMapping("/all")
-    public List<Expense> getAllExpenses() {
+    public List<Expense> getAllExpenses()
+    {
         return repository.findAll();
     }
 
@@ -48,7 +50,8 @@ public class ExpenseController {
      * @return A list of expenses on the specified date.
      */
     @GetMapping("/filterByDate/{date}")
-    public List<Expense> filterExpensesByDate(@PathVariable String date) {
+    public List<Expense> filterExpensesByDate(@PathVariable String date)
+    {
         return repository.findAllByDate(date);
     }
 
@@ -90,7 +93,46 @@ public class ExpenseController {
      */
     @GetMapping("/details/{id}")
     public ResponseEntity<String> getExpenseDetails(@PathVariable("id") long id) {
-        Expense expense = repository.findById(id);
+        Optional<Expense> expense = repository.findById(id);
         return ResponseEntity.ok((expense != null) ? expense.toString() : "Expense not found");
+    }
+    /**
+     * update an expense
+     * @param id The ID of the expense to retrieve details.
+     * @param updatedExpense the updated version of the expense
+     */
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Void> updateExpense(@PathVariable("id") long id, @RequestBody Expense updatedExpense)
+    {
+        Optional<Expense> expenseOptional = repository.findById(id);
+        if (expenseOptional.isPresent())
+        {
+            Expense existingExpense = expenseOptional.get();
+
+            existingExpense.setDate(updatedExpense.getDate());
+            existingExpense.setCategory(updatedExpense.getCategory());
+            existingExpense.setCurrency(updatedExpense.getCurrency());
+            existingExpense.setExpenseType(updatedExpense.getExpenseType());
+            existingExpense.setAmount(updatedExpense.getAmount());
+            existingExpense.setPerson(updatedExpense.getPerson());
+            existingExpense.setSplittingOption(updatedExpense.getSplittingOption());
+            repository.save(existingExpense);
+            return ResponseEntity.ok().build();
+        }
+        else
+        {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * delete an expense
+     * @param id The ID of the expense to retrieve details.
+     */
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteExpense(@PathVariable("id") long id)
+    {
+        repository.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }
