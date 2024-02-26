@@ -13,7 +13,7 @@ public class Expense {
     @ManyToOne
     private Participant participant;
     private String category;
-    private int amount;
+    private double amount;
     private String currency;
     private String date;
     @OneToMany
@@ -30,7 +30,7 @@ public class Expense {
      * @param splittingOption shows a list of people that are included in the splitting option
      * @param expenseType the type of category the expense belongs to
      */
-    public Expense(Participant participant, String category, int amount, String currency,
+    public Expense(Participant participant, String category, double amount, String currency,
                     String date, List<Participant> splittingOption, String expenseType) {
         this.participant = participant;
         this.category = category;
@@ -104,7 +104,7 @@ public class Expense {
      * Getter for amount
      * @return the price of the expense
      */
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
@@ -112,7 +112,7 @@ public class Expense {
      * Setter for amount
      * @param amount the price of the expense
      */
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
@@ -190,9 +190,13 @@ public class Expense {
      */
     @Override
     public int hashCode() {
-        int result = participant != null ? participant.hashCode() : 0;
+        int result;
+        long temp;
+        result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (participant != null ? participant.hashCode() : 0);
         result = 31 * result + (category != null ? category.hashCode() : 0);
-        result = 31 * result + amount;
+        temp = Double.doubleToLongBits(amount);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + (currency != null ? currency.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (splittingOption != null ? splittingOption.hashCode() : 0);
