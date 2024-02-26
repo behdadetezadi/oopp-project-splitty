@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class EventTest {
 
     private Event event;
-    private List<Person> people;
+    private List<Participant> people;
     private List<Expense> expenses;
 
     @BeforeEach
@@ -47,33 +47,33 @@ class EventTest {
 
     @Test
     void testAddPerson() {
-        Person person = new Person("John", "Doe");
-        assertTrue(event.addPerson(person));
-        assertTrue(event.getPeople().contains(person));
+        Participant participant = new Participant("John", "Doe");
+        assertTrue(event.addParticipant(participant));
+        assertTrue(event.getPeople().contains(participant));
     }
 
     @Test
     void testRemovePerson() {
-        Person person = new Person("John", "Doe");
-        event.addPerson(person);
-        assertTrue(event.removePerson(person));
-        assertFalse(event.getPeople().contains(person));
+        Participant participant = new Participant("John", "Doe");
+        event.addParticipant(participant);
+        assertTrue(event.removeParticipant(participant));
+        assertFalse(event.getPeople().contains(participant));
     }
 
     @Test
     void testAddExpense() {
-        Person person = new Person("John", "Foo");
-        List<Person> splitOption = new ArrayList<>();
-        Expense a = new Expense(person, "dinner", 12, "Euros", "01-01-2024", splitOption, "food");
+        Participant participant = new Participant("John", "Foo");
+        List<Participant> splitOption = new ArrayList<>();
+        Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", splitOption, "food");
         assertTrue(event.addExpense(a));
         assertTrue(event.getExpenses().contains(a));
     }
 
     @Test
     void testRemoveExpense() {
-        Person person = new Person("John", "Foo");
-        List<Person> splitOption = new ArrayList<>();
-        Expense a = new Expense(person, "dinner", 12, "Euros", "01-01-2024", splitOption, "food");
+        Participant participant = new Participant("John", "Foo");
+        List<Participant> splitOption = new ArrayList<>();
+        Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", splitOption, "food");
         event.addExpense(a);
         assertTrue(event.removeExpense(a));
         assertFalse(event.getExpenses().contains(a));
@@ -101,13 +101,13 @@ class EventTest {
 
     @Test
     void testAddNullPerson() {
-        assertFalse(event.addPerson(null));
+        assertFalse(event.addParticipant(null));
     }
 
     @Test
     void testRemoveNonExistingPerson() {
-        Person person = new Person("Jane", "Doe");
-        assertFalse(event.removePerson(person));
+        Participant participant = new Participant("Jane", "Doe");
+        assertFalse(event.removeParticipant(participant));
     }
 
     @Test
@@ -117,9 +117,9 @@ class EventTest {
 
     @Test
     void testRemoveNonExistingExpense() {
-        Person person = new Person("John", "Foo");
-        List<Person> splitOption = new ArrayList<>();
-        Expense a = new Expense(person, "lunch", 15, "USD", "01-02-2024", splitOption, "food");
+        Participant participant = new Participant("John", "Foo");
+        List<Participant> splitOption = new ArrayList<>();
+        Expense a = new Expense(participant, "lunch", 15, "USD", "01-02-2024", splitOption, "food");
         assertFalse(event.removeExpense(a));
     }
 
