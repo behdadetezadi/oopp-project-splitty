@@ -7,25 +7,25 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ExpensesTest {
-    Person person = new Person("John", "Foo");
-    Person person2 = new Person("John2", "Foo");
-    List<Person> spiltOption = new ArrayList<>();
-    List<Person> spiltOption2 = new ArrayList<>();
-    Expense a = new Expense(person, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
-    Expense b = new Expense(person, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
-    Expense c = new Expense(person, "dinner", 13, "Euros", "01-01-2024", spiltOption, "food");
+class ExpenseTest {
+    Participant participant = new Participant("John", "Foo");
+    Participant participant2 = new Participant("John2", "Foo");
+    List<Participant> spiltOption = new ArrayList<>();
+    List<Participant> spiltOption2 = new ArrayList<>();
+    Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
+    Expense b = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
+    Expense c = new Expense(participant, "dinner", 13, "Euros", "01-01-2024", spiltOption, "food");
 
 
     @Test
     public void equalsTest(){
-        spiltOption.add(person);
+        spiltOption.add(participant);
         assertEquals(a, b);
     }
 
     @Test
     public void notEqualsTest(){
-        spiltOption.add(person);
+        spiltOption.add(participant);
         assertNotEquals(a, c);
     }
 
@@ -41,13 +41,13 @@ class ExpensesTest {
 
     @Test
     public void getPersonTest(){
-        assertEquals(person, a.getPerson());
+        assertEquals(participant, a.getParticipant());
     }
 
     @Test
     public void setPersonTest(){
-        a.setPerson(person2);
-        assertEquals(person2, a.getPerson());
+        a.setParticipant(participant2);
+        assertEquals(participant2, a.getParticipant());
     }
 
     @Test
