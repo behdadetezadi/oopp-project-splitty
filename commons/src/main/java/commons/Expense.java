@@ -11,18 +11,18 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
     @ManyToOne
-    private Person person;
+    private Participant participant;
     private String category;
     private int amount;
     private String currency;
     private String date;
     @OneToMany
-    private List<Person> splittingOption;
+    private List<Participant> splittingOption;
     private String expenseType;
 
     /**
      * This is the constructor that initialises the expense
-     * @param person the person who paid
+     * @param participant the person who paid
      * @param category what the expense was for
      * @param amount the amount that was spent
      * @param currency what currency was used for the expense
@@ -30,9 +30,9 @@ public class Expense {
      * @param splittingOption shows a list of people that are included in the splitting option
      * @param expenseType the type of category the expense belongs to
      */
-    public Expense(Person person, String category, int amount, String currency,
-                    String date, List<Person> splittingOption, String expenseType) {
-        this.person = person;
+    public Expense(Participant participant, String category, int amount, String currency,
+                    String date, List<Participant> splittingOption, String expenseType) {
+        this.participant = participant;
         this.category = category;
         this.amount = amount;
         this.currency = currency;
@@ -56,23 +56,23 @@ public class Expense {
      * Getter for person
      * @return the person who paid for the expense
      */
-    public Person getPerson() {
-        return person;
+    public Participant getParticipant() {
+        return participant;
     }
 
     /**
      * Setter for person
-     * @param person the person who paid for the expense
+     * @param participant the person who paid for the expense
      */
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setParticipant(Participant participant) {
+        this.participant = participant;
     }
 
     /**
      * Getter for splittingOption
      * @return the people the bill is split between
      */
-    public List<Person> getSplittingOption() {
+    public List<Participant> getSplittingOption() {
         return splittingOption;
     }
 
@@ -80,7 +80,7 @@ public class Expense {
      * Setter for splittingOption
      * @param splittingOption the people the bill is split between
      */
-    public void setSplittingOption(List<Person> splittingOption) {
+    public void setSplittingOption(List<Participant> splittingOption) {
         this.splittingOption = splittingOption;
     }
 
@@ -175,7 +175,7 @@ public class Expense {
         if (!(o instanceof Expense expense)) return false;
 
         if (amount != expense.amount) return false;
-        if (!Objects.equals(person, expense.person)) return false;
+        if (!Objects.equals(participant, expense.participant)) return false;
         if (!Objects.equals(category, expense.category)) return false;
         if (!Objects.equals(currency, expense.currency)) return false;
         if (!Objects.equals(date, expense.date)) return false;
@@ -190,7 +190,7 @@ public class Expense {
      */
     @Override
     public int hashCode() {
-        int result = person != null ? person.hashCode() : 0;
+        int result = participant != null ? participant.hashCode() : 0;
         result = 31 * result + (category != null ? category.hashCode() : 0);
         result = 31 * result + amount;
         result = 31 * result + (currency != null ? currency.hashCode() : 0);
@@ -207,7 +207,7 @@ public class Expense {
     @Override
     public String toString() {
         StringBuilder res = new StringBuilder();
-        res.append("Expense: " + person + " paid " + amount + " " + currency +
+        res.append("Expense: " + participant + " paid " + amount + " " + currency +
                 "for " + category  + " on " + date + ". The bill is split between " );
         for(int i=0; i<splittingOption.size(); i++) {
             res.append(splittingOption.get(i));
