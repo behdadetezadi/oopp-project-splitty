@@ -28,7 +28,7 @@ public class Event {
 
     //List of Person s involved in the Event
     @OneToMany
-    private List<Person> people;
+    private List<Participant> people;
 
 
     //List of Expense s in the Event
@@ -43,7 +43,7 @@ public class Event {
      * @param title a string stating the title of the Event
      * @param inviteCode the invitation code for sharing the Event (for now type long)
      */
-    public Event(List<Person> people, List<Expense> expenses, String title, long inviteCode) {
+    public Event(List<Participant> people, List<Expense> expenses, String title, long inviteCode) {
         this.people = people;
         this.expenses = expenses;
         this.inviteCode = inviteCode;
@@ -86,7 +86,7 @@ public class Event {
      * Getter for the list of people involved in the Event
      * @return list of people involved in the Event
      */
-    public List<Person> getPeople() {
+    public List<Participant> getPeople() {
         return people;
     }
 
@@ -127,7 +127,7 @@ public class Event {
      * Setter for the list of participating people
      * @param people the list of Person s
      */
-    public void setPeople(List<Person> people) {
+    public void setPeople(List<Participant> people) {
         this.people = people;
     }
 
@@ -141,28 +141,28 @@ public class Event {
 
     /**
      * This method adds a person to the list of Person s in the Event
-     * @param person the Person to be added
+     * @param participant the Person to be added
      * @return true if the Person was added successfully otherwise returns false
      */
-    public boolean addPerson(Person person){
-        if(person == null){
+    public boolean addParticipant(Participant participant){
+        if(participant == null){
             return false;
         }
-        if(people.contains(person)){
+        if(people.contains(participant)){
             return false;
         }
-        return this.people.add(person);
+        return this.people.add(participant);
     }
 
 
     /**
      *
      * This method removes a Person from the list of Person s in the Event
-     * @param person the person to be removed
+     * @param participant the person to be removed
      * @return true if the Person was removed successfully otherwise returns false
      */
-    public boolean removePerson(Person person){
-        return this.people.remove(person);
+    public boolean removeParticipant(Participant participant){
+        return this.people.remove(participant);
     }
 
 
