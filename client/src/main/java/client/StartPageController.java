@@ -12,6 +12,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+import java.util.Objects;
+
 public class StartPageController {
 
     @FXML
@@ -36,9 +38,6 @@ public class StartPageController {
     private Button createEventButton;
 
     @FXML
-    private VBox centerVBox;
-
-    @FXML
     private ImageView logo;
 
     public void initialize() {
@@ -53,8 +52,36 @@ public class StartPageController {
 
 
 
+/*
+        Image gif = new Image(getClass().getClassLoader().getResourceAsStream("MatrixGif.gif"));
+        logo.setImage(gif);
 
-        Image image = new Image(getClass().getClassLoader().getResourceAsStream("images/MatrixGif.gif"));
+        // Create a fade out transition to gradually fade out the GIF
+        FadeTransition fadeOutTransition = new FadeTransition(Duration.seconds(2), logo);
+        fadeOutTransition.setFromValue(1.0);
+        fadeOutTransition.setToValue(0);
+
+        // Load and set the image after a short delay
+        PauseTransition logoDelay = new PauseTransition(Duration.seconds(2)); // Adjust the delay as needed
+        logoDelay.setOnFinished(event -> {
+            Image image = new Image(getClass().getClassLoader().getResourceAsStream("SplittyLogo.png"));
+            logo.setImage(image);
+        });
+
+        // Create a fade in transition to gradually fade in the image
+        FadeTransition fadeInTransition = new FadeTransition(Duration.seconds(2), logo);
+        fadeInTransition.setFromValue(0.0);
+        fadeInTransition.setToValue(1.0);
+
+        // Start the fade out, delay, and fade in transitions in parallel
+        ParallelTransition transition = new ParallelTransition(fadeOutTransition, logoDelay, fadeInTransition);
+        transition.play();
+        */
+
+
+
+
+        Image image = new Image(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("images/MatrixGif.gif")));
         logo.setImage(image);
 
         // Apply CSS glow effect to the logo
@@ -66,9 +93,7 @@ public class StartPageController {
 
         // Delay setting focus to prevent text field from being selected immediately
         PauseTransition delay = new PauseTransition(Duration.seconds(0.01));
-        delay.setOnFinished(event -> {
-            root.requestFocus();
-        });
+        delay.setOnFinished(event -> root.requestFocus());
         delay.play();
 
         // Dynamically adjust component sizes based on the parent container size
