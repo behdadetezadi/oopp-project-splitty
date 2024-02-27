@@ -52,31 +52,6 @@ public class StartPageController {
 
 
 
-        /*
-        Image gif = new Image(getClass().getClassLoader().getResourceAsStream("MatrixGif.gif"));
-        logo.setImage(gif);
-
-        // Create a fade out transition to gradually fade out the GIF
-        FadeTransition fadeOutTransition = new FadeTransition(Duration.seconds(2), logo);
-        fadeOutTransition.setFromValue(1.0);
-        fadeOutTransition.setToValue(0);
-
-        // Load and set the image after a short delay
-        PauseTransition logoDelay = new PauseTransition(Duration.seconds(2)); // Adjust the delay as needed
-        logoDelay.setOnFinished(event -> {
-            Image image = new Image(getClass().getClassLoader().getResourceAsStream("SplittyLogo.png"));
-            logo.setImage(image);
-        });
-
-        // Create a fade in transition to gradually fade in the image
-        FadeTransition fadeInTransition = new FadeTransition(Duration.seconds(2), logo);
-        fadeInTransition.setFromValue(0.0);
-        fadeInTransition.setToValue(1.0);
-
-        // Start the fade out, delay, and fade in transitions in parallel
-        ParallelTransition transition = new ParallelTransition(fadeOutTransition, logoDelay, fadeInTransition);
-        transition.play();
-        */
 
 
         Image image = new Image(getClass().getClassLoader().getResourceAsStream("images/MatrixGif.gif"));
