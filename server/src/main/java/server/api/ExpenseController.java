@@ -1,7 +1,8 @@
 package server.api;
 
+
 import commons.Expense;
-import commons.Person;
+import commons.Participant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,22 +69,22 @@ public class ExpenseController {
 
     /**
      * Filter expenses by person.
-     * @param person The person to filter expenses.
+     * @param participant The person to filter expenses.
      * @return A list of expenses associated with the specified person.
      */
     @GetMapping("/filterByPerson/{person}")
-    public List<Expense> filterExpensesByPerson(@PathVariable Person person) {
-        return repository.findAllByPerson(person);
+    public List<Expense> filterExpensesByPerson(@PathVariable Participant participant) {
+        return repository.findAllByPerson(participant);
     }
 
     /**
      * Filter expenses involving a specific person.
-     * @param person The person to filter expenses.
+     * @param participant The person to filter expenses.
      * @return A list of expenses involving the specified person.
      */
     @GetMapping("/filterByInvolving/{person}")
-    public List<Expense> filterExpensesInvolvingSomeone(@PathVariable Person person) {
-        return repository.findAllBySplittingOptionContaining(person);
+    public List<Expense> filterExpensesInvolvingSomeone(@PathVariable Participant participant) {
+        return repository.findAllBySplittingOptionContaining(participant);
     }
 
     /**
@@ -114,7 +115,7 @@ public class ExpenseController {
             existingExpense.setCurrency(updatedExpense.getCurrency());
             existingExpense.setExpenseType(updatedExpense.getExpenseType());
             existingExpense.setAmount(updatedExpense.getAmount());
-            existingExpense.setPerson(updatedExpense.getPerson());
+            existingExpense.setParticipant(updatedExpense.getParticipant());
             existingExpense.setSplittingOption(updatedExpense.getSplittingOption());
             repository.save(existingExpense);
             return ResponseEntity.ok().build();
@@ -136,3 +137,4 @@ public class ExpenseController {
         return ResponseEntity.ok().build();
     }
 }
+

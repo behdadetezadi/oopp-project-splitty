@@ -1,7 +1,7 @@
 package server.api;
 
 import commons.Expense;
-import commons.Person;
+import commons.Participant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,8 +11,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import server.database.ExpenseRepository;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +35,7 @@ class ExpenseControllerTest {
     @Test
     void addExpense()
     {
-        Expense expense = new Expense(new Person("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Person("Jodie","Zhao")),"Education");
+        Expense expense = new Expense(new Participant("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
 
         when(repository.save(expense)).thenReturn(expense);
 
@@ -50,8 +48,8 @@ class ExpenseControllerTest {
     @Test
     void getAllExpenses()
     {
-        Expense expense1=new Expense(new Person("Carlos","Sainz"),"dinner",16000,"EUR","2023-08-31",List.of(new Person("Carlos","Sainz")),"Food");
-        Expense expense2=new Expense(new Person("Steph","Curry"),"dinner",16000,"EUR","2023-08-31",List.of(new Person("Steph","Curry")),"Food");
+        Expense expense1=new Expense(new Participant("Carlos","Sainz"),"dinner",16000,"EUR","2023-08-31",List.of(new Participant("Carlos","Sainz")),"Food");
+        Expense expense2=new Expense(new Participant("Steph","Curry"),"dinner",16000,"EUR","2023-08-31",List.of(new Participant("Steph","Curry")),"Food");
         List<Expense> expenses = Arrays.asList(expense1, expense2);
 
         when(repository.findAll()).thenReturn(expenses);
@@ -69,7 +67,7 @@ class ExpenseControllerTest {
     void filterExpensesByDate()
     {
         String date = "2023-08-27";
-        Expense expense=new Expense(new Person("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Person("Jodie","Zhao")),"Education");
+        Expense expense=new Expense(new Participant("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
         List<Expense> expenses = Arrays.asList(expense);
 
         when(repository.findAllByDate(date)).thenReturn(expenses);
@@ -91,28 +89,28 @@ class ExpenseControllerTest {
     }
 
     @Test
-    void filterExpensesByPerson()
+    void filterExpensesByParticipant()
     {
-        Expense expense=new Expense(new Person("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Person("Jodie","Zhao")),"Education");
-        Person person=new Person("Jodie","Zhao");
-        when(repository.findAllByPerson(person)).thenReturn(List.of(expense));
-        assertEquals(List.of(expense), controller.filterExpensesByPerson(person));
+        Expense expense=new Expense(new Participant("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
+        Participant participant=new Participant("Jodie","Zhao");
+        when(repository.findAllByPerson(participant)).thenReturn(List.of(expense));
+        assertEquals(List.of(expense), controller.filterExpensesByPerson(participant));
     }
 
     @Test
     void filterExpensesInvolvingSomeone()
     {
-        Expense expense=new Expense(new Person("Jodie","Zhao")," CSE tution fee",16000,"EUR","2023-08-27",List.of(new Person("Jodie","Zhao")),"Education");
-        Person person=new Person("Jodie","Zhao");
-        when(repository.findAllBySplittingOptionContaining(person)).thenReturn(List.of(expense));
-        assertEquals(List.of(expense), controller.filterExpensesInvolvingSomeone(person));
+        Expense expense=new Expense(new Participant("Jodie","Zhao")," CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
+        Participant participant=new Participant("Jodie","Zhao");
+        when(repository.findAllBySplittingOptionContaining(participant)).thenReturn(List.of(expense));
+        assertEquals(List.of(expense), controller.filterExpensesInvolvingSomeone(participant));
     }
 
     @ParameterizedTest
     @ValueSource(longs = {1L, 2L})
     public void testGetExpenseDetails(long id) {
         // Mock data
-        Expense expense = (id == 1) ? new Expense(new Person("Jodie","Zhao")," CSE tution fee",16000,"EUR","2023-08-27",List.of(new Person("Jodie","Zhao")),"Education") : null;
+        Expense expense = (id == 1) ? new Expense(new Participant("Jodie","Zhao")," CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education") : null;
         Optional<Expense> optionalExpense = Optional.ofNullable(expense);
 
         when(repository.findById(id)).thenReturn(optionalExpense);
@@ -135,8 +133,8 @@ class ExpenseControllerTest {
     @Test
     public void testUpdateExpense() {
         long id = 1;
-        Expense updatedExpense = new Expense(new Person("Yanran","Zhao")," CSE tution fee",16000,"EUR","2023-08-27",List.of(new Person("Jodie","Zhao")),"Education");
-        Expense existingExpense = new Expense(new Person("Jodie","Zhao")," CSE tution fee",16000,"EUR","2023-08-27",List.of(new Person("Jodie","Zhao")),"Education");
+        Expense updatedExpense = new Expense(new Participant("Yanran","Zhao")," CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
+        Expense existingExpense = new Expense(new Participant("Jodie","Zhao")," CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
 
         when(repository.findById(id)).thenReturn(Optional.of(existingExpense));
         when(repository.save(existingExpense)).thenReturn(existingExpense);
@@ -160,4 +158,5 @@ class ExpenseControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 }
+
 
