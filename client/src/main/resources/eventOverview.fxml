@@ -34,7 +34,7 @@
                     <Button fx:id="editButton" onAction="#editParticipants">
                         <graphic>
                             <ImageView fitWidth="24" fitHeight="24">
-                                <Image url="@edit.png" />
+                                <Image url="@images/EditIcon.png" />
                             </ImageView>
                         </graphic>
                     </Button>
@@ -42,7 +42,7 @@
                     <Button fx:id="addButton" onAction="#addParticipant">
                         <graphic>
                             <ImageView fitWidth="24" fitHeight="24">
-                                <Image url="@addneo.png" />
+                                <Image url="@images/AddParticipantNeoIcon.png" />
                             </ImageView>
                         </graphic>
                     </Button>

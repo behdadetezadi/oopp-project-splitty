@@ -55,8 +55,8 @@ public class EventOverviewController {
         optionsListView.getItems().addAll("From (selected participant)", "Including (selected participant)");
 
         /*
-        Image editImage = new Image(getClass().getClassLoader().getResourceAsStream("edit.png"));
-        Image addImage = new Image(getClass().getClassLoader().getResourceAsStream("addneo.png"));
+        Image editImage = new Image(getClass().getClassLoader().getResourceAsStream("EditIcon.png"));
+        Image addImage = new Image(getClass().getClassLoader().getResourceAsStream("AddParticipantNeoIcon.png"));
 
         // Set images as graphics for buttons
         editButton.setGraphic(new ImageView(editImage));

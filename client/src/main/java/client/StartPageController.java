@@ -1,7 +1,5 @@
 package client;
 
-import javafx.animation.FadeTransition;
-import javafx.animation.ParallelTransition;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -45,17 +43,17 @@ public class StartPageController {
 
     public void initialize() {
         // Set fixed width for text fields
-        codeInput.setPrefWidth(200); // Adjust the width as needed
-        eventNameInput.setPrefWidth(200); // Adjust the width as needed
+        codeInput.setPrefWidth(200);
+        eventNameInput.setPrefWidth(200);
 
         // Set fixed width for buttons
-        joinButton.setPrefWidth(150); // Adjust the width as needed
-        createEventButton.setPrefWidth(150); // Adjust the width as needed
+        joinButton.setPrefWidth(150);
+        createEventButton.setPrefWidth(150);
 
 
 
         /*
-        Image gif = new Image(getClass().getClassLoader().getResourceAsStream("my-matrix-gif.gif"));
+        Image gif = new Image(getClass().getClassLoader().getResourceAsStream("MatrixGif.gif"));
         logo.setImage(gif);
 
         // Create a fade out transition to gradually fade out the GIF
@@ -66,7 +64,7 @@ public class StartPageController {
         // Load and set the image after a short delay
         PauseTransition logoDelay = new PauseTransition(Duration.seconds(2)); // Adjust the delay as needed
         logoDelay.setOnFinished(event -> {
-            Image image = new Image(getClass().getClassLoader().getResourceAsStream("your_logo.png"));
+            Image image = new Image(getClass().getClassLoader().getResourceAsStream("SplittyLogo.png"));
             logo.setImage(image);
         });
 
@@ -81,7 +79,7 @@ public class StartPageController {
         */
 
 
-        Image image = new Image(getClass().getClassLoader().getResourceAsStream("my-matrix-gif.gif"));
+        Image image = new Image(getClass().getClassLoader().getResourceAsStream("images/MatrixGif.gif"));
         logo.setImage(image);
 
         // Apply CSS glow effect to the logo
