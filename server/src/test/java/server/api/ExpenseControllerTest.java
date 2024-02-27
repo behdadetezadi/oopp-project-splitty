@@ -39,7 +39,7 @@ class ExpenseControllerTest {
 
         when(repository.save(expense)).thenReturn(expense);
 
-        ResponseEntity<Void> response = controller.addExpense(expense);
+        ResponseEntity<Void> response = controller.add(expense);
 
         verify(repository, times(1)).save(expense);
 
@@ -54,13 +54,13 @@ class ExpenseControllerTest {
 
         when(repository.findAll()).thenReturn(expenses);
 
-        List<Expense> result = controller.getAllExpenses();
+        List<Expense> result = controller.getAll();
 
         verify(repository, times(1)).findAll();
 
         assertEquals(expenses, result);
         when(repository.findAll()).thenReturn(expenses);
-        assertEquals(expenses, controller.getAllExpenses());
+        assertEquals(expenses, controller.getAll());
     }
 
     @Test
@@ -72,7 +72,7 @@ class ExpenseControllerTest {
 
         when(repository.findAllByDate(date)).thenReturn(expenses);
 
-        List<Expense> result = controller.filterExpensesByDate(date);
+        List<Expense> result = controller.filterByDate(date);
 
         verify(repository, times(1)).findAllByDate(date);
 
@@ -93,8 +93,8 @@ class ExpenseControllerTest {
     {
         Expense expense=new Expense(new Participant("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
         Participant participant=new Participant("Jodie","Zhao");
-        when(repository.findAllByPerson(participant)).thenReturn(List.of(expense));
-        assertEquals(List.of(expense), controller.filterExpensesByPerson(participant));
+        when(repository.findAllByParticipant(participant)).thenReturn(List.of(expense));
+        assertEquals(List.of(expense), controller.filterByParticipant(participant));
     }
 
     @Test
@@ -103,7 +103,7 @@ class ExpenseControllerTest {
         Expense expense=new Expense(new Participant("Jodie","Zhao")," CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
         Participant participant=new Participant("Jodie","Zhao");
         when(repository.findAllBySplittingOptionContaining(participant)).thenReturn(List.of(expense));
-        assertEquals(List.of(expense), controller.filterExpensesInvolvingSomeone(participant));
+        assertEquals(List.of(expense), controller.filterByInvolving(participant));
     }
 
     @ParameterizedTest
@@ -115,7 +115,7 @@ class ExpenseControllerTest {
 
         when(repository.findById(id)).thenReturn(optionalExpense);
 
-        ResponseEntity<String> response = controller.getExpenseDetails(id);
+        ResponseEntity<String> response = controller.getDetails(id);
 
         verify(repository, times(1)).findById(id);
 
@@ -139,7 +139,7 @@ class ExpenseControllerTest {
         when(repository.findById(id)).thenReturn(Optional.of(existingExpense));
         when(repository.save(existingExpense)).thenReturn(existingExpense);
 
-        ResponseEntity<Void> response = controller.updateExpense(id, updatedExpense);
+        ResponseEntity<Void> response = controller.update(id, updatedExpense);
 
         verify(repository, times(1)).findById(id);
         verify(repository, times(1)).save(existingExpense);
@@ -151,7 +151,7 @@ class ExpenseControllerTest {
     public void testDeleteExpense() {
         long id = 1;
 
-        ResponseEntity<Void> response = controller.deleteExpense(id);
+        ResponseEntity<Void> response = controller.delete(id);
 
         verify(repository, times(1)).deleteById(id);
 

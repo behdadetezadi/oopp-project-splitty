@@ -12,6 +12,6 @@ import java.util.List;
 public interface ExpenseRepository extends JpaRepository<Expense, Long>
 {
     List<Expense> findAllByDate(String date);
-    List<Expense> findAllByPerson(Participant participant);
+    List<Expense> findAllByParticipant(Participant participant);
     List<Expense> findAllBySplittingOptionContaining(Participant participant);
 }

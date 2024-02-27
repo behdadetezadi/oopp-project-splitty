@@ -29,8 +29,12 @@ public class ExpenseController {
      * @return ResponseEntity indicating the success of the operation.
      */
     @PostMapping("/add")
-    public ResponseEntity<Void> addExpense(@RequestBody Expense expense)
+    public ResponseEntity<Void> add(@RequestBody Expense expense)
     {
+        if (expense== null || expense.getParticipant().getFirstName()==null|| expense.getParticipant().getLastName()==null)
+        {
+            return ResponseEntity.badRequest().build();
+        }
         repository.save(expense);
         return ResponseEntity.ok().build();
     }
@@ -40,7 +44,7 @@ public class ExpenseController {
      * @return A list of all expenses.
      */
     @GetMapping("/all")
-    public List<Expense> getAllExpenses()
+    public List<Expense> getAll()
     {
         return repository.findAll();
     }
@@ -51,7 +55,7 @@ public class ExpenseController {
      * @return A list of expenses on the specified date.
      */
     @GetMapping("/filterByDate/{date}")
-    public List<Expense> filterExpensesByDate(@PathVariable String date)
+    public List<Expense> filterByDate(@PathVariable String date)
     {
         return repository.findAllByDate(date);
     }
@@ -62,7 +66,12 @@ public class ExpenseController {
      * @return ResponseEntity indicating the success of the operation.
      */
     @PostMapping("/addMoneyTransfer")
-    public ResponseEntity<Void> addMoneyTransfer(@RequestBody Expense transfer) {
+    public ResponseEntity<Void> addMoneyTransfer(@RequestBody Expense transfer)
+    {
+        if (transfer== null || transfer.getParticipant().getFirstName()==null|| transfer.getParticipant().getLastName()==null)
+        {
+            return ResponseEntity.badRequest().build();
+        }
         repository.save(transfer);
         return ResponseEntity.ok().build();
     }
@@ -73,8 +82,9 @@ public class ExpenseController {
      * @return A list of expenses associated with the specified person.
      */
     @GetMapping("/filterByPerson/{person}")
-    public List<Expense> filterExpensesByPerson(@PathVariable Participant participant) {
-        return repository.findAllByPerson(participant);
+    public List<Expense> filterByParticipant(@PathVariable Participant participant)
+    {
+        return repository.findAllByParticipant(participant);
     }
 
     /**
@@ -83,7 +93,7 @@ public class ExpenseController {
      * @return A list of expenses involving the specified person.
      */
     @GetMapping("/filterByInvolving/{person}")
-    public List<Expense> filterExpensesInvolvingSomeone(@PathVariable Participant participant) {
+    public List<Expense> filterByInvolving(@PathVariable Participant participant) {
         return repository.findAllBySplittingOptionContaining(participant);
     }
 
@@ -93,9 +103,9 @@ public class ExpenseController {
      * @return ResponseEntity containing the details of the expense, or an error message if not found.
      */
     @GetMapping("/details/{id}")
-    public ResponseEntity<String> getExpenseDetails(@PathVariable("id") long id) {
+    public ResponseEntity<String> getDetails(@PathVariable("id") long id) {
         Optional<Expense> expense = repository.findById(id);
-        return ResponseEntity.ok((expense != null) ? expense.toString() : "Expense not found");
+        return expense.map(value -> ResponseEntity.ok(value.toString())).orElseGet(() -> ResponseEntity.notFound().build());
     }
     /**
      * update an expense
@@ -103,7 +113,7 @@ public class ExpenseController {
      * @param updatedExpense the updated version of the expense
      */
     @PutMapping("/update/{id}")
-    public ResponseEntity<Void> updateExpense(@PathVariable("id") long id, @RequestBody Expense updatedExpense)
+    public ResponseEntity<Void> update(@PathVariable("id") long id, @RequestBody Expense updatedExpense)
     {
         Optional<Expense> expenseOptional = repository.findById(id);
         if (expenseOptional.isPresent())
@@ -131,10 +141,15 @@ public class ExpenseController {
      * @param id The ID of the expense to retrieve details.
      */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteExpense(@PathVariable("id") long id)
+    public ResponseEntity<Void> delete(@PathVariable("id") long id)
     {
+        if (id < 0 || !repository.existsById(id))
+        {
+            return ResponseEntity.badRequest().build();
+        }
         repository.deleteById(id);
         return ResponseEntity.ok().build();
     }
+
 }
 
