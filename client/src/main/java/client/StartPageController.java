@@ -1,10 +1,16 @@
 package client;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
@@ -34,12 +40,59 @@ public class StartPageController {
     @FXML
     private VBox centerVBox;
 
+    @FXML
+    private ImageView logo;
+
     public void initialize() {
+        // Set fixed width for text fields
+        codeInput.setPrefWidth(200); // Adjust the width as needed
+        eventNameInput.setPrefWidth(200); // Adjust the width as needed
+
+        // Set fixed width for buttons
+        joinButton.setPrefWidth(150); // Adjust the width as needed
+        createEventButton.setPrefWidth(150); // Adjust the width as needed
+
+
+
+        /*
+        Image gif = new Image(getClass().getClassLoader().getResourceAsStream("my-matrix-gif.gif"));
+        logo.setImage(gif);
+
+        // Create a fade out transition to gradually fade out the GIF
+        FadeTransition fadeOutTransition = new FadeTransition(Duration.seconds(2), logo);
+        fadeOutTransition.setFromValue(1.0);
+        fadeOutTransition.setToValue(0);
+
+        // Load and set the image after a short delay
+        PauseTransition logoDelay = new PauseTransition(Duration.seconds(2)); // Adjust the delay as needed
+        logoDelay.setOnFinished(event -> {
+            Image image = new Image(getClass().getClassLoader().getResourceAsStream("your_logo.png"));
+            logo.setImage(image);
+        });
+
+        // Create a fade in transition to gradually fade in the image
+        FadeTransition fadeInTransition = new FadeTransition(Duration.seconds(2), logo);
+        fadeInTransition.setFromValue(0.0);
+        fadeInTransition.setToValue(1.0);
+
+        // Start the fade out, delay, and fade in transitions in parallel
+        ParallelTransition transition = new ParallelTransition(fadeOutTransition, logoDelay, fadeInTransition);
+        transition.play();
+        */
+
+
+        Image image = new Image(getClass().getClassLoader().getResourceAsStream("my-matrix-gif.gif"));
+        logo.setImage(image);
+
+        // Apply CSS glow effect to the logo
+        logo.getStyleClass().add("glow");
+
+
         animateTextFields();
         animateButtonsText();
 
         // Delay setting focus to prevent text field from being selected immediately
-        PauseTransition delay = new PauseTransition(Duration.seconds(1));
+        PauseTransition delay = new PauseTransition(Duration.seconds(0.01));
         delay.setOnFinished(event -> {
             root.requestFocus();
         });
@@ -60,6 +113,31 @@ public class StartPageController {
 
         // Add margin to the createEventButton
         VBox.setMargin(createEventButton, new Insets(10, 0, 0, 0));
+
+        // Increase font size and weight of the recent events label
+        recentEventsLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        // Add some spacing between the label and the list view
+        VBox.setMargin(recentEventsLabel, new Insets(0, 0, 10, 0)); // Adjust insets as needed
+
+        // Ensure the label expands to fill available space horizontally
+        HBox.setHgrow(recentEventsLabel, Priority.ALWAYS);
+        animateText(recentEventsLabel, "Recent Events");
+    }
+
+    private void animateText(Label label, String text) {
+        PauseTransition pauseTransition = new PauseTransition(Duration.seconds(0.05));
+        StringBuilder stringBuilder = new StringBuilder();
+        int[] currentIndex = {0};
+        pauseTransition.setOnFinished(event -> {
+            if (currentIndex[0] < text.length()) {
+                stringBuilder.append(text.charAt(currentIndex[0]));
+                label.setText(stringBuilder.toString());
+                currentIndex[0]++;
+                pauseTransition.play();
+            }
+        });
+        pauseTransition.play();
     }
 
     private void animateTextFields() {

@@ -50,3 +50,8 @@
     -fx-font-size: 14px;
 }
 
+/*
+.glow {
+    -fx-effect: dropshadow(three-pass-box, yellow, 10, 0, 0, 0);
+}
+*/
