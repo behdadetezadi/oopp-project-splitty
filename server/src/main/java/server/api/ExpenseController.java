@@ -68,7 +68,7 @@ public class ExpenseController {
     @PostMapping("/addMoneyTransfer")
     public ResponseEntity<Void> addMoneyTransfer(@RequestBody Expense transfer)
     {
-        if (transfer== null || transfer.getParticipant().getFirstName()==null|| transfer.getParticipant().getLastName()==null)
+        if (transfer== null || transfer.getParticipant()==null||transfer.getParticipant().getFirstName()==null|| transfer.getParticipant().getLastName()==null)
         {
             return ResponseEntity.badRequest().build();
         }
@@ -82,7 +82,7 @@ public class ExpenseController {
      * @return A list of expenses associated with the specified person.
      */
     @GetMapping("/filterByPerson/{person}")
-    public List<Expense> filterByParticipant(@PathVariable Participant participant)
+    public List<Expense> filterByPerson(@PathVariable Participant participant)
     {
         return repository.findAllByParticipant(participant);
     }
@@ -141,15 +141,20 @@ public class ExpenseController {
      * @param id The ID of the expense to retrieve details.
      */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") long id)
-    {
-        if (id < 0 || !repository.existsById(id))
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
+        if (id < 0)
         {
             return ResponseEntity.badRequest().build();
         }
+        if (!repository.existsById(id))
+        {
+            return ResponseEntity.notFound().build();
+        }
+
         repository.deleteById(id);
         return ResponseEntity.ok().build();
     }
+
 
 }
 

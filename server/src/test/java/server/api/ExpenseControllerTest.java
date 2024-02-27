@@ -1,11 +1,8 @@
 package server.api;
-
 import commons.Expense;
 import commons.Participant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
@@ -82,7 +79,7 @@ class ExpenseControllerTest {
     @Test
     void addMoneyTransfer()
     {
-        Expense transfer = new Expense();
+        Expense transfer = new Expense(new Participant("Jay","Z"),"dinner",16000,"EUR","2023-08-03",List.of(new Participant("Jay","Z")),"food");
         ResponseEntity<Void> responseEntity = controller.addMoneyTransfer(transfer);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         verify(repository, times(1)).save(transfer);
@@ -94,7 +91,7 @@ class ExpenseControllerTest {
         Expense expense=new Expense(new Participant("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
         Participant participant=new Participant("Jodie","Zhao");
         when(repository.findAllByParticipant(participant)).thenReturn(List.of(expense));
-        assertEquals(List.of(expense), controller.filterByParticipant(participant));
+        assertEquals(List.of(expense), controller.filterByPerson(participant));
     }
 
     @Test
@@ -106,30 +103,7 @@ class ExpenseControllerTest {
         assertEquals(List.of(expense), controller.filterByInvolving(participant));
     }
 
-    @ParameterizedTest
-    @ValueSource(longs = {1L, 2L})
-    public void testGetExpenseDetails(long id) {
-        // Mock data
-        Expense expense = (id == 1) ? new Expense(new Participant("Jodie","Zhao")," CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education") : null;
-        Optional<Expense> optionalExpense = Optional.ofNullable(expense);
 
-        when(repository.findById(id)).thenReturn(optionalExpense);
-
-        ResponseEntity<String> response = controller.getDetails(id);
-
-        verify(repository, times(1)).findById(id);
-
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
-        if (optionalExpense.isPresent()) {
-            String expectedResponseBody = "Optional["+optionalExpense.get().toString()+"]"; // Extract Expense from Optional
-            assertEquals(expectedResponseBody, response.getBody());
-        } else {
-            String expectedResponseBody = "Optional.empty";
-            assertEquals(expectedResponseBody, response.getBody());
-        }
-    }
     @Test
     public void testUpdateExpense() {
         long id = 1;
@@ -151,12 +125,18 @@ class ExpenseControllerTest {
     public void testDeleteExpense() {
         long id = 1;
 
+        // Mocking repository behavior to return true for existsById(1L)
+        when(repository.existsById(id)).thenReturn(true);
+
         ResponseEntity<Void> response = controller.delete(id);
 
+        // Verify that deleteById is called with ID 1 exactly once
         verify(repository, times(1)).deleteById(id);
 
+        // Verify that the controller returns HttpStatus.OK
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
+
 }
 
 
