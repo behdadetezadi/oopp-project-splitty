@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.Image?>
+
+<BorderPane fx:id="root" prefHeight="400" prefWidth="600" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.EventOverviewController"
+            stylesheets="@styles.css">
+    <padding>
+        <Insets top="20" />
+    </padding>
+
+    <top>
+        <VBox alignment="CENTER" spacing="10">
+            <Label fx:id="titleLabel" styleClass="title-label" />
+            <Button text="Send Invites" onAction="#sendInvites" />
+        </VBox>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" spacing="10">
+            <!-- Participants Section -->
+            <Label fx:id="participantsLabel" styleClass="section-label" />
+            <VBox alignment="CENTER" spacing="5">
+                <ListView fx:id="participantsListView" />
+                <HBox alignment="CENTER" spacing="5">
+                    <Button fx:id="editButton" onAction="#editParticipants">
+                        <graphic>
+                            <ImageView fitWidth="24" fitHeight="24">
+                                <Image url="@images/EditIcon.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
+
+                    <Button fx:id="addButton" onAction="#addParticipant">
+                        <graphic>
+                            <ImageView fitWidth="24" fitHeight="24">
+                                <Image url="@images/AddParticipantNeoIcon.png" />
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </HBox>
+            </VBox>
+
+            <!-- Expenses Section -->
+            <Label fx:id="expensesLabel" styleClass="section-label" />
+            <VBox alignment="CENTER" spacing="5">
+                <ComboBox fx:id="participantDropdown" promptText="Select participant" />
+                <Button text="Add Expense" onAction="#addExpense" />
+            </VBox>
+
+            <!-- ListView Section -->
+            <Label fx:id="optionsLabel" styleClass="section-label" />
+            <ListView fx:id="optionsListView" />
+        </VBox>
+    </center>
+</BorderPane>
