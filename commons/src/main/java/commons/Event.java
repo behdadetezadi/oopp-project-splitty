@@ -212,13 +212,27 @@ public class Event {
         return Objects.equals(expenses, event.expenses);
     }
 
+    /**
+     * temporary hashcode look into fixing a failing pipeline (NEEDS TO BE FIXED LATER)
+     * @return int
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(title,inviteCode);
+    }
 
     /**
-     * toString method using ToStringBuilder using MULTI_LINE_STYLE (possibly needs to be changed in the future)
-     * @return a type String which is the presentation of this in a suitable String format
+     * default toString
+     * @return a type String
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+        return "Event{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", inviteCode=" + inviteCode +
+                ", people=" + people +
+                ", expenses=" + expenses +
+                '}';
     }
 }
