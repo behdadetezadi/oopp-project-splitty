@@ -8,6 +8,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Event {
@@ -192,26 +193,25 @@ public class Event {
         return this.expenses.remove(expense);
     }
 
-
-
     /**
-     * Equals method using EqualsBuilder (might need reimplementation)
-     * @param obj the object to check the equality with
-     * @return a boolean stating whether the object is equal to this or not (true if equal)
+     * java generated equals method
+     * @param o Object
+     * @return boolean
      */
     @Override
-    public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Event event = (Event) o;
+
+        if (id != event.id) return false;
+        if (inviteCode != event.inviteCode) return false;
+        if (!Objects.equals(title, event.title)) return false;
+        if (!Objects.equals(people, event.people)) return false;
+        return Objects.equals(expenses, event.expenses);
     }
 
-    /**
-     * Hash method using HashCodeBuilder (might need reimplementation)
-     * @return type int as a hashcode for this
-     */
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
 
     /**
      * toString method using ToStringBuilder using MULTI_LINE_STYLE (possibly needs to be changed in the future)
