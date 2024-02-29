@@ -1,12 +1,13 @@
 package commons;
 import jakarta.persistence.*;
 import java.util.*;
+
 @Entity
 public class Debt {
     //Debt id
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public long id;
+    private long id;
     @ManyToOne
     private Participant debtor;
     @ManyToOne
@@ -16,7 +17,7 @@ public class Debt {
     private String description;
 
     /**
-     * constructor
+     * constructor for debt
      * @param debtor Participant
      * @param lender Participant
      * @param amountOfMoney double
@@ -33,10 +34,16 @@ public class Debt {
     }
 
     /**
-     * empty constructor for the persistent object.
+     * empty constructor added for persistence.
      */
-    public Debt() {
+    public Debt() {}
 
+    /**
+     * getter for the id
+     * @return a long formatted number.
+     */
+    public long getId() {
+        return id;
     }
 
     /**
@@ -129,8 +136,7 @@ public class Debt {
 
         if (Double.compare(amountOfMoney, debt.amountOfMoney) != 0) return false;
         if (debtCollective != debt.debtCollective) return false;
-        if (!debtor.equals(debt.debtor)) return false;
-        if (!lender.equals(debt.lender)) return false;
+        if (!debtor.equals(debt.debtor) || lender.equals(debt.lender)) return false;
         return Objects.equals(description, debt.description);
     }
 
@@ -151,6 +157,10 @@ public class Debt {
         return result;
     }
 
+    /**
+     * human understandable to string method
+     * @return a string that displays all relevant information about debt.
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -176,8 +186,5 @@ public class Debt {
 
         return sb.toString();
     }
-
-    //There should be more additonal methods that will be implemented here as we continue our project.
-    //But for now, these are the simple methods.
 
 }
