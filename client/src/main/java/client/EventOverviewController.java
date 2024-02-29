@@ -39,6 +39,10 @@ public class EventOverviewController {
 
     @FXML
     private Button addButton;
+
+    /**
+     * initializer function does: //TODO
+     */
     public void initialize() {
 
         animateLabels();
@@ -50,11 +54,15 @@ public class EventOverviewController {
         participantDropdown.getItems().addAll("Participant 1", "Participant 2", "Participant 3");
 
         // Initialize options list view
-        optionsListView.getItems().addAll("From (selected participant)", "Including (selected participant)");
+        optionsListView.getItems()
+                .addAll("From (selected participant)", "Including (selected participant)");
 
         /*
-        Image editImage = new Image(getClass().getClassLoader().getResourceAsStream("EditIcon.png"));
-        Image addImage = new Image(getClass().getClassLoader().getResourceAsStream("AddParticipantNeoIcon.png"));
+        Image editImage =
+                new Image(getClass().getClassLoader().getResourceAsStream("EditIcon.png"));
+        Image addImage =
+                new Image(getClass().getClassLoader()
+                .getResourceAsStream("AddParticipantNeoIcon.png"));
 
         // Set images as graphics for buttons
         editButton.setGraphic(new ImageView(editImage));
@@ -68,21 +76,35 @@ public class EventOverviewController {
         AnimationUtil.animateText(expensesLabel, "Expenses");
         AnimationUtil.animateText(optionsLabel, "Options");
     }
+
+
+    /**
+     * sendInvites method //TODO
+      */
     @FXML
     public void sendInvites() {
         // Action for sending invites
     }
 
+    /**
+     * edit participant method //TODO
+     */
     @FXML
     public void editParticipants() {
         // Action for editing participants
     }
 
+    /**
+     * add participant //TODO
+     */
     @FXML
     public void addParticipant() {
         // Action for adding a new participant
     }
 
+    /**
+     * add expense //TODO
+     */
     @FXML
     public void addExpense() {
         // Action for adding an expense

@@ -6,6 +6,11 @@ import javafx.util.Duration;
 
 public class AnimationUtil {
 
+    /**
+     * animation for typing text
+     * @param label a label text
+     * @param text the content of the text in type string
+     */
     public static void animateText(Label label, String text) {
         PauseTransition pauseTransition = new PauseTransition(Duration.seconds(0.05));
         StringBuilder stringBuilder = new StringBuilder();
