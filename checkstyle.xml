@@ -6,12 +6,11 @@
 <module name = "Checker">
     <module name="TreeWalker">
         <module name="UnusedImports" />
-    </module>
 
-    <module name="JavadocType">
+        <module name="JavadocType">
             <property name="scope" value="public"/>
         </module>
-
+    
         <module name="JavadocMethod">
             <property name="scope" value="public"/>
             <property name="excludeScope" value="private"/>
@@ -21,41 +20,44 @@
             <property name="allowedAnnotations" value="Override, Test"/>
             <property name="ignoreMethodNamesRegex" value="^(get|set|is)[A-Z].*"/>
         </module>
-<module name="LineLength">
+
+        <module name="LineLength">
             <property name="max" value="120"/>
         </module>
-<module name="UnusedImports"/>
 
-<module name="WhitespaceAround">
-        <property name="allowEmptyConstructors" value="true"/>
-        <property name="allowEmptyMethods" value="true"/>
-        <property name="allowEmptyTypes" value="true"/>
-        <property name="allowEmptyLoops" value="true"/>
-        <message key="ws.notFollowed"
-                 value="WhitespaceAround: ''{0}'' is not followed by whitespace."/>
-        <message key="ws.notPreceded"
-                 value="WhitespaceAround: ''{0}'' is not preceded with whitespace."/>
-    </module>
+        <module name="UnusedImports"/>
 
-<module name="Indentation">
-        <property name="basicOffset" value="4"/>
-        <property name="braceAdjustment" value="0"/>
-        <property name="caseIndent" value="4"/>
-        <property name="throwsIndent" value="4"/>
-        <property name="lineWrappingIndentation" value="8"/>
-        <property name="arrayInitIndent" value="4"/>
-    </module>
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+            <message key="ws.notFollowed"
+                     value="WhitespaceAround: ''{0}'' is not followed by whitespace."/>
+            <message key="ws.notPreceded"
+                     value="WhitespaceAround: ''{0}'' is not preceded with whitespace."/>
+        </module>
 
-<module name="IllegalTokenText">
-      <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
-      <property name="format"
-               value="\u00(09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\(0(10|11|12|14|15|42|47)|134)"/>
-      <property name="message"
-               value="Consider using special escape sequence instead of octal value or Unicode escaped value."/>
-    </module>
-<module name="AvoidStarImport"/>
+        <module name="Indentation">
+            <property name="basicOffset" value="4"/>
+            <property name="braceAdjustment" value="0"/>
+            <property name="caseIndent" value="4"/>
+            <property name="throwsIndent" value="4"/>
+            <property name="lineWrappingIndentation" value="8"/>
+            <property name="arrayInitIndent" value="4"/>
+        </module>
 
-<module name="MagicNumber">
+        <module name="IllegalTokenText">
+            <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
+            <property name="format"
+                   value="\u00(09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\(0(10|11|12|14|15|42|47)|134)"/>
+            <property name="message"
+                   value="Consider using special escape sequence instead of octal value or Unicode escaped value."/>
+        </module>
+
+        <module name="AvoidStarImport"/>
+
+        <module name="MagicNumber">
             <property name="ignoreNumbers" value="-1,0,1,2"/>
             <property name="ignoreHashCodeMethod" value="true"/>
             <property name="ignoreAnnotation" value="true"/>
@@ -63,36 +65,36 @@
             <property name="ignoreConstantDeclaration" value="true"/>
         </module>
 
-<module name="LeftCurly">
-    <property name="option" value="nl"/>
-</module>
+        <module name="LeftCurly">
+            <property name="option" value="nl"/>
+        </module>
 
-<module name="RightCurly">
-    <property name="option" value="same"/>
-</module>
+        <module name="RightCurly">
+            <property name="option" value="same"/>
+        </module>
 
-<module name="CyclomaticComplexity">
-    <property name="max" value="10"/>
-</module>
+        <module name="CyclomaticComplexity">
+            <property name="max" value="10"/>
+        </module>
 
-<module name="TodoComment">
-    <property name="format" value="TODO"/>
-</module>
+        <module name="TodoComment">
+            <property name="format" value="TODO"/>
+        </module>
 
-<module name="TypeName">
-    <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
-</module>
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][a-zA-Z0-9]*$"/>
+        </module>
 
-<module name="MethodName">
-    <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
-</module>
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
 
-<module name="ConstantName">
-    <property name="format" value="^[A-Z][A-Z0-9](_[A-Z0-9]+)$"/>
-</module>
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9](_[A-Z0-9]+)$"/>
+        </module>
 
-<module name="ParameterName">
-    <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
-</module>
-
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+    </module>
 </module>
