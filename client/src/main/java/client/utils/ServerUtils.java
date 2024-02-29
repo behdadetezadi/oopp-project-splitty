@@ -32,9 +32,13 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
-
 	private static final String SERVER = "http://localhost:8080/";
 
+	/**
+	 * gets quotes
+	 * @throws IOException io exception
+	 * @throws URISyntaxException URI syntax exception
+	 */
 	public void getQuotesTheHardWay() throws IOException, URISyntaxException {
 		var url = new URI("http://localhost:8080/api/quotes").toURL();
 		var is = url.openConnection().getInputStream();
@@ -45,6 +49,10 @@ public class ServerUtils {
 		}
 	}
 
+	/**
+	 * get quotes
+	 * @return a list of quotes
+	 */
 	public List<Quote> getQuotes() {
 		return ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/quotes") //
@@ -53,6 +61,11 @@ public class ServerUtils {
                 .get(new GenericType<List<Quote>>() {});
 	}
 
+	/**
+	 * adds a quote
+	 * @param quote a type Quote
+	 * @return //TODO
+	 */
 	public Quote addQuote(Quote quote) {
 		return ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/quotes") //
