@@ -10,15 +10,11 @@
         <module name="JavadocType">
             <property name="scope" value="public"/>
         </module>
-    
+
         <module name="JavadocMethod">
-            <property name="scope" value="public"/>
-            <property name="excludeScope" value="private"/>
-            <property name="allowMissingJavadoc" value="true"/>
-            <property name="allowMissingPropertyJavadoc" value="true"/>
-            <property name="minLineCount" value="2"/>
-            <property name="allowedAnnotations" value="Override, Test"/>
-            <property name="ignoreMethodNamesRegex" value="^(get|set|is)[A-Z].*"/>
+            <property name="allowMissingParamTags" value="true"/>
+            <property name="allowMissingReturnTag" value="true"/>
+            <property name="validateThrows" value="false"/>
         </module>
 
         <module name="LineLength">
