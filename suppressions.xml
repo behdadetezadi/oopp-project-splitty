@@ -6,4 +6,5 @@
     <suppress files="[\\/]client[\\/]src[\\/]main[\\/]java[\\/]client[\\/]utils[\\/]ServerUtils\.java" checks=".*"/>
     <suppress files="[\\/]commons[\\/]src[\\/]main[\\/]java[\\/]commons[\\/]Quote\.java" checks=".*"/>
     <suppress files="[\\/]commons[\\/]src[\\/]main[\\/]java[\\/]commons[\\/]Person\.java" checks=".*"/>
+    <suppress files="[\\/]server[\\/]src[\\/]test[\\/]java[\\/]server[\\/]api[\\/]TestQuoteRepository\.java" checks=".*"/>
 </suppressions>
