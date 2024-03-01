@@ -1,6 +1,15 @@
 
+plugins {
+	id 'org.kordamp.gradle.jacoco' version '0.54.0'
+	id 'checkstyle'
+
+}
 java {
 	sourceCompatibility = '21'
+}
+checkstyle {
+	configFile = file("$project.rootDir/builds/cse1105/2023-2024/teams/oopp-team-64/checkstyle.xml") as File
+	// Add any additional configuration options as needed
 }
 
 
