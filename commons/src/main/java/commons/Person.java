@@ -1,4 +1,18 @@
-
+/*
+ * Copyright 2021 Delft University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package commons;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
@@ -14,61 +28,34 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Person {
-    @Id
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	public long id;
+
 	public String firstName;
 	public String lastName;
 
-	/**
-	 * default constructor for a person
-	 */
 	@SuppressWarnings("unused")
-	protected Person() {
+	private Person() {
 		// for object mapper
 	}
 
-	/**
-	 * constructor for a person
-	 * @param firstName as a string
-	 * @param lastName as a string
-	 */
 	public Person(String firstName, String lastName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
 
-	/**
-	 * getter for the generated id
-	 * @return a long number
-	 */
-	public long getId() {
-		return id;
-	}
-
-	/**
-	 * equals method for a person using an equals builder
-	 * @param obj Object
-	 * @return a boolean (true or false)
-	 */
 	@Override
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 
-	/**
-	 * unique hashcode generator
-	 * @return an int
-	 */
 	@Override
 	public int hashCode() {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
-	/**
-	 * to string method for a person
-	 * @return a string
-	 */
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
