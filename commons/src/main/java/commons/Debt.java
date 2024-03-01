@@ -3,7 +3,7 @@ import jakarta.persistence.*;
 import java.util.*;
 @Entity
 public class Debt {
-    //Debt id
+    //ID for primary key
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
@@ -176,8 +176,5 @@ public class Debt {
 
         return sb.toString();
     }
-
-    //There should be more additonal methods that will be implemented here as we continue our project.
-    //But for now, these are the simple methods.
 
 }
