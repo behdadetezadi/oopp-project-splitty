@@ -16,7 +16,7 @@ import jakarta.persistence.Id;
 public class Person {
     @Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	public long id;
+	private long id;
 	public String firstName;
 	public String lastName;
 
@@ -24,7 +24,7 @@ public class Person {
 	 * default constructor for a person
 	 */
 	@SuppressWarnings("unused")
-	public Person() {
+	protected Person() {
 		// for object mapper
 	}
 
