@@ -29,11 +29,11 @@
         <property name="fileNamePattern" value=".*Test\.java$"/>
     </module>
 
-    <module name="TreeWalker">
+    <module name="SuppressionFilter">
+        <property name="file" value="suppressions.xml"/>
+    </module>
 
-        <module name="SuppressionFilter">
-            <property name="file" value="suppressions.xml"/>
-        </module>
+    <module name="TreeWalker">
 
         <module name="MissingJavadocMethod">
             <property name="severity" value="warning"/>
