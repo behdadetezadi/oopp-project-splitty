@@ -24,16 +24,17 @@
 
 <module name="Checker">
 
-    <module name="SuppressionFilter">
-        <property name="file" value="suppressions.xml"/>
-    </module>
-
     <property name="fileExtensions" value="java"/>
     <module name="BeforeExecutionExclusionFileFilter">
         <property name="fileNamePattern" value=".*Test\.java$"/>
     </module>
 
     <module name="TreeWalker">
+
+        <module name="SuppressionFilter">
+            <property name="file" value="suppressions.xml"/>
+        </module>
+
         <module name="MissingJavadocMethod">
             <property name="severity" value="warning"/>
             <property name="scope" value="public"/>
