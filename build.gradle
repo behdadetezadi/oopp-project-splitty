@@ -23,7 +23,9 @@ subprojects {
 		ignoreFailures = false
 		maxErrors = 0
 		maxWarnings = 0
-		configFile = project.rootProject.file('checkstyle.xml')
+		configFile = '../checkstyle.xml' as File
+
+
 
 	}
 
