@@ -23,7 +23,8 @@ subprojects {
 		ignoreFailures = false
 		maxErrors = 0
 		maxWarnings = 0
-		configFile = 'checkstyle.xml' as File
+		configFile = configFile = project.rootProject.file('checkstyle.xml')
+
 	}
 
 	tasks.named('test') {
