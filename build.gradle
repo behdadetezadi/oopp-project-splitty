@@ -23,7 +23,7 @@ subprojects {
 		ignoreFailures = false
 		maxErrors = 0
 		maxWarnings = 0
-		configFile = 'checkstyle.xml' as File
+		configFile = 'oopp-team-64/checkstyle.xml' as File
 
 	}
 
