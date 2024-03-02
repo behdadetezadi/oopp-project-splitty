@@ -53,7 +53,6 @@ package server.api;
 
 
 import commons.Expense;
-import commons.Participant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -100,7 +99,7 @@ public class ExpenseService {
     @PostMapping("/addMoneyTransfer")
     public ResponseEntity<Void> addMoneyTransfer(@RequestBody Expense transfer)
     {
-        if (transfer== null || transfer.getParticipant()==null||transfer.getParticipant().getFirstName()==null|| transfer.getParticipant().getLastName()==null)
+        if (transfer== null || transfer.getParticipant()==null||transfer.getParticipant().getFirstName()==null || transfer.getParticipant().getLastName()==null)
         {
             return ResponseEntity.badRequest().build();
         }
@@ -110,23 +109,23 @@ public class ExpenseService {
 
     /**
      * Filter expenses by person.
-     * @param participant The person to filter expenses.
+     * @param participantId The person to filter expenses.
      * @return A list of expenses associated with the specified person.
      */
-    @GetMapping("/filterByPerson/{person}")
-    public List<Expense> filterByParticipant(@PathVariable Participant participant)
+    @GetMapping("/filterByPerson/{participantId}")
+    public List<Expense> filterByParticipant(@PathVariable long participantId)
     {
-        return expenseRepository.findAllByParticipant(participant);
+        return expenseRepository.findAllByParticipantId(participantId);
     }
 
     /**
      * Filter expenses involving a specific person.
-     * @param participant The person to filter expenses.
+     * @param participantId The person to filter expenses.
      * @return A list of expenses involving the specified person.
      */
-    @GetMapping("/filterByInvolving/{person}")
-    public List<Expense> filterByInvolving(@PathVariable Participant participant) {
-        return expenseRepository.findAllBySplittingOptionContaining(participant);
+    @GetMapping("/filterByInvolving/{participantId}")
+    public List<Expense> filterByInvolving(@PathVariable long participantId) {
+        return expenseRepository.findAllBySplittingOptionContaining(participantId);
     }
 
     /**

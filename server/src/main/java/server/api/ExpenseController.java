@@ -1,7 +1,6 @@
 package server.api;
 
 import commons.Expense;
-import commons.Participant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,24 +28,36 @@ public class ExpenseController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public List<Expense> getAll() {
         return expenseService.getAllExpenses();
     }
 
-    @GetMapping("/filterByDate/{date}")
+    @GetMapping("/{date}")
     public List<Expense> filterByDate(@PathVariable String date) {
         return expenseService.filterByDate(date);
     }
 
-    @GetMapping("/filterByPerson/{person}")
-    public List<Expense> filterByParticipant(@PathVariable Participant participant) {
-        return expenseService.filterByParticipant(participant);
+    /**
+     * filtering expenses by the person who made the payment
+     * @param participantId provided as a long
+     * @return ResponseEntity<List<Expense>>
+     */
+    @GetMapping("/participant/{participantId}")
+    public ResponseEntity<List<Expense>> filterExpenseByParticipant(@PathVariable long participantId) {
+        List<Expense> expenses =  expenseService.filterByParticipant(participantId);
+        return ResponseEntity.ok(expenses);
     }
 
-    @GetMapping("/filterByInvolving/{person}")
-    public List<Expense> filterByInvolving(@PathVariable Participant participant) {
-        return expenseService.filterByInvolving(participant);
+    /**
+     * filtering expenses by the person who needs to pay something back
+     * @param participantId provided as a long
+     * @return ResponseEntity<List<Expense>>
+     */
+    @GetMapping("/involvedParticipant/{participantId}")
+    public ResponseEntity<List<Expense>> filterByInvolving(@PathVariable long participantId) {
+        List<Expense> expenses =  expenseService.filterByInvolving(participantId);
+        return ResponseEntity.ok(expenses);
     }
 
     @GetMapping("/details/{id}")

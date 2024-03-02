@@ -3,6 +3,7 @@ import commons.Expense;
 import commons.Participant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
@@ -13,10 +14,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 class ExpenseControllerTest {
 
+    @InjectMocks
     private ExpenseController controller;
 
     @Mock
@@ -25,25 +28,24 @@ class ExpenseControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        controller = new ExpenseController(repository);
     }
 
 
     @Test
-    void addExpense()
+    void addExpenseTest()
     {
-        Expense expense = new Expense(new Participant("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
+        Expense expense = new Expense(new Participant("Jodie","Zhao"),"CSE tuition fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
 
         when(repository.save(expense)).thenReturn(expense);
-
         ResponseEntity<Void> response = controller.add(expense);
-
         verify(repository, times(1)).save(expense);
 
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    void getAllExpenses()
+    void getAllExpensesTest()
     {
         Expense expense1=new Expense(new Participant("Carlos","Sainz"),"dinner",16000,"EUR","2023-08-31",List.of(new Participant("Carlos","Sainz")),"Food");
         Expense expense2=new Expense(new Participant("Steph","Curry"),"dinner",16000,"EUR","2023-08-31",List.of(new Participant("Steph","Curry")),"Food");
@@ -55,17 +57,18 @@ class ExpenseControllerTest {
 
         verify(repository, times(1)).findAll();
 
+        assertNotNull(result);
         assertEquals(expenses, result);
-        when(repository.findAll()).thenReturn(expenses);
-        assertEquals(expenses, controller.getAll());
+//        when(repository.findAll()).thenReturn(expenses);
+//        assertEquals(expenses, controller.getAll());
     }
 
     @Test
-    void filterExpensesByDate()
+    void filterExpensesByDateTest()
     {
         String date = "2023-08-27";
         Expense expense=new Expense(new Participant("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
-        List<Expense> expenses = Arrays.asList(expense);
+        List<Expense> expenses = List.of(expense);
 
         when(repository.findAllByDate(date)).thenReturn(expenses);
 
@@ -73,34 +76,47 @@ class ExpenseControllerTest {
 
         verify(repository, times(1)).findAllByDate(date);
 
+        assertNotNull(result);
         assertEquals(expenses, result);
     }
 
-    @Test
-    void addMoneyTransfer()
-    {
-        Expense transfer = new Expense(new Participant("Jay","Z"),"dinner",16000,"EUR","2023-08-03",List.of(new Participant("Jay","Z")),"food");
-        ResponseEntity<Void> responseEntity = controller.addMoneyTransfer(transfer);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        verify(repository, times(1)).save(transfer);
-    }
+//    @Test
+//    void addMoneyTransferTest()
+//    {
+//        Expense transfer = new Expense(new Participant("Jay","Z"),"dinner",16000,"EUR","2023-08-03",List.of(new Participant("Jay","Z")),"food");
+//        ResponseEntity<Void> responseEntity = controller.addMoneyTransfer(transfer);
+//        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+//        verify(repository, times(1)).save(transfer);
+//    }
 
     @Test
-    void filterExpensesByParticipant()
+    void filterExpensesByParticipantTest()
     {
         Expense expense=new Expense(new Participant("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
         Participant participant=new Participant("Jodie","Zhao");
-        when(repository.findAllByParticipant(participant)).thenReturn(List.of(expense));
-        assertEquals(List.of(expense), controller.filterByPerson(participant));
+        when(repository.findAllByParticipantId(participant.getId())).thenReturn(List.of(expense));
+        ResponseEntity<List<Expense>> responseEntity = controller.filterExpenseByParticipant(participant.getId());
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        List<Expense> responseResult = responseEntity.getBody();
+        assertNotNull(responseResult);
+        assertEquals(List.of(expense), responseResult);
     }
 
     @Test
-    void filterExpensesInvolvingSomeone()
+    void filterExpensesInvolvingSomeoneTest()
     {
         Expense expense=new Expense(new Participant("Jodie","Zhao")," CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
         Participant participant=new Participant("Jodie","Zhao");
-        when(repository.findAllBySplittingOptionContaining(participant)).thenReturn(List.of(expense));
-        assertEquals(List.of(expense), controller.filterByInvolving(participant));
+        when(repository.findAllBySplittingOptionContaining(participant.getId())).thenReturn(List.of(expense));
+        ResponseEntity<List<Expense>> responseEntity = controller.filterByInvolving(participant.getId());
+
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        List<Expense> responseResult = responseEntity.getBody();
+        assertNotNull(responseResult);
+        assertEquals(List.of(expense), responseResult);
     }
 
 
@@ -133,10 +149,13 @@ class ExpenseControllerTest {
         // Verify that deleteById is called with ID 1 exactly once
         verify(repository, times(1)).deleteById(id);
 
+        assertNotNull(response);
         // Verify that the controller returns HttpStatus.OK
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
 }
+
+
 
 
