@@ -94,8 +94,8 @@ class ExpenseControllerTest {
     {
         Expense expense=new Expense(new Participant("Jodie","Zhao"),"CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
         Participant participant=new Participant("Jodie","Zhao");
-        when(repository.findAllByParticipantId(participant.getId())).thenReturn(List.of(expense));
-        ResponseEntity<List<Expense>> responseEntity = controller.filterExpenseByParticipant(participant.getId());
+        when(repository.findAllByParticipantId(participant.id)).thenReturn(List.of(expense));
+        ResponseEntity<List<Expense>> responseEntity = controller.filterExpenseByParticipant(participant.id);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -109,8 +109,8 @@ class ExpenseControllerTest {
     {
         Expense expense=new Expense(new Participant("Jodie","Zhao")," CSE tution fee",16000,"EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
         Participant participant=new Participant("Jodie","Zhao");
-        when(repository.findAllBySplittingOptionContaining(participant.getId())).thenReturn(List.of(expense));
-        ResponseEntity<List<Expense>> responseEntity = controller.filterByInvolving(participant.getId());
+        when(repository.findAllBySplittingOptionContaining(participant.id)).thenReturn(List.of(expense));
+        ResponseEntity<List<Expense>> responseEntity = controller.filterByInvolving(participant.id);
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
