@@ -35,13 +35,16 @@ public interface DebtRepository extends JpaRepository<Debt, Long> {
     List<Debt> debtCollectivity(boolean debtCollective);
 
     /**
-     * finds all the debts related to a certain description (may be handy if the descriptions are short and concise)
+     * finds all the debts related to a certain description
+     * (may be handy if the descriptions are short and concise)
      * for each unique  event (for example), we could have the same description
-     * e.g : restaurant called "BurgerFood" each debt instance would have description "BurgerFood debt"
+     * e.g : restaurant called "BurgerFood" each debt
+     * instance would have description "BurgerFood debt"
      * @param description a String
      * @return an array list of debts
      */
-    @Query("SELECT d FROM Debt d WHERE LOWER(d.description) LIKE LOWER(CONCAT('%', :description, '%'))")
+    @Query("SELECT d FROM Debt d WHERE LOWER(d.description) " +
+            "LIKE LOWER(CONCAT('%', :description, '%'))")
     List<Debt> debtsThroughDescription(String description);
 
     /**

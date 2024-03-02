@@ -55,7 +55,8 @@ public class DebtService {
     }
 
     /**
-     * The query was already annotated basically through the interface so look there if you need more info.
+     * The query was already annotated basically through the
+     * interface so look there if you need more info.
      * @param lenderId Long id/number.
      * @return an array list of debts.
      */
@@ -64,7 +65,8 @@ public class DebtService {
     }
 
     /**
-     * The query was already annotated basically through the interface so look there if you need more info.
+     * The query was already annotated basically through
+     * the interface so look there if you need more info.
      * @param debtorId Long id/number.
      * @return an array list of debts for the debtor.
      */
@@ -73,7 +75,8 @@ public class DebtService {
     }
 
     /**
-     * The query was already annotated basically through the interface so look there if you need more info.
+     * The query was already annotated basically
+     * through the interface so look there if you need more info.
      * @param debtCollective is a boolean indicating whether the debt is (or not ) collective.
      * @return an array list of debts.
      */
@@ -82,7 +85,8 @@ public class DebtService {
     }
 
     /**
-     * The query was already annotated basically through the interface so look there if you need more info.
+     * The query was already annotated basically through the
+     * interface so look there if you need more info.
      * @param description as a String
      * @return array list of debts that match the same description
      */
@@ -91,7 +95,8 @@ public class DebtService {
     }
 
     /**
-     * The query was already annotated basically through the interface so look there if you need more info.
+     * The query was already annotated basically
+     * through the interface so look there if you need more info.
      * @param amount as a double
      * @return an array list of debts costlier than the amount you entered.
      */
@@ -100,10 +105,12 @@ public class DebtService {
     }
 
     /**
-     * The query was already annotated basically through the interface so look there if you need more info.
+     * The query was already annotated basically
+     * through the interface so look there if you need more info.
      * @param amount as a double
      * @return an array list of debts cheaper than the amount you entered.
-     */    public List<Debt> findCheaperDebts(double amount) {
+     */
+    public List<Debt> findCheaperDebts(double amount) {
         return debtRepository.cheaperDebts(amount);
     }
 }

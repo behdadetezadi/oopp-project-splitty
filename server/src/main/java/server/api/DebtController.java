@@ -9,7 +9,8 @@ import server.DebtService;
 
 import java.util.*;
 
-//instead of just controller annotation, making it restful(just as a build up of the Web Section of WDT course)
+//instead of just controller annotation, making it restful
+// (just as a build up of the Web Section of WDT course)
 @RestController
 @RequestMapping("/api/debts") // our base endpoint
 public class DebtController {
@@ -26,7 +27,8 @@ public class DebtController {
     }
 
     /**
-     * we create or update a specific debt according to its id and we use proper http status after done.
+     * we create or update a specific debt according
+     * to its id and we use proper http status after done.
      * @param debt Debt
      * @return ResponseEntity<Debt>
      */
@@ -96,7 +98,8 @@ public class DebtController {
      * @return ResponseEntity<List<Debt>>
      */
     @GetMapping("/collective")
-    public ResponseEntity<List<Debt>> findDebtsByCollectivity(@RequestParam boolean debtCollective) {
+    public ResponseEntity<List<Debt>>
+        findDebtsByCollectivity(@RequestParam boolean debtCollective) {
         List<Debt> debts = debtService.findDebtsByCollectivity(debtCollective);
         return ResponseEntity.ok(debts);
     }
@@ -107,7 +110,8 @@ public class DebtController {
      * @return ResponseEntity<List<Debt>>
      */
     @GetMapping("/description")
-    public ResponseEntity<List<Debt>> findDebtsThroughDescription(@RequestParam String description) {
+    public ResponseEntity<List<Debt>>
+        findDebtsThroughDescription(@RequestParam String description) {
         List<Debt> debts = debtService.findDebtsThroughDescription(description);
         return ResponseEntity.ok(debts);
     }
