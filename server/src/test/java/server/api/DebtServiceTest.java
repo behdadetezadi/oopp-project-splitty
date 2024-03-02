@@ -32,8 +32,48 @@ public class DebtServiceTest {
 
     /**
      *this is a very simple test and all below use mockito to verify how well the method in the service class works.
-     * All tests below again verify (in a simple case) if method functions properly.
+     * All tests below again verify (in a simple case with no parameters) if method functions properly.
      */
+    @Test
+    public void testSaveDebt() {
+        Debt debt = new Debt();
+
+        when(debtRepository.save(debt)).thenReturn(debt);
+        Debt result = debtService.saveDebt(debt);
+        assertEquals(debt, result);
+        verify(debtRepository).save(debt);
+    }
+
+    @Test
+    public void testFindDebtById() {
+        Long id = 1L;
+        Optional<Debt> expectedDebt = Optional.of(new Debt());
+
+        when(debtRepository.findById(id)).thenReturn(expectedDebt);
+        Optional<Debt> result = debtService.findDebtById(id);
+        assertEquals(expectedDebt, result);
+        verify(debtRepository).findById(id);
+    }
+
+    @Test
+    public void testFindAllDebts() {
+        List<Debt> expectedDebts = Arrays.asList(new Debt(), new Debt());
+        when(debtRepository.findAll()).thenReturn(expectedDebts);
+
+        List<Debt> result = debtService.findAllDebts();
+        assertEquals(expectedDebts, result);
+        verify(debtRepository).findAll();
+    }
+
+    @Test
+    public void testDeleteDebtById() {
+        Long id = 1L;
+
+        doNothing().when(debtRepository).deleteById(id);
+        debtService.deleteDebtById(id);
+        verify(debtRepository).deleteById(id);
+    }
+
     @Test
     public void testFindDebtsByLender() {
         Long lenderId = 1L; //lender id 1 in form of a long

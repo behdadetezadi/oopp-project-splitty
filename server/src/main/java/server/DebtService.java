@@ -8,7 +8,7 @@ import java.util.*;
 
 @Service
 public class DebtService {
-    //The debt repository interface that we created
+    //The debt repository interface that we created (with all CRUD + extra operations)
     private final DebtRepository debtRepository;
 
     /**
@@ -18,6 +18,40 @@ public class DebtService {
     @Autowired
     public DebtService(DebtRepository debtRepository) {
         this.debtRepository = debtRepository;
+    }
+
+    /**
+     * Here, we can create a debt or update an existing one
+     * @param debt Debt
+     * @return a Debt instance
+     */
+    public Debt saveDebt(Debt debt) {
+        return debtRepository.save(debt);
+    }
+
+    /**
+     * This query performs a read, and finds one debt using its id
+     * @param id in form of a Long number
+     * @return an Optional<Debt> as the id may not exist or be correct.
+     */
+    public Optional<Debt> findDebtById(Long id) {
+        return debtRepository.findById(id);
+    }
+
+    /**
+     * query that returns all debts with no parameters required
+     * @return an array list of debts
+     */
+    public List<Debt> findAllDebts() {
+        return debtRepository.findAll();
+    }
+
+    /**
+     * Query that deleted a debt when a specific id is provided
+     * @param id in format of a long number
+     */
+    public void deleteDebtById(Long id) {
+        debtRepository.deleteById(id);
     }
 
     /**
