@@ -17,6 +17,10 @@ public class ExpenseController {
 
     private final ExpenseRepository repository;
 
+    /**
+     * expense controller
+     * @param repository ExpenseRepository
+     */
     @Autowired
     public ExpenseController(ExpenseRepository repository)
     {
@@ -31,7 +35,8 @@ public class ExpenseController {
     @PostMapping("/add")
     public ResponseEntity<Void> add(@RequestBody Expense expense)
     {
-        if (expense== null || expense.getParticipant().getFirstName()==null|| expense.getParticipant().getLastName()==null)
+        if (expense== null || expense.getParticipant().getFirstName()==null||
+                expense.getParticipant().getLastName()==null)
         {
             return ResponseEntity.badRequest().build();
         }
@@ -68,7 +73,9 @@ public class ExpenseController {
     @PostMapping("/addMoneyTransfer")
     public ResponseEntity<Void> addMoneyTransfer(@RequestBody Expense transfer)
     {
-        if (transfer== null || transfer.getParticipant()==null||transfer.getParticipant().getFirstName()==null|| transfer.getParticipant().getLastName()==null)
+        if (transfer== null || transfer.getParticipant()==null||
+                transfer.getParticipant().getFirstName()==null||
+                transfer.getParticipant().getLastName()==null)
         {
             return ResponseEntity.badRequest().build();
         }
@@ -100,20 +107,25 @@ public class ExpenseController {
     /**
      * Get details of an expense by its ID.
      * @param id The ID of the expense to retrieve details.
-     * @return ResponseEntity containing the details of the expense, or an error message if not found.
+     * @return ResponseEntity containing the details of
+     * the expense, or an error message if not found.
      */
     @GetMapping("/details/{id}")
     public ResponseEntity<String> getDetails(@PathVariable("id") long id) {
         Optional<Expense> expense = repository.findById(id);
-        return expense.map(value -> ResponseEntity.ok(value.toString())).orElseGet(() -> ResponseEntity.notFound().build());
+        return expense.map(value -> ResponseEntity.ok(value.toString())).
+                orElseGet(() -> ResponseEntity.notFound().build());
     }
     /**
      * update an expense
      * @param id The ID of the expense to retrieve details.
      * @param updatedExpense the updated version of the expense
+     * @return ResponseEntity<Void>
      */
+
     @PutMapping("/update/{id}")
-    public ResponseEntity<Void> update(@PathVariable("id") long id, @RequestBody Expense updatedExpense)
+    public ResponseEntity<Void> update(@PathVariable("id")
+                                           long id, @RequestBody Expense updatedExpense)
     {
         Optional<Expense> expenseOptional = repository.findById(id);
         if (expenseOptional.isPresent())
@@ -139,6 +151,7 @@ public class ExpenseController {
     /**
      * delete an expense
      * @param id The ID of the expense to retrieve details.
+     * @return ResponseEntity<Void>
      */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") long id) {

@@ -7,26 +7,13 @@ import java.util.Objects;
 @Entity
 public class Event {
 
-    //Event ID
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public long id;
-
-    //Event title
+    private long id;
     private String title;
-
-    //Todo: should be changed to a safer type for now we treat it as a number
-    //Event invite code
     private long inviteCode;
-
-
-
-    //List of Person s involved in the Event
     @OneToMany
     private List<Participant> people;
-
-
-    //List of Expense s in the Event
     @OneToMany
     private List<Expense> expenses;
 
@@ -48,9 +35,8 @@ public class Event {
     /**
      * Empty public constructor (required)
      */
-    public Event() {
-        // for object mappers
-    }
+    public Event() {}
+
 
 
     /**
@@ -199,8 +185,7 @@ public class Event {
 
         Event event = (Event) o;
 
-        if (id != event.id) return false;
-        if (inviteCode != event.inviteCode) return false;
+        if (id != event.id || inviteCode != event.inviteCode) return false;
         if (!Objects.equals(title, event.title)) return false;
         if (!Objects.equals(people, event.people)) return false;
         return Objects.equals(expenses, event.expenses);

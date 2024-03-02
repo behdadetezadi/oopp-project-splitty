@@ -9,7 +9,7 @@ import java.util.Objects;
 public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public long id;
+    private long id;
     @ManyToOne
     private Participant participant;
     private String category;
@@ -41,8 +41,10 @@ public class Expense {
         this.expenseType = expenseType;
     }
 
-    public Expense() {
-    }
+    /**
+     * constructor created for the purpose of persistence.
+     */
+    public Expense() {}
 
     /**
      * id for the database
@@ -173,14 +175,12 @@ public class Expense {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Expense expense)) return false;
-
-        if (amount != expense.amount) return false;
-        if (!Objects.equals(participant, expense.participant)) return false;
-        if (!Objects.equals(category, expense.category)) return false;
-        if (!Objects.equals(currency, expense.currency)) return false;
-        if (!Objects.equals(date, expense.date)) return false;
-        if (!Objects.equals(splittingOption, expense.splittingOption))
-            return false;
+        if (amount != expense.amount ||
+                !Objects.equals(participant, expense.participant)) return false;
+        if (!Objects.equals(category, expense.category)||
+                !Objects.equals(currency, expense.currency)) return false;
+        if (!Objects.equals(date, expense.date) ||
+                !Objects.equals(splittingOption, expense.splittingOption)) return false;
         return Objects.equals(expenseType, expense.expenseType);
     }
 
@@ -198,7 +198,6 @@ public class Expense {
         temp = Double.doubleToLongBits(amount);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + (currency != null ? currency.hashCode() : 0);
-        result = 31 * result + (date != null ? date.hashCode() : 0);
         result = 31 * result + (splittingOption != null ? splittingOption.hashCode() : 0);
         result = 31 * result + (expenseType != null ? expenseType.hashCode() : 0);
         return result;

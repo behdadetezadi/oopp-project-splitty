@@ -37,7 +37,7 @@ public class Person {
 	public String lastName;
 
 	@SuppressWarnings("unused")
-	protected Person() {
+	public Person() {
 		// for object mapper
 	}
 
@@ -45,6 +45,7 @@ public class Person {
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
