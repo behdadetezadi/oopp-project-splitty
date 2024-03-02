@@ -2,6 +2,7 @@ package server.api;
 
 import commons.Debt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.DebtService;
@@ -23,6 +24,50 @@ public class DebtController {
     public DebtController(DebtService debtService) {
         this.debtService = debtService;
     }
+
+    /**
+     * we create or update a specific debt according to its id and we use proper http status after done.
+     * @param debt Debt
+     * @return ResponseEntity<Debt>
+     */
+    @PostMapping
+    public ResponseEntity<Debt> saveDebt(@RequestBody Debt debt) {
+        Debt savedDebt = debtService.saveDebt(debt);
+        return new ResponseEntity<>(savedDebt, HttpStatus.CREATED);
+    }
+
+    /**
+     * we find a certain debt according to its id if it exists
+     * @param id as a long number
+     * @return ResponseEntity<Debt>
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Debt> findDebtById(@PathVariable Long id) {
+        Optional<Debt> debt = debtService.findDebtById(id);
+        return debt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /**
+     * find all debts that there are without any parameters
+     * @return response entity of array lists of debts
+     */
+    @GetMapping
+    public ResponseEntity<List<Debt>> findAllDebts() {
+        List<Debt> debts = debtService.findAllDebts();
+        return ResponseEntity.ok(debts);
+    }
+
+    /**
+     * delete a debt according to its id
+     * @param id as a long number
+     * @return  ResponseEntity<Void> (so just void in general)
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDebtById(@PathVariable Long id) {
+        debtService.deleteDebtById(id);
+        return ResponseEntity.noContent().build(); // Use noContent for delete operations
+    }
+
 
     /**
      * finding debts by the lender
