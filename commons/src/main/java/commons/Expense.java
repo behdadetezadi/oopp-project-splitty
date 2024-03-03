@@ -54,6 +54,10 @@ public class Expense {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     /**
      * Getter for person
      * @return the person who paid for the expense
