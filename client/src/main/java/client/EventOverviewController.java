@@ -1,11 +1,10 @@
 package client;
-
-
 import client.utils.AnimationUtil;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-
 import static client.utils.AnimationUtil.animateButton;
 import static client.utils.AnimationUtil.animateText;
 
@@ -42,12 +41,22 @@ public class EventOverviewController {
     private Button addButton;
 
     @FXML
+    private Button filterOne;
+
+    @FXML
+    private Button filterTwo;
+
+    @FXML
     private Button sendInvitesButton;
 
     @FXML
     private Button addExpenseButton;
 
-
+    @FXML
+    private final ObservableList<String> allOptions = FXCollections
+            .observableArrayList("1", "2");
+    @FXML
+    private final ObservableList<String> filteredOptions = FXCollections.observableArrayList();
 
     /**
      * initializer function does: //TODO
@@ -63,12 +72,20 @@ public class EventOverviewController {
         // Initialize participant dropdown
         participantDropdown.getItems().addAll("Participant 1", "Participant 2", "Participant 3");
 
-        // Initialize options list view
-        optionsListView.getItems()
-                .addAll("From (selected participant)", "Including (selected participant)");
+        // Set maximum height of participantsListView to fit its items
+        participantsListView.setMaxHeight(150);
 
+        // Initialize options list view
+
+
+        // Set maximum height of optionsListView to fit its items
+        optionsListView.setMaxHeight(250);
 
     }
+
+    /**
+     * animates the labels using AnimationUtil
+     */
     private void animateLabels() {
         animateText(titleLabel, "Event Overview");
         animateText(participantsLabel, "Participants");
@@ -76,12 +93,43 @@ public class EventOverviewController {
         animateText(optionsLabel, "Options");
     }
 
+    /**
+     * animates the buttons using AnimationUtil
+     */
     private void animateButtonsText() {
-        AnimationUtil.animateButton(sendInvitesButton);
+        animateButton(sendInvitesButton);
         animateButton(addExpenseButton);
+        animateButton(filterOne);
+        animateButton(filterTwo);
     }
 
+    //TODO needs changing to better fit functionality and backlog
+    /**
+     * apply filters for options list
+     */
+    @FXML
+    private void applyFromFilter() {
+        String selectedParticipant = null; // Get selected participant
+        if (selectedParticipant != null) {
+            filteredOptions.clear();
+            filteredOptions.add("From " + selectedParticipant);
+            optionsListView.setItems(filteredOptions);
+        }
+    }
 
+    //TODO needs changing to better fit functionality and backlog
+    /**
+     * apply filters for options list
+     */
+    @FXML
+    private void applyIncludingFilter() {
+        String selectedParticipant = null; // Get selected participant
+        if (selectedParticipant != null) {
+            filteredOptions.clear();
+            filteredOptions.add("Including " + selectedParticipant);
+            optionsListView.setItems(filteredOptions);
+        }
+    }
 
     /**
      * sendInvites method //TODO
