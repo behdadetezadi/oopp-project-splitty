@@ -45,7 +45,7 @@ public class ExpenseController {
      */
     @GetMapping("/participant/{participantId}")
     public ResponseEntity<List<Expense>> filterExpenseByParticipant(@PathVariable long participantId) {
-        List<Expense> expenses =  expenseService.filterByParticipant(participantId);
+        List<Expense> expenses =  expenseService.filterByParticipantId(participantId);
         return ResponseEntity.ok(expenses);
     }
 
