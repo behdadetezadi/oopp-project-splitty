@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Region?>
+<BorderPane fx:id="root" prefHeight="400" prefWidth="600" stylesheets="@../../styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.StartPageController">
+    <padding>
+        <Insets top="20" />
+    </padding>
+
+    <top>
+        <VBox alignment="CENTER" spacing="10" fx:id="vbox">
+            <!-- Logo -->
+            <ImageView fx:id="logo" fitWidth="300" fitHeight="200" />
+
+            <HBox spacing="10" alignment="CENTER">
+                <TextField fx:id="codeInput" promptText="Enter code" />
+                <Button fx:id="joinButton" onAction="#joinMeeting" text="Join Meeting" />
+            </HBox>
+            <HBox spacing="10" alignment="CENTER">
+                <TextField fx:id="eventNameInput" promptText="Enter event name" />
+                <Button fx:id="createEventButton" onAction="#createEvent" text="Create Event" />
+            </HBox>
+            <Region prefHeight="20" />
+        </VBox>
+    </top>
+
+
+
+    <center>
+        <VBox alignment="CENTER">
+            <Label fx:id="recentEventsLabel" alignment="CENTER" styleClass="black-background-label" text="Recent Events" />
+            <ListView fx:id="recentEventsList" />
+        </VBox>
+    </center>
+
+</BorderPane>
