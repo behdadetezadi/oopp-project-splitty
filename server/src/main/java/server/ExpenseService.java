@@ -1,4 +1,4 @@
-package server.api;
+package server;
 
 
 import commons.Expense;
