@@ -11,7 +11,7 @@ public class Participant {
     //Participant ID
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public long id;
+    private long id;
     private String username;
     private String firstName;
     private String lastName;
@@ -19,14 +19,17 @@ public class Participant {
     private String iban; // international bank account number.
     private String bic; // bank identifier code. Similar to the iban, it is required in the backlog.
     @ElementCollection
-    @CollectionTable(name = "participant_owed_amount", joinColumns = @JoinColumn(name = "participant_id"))
+    @CollectionTable(name = "participant_owed_amount",
+            joinColumns = @JoinColumn(name = "participant_id"))
     @MapKeyJoinColumn(name = "event_id")
     @Column(name = "owed_amount")
     private Map<Event, Integer> owedAmount; //at the time of the code (no Event class yet).
     @ElementCollection
-    @CollectionTable(name = "participant_owed_amount", joinColumns = @JoinColumn(name = "participant_id"))
+    @CollectionTable(name = "participant_owed_amount",
+            joinColumns = @JoinColumn(name = "participant_id"))
     @MapKeyJoinColumn(name = "event_id")
-    @Column(name = "owed_amount")    private Map<Event, Integer> payedAmount; //at the time of the code (no Event class yet).
+    @Column(name = "owed_amount")
+    private Map<Event, Integer> payedAmount; //at the time of the code (no Event class yet).
     @ElementCollection
     private Set<Integer> eventIds;
     private String languageChoice;
@@ -71,10 +74,16 @@ public class Participant {
     }
 
     /**
-     * Default constructor for my entity.
+     * Default constructor for persistence.
      */
-    public Participant() {
+    public Participant() {}
 
+    /**
+     * getter for the id
+     * @return the id as a long number
+     */
+    public long getId() {
+        return id;
     }
 
     /**
@@ -253,15 +262,15 @@ public class Participant {
 
         Participant that = (Participant) o;
 
-        if (!Objects.equals(username, that.username)) return false;
-        if (!Objects.equals(firstName, that.firstName)) return false;
-        if (!Objects.equals(lastName, that.lastName)) return false;
-        if (!Objects.equals(email, that.email)) return false;
-        if (!Objects.equals(iban, that.iban)) return false;
-        if (!Objects.equals(bic, that.bic)) return false;
+        if (!Objects.equals(username, that.username) ||
+                !Objects.equals(firstName, that.firstName)) return false;
+        if (!Objects.equals(lastName, that.lastName) ||
+                !Objects.equals(email, that.email)) return false;
+        if (!Objects.equals(iban, that.iban) ||
+                !Objects.equals(bic, that.bic)) return false;
         if (!Objects.equals(owedAmount, that.owedAmount)) return false;
-        if (!Objects.equals(payedAmount, that.payedAmount)) return false;
-        if (!Objects.equals(eventIds, that.eventIds)) return false;
+        if (!Objects.equals(payedAmount, that.payedAmount) ||
+                !Objects.equals(eventIds, that.eventIds)) return false;
         return Objects.equals(languageChoice, that.languageChoice);
     }
 
@@ -272,20 +281,17 @@ public class Participant {
     @Override
     public int hashCode() {
         int result = username != null ? username.hashCode() : 0;
-        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
         result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-        result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (iban != null ? iban.hashCode() : 0);
         result = 31 * result + (bic != null ? bic.hashCode() : 0);
         result = 31 * result + (owedAmount != null ? owedAmount.hashCode() : 0);
         result = 31 * result + (payedAmount != null ? payedAmount.hashCode() : 0);
         result = 31 * result + (eventIds != null ? eventIds.hashCode() : 0);
-        result = 31 * result + (languageChoice != null ? languageChoice.hashCode() : 0);
         return result;
     }
 
     /**
-     * to string method that is human readable
+     * to string method that is human-readable
      * @return String
      */
     @Override

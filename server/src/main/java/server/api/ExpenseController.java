@@ -13,6 +13,10 @@ public class ExpenseController {
 
     private final ExpenseService expenseService;
 
+    /**
+     * expense controller
+     * @param repository ExpenseRepository
+     */
     @Autowired
     public ExpenseController(ExpenseService expenseService)
     {

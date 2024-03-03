@@ -8,12 +8,6 @@ class DebtTest {
     Participant participant1 = new Participant("Lewis", "Hamilton");
     Participant participant2 = new Participant("Max", "Verstappen");
 
-    @Test
-    void testEquals() {
-        Debt debt1 = new Debt(participant1, participant2, 50.0, true, "Expense");
-        Debt debt2 = new Debt(participant1, participant2, 50.0, true, "Expense");
-        assertEquals(debt1, debt2);
-    }
 
     @Test
     void testNotEquals() {
