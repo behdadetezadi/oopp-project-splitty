@@ -1,12 +1,13 @@
 package client;
 
 
+import client.utils.AnimationUtil;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+
+import static client.utils.AnimationUtil.animateButton;
+import static client.utils.AnimationUtil.animateText;
 
 public class EventOverviewController {
 
@@ -40,12 +41,21 @@ public class EventOverviewController {
     @FXML
     private Button addButton;
 
+    @FXML
+    private Button sendInvitesButton;
+
+    @FXML
+    private Button addExpenseButton;
+
+
+
     /**
      * initializer function does: //TODO
      */
     public void initialize() {
 
         animateLabels();
+        animateButtonsText();
 
         // Initialize participants list view
         participantsListView.getItems().addAll("Participant 1", "Participant 2", "Participant 3");
@@ -57,25 +67,20 @@ public class EventOverviewController {
         optionsListView.getItems()
                 .addAll("From (selected participant)", "Including (selected participant)");
 
-        /*
-        Image editImage =
-                new Image(getClass().getClassLoader().getResourceAsStream("EditIcon.png"));
-        Image addImage =
-                new Image(getClass().getClassLoader()
-                .getResourceAsStream("AddParticipantNeoIcon.png"));
-
-        // Set images as graphics for buttons
-        editButton.setGraphic(new ImageView(editImage));
-        addButton.setGraphic(new ImageView(addImage));
-        */
 
     }
     private void animateLabels() {
-        AnimationUtil.animateText(titleLabel, "Event Overview");
-        AnimationUtil.animateText(participantsLabel, "Participants");
-        AnimationUtil.animateText(expensesLabel, "Expenses");
-        AnimationUtil.animateText(optionsLabel, "Options");
+        animateText(titleLabel, "Event Overview");
+        animateText(participantsLabel, "Participants");
+        animateText(expensesLabel, "Expenses");
+        animateText(optionsLabel, "Options");
     }
+
+    private void animateButtonsText() {
+        AnimationUtil.animateButton(sendInvitesButton);
+        animateButton(addExpenseButton);
+    }
+
 
 
     /**
