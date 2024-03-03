@@ -77,7 +77,7 @@ class DebtControllerTest {
         List<Debt> expectedDebts = Arrays.asList(new Debt());
         when(debtService.findDebtsByLender(anyLong())).thenReturn(expectedDebts);
 
-        ResponseEntity<List<Debt>> response = debtController.findDebtsByLender(1L);
+        ResponseEntity<?> response = debtController.findDebtsByLender(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedDebts, response.getBody());
@@ -88,7 +88,7 @@ class DebtControllerTest {
         List<Debt> expectedDebts = Arrays.asList(new Debt());
         when(debtService.findDebtsByDebtor(anyLong())).thenReturn(expectedDebts);
 
-        ResponseEntity<List<Debt>> response = debtController.findDebtsByDebtor(1L);
+        ResponseEntity<?> response = debtController.findDebtsByDebtor(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedDebts, response.getBody());
@@ -99,7 +99,7 @@ class DebtControllerTest {
         List<Debt> expectedDebts = Arrays.asList(new Debt());
         when(debtService.findDebtsByCollectivity(anyBoolean())).thenReturn(expectedDebts);
 
-        ResponseEntity<List<Debt>> response = debtController.findDebtsByCollectivity(true);
+        ResponseEntity<?> response = debtController.findDebtsByCollectivity(true);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedDebts, response.getBody());
@@ -110,7 +110,7 @@ class DebtControllerTest {
         List<Debt> expectedDebts = Arrays.asList(new Debt());
         when(debtService.findDebtsThroughDescription(anyString())).thenReturn(expectedDebts);
 
-        ResponseEntity<List<Debt>> response = debtController.findDebtsThroughDescription("description");
+        ResponseEntity<?> response = debtController.findDebtsThroughDescription("description");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedDebts, response.getBody());
@@ -121,7 +121,7 @@ class DebtControllerTest {
         List<Debt> expectedDebts = Arrays.asList(new Debt());
         when(debtService.findCostlierDebts(anyDouble())).thenReturn(expectedDebts);
 
-        ResponseEntity<List<Debt>> response = debtController.findCostlierDebts(100.0);
+        ResponseEntity<?> response = debtController.findCostlierDebts(100.0);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedDebts, response.getBody());
@@ -132,7 +132,7 @@ class DebtControllerTest {
         List<Debt> expectedDebts = Arrays.asList(new Debt());
         when(debtService.findCheaperDebts(anyDouble())).thenReturn(expectedDebts);
 
-        ResponseEntity<List<Debt>> response = debtController.findCheaperDebts(50.0);
+        ResponseEntity<?> response = debtController.findCheaperDebts(50.0);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedDebts, response.getBody());
