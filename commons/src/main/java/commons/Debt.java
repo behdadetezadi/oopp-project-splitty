@@ -4,7 +4,7 @@ import java.util.*;
 
 @Entity
 public class Debt {
-    //Debt id
+    //ID for primary key
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;

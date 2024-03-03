@@ -1,0 +1,53 @@
+.root {
+    -fx-background-color: black;
+    -fx-font-family: "Courier New", monospace;
+}
+
+
+.black-background-label, .label{
+    -fx-background-color: black;
+    -fx-text-fill: lime;
+    -fx-font-size: 14px;
+
+
+}
+
+.text-field, .text-area, .list-view, .list-cell {
+    -fx-background-color: black;
+    -fx-text-fill: lime;
+    -fx-font-size: 14px;
+    -fx-border-color: lime;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px; /* Add rounded corners */
+    -fx-background-radius: 5px; /* Add rounded corners */
+}
+
+.button {
+    -fx-background-radius: 20px; /* Increase radius for buttons */
+}
+
+.list-view {
+    -fx-control-inner-background: black; /* Adjust list view background */
+}
+
+.list-cell {
+    -fx-control-inner-background: black; /* Adjust list cell background */
+}
+
+/* Normal button style */
+.button {
+    -fx-background-color: lime;
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+    -fx-border-color: lime;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+/* Hover effect for button */
+.button:hover {
+    -fx-background-color: lightgreen; /* Change background color on hover */
+    -fx-text-fill: black; /* Adjust text color on hover */
+    -fx-border-color: lightgreen; /* Adjust border color on hover */
+}
