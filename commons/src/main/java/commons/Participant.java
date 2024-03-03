@@ -87,14 +87,6 @@ public class Participant {
     }
 
     /**
-     * getter for the id
-     * @return the id as a long
-     */
-    public long getId() {
-        return id;
-    }
-
-    /**
      * username getter
      * @return String
      */
