@@ -62,6 +62,11 @@ public class EventService {
         events.remove(eventId);
     }
 
+
+    /**
+     * constructor
+     * @param eventRepository this eventRepository
+     */
     public EventService(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
