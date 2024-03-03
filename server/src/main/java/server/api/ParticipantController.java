@@ -35,7 +35,8 @@ public class ParticipantController {
             Participant savedParticipant = participantService.saveParticipant(participant);
             return new ResponseEntity<>(savedParticipant, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to save the participant.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to save the participant.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -51,7 +52,8 @@ public class ParticipantController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find the participant by ID.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to find the participant by ID.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -65,7 +67,8 @@ public class ParticipantController {
             List<Participant> participants = participantService.findAllParticipants();
             return ResponseEntity.ok(participants);
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to retrieve all participants.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to retrieve all participants.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -80,7 +83,8 @@ public class ParticipantController {
             participantService.deleteParticipantById(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to delete the participant.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to delete the participant.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -99,7 +103,8 @@ public class ParticipantController {
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find the participant by username.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to find the participant by username.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -118,7 +123,8 @@ public class ParticipantController {
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find the participant by email.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to find the participant by email.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -130,10 +136,12 @@ public class ParticipantController {
     @GetMapping("/firstname/{firstName}")
     public ResponseEntity<?> findParticipantsByFirstName(@PathVariable String firstName) {
         try {
-            List<Participant> participants = participantService.findParticipantsByFirstName(firstName);
+            List<Participant> participants = participantService
+                .findParticipantsByFirstName(firstName);
             return ResponseEntity.ok(participants);
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find participants by first name.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to find participants by first name.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -145,10 +153,12 @@ public class ParticipantController {
     @GetMapping("/lastname/{lastName}")
     public ResponseEntity<?> findParticipantsByLastName(@PathVariable String lastName) {
         try {
-            List<Participant> participants = participantService.findParticipantsByLastName(lastName);
+            List<Participant> participants = participantService
+                    .findParticipantsByLastName(lastName);
             return ResponseEntity.ok(participants);
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find participants by last name.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to find participants by last name.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -160,10 +170,12 @@ public class ParticipantController {
     @GetMapping("/language/{languageChoice}")
     public ResponseEntity<?> findParticipantsByLanguageChoice(@PathVariable String languageChoice) {
         try {
-            List<Participant> participants = participantService.findParticipantsByLanguageChoice(languageChoice);
+            List<Participant> participants = participantService
+                    .findParticipantsByLanguageChoice(languageChoice);
             return ResponseEntity.ok(participants);
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find participants by language choice.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to find participants by language choice.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -175,14 +187,16 @@ public class ParticipantController {
     @GetMapping("/event/owing/{eventId}")
     public ResponseEntity<?> findParticipantsOwingForEvent(@PathVariable Long eventId) {
         try {
-            List<Participant> participants = participantService.findParticipantsOwingForEvent(eventId);
+            List<Participant> participants = participantService
+                    .findParticipantsOwingForEvent(eventId);
             if (!participants.isEmpty()) {
                 return ResponseEntity.ok(participants);
             } else {
                 return ResponseEntity.noContent().build();
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find participants owing for the event.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to find participants owing for the event.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -194,14 +208,16 @@ public class ParticipantController {
     @GetMapping("/event/paid/{eventId}")
     public ResponseEntity<?> findParticipantsPaidForEvent(@PathVariable Long eventId) {
         try {
-            List<Participant> participants = participantService.findParticipantsPaidForEvent(eventId);
+            List<Participant> participants = participantService
+                    .findParticipantsPaidForEvent(eventId);
             if (!participants.isEmpty()) {
                 return ResponseEntity.ok(participants);
             } else {
                 return ResponseEntity.noContent().build();
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find participants who have paid for the event.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed to find participants who have paid for the event.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

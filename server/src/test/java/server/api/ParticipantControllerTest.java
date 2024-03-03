@@ -98,7 +98,7 @@ class ParticipantControllerTest {
 
     @Test
     void testFindParticipantsByFirstName() {
-        List<Participant> expectedParticipants = Arrays.asList(new Participant());
+        List<Participant> expectedParticipants = List.of(new Participant());
         when(participantService.findParticipantsByFirstName(anyString())).thenReturn(expectedParticipants);
 
         ResponseEntity<?> response = participantController.findParticipantsByFirstName("John");
@@ -109,7 +109,7 @@ class ParticipantControllerTest {
 
     @Test
     void testFindParticipantsByLastName() {
-        List<Participant> expectedParticipants = Arrays.asList(new Participant());
+        List<Participant> expectedParticipants = List.of(new Participant());
         when(participantService.findParticipantsByLastName(anyString())).thenReturn(expectedParticipants);
 
         ResponseEntity<?> response = participantController.findParticipantsByLastName("Doe");
@@ -120,7 +120,7 @@ class ParticipantControllerTest {
 
     @Test
     void testFindParticipantsByLanguageChoice() {
-        List<Participant> expectedParticipants = Arrays.asList(new Participant());
+        List<Participant> expectedParticipants = List.of(new Participant());
         when(participantService.findParticipantsByLanguageChoice(anyString())).thenReturn(expectedParticipants);
 
         ResponseEntity<?> response = participantController.findParticipantsByLanguageChoice("English");
@@ -131,7 +131,7 @@ class ParticipantControllerTest {
 
     @Test
     void testFindParticipantsOwingForEvent() {
-        List<Participant> expectedParticipants = Arrays.asList(new Participant());
+        List<Participant> expectedParticipants = List.of(new Participant());
         when(participantService.findParticipantsOwingForEvent(anyLong())).thenReturn(expectedParticipants);
 
         ResponseEntity<?> response = participantController.findParticipantsOwingForEvent(1L);
@@ -142,7 +142,7 @@ class ParticipantControllerTest {
 
     @Test
     void testFindParticipantsPaidForEvent() {
-        List<Participant> expectedParticipants = Arrays.asList(new Participant());
+        List<Participant> expectedParticipants = List.of(new Participant());
         when(participantService.findParticipantsPaidForEvent(anyLong())).thenReturn(expectedParticipants);
 
         ResponseEntity<?> response = participantController.findParticipantsPaidForEvent(1L);
