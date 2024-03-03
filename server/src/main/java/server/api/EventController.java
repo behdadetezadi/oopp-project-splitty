@@ -2,6 +2,8 @@ package server.api;
 
 import commons.Event;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.api.EventService;
 
@@ -32,6 +34,46 @@ public class EventController {
     public Event getEventById(@PathVariable long eventId) {
         return eventService.getEventById(eventId);
     }
+
+    /**
+     * getter for event by title
+     * @param title the title of this event
+     * @return the event
+     */
+
+    @GetMapping("/{title}")
+    public Event getEventByTitle(@PathVariable String title) {
+        return eventService.getEventByTitle(title);
+    }
+
+    /**
+     * getter for event by invite code
+     * @param inviteCode the invite code
+     * @return the event
+     */
+
+    @GetMapping("/{inviteCode}")
+    public Event getEventByInviteCode(@PathVariable Long inviteCode) {
+        return eventService.getEventByInviteCode(inviteCode);
+    }
+
+    /**
+     * delete an event by its id
+     * @param id the event to be deleted
+     * @return nothing really
+     */
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<?> deleteEventById(@PathVariable Long id) {
+        try {
+            eventService.deleteEvent(id);
+            return  ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to delete the event.",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
     /**
      * getter for all events
