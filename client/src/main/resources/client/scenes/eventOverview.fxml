@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.image.Image?>
 <BorderPane fx:id="root" prefHeight="400" prefWidth="600" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.EventOverviewController"
-            stylesheets="@styles.css">
+            stylesheets="@../../styles.css">
     <padding>
         <Insets top="20" left="20" right="20" bottom="20" />
     </padding>
@@ -35,7 +35,7 @@
                         <Button fx:id="editButton" onAction="#editParticipants" style="-fx-font-size: 14px;">
                             <graphic>
                                 <ImageView fitWidth="24" fitHeight="24">
-                                    <Image url="@images/EditIcon.png" />
+                                    <Image url="@../../images/EditIcon.png" />
                                 </ImageView>
                             </graphic>
                         </Button>
@@ -43,7 +43,7 @@
                         <Button fx:id="addButton" onAction="#addParticipant" style="-fx-font-size: 14px;">
                             <graphic>
                                 <ImageView fitWidth="24" fitHeight="24">
-                                    <Image url="@images/AddParticipantNeoIcon.png" />
+                                    <Image url="@../../images/AddParticipantNeoIcon.png" />
                                 </ImageView>
                             </graphic>
                         </Button>
