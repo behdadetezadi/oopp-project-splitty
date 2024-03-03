@@ -2,14 +2,20 @@ package server;
 
 import commons.Participant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import server.database.ParticipantRepository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ParticipantService {
     private final ParticipantRepository participantRepository;
 
+    /**
+     * Dependency Injection through the constructor
+     * @param participantRepository of type ParticipantRepository
+     */
     @Autowired
     public ParticipantService(ParticipantRepository participantRepository) {
         this.participantRepository = participantRepository;
