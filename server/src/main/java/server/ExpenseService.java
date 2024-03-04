@@ -1,6 +1,5 @@
 package server;
 
-
 import commons.Expense;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,16 +16,29 @@ public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
 
+    /**
+     * Dependency Injection through the constructor
+     * @param expenseRepository of type ExpenseRepository
+     */
     @Autowired
     public ExpenseService(ExpenseRepository expenseRepository) {
         this.expenseRepository = expenseRepository;
     }
 
+    /**
+     * gets the expense by its id
+     * @param expenseId the id of the expense that needs to be retrieved
+     * @return the expense
+     */
     public Expense getExpenseById(long expenseId) {
         return expenseRepository.findById(expenseId)
                 .orElseThrow(() -> new IllegalArgumentException("Expense not found with ID: " + expenseId));
     }
 
+    /**
+     * gets all the expenses that are there
+     * @return a list containing all the expenses
+     */
     public List<Expense> getAllExpenses() {
         return expenseRepository.findAll();
     }
@@ -84,7 +96,11 @@ public class ExpenseService {
         return expense.map(value -> ResponseEntity.ok(value.toString())).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-
+    /**
+     * creates a new expense
+     * @param expense the new expense
+     * @return the new expense
+     */
     public Expense createExpense(Expense expense) {
         return expenseRepository.save(expense);
     }
@@ -97,6 +113,11 @@ public class ExpenseService {
         return expenseRepository.save(expense);
     }
 
+    /**
+     * deletes an expense
+     * @param expenseId the id of the expense that needs to be deleted
+     * @return ResponseEntity<Void>
+     */
     public ResponseEntity<Void> deleteExpense(long expenseId) {
         if (!expenseRepository.existsById(expenseId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
