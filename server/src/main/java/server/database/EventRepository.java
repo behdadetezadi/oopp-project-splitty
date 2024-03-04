@@ -17,7 +17,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * @param id the event's id
      * @return a list containing all participants
      */
-    @Query("SELECT people FROM Event p WHERE p.id =:id")
+    @Query("SELECT e FROM Event e WHERE e.id = :id")
     List<Participant> participantsOfEventById(long id);
 
     /**
@@ -27,7 +27,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * @param title the event's title
      * @return a list containing all participants
      */
-    @Query("SELECT people FROM Event e WHERE e.title = :title")
+    @Query("SELECT e FROM Event e WHERE e.title = :title")
     List<Participant> participantsOfEventByTitle(String title);
 
     /**
@@ -36,7 +36,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * @param inviteCode the event's invite code
      * @return a list containing all participants
      */
-    @Query("SELECT people FROM Event e WHERE e.inviteCode = :inviteCode")
+    @Query("SELECT e FROM Event e WHERE e.inviteCode = :inviteCode")
     List<Participant> participantsOfEventByInviteCode(long inviteCode);
 
     /**
@@ -71,7 +71,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * @param expense the expense to check
      * @return event  which has this expense
      */
-    @Query("SELECT e FROM Event e WHERE e.expanses CONTAINS :expense")
+    @Query("SELECT e FROM Event e WHERE :expense MEMBER OF e.expenses")
     Event eventByExpense(Expense expense);
 
 
