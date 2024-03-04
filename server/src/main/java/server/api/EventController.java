@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import server.EventService;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class EventController {
      * @param eventId long number which is event id
      * @return a long id
      */
-    @GetMapping("/{eventId}")
+    @GetMapping("/id/{eventId}")
     public Event getEventById(@PathVariable long eventId) {
         return eventService.getEventById(eventId);
     }
@@ -40,7 +41,7 @@ public class EventController {
      * @return the event
      */
 
-    @GetMapping("/{title}")
+    @GetMapping("/title/{title}")
     public Event getEventByTitle(@PathVariable String title) {
         return eventService.getEventByTitle(title);
     }
@@ -51,28 +52,25 @@ public class EventController {
      * @return the event
      */
 
-    @GetMapping("/{inviteCode}")
+    @GetMapping("/inviteCode/{inviteCode}")
     public Event getEventByInviteCode(@PathVariable Long inviteCode) {
         return eventService.getEventByInviteCode(inviteCode);
     }
 
     /**
      * delete an event by its id
-     * @param id the event to be deleted
+     * @param eventId the event to be deleted
      * @return nothing really
      */
     @DeleteMapping("/{eventId}")
-    public ResponseEntity<?> deleteEventById(@PathVariable Long id) {
+    public ResponseEntity<?> deleteEventById(@PathVariable Long eventId) {
         try {
-            eventService.deleteEvent(id);
-            return  ResponseEntity.noContent().build();
+            eventService.deleteEvent(eventId);
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to delete the event.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Failed deletion.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 
     /**
      * getter for all events
@@ -104,12 +102,4 @@ public class EventController {
         return eventService.updateEvent(eventId, event);
     }
 
-    /**
-     * method to delete event
-     * @param eventId long number
-     */
-    @DeleteMapping("/{eventId}")
-    public void deleteEvent(@PathVariable long eventId) {
-        eventService.deleteEvent(eventId);
-    }
 }
