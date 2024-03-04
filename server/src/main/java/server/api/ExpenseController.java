@@ -14,12 +14,21 @@ public class ExpenseController {
 
     private final ExpenseService expenseService;
 
+    /**
+     * dependency injection through constructor
+     * @param expenseService the ExpenseService
+     */
     @Autowired
     public ExpenseController(ExpenseService expenseService)
     {
         this.expenseService = expenseService;
     }
 
+    /**
+     * add a new expense
+     * @param expense the expense to be added
+     * @return ResponseEntity<Void> ok or bad request
+     */
     @PostMapping("/add")
     public ResponseEntity<Void> add(@RequestBody Expense expense) {
         if (expense == null || expense.getParticipant() == null || expense.getParticipant().getFirstName() == null || expense.getParticipant().getLastName() == null) {
@@ -29,18 +38,27 @@ public class ExpenseController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * get all the expenses
+     * @return the list of expenses
+     */
     @GetMapping("/")
     public List<Expense> getAll() {
         return expenseService.getAllExpenses();
     }
 
+    /**
+     * gets the expenses from a specific date
+     * @param date the desired specific date
+     * @return the list of expenses
+     */
     @GetMapping("/{date}")
     public List<Expense> filterByDate(@PathVariable String date) {
         return expenseService.filterByDate(date);
     }
 
     /**
-     * filtering expenses by the person who made the payment
+     * gets the expenses from the person who made the payment
      * @param participantId provided as a long
      * @return ResponseEntity<List<Expense>>
      */
@@ -51,7 +69,7 @@ public class ExpenseController {
     }
 
     /**
-     * filtering expenses by the person who needs to pay something back
+     * gets the expenses from the people who need to pay something back
      * @param participantId provided as a long
      * @return ResponseEntity<List<Expense>>
      */
@@ -61,6 +79,11 @@ public class ExpenseController {
         return ResponseEntity.ok(expenses);
     }
 
+    /**
+     * gets the details of an expense based off of its id
+     * @param id the id of the desired expense
+     * @return ResponseEntity<String> ok or not found
+     */
     @GetMapping("/details/{id}")
     public ResponseEntity<String> getDetails(@PathVariable("id") long id) {
         try {
@@ -71,6 +94,12 @@ public class ExpenseController {
         }
     }
 
+    /**
+     * updates the expense
+     * @param id the id of the expense that needs to be updated
+     * @param updatedExpense the new updated version of the expense
+     * @return ResponseEntity<Void> ok or not found
+     */
     @PutMapping("/update/{id}")
     public ResponseEntity<Void> update(@PathVariable("id") long id, @RequestBody Expense updatedExpense) {
         try {
@@ -81,6 +110,11 @@ public class ExpenseController {
         }
     }
 
+    /**
+     * deletes an expense
+     * @param id the id of the expense that needs to be deleted
+     * @return ResponseEntity<Void> ok or not found
+     */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") long id) {
         try {
