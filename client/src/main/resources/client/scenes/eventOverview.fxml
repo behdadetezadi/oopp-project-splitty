@@ -35,7 +35,7 @@
                         <Button fx:id="editButton" onAction="#editParticipants" style="-fx-font-size: 14px;">
                             <graphic>
                                 <ImageView fitWidth="24" fitHeight="24">
-                                    <Image url="@../../images/EditIcon.png" />
+                                    <Image url="@../../images/editIcon.png" />
                                 </ImageView>
                             </graphic>
                         </Button>
@@ -43,7 +43,7 @@
                         <Button fx:id="addButton" onAction="#addParticipant" style="-fx-font-size: 14px;">
                             <graphic>
                                 <ImageView fitWidth="24" fitHeight="24">
-                                    <Image url="@../../images/AddParticipantNeoIcon.png" />
+                                    <Image url="@../../images/addParticipantIconNeo.png" />
                                 </ImageView>
                             </graphic>
                         </Button>
