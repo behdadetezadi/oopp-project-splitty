@@ -41,6 +41,11 @@ public class AddQuoteCtrl {
     @FXML
     private TextField quote;
 
+    /**
+     * Constructor
+     * @param server type ServerUtils
+     * @param mainCtrl type MainCtrl
+     */
     @Inject
     public AddQuoteCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
@@ -48,11 +53,17 @@ public class AddQuoteCtrl {
 
     }
 
+    /**
+     * cancels and clears the field
+     */
     public void cancel() {
         clearFields();
         mainCtrl.showOverview();
     }
 
+    /**
+     * checks for exceptions while calling add quote
+     */
     public void ok() {
         try {
             server.addQuote(getQuote());
@@ -69,28 +80,36 @@ public class AddQuoteCtrl {
         mainCtrl.showOverview();
     }
 
+    /**
+     * getter for quote
+     * @return a new quote with attributes p q
+     */
     private Quote getQuote() {
         var p = new Person(firstName.getText(), lastName.getText());
         var q = quote.getText();
         return new Quote(p, q);
     }
 
+    /**
+     * clears all the fields
+     */
     private void clearFields() {
         firstName.clear();
         lastName.clear();
         quote.clear();
     }
 
+
+    /**
+     * event handler for key
+     * @param e a key-event
+     */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
-        case ENTER:
-            ok();
-            break;
-        case ESCAPE:
-            cancel();
-            break;
-        default:
-            break;
+            case ENTER -> ok();
+            case ESCAPE -> cancel();
+            default -> {
+            }
         }
     }
 }
