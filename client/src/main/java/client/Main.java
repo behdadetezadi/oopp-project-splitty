@@ -33,7 +33,7 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("client/scenes/startPage.fxml"));
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("client/scenes/eventOverview.fxml"));
         primaryStage.setTitle("Matrix Start Page");
         primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.show();
