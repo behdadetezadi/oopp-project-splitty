@@ -1,226 +1,128 @@
-package server.api;
-<<<<<<< HEAD
-import commons.Expense;
-import commons.Person;
-import java.util.List;
-import java.util.stream.Collectors;
-
-
-
-public class ExpenseController {
-    private ExpenseModel expenseModel;
-
-    /**
-     * construct the ExpenseController object
-     * @param expenseModel the expenseModel object including a expenseList
-     */
-    public ExpenseController(ExpenseModel expenseModel)
-    {
-        this.expenseModel = expenseModel;
-    }
-    /**
-     * add an Expense object by passing individual parameters
-     * @param person the person who paid
-     * @param category what the expense was for
-     * @param amount the amount that was spent
-     * @param currency what currency was used for the expense
-     * @param date when the expense was made
-     * @param splittingOption shows a list of people that are included in the splitting option
-     * @param expenseType the type of category the expense belongs to
-     */
-
-    public void addExpense(Person person, String category,
-                           int amount, String currency, String date,
-                           List<Person> splittingOption, String expenseType)
-    {
-        Expense expense = new Expense(person, category, amount, currency, date, splittingOption, expenseType);
-        expenseModel.addExpense(expense);
-    }
-
-    /**
-     * show all Expense objects in the list of expenseModel object
-     * @return return expenseList of expenseModel object
-     */
-    public List<Expense> getAllExpenses() {
-        return expenseModel.getAllExpenses();
-    }
-    /**
-     * Display all expenses specific to that date.
-     * @param date all the expenses of certain date that the user want to check
-     */
-    public List<Expense> filterExpensesByDate(String date) {
-        return expenseModel.getAllExpenses().stream()
-                .filter(expense -> expense.getDate().equals(date))
-                .collect(Collectors.toList());
-    }
-    /** add money transfer form person A to B(I'm not sure if the requirement is need to add the transfer in to the expenseList in the expenseModel)
-     * @param A the person who need to transfer the money
-     * @param B the person who receive the transfer
-     * @param amount the amount of transfer
-     * @param currency the currency of the transfer
-     * @param date the date of the transfer
-     */
-    public void addMoneyTransfer(Person A, Person B, int amount, String currency, String date)
-    {
-        Expense transfer = new Expense(A, "Money Transfer", amount, currency, date, List.of(B), "Transfer");
-        expenseModel.getAllExpenses().add(transfer);
-    }
-    /**
-     * Display all expenses specific to the person.
-     * @param person the expense of certain person that the user want to check
-     */
-    public List<Expense> filterExpensesByPerson(Person person)
-    {
-        return expenseModel.getAllExpenses().stream()
-                .filter(expense -> expense.getPerson().equals(person))
-                .collect(Collectors.toList());
-    }
-    /**
-     * Display all expenses involving certain person.
-     * @param person the expense of certain person that the user want to check
-     */
-    public List<Expense> filterExpensesInvolvingSomeone(Person person) {
-        return expenseModel.getAllExpenses().stream()
-                .filter(expense -> expense.getSplittingOption().contains(person))
-                .collect(Collectors.toList());
-    }
-    /**
-     * Display all the details of certain expense.
-     * @param expense the expense that the user want to check details
-     */
-    public String getExpenseDetails(Expense expense)
-    {
-        return expense.toString();
-    }
-
-}
-=======
+package server;
 
 import commons.Expense;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import server.ExpenseService;
+import server.database.ExpenseRepository;
 
 import java.util.List;
+import java.util.Optional;
+import org.springframework.stereotype.Service;
 
-@RestController
-@RequestMapping("/api/expenses")
-public class ExpenseController {
+@Service
+public class ExpenseService {
 
-    private final ExpenseService expenseService;
+    private final ExpenseRepository expenseRepository;
 
     /**
-     * dependency injection through constructor
-     * @param expenseService the ExpenseService
+     * Dependency Injection through the constructor
+     * @param expenseRepository of type ExpenseRepository
      */
     @Autowired
-    public ExpenseController(ExpenseService expenseService)
-    {
-        this.expenseService = expenseService;
+    public ExpenseService(ExpenseRepository expenseRepository) {
+        this.expenseRepository = expenseRepository;
     }
 
     /**
-     * add a new expense
-     * @param expense the expense to be added
-     * @return ResponseEntity<Void> ok or bad request
+     * gets the expense by its id
+     * @param expenseId the id of the expense that needs to be retrieved
+     * @return the expense
      */
-    @PostMapping("/add")
-    public ResponseEntity<Void> add(@RequestBody Expense expense) {
-        if (expense == null || expense.getParticipant() == null || expense.getParticipant().getFirstName() == null || expense.getParticipant().getLastName() == null) {
+    public Expense getExpenseById(long expenseId) {
+        return expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new IllegalArgumentException("Expense not found with ID: " + expenseId));
+    }
+
+    /**
+     * gets all the expenses that are there
+     * @return a list containing all the expenses
+     */
+    public List<Expense> getAllExpenses() {
+        return expenseRepository.findAll();
+    }
+    /**
+     * Filter expenses by date.
+     * @param date The date to filter expenses.
+     * @return A list of expenses on the specified date.
+     */
+    public List<Expense> filterByDate(@PathVariable String date)
+    {
+        return expenseRepository.findAllByDate(date);
+    }
+
+    /**
+     * Add a money transfer to the repository.
+     * @param transfer The money transfer to be added.
+     * @return ResponseEntity indicating the success of the operation.
+     */
+    public ResponseEntity<Void> addMoneyTransfer(@RequestBody Expense transfer)
+    {
+        if (transfer== null || transfer.getParticipant()==null||transfer.getParticipant().getFirstName()==null || transfer.getParticipant().getLastName()==null)
+        {
             return ResponseEntity.badRequest().build();
         }
-        expenseService.createExpense(expense);
+        expenseRepository.save(transfer);
         return ResponseEntity.ok().build();
     }
 
     /**
-     * get all the expenses
-     * @return the list of expenses
+     * Filter expenses by person.
+     * @param participantId The person to filter expenses.
+     * @return A list of expenses associated with the specified person.
      */
-    @GetMapping("/")
-    public List<Expense> getAll() {
-        return expenseService.getAllExpenses();
+    public List<Expense> filterByParticipantId(@PathVariable long participantId)
+    {
+        return expenseRepository.findAllByParticipantId(participantId);
     }
 
     /**
-     * gets the expenses from a specific date
-     * @param date the desired specific date
-     * @return the list of expenses
+     * Filter expenses involving a specific person.
+     * @param participantId The person to filter expenses.
+     * @return A list of expenses involving the specified person.
      */
-    @GetMapping("/{date}")
-    public List<Expense> filterByDate(@PathVariable String date) {
-        return expenseService.filterByDate(date);
+    public List<Expense> filterByInvolving(@PathVariable long participantId) {
+        return expenseRepository.findAllBySplittingOptionContaining(participantId);
     }
 
     /**
-     * gets the expenses from the person who made the payment
-     * @param participantId provided as a long
-     * @return ResponseEntity<List<Expense>>
+     * Get details of an expense by its ID.
+     * @param id The ID of the expense to retrieve details.
+     * @return ResponseEntity containing the details of the expense, or an error message if not found.
      */
-    @GetMapping("/participant/{participantId}")
-    public ResponseEntity<List<Expense>> filterExpenseByParticipant(@PathVariable long participantId) {
-        List<Expense> expenses =  expenseService.filterByParticipantId(participantId);
-        return ResponseEntity.ok(expenses);
-    }
-
-    /**
-     * gets the expenses from the people who need to pay something back
-     * @param participantId provided as a long
-     * @return ResponseEntity<List<Expense>>
-     */
-    @GetMapping("/involvedParticipant/{participantId}")
-    public ResponseEntity<List<Expense>> filterByInvolving(@PathVariable long participantId) {
-        List<Expense> expenses =  expenseService.filterByInvolving(participantId);
-        return ResponseEntity.ok(expenses);
-    }
-
-    /**
-     * gets the details of an expense based off of its id
-     * @param id the id of the desired expense
-     * @return ResponseEntity<String> ok or not found
-     */
-    @GetMapping("/details/{id}")
     public ResponseEntity<String> getDetails(@PathVariable("id") long id) {
-        try {
-            Expense expense = expenseService.getExpenseById(id);
-            return ResponseEntity.ok(expense.toString());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        Optional<Expense> expense = expenseRepository.findById(id);
+        return expense.map(value -> ResponseEntity.ok(value.toString())).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /**
-     * updates the expense
-     * @param id the id of the expense that needs to be updated
-     * @param updatedExpense the new updated version of the expense
-     * @return ResponseEntity<Void> ok or not found
+     * creates a new expense
+     * @param expense the new expense
+     * @return the new expense
      */
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Void> update(@PathVariable("id") long id, @RequestBody Expense updatedExpense) {
-        try {
-            expenseService.updateExpense(id, updatedExpense);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+    public Expense createExpense(Expense expense) {
+        return expenseRepository.save(expense);
+    }
+
+    public Expense updateExpense(long expenseId, Expense expense) {
+        if (!expenseRepository.existsById(expenseId)) {
+            throw new IllegalArgumentException("Expense not found with ID: " + expenseId);
         }
+        expense.setId(expenseId);
+        return expenseRepository.save(expense);
     }
 
     /**
      * deletes an expense
-     * @param id the id of the expense that needs to be deleted
-     * @return ResponseEntity<Void> ok or not found
+     * @param expenseId the id of the expense that needs to be deleted
+     * @return ResponseEntity<Void>
      */
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
-        try {
-            expenseService.deleteExpense(id);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Void> deleteExpense(long expenseId) {
+        if (!expenseRepository.existsById(expenseId)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        expenseRepository.deleteById(expenseId);
+        return ResponseEntity.ok().build();
     }
 }
-
-
->>>>>>> origin/main
