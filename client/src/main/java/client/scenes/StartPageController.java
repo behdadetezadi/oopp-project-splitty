@@ -1,15 +1,15 @@
 package client.scenes;
 
 import javafx.animation.PauseTransition;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.util.Duration;
 
 import java.util.Objects;
@@ -42,9 +42,19 @@ public class StartPageController {
     @FXML
     private ImageView logo;
 
+
     /**
      * initializer method //TODO
      */
+
+    private static final ObservableList<String> EVENT_TITLES = FXCollections.observableArrayList(
+            "Conference",
+            "Workshop",
+            "Seminar",
+            "Hackathon",
+            "Webinar"
+    );
+
     public void initialize() {
 
         // Set fixed width for text fields
@@ -88,6 +98,43 @@ public class StartPageController {
         // Ensure the label expands to fill available space horizontally
         HBox.setHgrow(recentEventsLabel, Priority.ALWAYS);
         animateText(recentEventsLabel, "Recent Events");
+
+        recentEventsList.setItems(EVENT_TITLES);
+
+
+        // Set the cell factory for the recentEventsList
+        recentEventsList.setCellFactory(listView -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    // Create the cell content as before
+                    Label eventNameLabel = new Label(item);
+                    // Create button and handle actions
+                    Button removeButton = new Button();
+                    removeButton.setStyle("-fx-background-color: transparent;");
+                    ImageView removeImage = new ImageView("images/closeIcon.png");
+                    removeImage.setFitWidth(16);
+                    removeImage.setFitHeight(16);
+                    removeButton.setGraphic(removeImage);
+                    removeButton.setOnAction(event -> {
+                        getListView().getItems().remove(item);
+                    });
+                    HBox buttonBox = new HBox(removeButton);
+                    buttonBox.setAlignment(Pos.CENTER_RIGHT);
+                    VBox cellBox = new VBox(eventNameLabel, buttonBox);
+                    cellBox.setSpacing(10);
+                    cellBox.setAlignment(Pos.CENTER_LEFT);
+                    setGraphic(cellBox);
+                    setText(null);
+                }
+            }
+        });
+
+
     }
 
 
