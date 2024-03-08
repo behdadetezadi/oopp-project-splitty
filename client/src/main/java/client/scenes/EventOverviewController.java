@@ -4,6 +4,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+
+import java.util.Arrays;
+import java.util.List;
+
 import static client.utils.AnimationUtil.animateButton;
 import static client.utils.AnimationUtil.animateText;
 
@@ -74,12 +78,26 @@ public class EventOverviewController {
         // Set maximum height of participantsListView to fit its items
         participantsListView.setMaxHeight(150);
 
-        // Initialize options list view
+        initializeParticipants();
+        initializeOptionsListView();
+
 
 
         // Set maximum height of optionsListView to fit its items
         optionsListView.setMaxHeight(250);
 
+    }
+
+    private void initializeParticipants() {
+        // Assume you have a method to get your participants
+        List<String> participants = Arrays.asList("Participant 1", "Participant 2", "Participant 3");
+        participantsListView.getItems().setAll(participants);
+        participantDropdown.getItems().setAll(participants);
+    }
+
+    private void initializeOptionsListView() {
+        // If you have specific options to show, add them here
+        optionsListView.getItems().addAll("Option 1", "Option 2", "Option 3");
     }
 
     /**
@@ -102,19 +120,23 @@ public class EventOverviewController {
         animateButton(filterTwo);
     }
 
+
+
     //TODO needs changing to better fit functionality and backlog
     /**
      * apply filters for options list
      */
     @FXML
     private void applyFromFilter() {
-        String selectedParticipant = null; // Get selected participant
+        // Assuming you want to filter based on a selected participant
+        String selectedParticipant = participantDropdown.getSelectionModel().getSelectedItem();
         if (selectedParticipant != null) {
             filteredOptions.clear();
-            filteredOptions.add("From " + selectedParticipant);
+            filteredOptions.add("Filtered option for " + selectedParticipant);
             optionsListView.setItems(filteredOptions);
         }
     }
+
 
     //TODO needs changing to better fit functionality and backlog
     /**
@@ -132,19 +154,27 @@ public class EventOverviewController {
 
     /**
      * sendInvites method //TODO
-      */
+     */
     @FXML
     public void sendInvites() {
-        // Action for sending invites
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Invitation Sent");
+        alert.setHeaderText(null);
+        alert.setContentText("Invitations have been sent to all participants.");
+        alert.showAndWait();
     }
-
     /**
      * edit participant method //TODO
      */
     @FXML
     public void editParticipants() {
-        // Action for editing participants
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Participant Edited");
+        alert.setHeaderText(null);
+        alert.setContentText("The participant's details have been updated successfully.");
+        alert.showAndWait();
     }
+
 
     /**
      * add participant //TODO
@@ -159,6 +189,25 @@ public class EventOverviewController {
      */
     @FXML
     public void addExpense() {
-        // Action for adding an expense
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Expense Added");
+        alert.setHeaderText(null);
+        alert.setContentText("A new expense has been added successfully.");
+        alert.showAndWait();
     }
+
+    /**
+     * Here is just a simple regular error message which we
+     * can add later for error handling
+     * @param errorMessage String
+     */
+    private void showErrorAlert(String errorMessage) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("There was an error.");
+        alert.setContentText(errorMessage);
+        alert.showAndWait();
+    }
+
+
 }
