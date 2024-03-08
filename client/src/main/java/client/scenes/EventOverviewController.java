@@ -2,9 +2,14 @@ package client.scenes;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,6 +26,9 @@ public class EventOverviewController {
 
     @FXML
     private ComboBox<String> participantDropdown;
+
+    @FXML
+    private Button showParticipantsButton;
 
     @FXML
     private ListView<String> optionsListView;
@@ -65,27 +73,30 @@ public class EventOverviewController {
      * initializer function does: //TODO
      */
     public void initialize() {
-
         animateLabels();
         animateButtonsText();
 
-        // Initialize participants list view
-        participantsListView.getItems().addAll("Participant 1", "Participant 2", "Participant 3");
 
-        // Initialize participant dropdown
-        participantDropdown.getItems().addAll("Participant 1", "Participant 2", "Participant 3");
+    }
 
-        // Set maximum height of participantsListView to fit its items
-        participantsListView.setMaxHeight(150);
-
-        initializeParticipants();
-        initializeOptionsListView();
-
-
-
-        // Set maximum height of optionsListView to fit its items
-        optionsListView.setMaxHeight(250);
-
+    /**
+     * method to switch over to the participant scene when clicked upon
+     */
+    @FXML
+    private void showParticipants() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/TableOfParticipants.fxml"));
+            Parent participantRoot = loader.load();
+            Scene scene = new Scene(participantRoot);
+            Stage stage = (Stage) root.getScene().getWindow();
+            stage.setScene(scene);
+            stage.show();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            showErrorAlert("Failed to load the participant scene.");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void initializeParticipants() {
