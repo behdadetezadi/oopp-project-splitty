@@ -29,11 +29,13 @@ public class TableOfParticipantsController {
         VBox box = new VBox(5);
         if (pageIndex < participants.size()) {
             Participant participant = participants.get(pageIndex);
-            String content = participant.getFirstName() + " " + participant.getLastName();
+            StringBuilder sb = new StringBuilder();
+            sb.append("First Name: "+ participant.getFirstName()+'\n');
+            sb.append("Last Name: "+ participant.getLastName()+'\n');
+            String content = sb.toString();
             Label label = new Label(content);
             label.getStyleClass().add("participant-label");
             box.getChildren().add(label);
-            box.setStyle("-fx-background-color: white; -fx-font-size: 20px;");
 
         }
         return box;
