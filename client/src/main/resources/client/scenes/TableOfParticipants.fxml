@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="335.0" prefWidth="594.0" stylesheets="@../../styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <Label fx:id="titleLabel" layoutX="219.0" layoutY="30.0" text="Participant Overview" textAlignment="CENTER" underline="true">
+            <font>
+                <Font size="29.0" />
+            </font>
+        </Label>
+        <Pagination layoutX="20.0" layoutY="62.0" pageCount="10" prefHeight="248.0" prefWidth="553.0" />
+    </children>
+</AnchorPane>
