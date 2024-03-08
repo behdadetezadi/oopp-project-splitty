@@ -1,6 +1,8 @@
 package commons;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,6 +32,12 @@ public class Event {
         this.expenses = expenses;
         this.inviteCode = inviteCode;
         this.title = title;
+    }
+
+    public Event(String title) {
+        this.title = title;
+        this.people = new ArrayList<>();
+        this.expenses = new ArrayList<>();
     }
 
     /**
