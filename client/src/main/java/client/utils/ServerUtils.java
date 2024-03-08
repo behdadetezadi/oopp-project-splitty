@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import commons.Expense;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -33,6 +34,18 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 	private static final String SERVER = "http://localhost:8080/";
+
+	/**
+	 * Adds an expense
+	 * //TODO
+	 *
+	 * @param payer       the person who paid for the expense
+	 * @param description description of the expense
+	 * @param amountValue the amount the person has paid for the expense
+	 */
+	public static Expense addExpense(String payer, String description, double amountValue) {
+		throw new RuntimeException("To do");
+	}
 
 	/**
 	 * gets quotes

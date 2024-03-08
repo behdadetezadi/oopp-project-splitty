@@ -15,11 +15,15 @@
  */
 package client;
 
+import client.scenes.ExpenseController;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 public class Main extends Application {
 
@@ -33,7 +37,11 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("client/scenes/eventOverview.fxml"));
+        Injector injector = Guice.createInjector(new MyModule());
+        MyFXML myFXML = new MyFXML(injector);
+        Pair<ExpenseController, Parent> expensePair = myFXML.load(ExpenseController.class,
+                "client/scenes/AddExpense.fxml");
+        Parent root = expensePair.getValue();
         primaryStage.setTitle("Matrix Start Page");
         primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.show();

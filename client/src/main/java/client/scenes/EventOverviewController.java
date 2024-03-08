@@ -1,4 +1,4 @@
-package client;
+package client.scenes;
 import client.utils.AnimationUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

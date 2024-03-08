@@ -1,10 +1,25 @@
 package client.scenes;
 
+import com.google.inject.Inject;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import client.utils.ServerUtils;
+import client.utils.ValidationUtils;
+import client.utils.AlertUtils;
+
+import commons.Expense;
+
 
 public class ExpenseController {
+    private final ServerUtils server;
+    private final MainController mainController;
+    @FXML
+    private Button cancelButton;
+    @FXML
+    private Button addExpenseButton;
     @FXML
     private TextField payer;
     @FXML
@@ -13,69 +28,78 @@ public class ExpenseController {
     private TextField amountPaid;
 
     /**
+     * Expense controller
+     * @param server ServerUtils type
+     * @param mainController MainCtrl type
+     */
+    @Inject
+    public ExpenseController(ServerUtils server, MainController mainController) {
+        this.server = server;
+        this.mainController = mainController;
+    }
+
+    /**
      * Initializer method
      */
     public void initialize() {
+        cancelButton.setOnAction(this::handleCancelAction);
+        addExpenseButton.setOnAction(this::handleAddExpenseAction);
         amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
     }
 
     /**
-     * This method validates input for the amount paid field to make sure it's an integer/double
+     * This method validates input for the amount paid field to make sure it's a valid integer/double
      * @param event keyboard input event
      */
     @FXML
     private void validateAmountInput(KeyEvent event) {
-        String character = event.getCharacter();
-        String currentText = amountPaid.getText();
+        ValidationUtils.validateAmountInput(event, amountPaid.getText());
+    }
 
-        // Allow digits, period, and comma
-        if (!character.matches("[0-9.,]")) {
-            event.consume();
+    /**
+     * Add expense button handler
+     * @param event button press
+     */
+    @FXML
+    private void handleAddExpenseAction(ActionEvent event) {
+        String payer = this.payer.getText();
+        String description = this.expenseDescription.getText();
+        String amount = this.amountPaid.getText();
+
+        // Convert amount to a number and handle potential exceptions
+        double amountValue;
+
+        // Check for a trailing period/comma
+        String normalizedAmount = amount.replace(',', '.');
+        if (normalizedAmount.endsWith(".")) {
+            AlertUtils.showErrorAlert("Invalid amount", "Please enter a valid number for the amount.");
             return;
         }
 
-        // If it's a period or comma, only allow one in the text
-        if (character.equals(".") || character.equals(",")) {
-            if (currentText.contains(".") || currentText.contains(",")) {
-                event.consume();
-                return;
-            }
+        try {
+            amountValue = Double.parseDouble(normalizedAmount);
+        } catch (NumberFormatException e) {
+            // Handle invalid number format
+            AlertUtils.showErrorAlert("Invalid amount", "Please enter a valid number for the amount.");
+            return;
         }
 
-        // Construct the expected text at the current caret position
-        StringBuilder expectedTextBuilder = new StringBuilder(currentText).insert(amountPaid.getCaretPosition(), character);
-        String expectedText = expectedTextBuilder.toString();
-
-        // Replace comma with period for parsing
-        expectedText = expectedText.replace(',', '.');
-
-        // Check if it's a valid number
-        if (!isValidDouble(expectedText)) {
-            event.consume();
+        // Create new expense in backend
+        try {
+            Expense newExpense = ServerUtils.addExpense(payer, description, amountValue);
+            // TODO show success message, navigate to previous scene etc
+        } catch (Exception e) {
+            // Catch exception
+            AlertUtils.showErrorAlert("Unexpected Error", "An unexpected error occurred: " + e.getMessage());
         }
     }
 
     /**
-     * Validates text to make sure it's a valid double in this context
-     * @param text input
-     * @return if valid number (e.g. 15.36 valid, 5 valid, 7.257 not valid)
+     * Cancel button handler
+     * @param event button press
      */
-    private boolean isValidDouble(String text) {
-        // If the text ends with a decimal point, it's still considered valid at this point
-        if (text.endsWith(".")) {
-            return true;
-        }
-
-        try {
-            Double.parseDouble(text);
-            if (text.contains(".")) {
-                // Check if there are not more than 2 decimal places
-                String decimalPart = text.substring(text.indexOf(".") + 1);
-                return decimalPart.length() <= 2;
-            }
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
+    @FXML
+    public void handleCancelAction(ActionEvent event) {
+        // TODO navigate to previous scene
     }
 }
