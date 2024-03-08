@@ -21,6 +21,9 @@ public class TableOfParticipantsController {
 
     private ObservableList<Participant> participants = FXCollections.observableArrayList();
 
+    /**
+     * this is an initializer method.
+     */
     @FXML
     public void initialize() {
         loadParticipants();
@@ -28,6 +31,11 @@ public class TableOfParticipantsController {
         pagination.setPageFactory(this::createPage);
     }
 
+    /**
+     * This allows each page to display a single participant with his/her aattributes
+     * @param pageIndex as an int
+     * @return a Node
+     */
     private Node createPage(int pageIndex) {
         VBox box = new VBox(5);
         if (pageIndex < participants.size()) {
@@ -49,6 +57,9 @@ public class TableOfParticipantsController {
         return box;
     }
 
+    /**
+     * this methods ensures all participants are added and loaded before the method create Page executes
+     */
     private void loadParticipants() {
         participants.addAll(
                 new Participant("johnDoe", "John", "Doe","john.doe@student.tudelft.com","A1","B2",
