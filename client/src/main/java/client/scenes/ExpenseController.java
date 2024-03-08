@@ -13,40 +13,69 @@ public class ExpenseController {
     private TextField amountPaid;
 
     /**
+     * Initializer method
+     */
+    public void initialize() {
+        amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
+    }
+
+    /**
      * This method validates input for the amount paid field to make sure it's an integer/double
      * @param event keyboard input event
      */
     @FXML
     private void validateAmountInput(KeyEvent event) {
         String character = event.getCharacter();
-        String text = amountPaid.getText();
+        String currentText = amountPaid.getText();
 
-        // Check if the character is not a digit or not a period
-        if (!character.matches("[0-9]") && !character.equals(".")) {
+        // Allow digits, period, and comma
+        if (!character.matches("[0-9.,]")) {
             event.consume();
             return;
         }
 
-        // If it's a period, don't allow a second one
-        if (character.equals(".") && text.contains(".")) {
-            event.consume();
-            return;
-        }
-
-        // Create the resulting text if the character is added at the current caret position
-        int caretPosition = amountPaid.getCaretPosition();
-        String beforeCaret = text.substring(0, caretPosition);
-        String afterCaret = text.substring(caretPosition);
-        String resultingText = beforeCaret + character + afterCaret;
-
-        // Try to parse the resulting text to a double, considering incomplete input as well
-        try {
-            // This allows incomplete numbers such as "."
-            if (!resultingText.equals(".")) {
-                Double.parseDouble(resultingText);
+        // If it's a period or comma, only allow one in the text
+        if (character.equals(".") || character.equals(",")) {
+            if (currentText.contains(".") || currentText.contains(",")) {
+                event.consume();
+                return;
             }
-        } catch (NumberFormatException e) {
+        }
+
+        // Construct the expected text at the current caret position
+        StringBuilder expectedTextBuilder = new StringBuilder(currentText).insert(amountPaid.getCaretPosition(), character);
+        String expectedText = expectedTextBuilder.toString();
+
+        // Replace comma with period for parsing
+        expectedText = expectedText.replace(',', '.');
+
+        // Check if it's a valid number
+        if (!isValidDouble(expectedText)) {
             event.consume();
+        }
+    }
+
+    /**
+     * Validates text to make sure it's a valid double in this context
+     * @param text input
+     * @return if valid number (e.g. 15.36 valid, 5 valid, 7.257 not valid)
+     */
+    private boolean isValidDouble(String text) {
+        // If the text ends with a decimal point, it's still considered valid at this point
+        if (text.endsWith(".")) {
+            return true;
+        }
+
+        try {
+            Double.parseDouble(text);
+            if (text.contains(".")) {
+                // Check if there are not more than 2 decimal places
+                String decimalPart = text.substring(text.indexOf(".") + 1);
+                return decimalPart.length() <= 2;
+            }
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 }
