@@ -14,8 +14,8 @@ import commons.Expense;
 
 
 public class ExpenseController {
-    private final ServerUtils server;
-    private final MainController mainController;
+    private ServerUtils server;
+    private MainController mainController;
     @FXML
     private Button cancelButton;
     @FXML
@@ -41,6 +41,7 @@ public class ExpenseController {
     /**
      * Initializer method
      */
+    @FXML
     public void initialize() {
         cancelButton.setOnAction(this::handleCancelAction);
         addExpenseButton.setOnAction(this::handleAddExpenseAction);

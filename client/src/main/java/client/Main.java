@@ -37,11 +37,23 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
+        // Set up Guice injector
         Injector injector = Guice.createInjector(new MyModule());
+
+        // Use MyFXML to load ExpenseController and its view
         MyFXML myFXML = new MyFXML(injector);
         Pair<ExpenseController, Parent> expensePair = myFXML.load(ExpenseController.class,
                 "client/scenes/AddExpense.fxml");
+
+        // Retrieve the loaded controller and root node for the scene
+        ExpenseController controller = expensePair.getKey();
         Parent root = expensePair.getValue();
+
+        // TODO Initialize the controller (this part is broken)
+        // TODO FXML loader does not instantiate the ExpenseController as expected (it's null)
+//      controller.initialize();
+
+        // Setup and show the primary stage
         primaryStage.setTitle("Matrix Start Page");
         primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.show();
