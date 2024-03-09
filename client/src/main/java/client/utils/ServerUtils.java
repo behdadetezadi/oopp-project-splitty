@@ -80,7 +80,7 @@ public class ServerUtils {
 	 * @param participant a participant
 	 * @return //TODO
 	 */
-	public Participant addParticipant(Participant participant) {
+	public static Participant addParticipant(Participant participant) {
 		return ClientBuilder.newClient(new ClientConfig()) //
 				.target(SERVER).path("api/participants") //
 				.request(APPLICATION_JSON) //
