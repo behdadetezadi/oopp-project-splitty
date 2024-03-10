@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import com.google.inject.Inject;
 import client.utils.ServerUtils;
 import commons.Participant;
@@ -18,7 +17,6 @@ import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -65,7 +63,7 @@ public class ContactDetailsCtrl {
     @FXML
     public void initialize() {
 //        cancelButton.setOnAction(this::clearFields);  -- change later
-        contactButton.setOnAction(this::ok);
+//        contactButton.setOnAction(this::ok);
     }
 
     public void ok(ActionEvent actionEvent) {
@@ -79,28 +77,35 @@ public class ContactDetailsCtrl {
         // validate email
         if(!validateEmail((email))){
 //            AlertUtils.showErrorAlert("Invalid email", "Please enter an email of the format: username@domain.com");
+            System.out.println("wrong mail"); // for testing, can remove later
             return;
         }
         // validate iban
         if(!validateIban(iban)){
 //            AlertUtils.showErrorAlert("Invalid IBAN", "Please enter a valid IBAN");
+            System.out.println("wrong iban"); // for testing, can remove later
             return;
         }
         // validate bic
         if(!validateBIC(bic)){
 //            AlertUtils.showErrorAlert("Invalid BIC", "Please enter a BIC of the format: AAAABBCCXXX");
+            System.out.println("wrong bic"); // for testing, can remove later
             return;
         }
         try {
             Participant participant =  new Participant(userName, firstName, lastName, email, iban, bic,
                 new HashMap<>(), new HashMap<>(), new HashSet<>(), "English");
+            System.out.println("test"); // for testing, can remove later
             ServerUtils.addParticipant(participant);
+
+            //TODO switch to the next page
 //            switchToStartPageScene(actionEvent);
         } catch (WebApplicationException e) {
             var alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.setContentText(e.getMessage());
             alert.showAndWait();
+            System.out.println("hello"); // for testing, can remove later
         }
     }
 
@@ -184,6 +189,7 @@ public class ContactDetailsCtrl {
         emailField.clear();
         ibanField.clear();
         bicField.clear();
+        // TODO go back to the scene before
     }
 
 }
