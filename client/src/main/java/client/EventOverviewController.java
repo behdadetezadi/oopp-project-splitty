@@ -1,18 +1,9 @@
-package client.scenes;
+package client;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
 import static client.utils.AnimationUtil.animateButton;
 import static client.utils.AnimationUtil.animateText;
 
@@ -26,9 +17,6 @@ public class EventOverviewController {
 
     @FXML
     private ComboBox<String> participantDropdown;
-
-    @FXML
-    private Button showParticipantsButton;
 
     @FXML
     private ListView<String> optionsListView;
@@ -73,42 +61,25 @@ public class EventOverviewController {
      * initializer function does: //TODO
      */
     public void initialize() {
+
         animateLabels();
         animateButtonsText();
 
+        // Initialize participants list view
+        participantsListView.getItems().addAll("Participant 1", "Participant 2", "Participant 3");
 
-    }
+        // Initialize participant dropdown
+        participantDropdown.getItems().addAll("Participant 1", "Participant 2", "Participant 3");
 
-    /**
-     * method to switch over to the participant scene when clicked upon
-     */
-    @FXML
-    private void showParticipants() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/TableOfParticipants.fxml"));
-            Parent participantRoot = loader.load();
-            Scene scene = new Scene(participantRoot);
-            Stage stage = (Stage) root.getScene().getWindow();
-            stage.setScene(scene);
-            stage.show();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-            showErrorAlert("Failed to load the participant scene.");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+        // Set maximum height of participantsListView to fit its items
+        participantsListView.setMaxHeight(150);
 
-    private void initializeParticipants() {
-        // Assume you have a method to get your participants
-        List<String> participants = Arrays.asList("Participant 1", "Participant 2", "Participant 3");
-        participantsListView.getItems().setAll(participants);
-        participantDropdown.getItems().setAll(participants);
-    }
+        // Initialize options list view
 
-    private void initializeOptionsListView() {
-        // If you have specific options to show, add them here
-        optionsListView.getItems().addAll("Option 1", "Option 2", "Option 3");
+
+        // Set maximum height of optionsListView to fit its items
+        optionsListView.setMaxHeight(250);
+
     }
 
     /**
@@ -131,23 +102,19 @@ public class EventOverviewController {
         animateButton(filterTwo);
     }
 
-
-
     //TODO needs changing to better fit functionality and backlog
     /**
      * apply filters for options list
      */
     @FXML
     private void applyFromFilter() {
-        // Assuming you want to filter based on a selected participant
-        String selectedParticipant = participantDropdown.getSelectionModel().getSelectedItem();
+        String selectedParticipant = null; // Get selected participant
         if (selectedParticipant != null) {
             filteredOptions.clear();
-            filteredOptions.add("Filtered option for " + selectedParticipant);
+            filteredOptions.add("From " + selectedParticipant);
             optionsListView.setItems(filteredOptions);
         }
     }
-
 
     //TODO needs changing to better fit functionality and backlog
     /**
@@ -165,27 +132,19 @@ public class EventOverviewController {
 
     /**
      * sendInvites method //TODO
-     */
+      */
     @FXML
     public void sendInvites() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Invitation Sent");
-        alert.setHeaderText(null);
-        alert.setContentText("Invitations have been sent to all participants.");
-        alert.showAndWait();
+        // Action for sending invites
     }
+
     /**
      * edit participant method //TODO
      */
     @FXML
     public void editParticipants() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Participant Edited");
-        alert.setHeaderText(null);
-        alert.setContentText("The participant's details have been updated successfully.");
-        alert.showAndWait();
+        // Action for editing participants
     }
-
 
     /**
      * add participant //TODO
@@ -200,25 +159,6 @@ public class EventOverviewController {
      */
     @FXML
     public void addExpense() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Expense Added");
-        alert.setHeaderText(null);
-        alert.setContentText("A new expense has been added successfully.");
-        alert.showAndWait();
+        // Action for adding an expense
     }
-
-    /**
-     * Here is just a simple regular error message which we
-     * can add later for error handling
-     * @param errorMessage String
-     */
-    private void showErrorAlert(String errorMessage) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText("There was an error.");
-        alert.setContentText(errorMessage);
-        alert.showAndWait();
-    }
-
-
 }

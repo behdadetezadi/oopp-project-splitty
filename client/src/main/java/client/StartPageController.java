@@ -1,4 +1,4 @@
-package client.scenes;
+package client;
 
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
