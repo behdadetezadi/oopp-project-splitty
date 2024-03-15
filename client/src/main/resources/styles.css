@@ -51,3 +51,8 @@
     -fx-text-fill: black; /* Adjust text color on hover */
     -fx-border-color: lightgreen; /* Adjust border color on hover */
 }
+
+.list-view .list-cell {
+    -fx-background-color: transparent; /* Set background color of cells */
+    -fx-border-color: transparent; /* Set border color of cells */
+}

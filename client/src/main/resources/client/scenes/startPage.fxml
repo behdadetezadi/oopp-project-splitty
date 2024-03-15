@@ -10,7 +10,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Region?>
-<BorderPane fx:id="root" prefHeight="400" prefWidth="600" stylesheets="@../../styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.StartPageController">
+<?import javafx.scene.control.cell.TextFieldListCell?>
+<?import javafx.util.Callback?>
+<BorderPane fx:id="root" prefHeight="400" prefWidth="600" stylesheets="@../../styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartPageController">
     <padding>
         <Insets top="20" />
     </padding>
@@ -31,8 +33,6 @@
             <Region prefHeight="20" />
         </VBox>
     </top>
-
-
 
     <center>
         <VBox alignment="CENTER">
