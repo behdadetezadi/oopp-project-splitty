@@ -10,8 +10,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.control.cell.TextFieldListCell?>
-<?import javafx.util.Callback?>
 <BorderPane fx:id="root" prefHeight="400" prefWidth="600" stylesheets="@../../styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartPageController">
     <padding>
         <Insets top="20" />
