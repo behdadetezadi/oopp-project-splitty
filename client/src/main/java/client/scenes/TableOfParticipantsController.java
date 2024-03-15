@@ -58,7 +58,8 @@ public class TableOfParticipantsController {
     }
 
     /**
-     * this methods ensures all participants are added and loaded before the method create Page executes
+     * this methods ensures all participants are added and
+     * loaded before the method create Page executes
      */
     private void loadParticipants() {
         participants.addAll(

@@ -55,6 +55,9 @@ public class StartPageController {
             "Webinar"
     );
 
+    /**
+     * initialize method of the start page controller
+     */
     public void initialize() {
 
         // Set fixed width for text fields

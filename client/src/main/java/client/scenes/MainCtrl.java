@@ -33,10 +33,12 @@ public class MainCtrl {
     private Scene contactDetails;
 
     /**
+     *
      * standard initializer method for our window
      * @param primaryStage the main stage
      * @param overview overview
      * @param add Pair<AddQuoteCtrl, Parent>
+     * @param contactDetails Pair<ContactDetailsCtrl, Parent>
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
             Pair<AddQuoteCtrl, Parent> add, Pair<ContactDetailsCtrl, Parent> contactDetails) {
