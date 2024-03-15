@@ -9,8 +9,15 @@
     -fx-text-fill: lime;
     -fx-font-size: 14px;
 
-
 }
+
+.label-button {
+    -fx-background-color: transparent;
+    -fx-border: none;
+    -fx-text-fill: lime;
+    -fx-font-size: 20px;
+}
+
 
 .text-field, .text-area, .list-view, .list-cell {
     -fx-background-color: black;
