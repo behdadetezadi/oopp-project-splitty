@@ -23,7 +23,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-
+import commons.Participant;
 import commons.Expense;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -34,6 +34,18 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 	private static final String SERVER = "http://localhost:8080/";
+
+	/**
+	 * Adds an expense
+	 * //TODO
+	 *
+	 * @param payer       the person who paid for the expense
+	 * @param description description of the expense
+	 * @param amountValue the amount the person has paid for the expense
+	 */
+	public static Expense addExpense(String payer, String description, double amountValue) {
+		throw new RuntimeException("To do");
+	}
 
 	/**
 	 * gets quotes
@@ -73,5 +85,18 @@ public class ServerUtils {
 				.request(APPLICATION_JSON) //
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
+	}
+
+	/**
+	 * adds a participant
+	 * @param participant a participant
+	 * @return //TODO
+	 */
+	public static Participant addParticipant(Participant participant) {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/participants") //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
 	}
 }

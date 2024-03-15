@@ -1,4 +1,4 @@
-package client;
+package client.scenes;
 
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
