@@ -32,7 +32,8 @@ public class ExpenseService {
      */
     public Expense getExpenseById(long expenseId) {
         return expenseRepository.findById(expenseId)
-                .orElseThrow(() -> new IllegalArgumentException("Expense not found with ID: " + expenseId));
+                .orElseThrow(() -> new IllegalArgumentException("Expense not found with ID: "
+                        + expenseId));
     }
 
     /**
@@ -59,7 +60,9 @@ public class ExpenseService {
      */
     public ResponseEntity<Void> addMoneyTransfer(@RequestBody Expense transfer)
     {
-        if (transfer== null || transfer.getParticipant()==null||transfer.getParticipant().getFirstName()==null || transfer.getParticipant().getLastName()==null)
+        if (transfer== null || transfer.getParticipant()==null||
+                transfer.getParticipant().getFirstName()==null ||
+                transfer.getParticipant().getLastName()==null)
         {
             return ResponseEntity.badRequest().build();
         }
@@ -89,11 +92,13 @@ public class ExpenseService {
     /**
      * Get details of an expense by its ID.
      * @param id The ID of the expense to retrieve details.
-     * @return ResponseEntity containing the details of the expense, or an error message if not found.
+     * @return ResponseEntity containing the
+     * details of the expense, or an error message if not found.
      */
     public ResponseEntity<String> getDetails(@PathVariable("id") long id) {
         Optional<Expense> expense = expenseRepository.findById(id);
-        return expense.map(value -> ResponseEntity.ok(value.toString())).orElseGet(() -> ResponseEntity.notFound().build());
+        return expense.map(value -> ResponseEntity.ok(value.toString())).orElseGet(()
+                -> ResponseEntity.notFound().build());
     }
 
     /**
@@ -105,6 +110,12 @@ public class ExpenseService {
         return expenseRepository.save(expense);
     }
 
+    /**
+     * Method used to update an expense
+     * @param expenseId as a long number
+     * @param expense as an Expense Object
+     * @return an Expense Object
+     */
     public Expense updateExpense(long expenseId, Expense expense) {
         if (!expenseRepository.existsById(expenseId)) {
             throw new IllegalArgumentException("Expense not found with ID: " + expenseId);
