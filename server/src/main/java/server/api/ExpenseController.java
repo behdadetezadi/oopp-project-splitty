@@ -31,7 +31,9 @@ public class ExpenseController {
      */
     @PostMapping("/add")
     public ResponseEntity<Void> add(@RequestBody Expense expense) {
-        if (expense == null || expense.getParticipant() == null || expense.getParticipant().getFirstName() == null || expense.getParticipant().getLastName() == null) {
+        if (expense == null || expense.getParticipant() == null ||
+                expense.getParticipant().getFirstName() == null ||
+                expense.getParticipant().getLastName() == null) {
             return ResponseEntity.badRequest().build();
         }
         expenseService.createExpense(expense);
@@ -63,7 +65,8 @@ public class ExpenseController {
      * @return ResponseEntity<List<Expense>>
      */
     @GetMapping("/participant/{participantId}")
-    public ResponseEntity<List<Expense>> filterExpenseByParticipant(@PathVariable long participantId) {
+    public ResponseEntity<List<Expense>>
+        filterExpenseByParticipant(@PathVariable long participantId) {
         List<Expense> expenses =  expenseService.filterByParticipantId(participantId);
         return ResponseEntity.ok(expenses);
     }
@@ -101,7 +104,8 @@ public class ExpenseController {
      * @return ResponseEntity<Void> ok or not found
      */
     @PutMapping("/update/{id}")
-    public ResponseEntity<Void> update(@PathVariable("id") long id, @RequestBody Expense updatedExpense) {
+    public ResponseEntity<Void> update(@PathVariable("id")
+                                           long id, @RequestBody Expense updatedExpense) {
         try {
             expenseService.updateExpense(id, updatedExpense);
             return ResponseEntity.ok().build();

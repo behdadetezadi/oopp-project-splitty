@@ -29,15 +29,19 @@ public class MainCtrl {
 
     private AddQuoteCtrl addCtrl;
     private Scene add;
+    private ContactDetailsCtrl contactDetailsCtrl;
+    private Scene contactDetails;
 
     /**
+     *
      * standard initializer method for our window
      * @param primaryStage the main stage
      * @param overview overview
      * @param add Pair<AddQuoteCtrl, Parent>
+     * @param contactDetails Pair<ContactDetailsCtrl, Parent>
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add) {
+            Pair<AddQuoteCtrl, Parent> add, Pair<ContactDetailsCtrl, Parent> contactDetails) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -45,7 +49,11 @@ public class MainCtrl {
         this.addCtrl = add.getKey();
         this.add = new Scene(add.getValue());
 
-        showOverview();
+        this.contactDetailsCtrl = contactDetails.getKey();
+        this.contactDetails = new Scene(contactDetails.getValue());
+
+        showContactDetail();
+//        showOverview();
         primaryStage.show();
     }
 
@@ -65,5 +73,13 @@ public class MainCtrl {
         primaryStage.setTitle("Quotes: Adding Quote");
         primaryStage.setScene(add);
         add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
+    }
+
+    /**
+     * shows the adding scene
+     */
+    public void showContactDetail() {
+        primaryStage.setTitle("Contact details: add/edit participant");
+        primaryStage.setScene(contactDetails);
     }
 }

@@ -29,7 +29,8 @@
             <!-- Participants Section -->
             <Label fx:id="participantsLabel" styleClass="section-label" text="Participants" style="-fx-font-weight: bold;" />
             <HBox alignment="CENTER" spacing="10">
-                <ListView fx:id="participantsListView" />
+                <!-- Participants Section Button to Open Participant Scene -->
+                <Button fx:id="showParticipantsButton" text="Show Participants" onAction="#showParticipants" styleClass="label-button" />
                 <VBox alignment="CENTER" spacing="5">
                     <HBox alignment="CENTER" spacing="5">
                         <Button fx:id="editButton" onAction="#editParticipants" style="-fx-font-size: 14px;">
