@@ -35,7 +35,8 @@ public class Participant {
     private String languageChoice;
 
     /**
-     * Partial Constructor for participant with fewer fields
+     * Partial Constructor for participant with fewer fields,
+     * can be used for the contact details scene
      * @param username the username
      * @param firstName the first name
      * @param lastName the last name
@@ -53,7 +54,8 @@ public class Participant {
     }
 
     /**
-     * Partial Constructor for participant with fewer fields
+     * Partial Constructor for participant with fewer fields,
+     * can be used for the contact details scene
      * @param username the username
      * @param firstName the first name
      * @param lastName the last name
@@ -84,12 +86,11 @@ public class Participant {
      * @param payedAmount HashMap
      * @param eventIds HashSet
      * @param languageChoice String
-     * @param id the id
      */
     public Participant(String username, String firstName, String lastName, String email,
                        String iban, String bic, Map<Event, Double> owedAmount,
                        Map<Event, Double> payedAmount, Set<Integer> eventIds,
-                       String languageChoice, long id) {
+                       String languageChoice) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
