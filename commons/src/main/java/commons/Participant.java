@@ -101,7 +101,6 @@ public class Participant {
         this.payedAmount = payedAmount;
         this.eventIds = eventIds;
         this.languageChoice = languageChoice;
-        this.id = id;
     }
 
     /**
