@@ -23,19 +23,57 @@ public class Participant {
             joinColumns = @JoinColumn(name = "participant_id"))
     @MapKeyJoinColumn(name = "event_id")
     @Column(name = "owed_amount")
-    private Map<Event, Integer> owedAmount; //at the time of the code (no Event class yet).
+    private Map<Event, Double> owedAmount; //at the time of the code (no Event class yet).
     @ElementCollection
     @CollectionTable(name = "participant_owed_amount",
             joinColumns = @JoinColumn(name = "participant_id"))
     @MapKeyJoinColumn(name = "event_id")
     @Column(name = "owed_amount")
-    private Map<Event, Integer> payedAmount; //at the time of the code (no Event class yet).
+    private Map<Event, Double> payedAmount; //at the time of the code (no Event class yet).
     @ElementCollection
     private Set<Integer> eventIds;
     private String languageChoice;
 
     /**
-     * Constructor of a participant
+     * Partial Constructor for participant with fewer fields
+     * @param username the username
+     * @param firstName the first name
+     * @param lastName the last name
+     * @param email the email
+     * @param iban the iban
+     * @param bic the bic
+     */
+    public Participant(String username, String firstName, String lastName, String email, String iban, String bic) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.iban = iban;
+        this.bic = bic;
+    }
+
+    /**
+     * Partial Constructor for participant with fewer fields
+     * @param username the username
+     * @param firstName the first name
+     * @param lastName the last name
+     * @param email the email
+     * @param iban the iban
+     * @param bic the bic
+     * @param languageChoice the choice of language
+     */
+    public Participant(String username, String firstName, String lastName, String email, String iban, String bic, String languageChoice) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.iban = iban;
+        this.bic = bic;
+        this.languageChoice = languageChoice;
+    }
+
+    /**
+     * Full constructor of a participant
      * @param username String
      * @param firstName String
      * @param lastName String
@@ -46,11 +84,12 @@ public class Participant {
      * @param payedAmount HashMap
      * @param eventIds HashSet
      * @param languageChoice String
+     * @param id the id
      */
     public Participant(String username, String firstName, String lastName, String email,
-                       String iban, String bic, Map<Event, Integer> owedAmount,
-                       Map<Event, Integer> payedAmount, Set<Integer> eventIds,
-                       String languageChoice) {
+                       String iban, String bic, Map<Event, Double> owedAmount,
+                       Map<Event, Double> payedAmount, Set<Integer> eventIds,
+                       String languageChoice, long id) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -61,6 +100,7 @@ public class Participant {
         this.payedAmount = payedAmount;
         this.eventIds = eventIds;
         this.languageChoice = languageChoice;
+        this.id = id;
     }
 
     /**
@@ -133,15 +173,15 @@ public class Participant {
      * owed Amount map getter
      * @return hashmap
      */
-    public Map<Event, Integer> getOwedAmount() {
+    public Map<Event, Double> getOwedAmount() {
         return owedAmount;
     }
 
     /**
-     * payed amount map getter
+     * paid amount map getter
      * @return hashmap
      */
-    public Map<Event, Integer> getPayedAmount() {
+    public Map<Event, Double> getPayedAmount() {
         return payedAmount;
     }
 
@@ -163,7 +203,7 @@ public class Participant {
 
     /**
      * username setter
-     * @param username
+     * @param username the username
      */
     public void setUsername(String username) {
         this.username = username;
@@ -171,7 +211,7 @@ public class Participant {
 
     /**
      * email setter
-     * @param email
+     * @param email the email
      */
     public void setEmail(String email) {
         this.email = email;
@@ -179,7 +219,7 @@ public class Participant {
 
     /**
      * iban setter
-     * @param iban
+     * @param iban the iban
      */
     public void setIban(String iban) {
         this.iban = iban;
@@ -187,7 +227,7 @@ public class Participant {
 
     /**
      * bic setter
-     * @param bic
+     * @param bic the bic
      */
     public void setBic(String bic) {
         this.bic = bic;
@@ -195,23 +235,23 @@ public class Participant {
 
     /**
      * owed amount setter
-     * @param owedAmount
+     * @param owedAmount the owed amount
      */
-    public void setOwedAmount(Map<Event, Integer> owedAmount) {
+    public void setOwedAmount(Map<Event, Double> owedAmount) {
         this.owedAmount = owedAmount;
     }
 
     /**
-     * payed amount setter
-     * @param payedAmount
+     * paid amount setter
+     * @param payedAmount the amount paid for the event
      */
-    public void setPayedAmount(Map<Event, Integer> payedAmount) {
+    public void setPayedAmount(Map<Event, Double> payedAmount) {
         this.payedAmount = payedAmount;
     }
 
     /**
      * event ids setter
-     * @param eventIds
+     * @param eventIds the id of the event
      */
     public void setEventIds(Set<Integer> eventIds) {
         this.eventIds = eventIds;
@@ -219,7 +259,7 @@ public class Participant {
 
     /**
      * language choice setter
-     * @param languageChoice
+     * @param languageChoice the choice of language
      */
     public void setLanguageChoice(String languageChoice) {
         this.languageChoice = languageChoice;
@@ -230,16 +270,16 @@ public class Participant {
      * @param event Event
      * @return Integer
      */
-    public Integer getOwedAmountForEvent(Event event) {
-        return owedAmount.getOrDefault(event, 0);
+    public Double getOwedAmountForEvent(Event event) {
+        return owedAmount.getOrDefault(event, (double) 0);
     }
     /**
-     * Get owed amount for a particular event in a hashmap
+     * Get paid amount for a particular event in a hashmap
      * @param event Event
      * @return Integer
      */
-    public Integer getPaidAmountForEvent(Event event) {
-        return payedAmount.getOrDefault(event, 0);
+    public Double getPaidAmountForEvent(Event event) {
+        return payedAmount.getOrDefault(event, (double) 0);
     }
 
     /**
@@ -250,19 +290,18 @@ public class Participant {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Participant that)) return false;
 
-        Participant that = (Participant) o;
-
-        if (!Objects.equals(username, that.username) ||
-                !Objects.equals(firstName, that.firstName)) return false;
-        if (!Objects.equals(lastName, that.lastName) ||
-                !Objects.equals(email, that.email)) return false;
-        if (!Objects.equals(iban, that.iban) ||
-                !Objects.equals(bic, that.bic)) return false;
+        if (id != that.id) return false;
+        if (!Objects.equals(username, that.username)) return false;
+        if (!Objects.equals(firstName, that.firstName)) return false;
+        if (!Objects.equals(lastName, that.lastName)) return false;
+        if (!Objects.equals(email, that.email)) return false;
+        if (!Objects.equals(iban, that.iban)) return false;
+        if (!Objects.equals(bic, that.bic)) return false;
         if (!Objects.equals(owedAmount, that.owedAmount)) return false;
-        if (!Objects.equals(payedAmount, that.payedAmount) ||
-                !Objects.equals(eventIds, that.eventIds)) return false;
+        if (!Objects.equals(payedAmount, that.payedAmount)) return false;
+        if (!Objects.equals(eventIds, that.eventIds)) return false;
         return Objects.equals(languageChoice, that.languageChoice);
     }
 
@@ -272,13 +311,17 @@ public class Participant {
      */
     @Override
     public int hashCode() {
-        int result = username != null ? username.hashCode() : 0;
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (username != null ? username.hashCode() : 0);
+        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
         result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (iban != null ? iban.hashCode() : 0);
         result = 31 * result + (bic != null ? bic.hashCode() : 0);
         result = 31 * result + (owedAmount != null ? owedAmount.hashCode() : 0);
         result = 31 * result + (payedAmount != null ? payedAmount.hashCode() : 0);
         result = 31 * result + (eventIds != null ? eventIds.hashCode() : 0);
+        result = 31 * result + (languageChoice != null ? languageChoice.hashCode() : 0);
         return result;
     }
 
@@ -299,14 +342,14 @@ public class Participant {
         sb.append("BIC: ").append(bic).append("\n");
         sb.append("Language Choice: ").append(languageChoice).append("\n");
         sb.append("Events Owed Amount:\n");
-        for (Map.Entry<Event, Integer> entry : owedAmount.entrySet()) {
+        for (Map.Entry<Event, Double> entry : owedAmount.entrySet()) {
             sb.append("Owes for ").
                     append(entry.getKey().getTitle()).
                     append(": ").append(entry.getValue()).
                     append("\n");
         }
         sb.append("Events Paid Amount:\n");
-        for (Map.Entry<Event, Integer> entry : payedAmount.entrySet()) {
+        for (Map.Entry<Event, Double> entry : payedAmount.entrySet()) {
             sb.append("Paid for ").
                     append(entry.getKey().getTitle()).
                     append(": ").append(entry.getValue()).
@@ -320,19 +363,25 @@ public class Participant {
 
 
     /**
-     * adding into hahsmap owed amount
+     * adding into hashmap owed amount
      * @param event Event
      * @param amount int
      */
-    public void addOwedAmountForSpecificEvent(Event event, int amount) {
+    public void addOwedAmountForSpecificEvent(Event event, double amount) {
+        if(amount < 0) {
+            throw new IllegalArgumentException("Amount of money can't be negative!");
+        }
         owedAmount.put(event, amount);
     }
     /**
-     * adding into hahsmap paid amount
+     * adding into hashmap paid amount
      * @param event Event
      * @param amount int
      */
-    public void addPaidAmountForSpecificEvent(Event event, int amount) {
+    public void addPaidAmountForSpecificEvent(Event event, double amount) {
+        if(amount < 0) {
+            throw new IllegalArgumentException("Amount of money can't be negative!");
+        }
         payedAmount.put(event, amount);
     }
 
@@ -347,7 +396,7 @@ public class Participant {
 
     /**
      * boolean event
-     * @param event
+     * @param event the event
      * @return boolean
      */
     public boolean hasPaidForEvent(Event event) {
@@ -358,9 +407,9 @@ public class Participant {
      * calculates total owed amount
      * @return int
      */
-    public int calculateOwed() {
-        int totalOwed = 0;
-        for (int amount : owedAmount.values()) {
+    public double calculateOwed() {
+        double totalOwed = 0;
+        for (double amount : owedAmount.values()) {
             totalOwed = totalOwed +  amount;
         }
         return totalOwed;
@@ -370,9 +419,9 @@ public class Participant {
      * calculates total paid amount
      * @return int
      */
-    public int calculatePaid() {
-        int totalPaid = 0;
-        for (int amount : payedAmount.values()) {
+    public double calculatePaid() {
+        double totalPaid = 0;
+        for (double amount : payedAmount.values()) {
             totalPaid = totalPaid + amount;
         }
         return totalPaid;
