@@ -46,13 +46,15 @@ public class ValidationUtils {
         }
 
         // Only allow one period/comma in the text
-        if ((character.equals(".") || character.equals(",")) && (currentText.contains(".") || currentText.contains(","))) {
+        if ((character.equals(".") || character.equals(",")) &&
+                (currentText.contains(".") || currentText.contains(","))) {
             event.consume();
             return;
         }
 
         // Construct the expected text at the current caret position
-        StringBuilder expectedTextBuilder = new StringBuilder(currentText).insert(currentText.length(), character);
+        StringBuilder expectedTextBuilder = new
+                StringBuilder(currentText).insert(currentText.length(), character);
         String expectedText = expectedTextBuilder.toString().replace(',', '.');
 
         // Validate text

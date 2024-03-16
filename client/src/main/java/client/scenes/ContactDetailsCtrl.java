@@ -66,6 +66,11 @@ public class ContactDetailsCtrl {
 //        contactButton.setOnAction(this::ok);
     }
 
+    /**
+     * Method for checking if the information entered is okay in the contact
+     * details page
+     * @param actionEvent ActionEvent
+     */
     public void ok(ActionEvent actionEvent) {
         String userName = userNameField.getText();
         String firstName = firstNameField.getText();
@@ -76,7 +81,8 @@ public class ContactDetailsCtrl {
 
         // validate email
         if(!validateEmail((email))){
-//            AlertUtils.showErrorAlert("Invalid email", "Please enter an email of the format: username@domain.com");
+//            AlertUtils.showErrorAlert("Invalid email",
+//            "Please enter an email of the format: username@domain.com");
             System.out.println("wrong mail"); // for testing, can remove later
             return;
         }
@@ -88,12 +94,14 @@ public class ContactDetailsCtrl {
         }
         // validate bic
         if(!validateBIC(bic)){
-//            AlertUtils.showErrorAlert("Invalid BIC", "Please enter a BIC of the format: AAAABBCCXXX");
+//            AlertUtils.showErrorAlert("Invalid BIC",
+//            "Please enter a BIC of the format: AAAABBCCXXX");
             System.out.println("wrong bic"); // for testing, can remove later
             return;
         }
         try {
-            Participant participant =  new Participant(userName, firstName, lastName, email, iban, bic,
+            Participant participant =  new Participant(userName,
+                    firstName, lastName, email, iban, bic,
                 new HashMap<>(), new HashMap<>(), new HashSet<>(), "English");
             System.out.println("test"); // for testing, can remove later
             ServerUtils.addParticipant(participant);
@@ -116,8 +124,9 @@ public class ContactDetailsCtrl {
      * @return whether it is of a correct format or not
      */
     public static boolean validateEmail(String emailInput) {
-        String REGEX_PATTERN = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-        Pattern pattern = Pattern.compile(REGEX_PATTERN);
+        String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+        Pattern pattern = Pattern.compile(regexPattern);
         Matcher matcher = pattern.matcher(emailInput);
         return matcher.matches();
     }
@@ -156,8 +165,8 @@ public class ContactDetailsCtrl {
      * @return whether it is a valid BIC or not
      */
     public static boolean validateBIC(String bicInput) {
-        String VALID_BIC = "^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$";
-        Pattern pattern = Pattern.compile(VALID_BIC);
+        String validBIC = "^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$";
+        Pattern pattern = Pattern.compile(validBIC);
         Matcher matcher = pattern.matcher(bicInput);
         return matcher.matches();
     }
@@ -168,7 +177,8 @@ public class ContactDetailsCtrl {
      */
     public void switchToStartPageScene(javafx.event.ActionEvent event){
         try {
-            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("client/scenes/startPage.fxml")));
+            root = FXMLLoader.load(Objects.requireNonNull
+                    (getClass().getResource("client/scenes/startPage.fxml")));
             stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);

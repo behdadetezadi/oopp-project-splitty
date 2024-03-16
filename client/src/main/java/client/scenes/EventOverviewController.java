@@ -85,7 +85,8 @@ public class EventOverviewController {
     @FXML
     private void showParticipants() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/TableOfParticipants.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().
+                    getResource("/client/scenes/TableOfParticipants.fxml"));
             Parent participantRoot = loader.load();
             Scene scene = new Scene(participantRoot);
             Stage stage = (Stage) root.getScene().getWindow();
@@ -101,7 +102,8 @@ public class EventOverviewController {
 
     private void initializeParticipants() {
         // Assume you have a method to get your participants
-        List<String> participants = Arrays.asList("Participant 1", "Participant 2", "Participant 3");
+        List<String> participants = Arrays.asList("Participant 1",
+                "Participant 2", "Participant 3");
         participantsListView.getItems().setAll(participants);
         participantDropdown.getItems().setAll(participants);
     }

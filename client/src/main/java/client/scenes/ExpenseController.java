@@ -49,7 +49,8 @@ public class ExpenseController {
     }
 
     /**
-     * This method validates input for the amount paid field to make sure it's a valid integer/double
+     * This method validates input for the amount
+     * paid field to make sure it's a valid integer/double
      * @param event keyboard input event
      */
     @FXML
@@ -73,7 +74,8 @@ public class ExpenseController {
         // Check for a trailing period/comma
         String normalizedAmount = amount.replace(',', '.');
         if (normalizedAmount.endsWith(".")) {
-            AlertUtils.showErrorAlert("Invalid amount", "Please enter a valid number for the amount.");
+            AlertUtils.showErrorAlert("Invalid amount",
+                    "Please enter a valid number for the amount.");
             return;
         }
 
@@ -81,7 +83,8 @@ public class ExpenseController {
             amountValue = Double.parseDouble(normalizedAmount);
         } catch (NumberFormatException e) {
             // Handle invalid number format
-            AlertUtils.showErrorAlert("Invalid amount", "Please enter a valid number for the amount.");
+            AlertUtils.showErrorAlert("Invalid amount",
+                    "Please enter a valid number for the amount.");
             return;
         }
 
@@ -91,7 +94,8 @@ public class ExpenseController {
             // TODO show success message, navigate to previous scene etc
         } catch (Exception e) {
             // Catch exception
-            AlertUtils.showErrorAlert("Unexpected Error", "An unexpected error occurred: " + e.getMessage());
+            AlertUtils.showErrorAlert("Unexpected Error",
+                    "An unexpected error occurred: " + e.getMessage());
         }
     }
 
