@@ -1,5 +1,6 @@
 package server.api;
 
+import org.hibernate.service.spi.ServiceException;
 import server.DebtService;
 import server.database.DebtRepository;
 import commons.Debt;
@@ -11,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class DebtServiceTest {
@@ -138,4 +140,96 @@ public class DebtServiceTest {
         assertEquals(expectedDebts, result);
         verify(debtRepository).cheaperDebts(amount);
     }
+
+    @Test
+    public void testSaveDebtWithNullDebt() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            debtService.saveDebt(null);
+        });
+
+        assertEquals("Debt not allowed to be null", exception.getMessage());
+    }
+
+    @Test
+    public void testFindDebtByIdWithInvalidId() {
+        assertThrows(IllegalArgumentException.class, () -> debtService.findDebtById(null));
+        assertThrows(IllegalArgumentException.class, () -> debtService.findDebtById(-1L));
+    }
+
+
+    @Test
+    public void testFindAllDebtsWithRepositoryException() {
+        when(debtRepository.findAll()).thenThrow(new RuntimeException("Database error"));
+
+        Exception exception = assertThrows(ServiceException.class, () -> {
+            debtService.findAllDebts();
+        });
+
+        assertEquals("Error retrieving all debts", exception.getMessage());
+    }
+    @Test
+    public void testDeleteDebtByIdWithInvalidId() {
+        Long invalidId = -20L;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            debtService.deleteDebtById(invalidId);
+        });
+
+        assertEquals("ID must be positive and not null", exception.getMessage());
+    }
+
+    @Test
+    public void testFindDebtsByLenderWithInvalidId() {
+        Long invalidLenderId = -20L;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            debtService.findDebtsByLender(invalidLenderId);
+        });
+
+        assertEquals("Lender ID must be positive and not null", exception.getMessage());
+    }
+    @Test
+    public void testFindDebtsByDebtorWithInvalidId() {
+        Long invalidDebtorId = -20L;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            debtService.findDebtsByDebtor(invalidDebtorId);
+        });
+
+        assertEquals("Debtor ID must be positive and not null", exception.getMessage());
+    }
+
+    @Test
+    public void testFindDebtsThroughDescriptionWithNullDescription() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            debtService.findDebtsThroughDescription(null);
+        });
+
+        assertEquals("Description must not be null", exception.getMessage());
+    }
+    @Test
+    public void testFindCostlierDebtsWithNegativeAmount() {
+        double invalidAmount = -1.00;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            debtService.findCostlierDebts(invalidAmount);
+        });
+
+        assertEquals("Amount must not be negative", exception.getMessage());
+    }
+
+    @Test
+    public void testFindCheaperDebtsWithNegativeAmount() {
+        double invalidAmount = -50.00;
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            debtService.findCheaperDebts(invalidAmount);
+        });
+
+        assertEquals("Amount must not be negative", exception.getMessage());
+    }
+
+
+
+
 }
