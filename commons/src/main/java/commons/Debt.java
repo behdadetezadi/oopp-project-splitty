@@ -197,8 +197,8 @@ public class Debt {
         }
 
         sb.append("Debt Details:\n");
-        sb.append("  Debtor: ").append(debtor).append("\n");
-        sb.append("  Creditor: ").append(lender).append("\n");
+        sb.append("  Debtor: ").append(debtor.getFirstName()).append("\n");
+        sb.append("  Creditor: ").append(lender.getFirstName()).append("\n");
         sb.append("  Amount: $").append(amountOfMoney).append("\n");
         sb.append("  Debt Type: ").append(type).append("\n");
         sb.append("  Description: ").append(debtDescription);
