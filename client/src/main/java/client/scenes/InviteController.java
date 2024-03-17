@@ -1,6 +1,6 @@
 package client.scenes;
 
-import javafx.event.ActionEvent;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -29,12 +29,12 @@ public class InviteController implements Initializable {
     /**
      * handler for the submit button.
      *
-     * @param event button press
      * @return an array list containing all email addresses to be processed further
      */
     @FXML
-    public ArrayList<String> handleSubmitButtonAction(ActionEvent event) {
+    public ArrayList<String> handleSubmitButtonAction() {
         Window owner = submitButton.getScene().getWindow();
+
         if(emailsField.getText().isEmpty()) {
             AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "Form Error!",
                     "Please enter email addresses!");
