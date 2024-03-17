@@ -1,5 +1,6 @@
 package client.scenes;
 
+import java.math.BigInteger;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -154,8 +155,9 @@ public class ContactDetailsCtrl {
                 numericIBAN.append(c);
             }
         }
-        long ibanValue = Long.parseLong(numericIBAN.toString());
-        return ibanValue % 97 == 1; // iban is valid if the numeric value % 97 == 1
+         //Switching from Long to BigInteger allows handling of IBANs' numeric conversions beyond Long's limit, ensuring accurate validation without overflow errors.
+        BigInteger ibanValue = new BigInteger(numericIBAN.toString());
+        return ibanValue.mod(BigInteger.valueOf(97)).equals(BigInteger.ONE);
     }
 
     /**
