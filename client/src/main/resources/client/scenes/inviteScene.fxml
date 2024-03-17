@@ -11,7 +11,11 @@
                 <Font name="System Bold" size="38.0" />
             </font>
         </Label>
-        <Label fx:id="inviteCode" layoutX="87.0" layoutY="155.0" prefHeight="16.0" prefWidth="390.0" styleClass="subtitle" text="Give people the following invite Code: AC74ED" />
+      <Label layoutX="220.0" layoutY="153.0" prefHeight="16.0" prefWidth="335.0" styleClass="subtitle" text="Give people the following invite Code:" />
+        <Label fx:id="inviteCode" layoutX="87.0" layoutY="155.0" prefHeight="16.0" prefWidth="122.0" styleClass="subtitle" text="AC74ED">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font></Label>
         <Label prefHeight="16.0" prefWidth="519.0" styleClass="subtitle" text="Invite the following people by email (one address per line): " />
       <TextArea id="emailsField" fx:id="emailsField" prefHeight="174.0" prefWidth="341.0" promptText="emails go here" />
         <HBox alignment="CENTER" spacing="10.0">

@@ -79,6 +79,6 @@ public class InviteController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle){
         Event event = new Event(null, null, "Watching paint dry", 12345);
         title.setText(event.getTitle());
-        inviteCode.setText("Give people the following invite code: " + event.getInviteCode());
+        inviteCode.setText(String.valueOf(event.getInviteCode()));
     }
 }
