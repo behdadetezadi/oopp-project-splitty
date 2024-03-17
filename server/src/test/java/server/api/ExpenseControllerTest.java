@@ -32,16 +32,22 @@ class ExpenseControllerTest {
 
     @Test
     void addExpenseTest() {
-        Expense expense = new Expense(new Participant("Jodie","Zhao"),"CSE tuition fee",16000,
-                "EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
+        Expense expense = new Expense(new Participant("Jodie", "Zhao"), "CSE tuition fee", 16000, "EUR", "2023-08-27", List.of(new Participant("Jodie", "Zhao")), "Education");
 
-        when(expenseService.createExpense(any(Expense.class))).thenReturn(expense);
+        // Since createExpense doesn't directly influence the test result for add method and
+        // add method returns ResponseEntity<Void>, no need to mock its return value here.
+        // Just ensure it is called.
+        doNothing().when(expenseService).createExpense(any(Expense.class));
+
         ResponseEntity<Void> response = controller.add(expense);
+
         verify(expenseService, times(1)).createExpense(any(Expense.class));
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        // Since ResponseEntity<Void> does not have a body, we don't check for body content here.
     }
+
 
     @Test
     void getAllExpensesTest() {
@@ -76,16 +82,20 @@ class ExpenseControllerTest {
 
     @Test
     void addMoneyTransferTest() {
-        Expense transfer = new Expense(new Participant("Jay","Z"),"dinner",16000,
-                "EUR","2023-08-03",List.of(new Participant("Jay","Z")),"food");
+        Expense transfer = new Expense(new Participant("Jay", "Z"), "dinner", 16000,
+                "EUR", "2023-08-03", List.of(new Participant("Jay", "Z")), "food");
+        
+        when(expenseService.createExpense(any(Expense.class))).thenReturn(ResponseEntity.ok().body("Success"));
 
-        when(expenseService.createExpense(any(Expense.class))).thenReturn(transfer);
         ResponseEntity<Void> response = controller.add(transfer);
-        verify(expenseService,times(1)).createExpense(any(Expense.class));
+
+        verify(expenseService, times(1)).createExpense(any(Expense.class));
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        // No need to check for body content as the response type is ResponseEntity<Void>
     }
+
 
     @Test
     void filterExpensesByParticipantTest()
