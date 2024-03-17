@@ -4,7 +4,6 @@ import java.util.*;
 
 @Entity
 public class Debt {
-    //ID for primary key
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -12,6 +11,7 @@ public class Debt {
     private Participant debtor;
     @ManyToOne
     private Participant lender;
+    @Column(name = "amount_of_money", nullable = false)
     private double amountOfMoney;
     private boolean debtCollective;
     private String description;
@@ -32,6 +32,21 @@ public class Debt {
         this.debtCollective = debtCollective;
         this.description = description;
     }
+
+    /**
+     * Partial Constructor for debtor with fewer (optional) fields
+     * @param debtor Participant who owes money
+     * @param lender Participant who lends money
+     * @param amountOfMoney amount of money lent
+     */
+    public Debt(Participant debtor, Participant lender, double amountOfMoney) {
+        this.debtor = debtor;
+        this.lender = lender;
+        setAmountOfMoney(amountOfMoney); // we are using a setter because it has a negative check
+        this.debtCollective = false; // by default
+        this.description = ""; //again by default
+    }
+
 
     /**
      * empty constructor added for persistence.
@@ -103,8 +118,12 @@ public class Debt {
      * @param amountOfMoney double
      */
     public void setAmountOfMoney(double amountOfMoney) {
+        if(amountOfMoney < 0) {
+            throw new IllegalArgumentException("Amount of money can't be negative!");
+        }
         this.amountOfMoney = amountOfMoney;
     }
+
 
     /**
      * collective debt setter
@@ -136,7 +155,7 @@ public class Debt {
 
         if (Double.compare(amountOfMoney, debt.amountOfMoney) != 0) return false;
         if (debtCollective != debt.debtCollective) return false;
-        if (!debtor.equals(debt.debtor) || lender.equals(debt.lender)) return false;
+        if (!debtor.equals(debt.debtor) || !lender.equals(debt.lender)) return false;
         return Objects.equals(description, debt.description);
     }
 
@@ -178,8 +197,8 @@ public class Debt {
         }
 
         sb.append("Debt Details:\n");
-        sb.append("  Debtor: ").append(debtor).append("\n");
-        sb.append("  Creditor: ").append(lender).append("\n");
+        sb.append("  Debtor: ").append(debtor.getFirstName()).append("\n");
+        sb.append("  Creditor: ").append(lender.getFirstName()).append("\n");
         sb.append("  Amount: $").append(amountOfMoney).append("\n");
         sb.append("  Debt Type: ").append(type).append("\n");
         sb.append("  Description: ").append(debtDescription);

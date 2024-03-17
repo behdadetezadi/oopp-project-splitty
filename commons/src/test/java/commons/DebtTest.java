@@ -8,6 +8,33 @@ class DebtTest {
     Participant participant1 = new Participant("Lewis", "Hamilton");
     Participant participant2 = new Participant("Max", "Verstappen");
 
+    @Test
+    void testFullConstructor() {
+        Debt debt = new Debt(participant1, participant2, 100.0, false, "Loan");
+        assertEquals(participant1, debt.getDebtor());
+        assertEquals(participant2, debt.getLender());
+        assertEquals(100.0, debt.getAmountOfMoney());
+        assertFalse(debt.isDebtCollective());
+        assertEquals("Loan", debt.getDescription());
+    }
+
+    @Test
+    void testPartialConstructor() {
+        Debt debt = new Debt(participant1, participant2, 100.0);
+        assertEquals(participant1, debt.getDebtor());
+        assertEquals(participant2, debt.getLender());
+        assertEquals(100.0, debt.getAmountOfMoney());
+        assertFalse(debt.isDebtCollective());
+        assertEquals("", debt.getDescription());
+    }
+
+    @Test
+    void testEquals() {
+        Debt debt1 = new Debt(participant1, participant2, 50.0, true, "Expense");
+        Debt debt2 = new Debt(participant1, participant2, 50.0, true, "Expense");
+        assertEquals(debt1, debt2);
+    }
+
 
     @Test
     void testNotEquals() {
@@ -23,12 +50,12 @@ class DebtTest {
     }
 
     @Test
-    void testAmountOfMoney() {
+    void testSetAmountOfMoneyWithNegativeValue() {
         Debt debt = new Debt(participant1, participant2, 50.0, true, "Expense");
-
-        debt.setAmountOfMoney(60.0);
-        assertEquals(60.0, debt.getAmountOfMoney());
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> debt.setAmountOfMoney(-10.0));
+        assertEquals("Amount of money can't be negative!", exception.getMessage());
     }
+
 
     @Test
     void testDebtCollective() {
@@ -62,6 +89,18 @@ class DebtTest {
         Participant lender = new Participant("Lando", "Norris");
         debt.setLender(lender);
         assertEquals(lender, debt.getLender());
+    }
+
+    @Test
+    void testToString() {
+        Debt debt = new Debt(participant1, participant2, 50.0, true, "Expense");
+        String expected = "Debt Details:\n" +
+                "  Debtor: " + "Lewis"+ "\n" +
+                "  Creditor: " + "Max" + "\n" +
+                "  Amount: $50.0\n" +
+                "  Debt Type: Collective\n" +
+                "  Description: Expense";
+        assertEquals(expected, debt.toString());
     }
 
 }
