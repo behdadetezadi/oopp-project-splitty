@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Participant;
+import org.hibernate.service.spi.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -54,6 +55,32 @@ class ParticipantControllerTest {
     }
 
     @Test
+    void testFindParticipantByIdNotFound() {
+        when(participantService.findParticipantById(anyLong())).thenReturn(Optional.empty());
+        ResponseEntity<?> response = participantController.findParticipantById(1L);
+        assertEquals(HttpStatus.NOT_FOUND,  response.getStatusCode());
+        assertEquals("Participant not found with ID: 1", response.getBody());
+    }
+
+    @Test
+    void testFindParticipantByIdThrowsIllegalArgumentException(){
+        when(participantService.findParticipantById(anyLong())).thenThrow(new IllegalArgumentException("Invalid id"));
+        ResponseEntity<?> response = participantController.findParticipantById(-1L);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid id", response.getBody());
+    }
+
+    @Test
+    void testFindParticipantByIdThrowsServiceException() {
+        when(participantService.findParticipantById(anyLong())).thenThrow(new ServiceException("Internal error"));
+
+        ResponseEntity<?> response = participantController.findParticipantById(1L);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Failed to find Participant by ID: Internal error", response.getBody());
+    }
+
+    @Test
     void testFindAllParticipants() {
         List<Participant> participants = Arrays.asList(new Participant(), new Participant());
         when(participantService.findAllParticipants()).thenReturn(participants);
@@ -75,6 +102,25 @@ class ParticipantControllerTest {
     }
 
     @Test
+    void testDeleteParticipantByIdThrowsIllegalArgumentException() {
+        doThrow(new IllegalArgumentException("Invalid ID")).when(participantService).deleteParticipantById(anyLong());
+
+        ResponseEntity<?> response = participantController.deleteParticipantById(-1L);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid ID", response.getBody());
+    }
+    @Test
+    void testDeleteParticipantByIdThrowsServiceException() {
+        doThrow(new ServiceException("Database error")).when(participantService).deleteParticipantById(anyLong());
+
+        ResponseEntity<?> response = participantController.deleteParticipantById(1L);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Failed to delete the participant: Database error", response.getBody());
+    }
+
+    @Test
     void testFindParticipantByUsername() {
         Participant expectedParticipant = new Participant();
         when(participantService.findParticipantByUsername(anyString())).thenReturn(expectedParticipant);
@@ -83,6 +129,26 @@ class ParticipantControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedParticipant, response.getBody());
+    }
+
+    @Test
+    void testFindParticipantByUsernameThrowsIllegalArgumentException() {
+        when(participantService.findParticipantByUsername(anyString())).thenThrow(new IllegalArgumentException("Invalid username"));
+
+        ResponseEntity<?> response = participantController.findParticipantByUsername("username");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find the participant by username: Invalid username", response.getBody());
+    }
+
+    @Test
+    void testFindParticipantByUsernameThrowsServiceException() {
+        when(participantService.findParticipantByUsername(anyString())).thenThrow(new ServiceException("Internal error"));
+
+        ResponseEntity<?> response = participantController.findParticipantByUsername("username");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find the participant by username: Internal error", response.getBody());
     }
 
     @Test
@@ -97,6 +163,26 @@ class ParticipantControllerTest {
     }
 
     @Test
+    void testFindParticipantByEmailThrowsIllegalArgumentException()  {
+        when(participantService.findParticipantByEmail(anyString())).thenThrow(new IllegalArgumentException("Invalid email"));
+
+        ResponseEntity<?> response = participantController.findParticipantByEmail("email@example.com");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find the participant by email: Invalid email", response.getBody());
+    }
+
+    @Test
+    void testFindParticipantByEmailThrowsServiceException() {
+        when(participantService.findParticipantByEmail(anyString())).thenThrow(new ServiceException("Internal error"));
+
+        ResponseEntity<?> response = participantController.findParticipantByEmail("email@example.com");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find the participant by email: Internal error", response.getBody());
+    }
+
+    @Test
     void testFindParticipantsByFirstName() {
         List<Participant> expectedParticipants = List.of(new Participant());
         when(participantService.findParticipantsByFirstName(anyString())).thenReturn(expectedParticipants);
@@ -105,6 +191,26 @@ class ParticipantControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedParticipants, response.getBody());
+    }
+
+    @Test
+    void testFindParticipantByFirstNameThrowsIllegalArgumentException()  {
+        when(participantService.findParticipantsByFirstName(anyString())).thenThrow(new IllegalArgumentException("Invalid first name"));
+
+        ResponseEntity<?> response = participantController.findParticipantsByFirstName("John");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find participants by first name: Invalid first name", response.getBody());
+    }
+
+    @Test
+    void testFindParticipantByFirstNameThrowsServiceException() {
+        when(participantService.findParticipantsByFirstName(anyString())).thenThrow(new ServiceException("Internal error"));
+
+        ResponseEntity<?> response = participantController.findParticipantsByFirstName("John");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find participants by first name: Internal error", response.getBody());
     }
 
     @Test
@@ -119,6 +225,26 @@ class ParticipantControllerTest {
     }
 
     @Test
+    void testFindParticipantByLastNameThrowsIllegalArgumentException()  {
+        when(participantService.findParticipantsByLastName(anyString())).thenThrow(new IllegalArgumentException("Invalid last name"));
+
+        ResponseEntity<?> response = participantController.findParticipantsByLastName("Doe");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find participants by last name: Invalid last name", response.getBody());
+    }
+
+    @Test
+    void testFindParticipantByLastNameThrowsServiceException() {
+        when(participantService.findParticipantsByLastName(anyString())).thenThrow(new ServiceException("Internal error"));
+
+        ResponseEntity<?> response = participantController.findParticipantsByLastName("Doe");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find participants by last name: Internal error", response.getBody());
+    }
+
+    @Test
     void testFindParticipantsByLanguageChoice() {
         List<Participant> expectedParticipants = List.of(new Participant());
         when(participantService.findParticipantsByLanguageChoice(anyString())).thenReturn(expectedParticipants);
@@ -127,6 +253,26 @@ class ParticipantControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedParticipants, response.getBody());
+    }
+
+    @Test
+    void testFindParticipantByLanguageChoiceThrowsIllegalArgumentException()  {
+        when(participantService.findParticipantsByLanguageChoice(anyString())).thenThrow(new IllegalArgumentException("Invalid language"));
+
+        ResponseEntity<?> response = participantController.findParticipantsByLanguageChoice("ABC");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find participants by language choice: Invalid language", response.getBody());
+    }
+
+    @Test
+    void testFindParticipantByLanguageChoiceThrowsServiceException() {
+        when(participantService.findParticipantsByLanguageChoice(anyString())).thenThrow(new ServiceException("Internal error"));
+
+        ResponseEntity<?> response = participantController.findParticipantsByLanguageChoice("ABC");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find participants by language choice: Internal error", response.getBody());
     }
 
     @Test
@@ -139,6 +285,25 @@ class ParticipantControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedParticipants, response.getBody());
     }
+    @Test
+    void testFindParticipantsOwingForEventThrowsIllegalArgumentException()  {
+        when(participantService.findParticipantsOwingForEvent(anyLong())).thenThrow(new IllegalArgumentException("Invalid eventId"));
+
+        ResponseEntity<?> response = participantController.findParticipantsOwingForEvent(1L);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find participants owing for the event: Invalid eventId", response.getBody());
+    }
+
+    @Test
+    void testFindParticipantsOwingForEventThrowsServiceException() {
+        when(participantService.findParticipantsOwingForEvent(anyLong())).thenThrow(new ServiceException("Internal error"));
+
+        ResponseEntity<?> response = participantController.findParticipantsOwingForEvent(1L);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find participants owing for the event: Internal error", response.getBody());
+    }
 
     @Test
     void testFindParticipantsPaidForEvent() {
@@ -149,5 +314,25 @@ class ParticipantControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedParticipants, response.getBody());
+    }
+
+    @Test
+    void testFindParticipantsPaidForEventThrowsIllegalArgumentException()  {
+        when(participantService.findParticipantsPaidForEvent(anyLong())).thenThrow(new IllegalArgumentException("Invalid eventId"));
+
+        ResponseEntity<?> response = participantController.findParticipantsPaidForEvent(1L);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find participants who have paid for the event: Invalid eventId", response.getBody());
+    }
+
+    @Test
+    void testFindParticipantsPaidForEventThrowsServiceException() {
+        when(participantService.findParticipantsPaidForEvent(anyLong())).thenThrow(new ServiceException("Internal error"));
+
+        ResponseEntity<?> response = participantController.findParticipantsPaidForEvent(1L);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find participants who have paid for the event: Internal error", response.getBody());
     }
 }

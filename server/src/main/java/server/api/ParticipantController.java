@@ -61,7 +61,7 @@ public class ParticipantController {
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (ServiceException e) {
-            return new ResponseEntity<>("Failed to find debt by ID: " + e.getMessage(),
+            return new ResponseEntity<>("Failed to find Participant by ID: " + e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
