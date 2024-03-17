@@ -14,8 +14,10 @@ import java.util.Scanner;
 
 public class InviteController implements Initializable {
 
-    @FXML Label title;
-    @FXML Label inviteCode;
+    @FXML
+    private Label title;
+    @FXML
+    private Label inviteCode;
 
     @FXML
     private TextArea emailsField;
@@ -23,8 +25,6 @@ public class InviteController implements Initializable {
     @FXML
     private Button submitButton;
 
-
-    private Event event;
 
     /**
      * handler for the submit button.
@@ -77,8 +77,8 @@ public class InviteController implements Initializable {
      */
     @FXML
     public void initialize(URL url, ResourceBundle resourceBundle){
-        event = new commons.Event(null, null, "Watching paint dry", 12345);
+        Event event = new Event(null, null, "Watching paint dry", 12345);
         title.setText(event.getTitle());
-        inviteCode.setText(String.valueOf(event.getInviteCode()));
+        inviteCode.setText("Give people the following invite code: " + event.getInviteCode());
     }
 }
