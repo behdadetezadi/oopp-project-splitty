@@ -30,6 +30,7 @@ public class MyModule implements Module {
     public void configure(Binder binder) {
         binder.bind(MainController.class).in(Scopes.SINGLETON);
         binder.bind(EventOverviewController.class).in(Scopes.SINGLETON);
+        binder.bind(TableOfParticipantsController.class).in(Scopes.SINGLETON);
         binder.bind(StartPageController.class).in(Scopes.SINGLETON);
         binder.bind(ExpenseController.class).in(Scopes.SINGLETON);
     }

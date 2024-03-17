@@ -34,6 +34,10 @@ public class Event {
         this.title = title;
     }
 
+    /**
+     * constructor with just title
+     * @param title title of the event
+     */
     public Event(String title) {
         this.title = title;
         this.people = new ArrayList<>();
@@ -45,6 +49,17 @@ public class Event {
      */
     public Event() {}
 
+    /**
+     * constructor with the title and a list of participants (empty array list for expenses + invite code = 0 //TODO)
+     * @param title  title of event
+     * @param people the people involved
+     */
+    public Event(String title, List<Participant> people) {
+        this.title = title;
+        this.people = people;
+        this.expenses = new ArrayList<>();
+        this.inviteCode = 0;
+    }
 
 
     /**
@@ -214,12 +229,33 @@ public class Event {
      */
     @Override
     public String toString() {
-        return "Event{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", inviteCode=" + inviteCode +
-                ", people=" + people +
-                ", expenses=" + expenses +
-                '}';
+        StringBuilder stringBuilder = new StringBuilder("Event{");
+
+        stringBuilder.append("id=").append(id).append(", ");
+
+        if (title != null && !title.isEmpty()) {
+            stringBuilder.append("title='").append(title).append("', ");
+        }
+
+        if (inviteCode != 0) {
+            stringBuilder.append("inviteCode=").append(inviteCode).append(", ");
+        }
+
+        if (people != null && !people.isEmpty()) {
+            stringBuilder.append("people=").append(people).append(", ");
+        }
+
+        if (expenses != null && !expenses.isEmpty()) {
+            stringBuilder.append("expenses=").append(expenses).append(", ");
+        }
+
+// Remove the trailing comma and space if any
+        if (stringBuilder.length() > "Event{".length()) {
+            stringBuilder.setLength(stringBuilder.length() - 2);
+        }
+
+        stringBuilder.append('}');
+        String result = stringBuilder.toString();
+        return  result;
     }
 }

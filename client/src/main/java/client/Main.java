@@ -15,6 +15,7 @@
  */
 package client;
 
+import client.scenes.EventOverviewController;
 import client.scenes.ExpenseController;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -41,11 +42,11 @@ public class Main extends Application {
 
         // Use MyFXML to load ExpenseController and its view
         MyFXML myFXML = new MyFXML(injector);
-        Pair<ExpenseController, Parent> expensePair = myFXML.load(ExpenseController.class,
-                "client/scenes/AddExpense.fxml");
+        Pair<EventOverviewController, Parent> expensePair = myFXML.load(EventOverviewController.class,
+                "client/scenes/EventOverview.fxml");
 
         // Retrieve the loaded controller and root node for the scene
-        ExpenseController controller = expensePair.getKey();
+        EventOverviewController controller = expensePair.getKey();
         Parent root = expensePair.getValue();
 
         // TODO Initialize the controller (this part is broken)
