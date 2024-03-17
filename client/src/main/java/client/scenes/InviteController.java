@@ -2,45 +2,60 @@ package client.scenes;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Window;
 
+import java.util.ArrayList;
+import java.util.Scanner;
+
 public class InviteController {
-    @FXML
-    private TextField nameField;
 
     @FXML
-    private TextField emailField;
-
-    @FXML
-    private PasswordField passwordField;
+    private TextArea emailsField;
 
     @FXML
     private Button submitButton;
 
+    /**
+     * handler for the submit button.
+     *
+     * @param event button press
+     * @return an array list containing all email addresses to be processed further
+     */
     @FXML
-    protected void handleSubmitButtonAction(ActionEvent event) {
+    public ArrayList<String> handleSubmitButtonAction(ActionEvent event) {
         Window owner = submitButton.getScene().getWindow();
-        if(nameField.getText().isEmpty()) {
+        if(emailsField.getText().isEmpty()) {
             AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "Form Error!",
-                    "Please enter your name");
-            return;
-        }
-        if(emailField.getText().isEmpty()) {
-            AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "Form Error!",
-                    "Please enter your email id");
-            return;
-        }
-        if(passwordField.getText().isEmpty()) {
-            AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "Form Error!",
-                    "Please enter a password");
-            return;
+                    "Please enter email addresses!");
+            return null;
         }
 
-        AlertHelper.showAlert(Alert.AlertType.CONFIRMATION, owner, "Registration Successful!",
-                "Welcome " + nameField.getText());
+        String emailAddressesAsString = emailsField.getText();
+        Scanner scanner = new Scanner(emailAddressesAsString);
+        ArrayList<String> emailAddresses = new ArrayList<>();
+        boolean flag = false; // hack. needs a better alternative
+        while(scanner.hasNext()) {
+            String temp = scanner.next();
+
+            if (!temp.contains("@") || !temp.contains(".")) {
+                AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "non-valid email!",
+                        temp + " is not a valid email address!");
+                flag = true;
+            } else {
+                emailAddresses.add(temp);
+            }
+        }
+
+        if (!flag) {
+            AlertHelper.showAlert(Alert.AlertType.INFORMATION, owner, "invites send!",
+                    "tell them to bring me my money");
+        }
+
+
+
+
+        return emailAddresses;
+
     }
 }
