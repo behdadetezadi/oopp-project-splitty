@@ -1,4 +1,6 @@
 package client.scenes;
+import client.utils.ServerUtils;
+import com.google.inject.Inject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,6 +19,10 @@ import static client.utils.AnimationUtil.animateButton;
 import static client.utils.AnimationUtil.animateText;
 
 public class EventOverviewController {
+
+    private ServerUtils server;
+    private MainController mainController;
+
 
     @FXML
     private BorderPane root;
@@ -69,13 +75,19 @@ public class EventOverviewController {
     @FXML
     private final ObservableList<String> filteredOptions = FXCollections.observableArrayList();
 
+    @Inject
+    public EventOverviewController(ServerUtils server, MainController mainController) {
+        this.server = server;
+        this.mainController = mainController;
+    }
+
+
     /**
      * initializer function does: //TODO
      */
     public void initialize() {
         animateLabels();
         animateButtonsText();
-
 
     }
 

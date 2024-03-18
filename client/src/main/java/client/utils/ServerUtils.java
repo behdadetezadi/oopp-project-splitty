@@ -23,6 +23,8 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+
+import commons.Event;
 import commons.Participant;
 import commons.Expense;
 import org.glassfish.jersey.client.ClientConfig;
@@ -99,4 +101,20 @@ public class ServerUtils {
 				.accept(APPLICATION_JSON) //
 				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
 	}
+
+	/**
+	 * adds an event
+	 * @param event an event
+	 * @return //TODO
+	 */
+	public static Event addEvent(Event event) {
+		return ClientBuilder.newClient(new ClientConfig()) //
+				.target(SERVER).path("api/events") //
+				.request(APPLICATION_JSON) //
+				.accept(APPLICATION_JSON) //
+				.post(Entity.entity(event, APPLICATION_JSON), Event.class);
+	}
+
+
+
 }
