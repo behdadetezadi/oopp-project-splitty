@@ -1,5 +1,6 @@
 package server.api;
 
+import org.hibernate.service.spi.ServiceException;
 import server.ParticipantService;
 import server.database.ParticipantRepository;
 import commons.Participant;
@@ -11,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 public class ParticipantServiceTest {
@@ -152,5 +154,97 @@ public class ParticipantServiceTest {
         List<Participant> result = participantService.findParticipantsByLanguageChoice(languageChoice);
         assertEquals(expectedParticipants, result);
         verify(participantRepository).findByLanguageChoice(languageChoice);
+    }
+
+    @Test
+    public void testSaveParticipantWithNull() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> participantService.saveParticipant(null));
+        assertEquals("Participant is not allowed to be null", exception.getMessage());
+    }
+
+    @Test
+    public void testFindParticipantByIdWithInvalidId() {
+        assertThrows(IllegalArgumentException.class, () -> participantService.findParticipantById(null));
+        assertThrows(IllegalArgumentException.class, () -> participantService.findParticipantById(-1L));
+    }
+
+    @Test
+    public void testFindAllParticipantsWithRepositoryException() {
+        when(participantRepository.findAll()).thenThrow(new RuntimeException("Database error"));
+        Exception exception = assertThrows(ServiceException.class, () -> participantService.findAllParticipants());
+        assertEquals("Error retrieving all the participants", exception.getMessage());
+    }
+
+        @Test
+        public void testDeleteParticipantByIdWithInvalidId() {
+            Exception exception = assertThrows(IllegalArgumentException.class, () -> participantService.deleteParticipantById(-1L));
+            assertEquals("ID must be positive and not null", exception.getMessage());
+        }
+
+    @Test
+    public void testFindParticipantByUsernameWithRepositoryException() {
+        when(participantRepository.findByUsername("username")).thenThrow(new RuntimeException("Database error"));
+        Exception exception = assertThrows(ServiceException.class, () -> participantService.findParticipantByUsername("username"));
+        assertEquals("Error finding the participant by username", exception.getMessage());
+    }
+
+    @Test
+    public void testFindParticipantByFirstnameWithRepositoryException() {
+        when(participantRepository.findByFirstName("firstname")).thenThrow(new RuntimeException("Database error"));
+        Exception exception = assertThrows(ServiceException.class, () -> participantService.findParticipantsByFirstName("firstname"));
+        assertEquals("Error finding the participant by first name", exception.getMessage());
+    }
+    @Test
+    public void testFindParticipantByLastnameWithRepositoryException() {
+        when(participantRepository.findByLastName("lastname")).thenThrow(new RuntimeException("Database error"));
+        Exception exception = assertThrows(ServiceException.class, () -> participantService.findParticipantsByLastName("lastname"));
+        assertEquals("Error finding the participant by last name", exception.getMessage());
+    }
+    @Test
+    public void testFindParticipantByEmailWithRepositoryException() {
+        when(participantRepository.findByEmail("email")).thenThrow(new RuntimeException("Database error"));
+        Exception exception = assertThrows(ServiceException.class, () -> participantService.findParticipantByEmail("email"));
+        assertEquals("Error finding the participant by email", exception.getMessage());
+    }
+    @Test
+    public void testFindParticipantByIbanWithRepositoryException() {
+        when(participantRepository.findByIban("iban")).thenThrow(new RuntimeException("Database error"));
+        Exception exception = assertThrows(ServiceException.class, () -> participantService.findParticipantByIban("iban"));
+        assertEquals("Error finding the participant by iban", exception.getMessage());
+    }
+
+    @Test
+    public void testFindParticipantsOwingForEventWithInvalidId() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> participantService.findParticipantsOwingForEvent(-1L));
+        assertEquals("eventId must be positive and not null", exception.getMessage());
+        assertThrows(IllegalArgumentException.class, () -> participantService.findParticipantsOwingForEvent(null));
+    }
+
+    @Test
+    public void testFindParticipantsOwingForEventWithRepositoryException() {
+        when(participantRepository.findParticipantsOwingForEvent(1L)).thenThrow(new RuntimeException("Database error"));
+        Exception exception = assertThrows(ServiceException.class, () -> participantService.findParticipantsOwingForEvent(1L));
+        assertEquals("Error finding the participant by eventId", exception.getMessage());
+    }
+
+    @Test
+    public void testFindParticipantsPaidForEventWithInvalidId() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> participantService.findParticipantsPaidForEvent(-1L));
+        assertEquals("eventId must be positive and not null", exception.getMessage());
+        assertThrows(IllegalArgumentException.class, () -> participantService.findParticipantsPaidForEvent(null));
+    }
+
+    @Test
+    public void testFindParticipantsPaidForEventWithRepositoryException() {
+        when(participantRepository.findParticipantsPaidForEvent(1L)).thenThrow(new RuntimeException("Database error"));
+        Exception exception = assertThrows(ServiceException.class, () -> participantService.findParticipantsPaidForEvent(1L));
+        assertEquals("Error finding the participants who have paid for a specific event", exception.getMessage());
+    }
+
+    @Test
+    public void testFindParticipantsByLanguageChoiceWithRepositoryException() {
+        when(participantRepository.findByLanguageChoice("ABC")).thenThrow(new RuntimeException("Database error"));
+        Exception exception = assertThrows(ServiceException.class, () -> participantService.findParticipantsByLanguageChoice("ABC"));
+        assertEquals("Error finding the participant by language choice", exception.getMessage());
     }
 }
