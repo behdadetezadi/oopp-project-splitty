@@ -1,4 +1,5 @@
 package server.api;
+
 import commons.Expense;
 import commons.Participant;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,9 +14,9 @@ import server.ExpenseService;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ExpenseControllerTest {
 
@@ -35,18 +36,19 @@ class ExpenseControllerTest {
         Expense expense = new Expense(new Participant("Jodie","Zhao"),"CSE tuition fee",16000,
                 "EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
 
-        when(expenseService.createExpense(any(Expense.class))).thenReturn(expense);
+        when(expenseService.createExpense(any(Expense.class))).thenReturn(ResponseEntity.ok("Expense created successfully"));
         ResponseEntity<Void> response = controller.add(expense);
-        verify(expenseService, times(1)).createExpense(any(Expense.class));
 
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response, "Response should not be null");
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be OK");
+        verify(expenseService, times(1)).createExpense(any(Expense.class));
     }
+
 
     @Test
     void getAllExpensesTest() {
         Expense expense1=new Expense(new Participant("Carlos","Sainz"),"dinner",16000,
-                "EUR","2023-08-31",List.of(new Participant("Carlos","Sainz")),"Food");
+                "EUR","2023-08-31", List.of(new Participant("Carlos","Sainz")),"Food");
         Expense expense2=new Expense(new Participant("Steph","Curry"),"dinner",16000,
                 "EUR","2023-08-31",List.of(new Participant("Steph","Curry")),"Food");
         List<Expense> expenses = Arrays.asList(expense1, expense2);
@@ -76,16 +78,20 @@ class ExpenseControllerTest {
 
     @Test
     void addMoneyTransferTest() {
-        Expense transfer = new Expense(new Participant("Jay","Z"),"dinner",16000,
-                "EUR","2023-08-03",List.of(new Participant("Jay","Z")),"food");
+        Expense transfer = new Expense(new Participant("Jay", "Z"), "dinner", 16000,
+                "EUR", "2023-08-03", List.of(new Participant("Jay", "Z")), "food");
 
-        when(expenseService.createExpense(any(Expense.class))).thenReturn(transfer);
+        when(expenseService.createExpense(any(Expense.class))).thenReturn(ResponseEntity.ok().body("Success"));
+
         ResponseEntity<Void> response = controller.add(transfer);
-        verify(expenseService,times(1)).createExpense(any(Expense.class));
+
+        verify(expenseService, times(1)).createExpense(any(Expense.class));
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        // No need to check for body content as the response type is ResponseEntity<Void>
     }
+
 
     @Test
     void filterExpensesByParticipantTest()
