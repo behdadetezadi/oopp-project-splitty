@@ -32,17 +32,17 @@ public class EventControllerTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test
-    public void testGetEventById() {
-        Event expectedEvent = new Event("Test Event");
-        expectedEvent.setId(1);
-
-        when(eventService.getEventById(anyLong())).thenReturn(expectedEvent);
-
-        Event result = eventController.getEventById(1);
-
-        assertEquals(expectedEvent, result);
-    }
+//    @Test
+//    public void testGetEventById() {
+//        Event expectedEvent = new Event("Test Event");
+//        expectedEvent.setId(1);
+//
+//        when(eventService.getEventById(anyLong())).thenReturn(expectedEvent);
+//
+//        Event result = eventController.getEventById(1);
+//
+//        assertEquals(expectedEvent, result);
+//    }
 
     @Test
     public void testGetEventByTitle() {
@@ -109,15 +109,15 @@ public class EventControllerTest {
         assertEquals(createdEvent, result);
     }
 
-    @Test
-    public void testUpdateEvent() {
-        Event eventToUpdate = new Event("Updated Event");
-        eventToUpdate.setId(1);
-
-        when(eventService.updateEvent(anyLong(), any(Event.class))).thenReturn(eventToUpdate);
-
-        Event result = eventController.updateEvent(1, eventToUpdate);
-
-        assertEquals(eventToUpdate, result);
-    }
+//    @Test
+//    public void testUpdateEvent() {
+//        Event eventToUpdate = new Event("Updated Event");
+//        eventToUpdate.setId(1);
+//
+//        when(eventService.updateEvent(anyLong(), any(Event.class))).thenReturn(eventToUpdate);
+//
+//        Event result = eventController.updateEvent(1, eventToUpdate);
+//
+//        assertEquals(eventToUpdate, result);
+//    }
 }

@@ -1,6 +1,8 @@
 package server.api;
 
 import commons.Event;
+import commons.Participant;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import server.database.EventRepository;
 import server.database.ParticipantRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/events")
@@ -22,6 +25,7 @@ public class EventController {
     /**
      * Event Controller
      * @param eventService Event service
+     * @param db database
      */
 
     @Autowired
@@ -32,12 +36,24 @@ public class EventController {
 
     /**
      * getting event by the id
-     * @param eventId long number which is event id
+     * @param id long number which is event id
      * @return a long id
      */
-    @GetMapping("/id/{eventId}")
-    public Event getEventById(@PathVariable long eventId) {
-        return eventService.getEventById(eventId);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getEventById(@PathVariable long id) {
+        try {
+            Optional<Event> eventOptional = eventService.findEventById(id);
+            if(eventOptional.isPresent()){
+                return ResponseEntity.ok(eventOptional.get());
+            } else{
+                return new ResponseEntity<>("Event not found with ID: " + id, HttpStatus.NOT_FOUND);
+            }
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceException e) {
+            return new ResponseEntity<>("Failed to find Event by ID: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -45,7 +61,6 @@ public class EventController {
      * @param title the title of this event
      * @return the event
      */
-
     @GetMapping("/title/{title}")
     public Event getEventByTitle(@PathVariable String title) {
         return eventService.getEventByTitle(title);
@@ -97,16 +112,18 @@ public class EventController {
         return eventService.createEvent(event);
     }
 
-    /**
-     * event updates
-     * @param eventId long number
-     * @param event Event
-     * @return an Event
-     */
-    @PutMapping("/{eventId}")
-    public Event updateEvent(@PathVariable long eventId, @RequestBody Event event) {
-//        db.save(event);
-        return eventService.updateEvent(eventId, event);
-    }
+
+ //TODO
+//    /**
+//     * event updates
+//     * @param eventId long number
+//     * @param event Event
+//     * @return an Event
+//     */
+//    @PutMapping("/{eventId}")
+//    public Event updateEvent(@PathVariable long eventId, @RequestBody Event event) {
+////        db.save(event);
+//        return eventService.updateEvent(eventId, event);
+//    }
 
 }

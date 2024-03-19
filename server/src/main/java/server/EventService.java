@@ -3,66 +3,18 @@ package server;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 import server.database.EventRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class EventService {
 
-    private final Map<Long, Event> events = new HashMap<>();
+    //private final Map<Long, Event> events = new HashMap<>();
     private final EventRepository eventRepository;
-    private long nextId = 1;
-
-
-
-    /**
-     * getter for all events
-     * @return an array list of events
-     */
-    public List<Event> getAllEvents() {
-        return new ArrayList<>(events.values());
-    }
-
-    /**
-     * create an event
-     * @param event Event
-     * @return an Event
-     */
-    public Event createEvent(Event event) {
-        event.setId(nextId++);
-        events.put(event.getId(), event);
-        return event;
-    }
-
-    /**
-     * update an event
-     * @param eventId long number
-     * @param event Event
-     * @return Event
-     */
-    public Event updateEvent(long eventId, Event event) {
-        if (!events.containsKey(eventId)) {
-            throw new IllegalArgumentException("Event not found with ID: " + eventId);
-        }
-        event.setId(eventId);
-        events.put(eventId, event);
-        return event;
-    }
-
-    /**
-     * delete event
-     * @param eventId long number
-     */
-    public void deleteEvent(long eventId) {
-        events.remove(eventId);
-    }
-
-
+    //private long nextId = 1;
     /**
      * constructor
      * @param eventRepository this eventRepository
@@ -72,12 +24,81 @@ public class EventService {
     }
 
     /**
+     * getter for all events
+     * @return an array list of events
+     */
+    public List<Event> getAllEvents() {
+        try{
+            return eventRepository.findAll();
+        } catch (Exception e){
+            throw new ServiceException("Error retrieving all the events", e);
+        }
+    }
+
+    /**
+     * create an event
+     * @param event Event
+     * @return an Event
+     */
+    public Event createEvent(Event event) {
+        if(event==null){
+            throw new IllegalArgumentException("Participant is not allowed to be null");
+        }
+        try{
+            return eventRepository.save(event);
+        } catch (Exception e){
+            throw new ServiceException("Error saving the participant", e);
+        }
+    }
+
+
+ //TODO
+//    /**
+//     * update an event
+//     * @param eventId long number
+//     * @param event Event
+//     * @return Event
+//     */
+//    public Event updateEvent(long eventId, Event event) {
+//        if (!events.containsKey(eventId)) {
+//            throw new IllegalArgumentException("Event not found with ID: " + eventId);
+//        }
+//        event.setId(eventId);
+//        events.put(eventId, event);
+//        return event;
+//    }
+
+    /**
+     * delete event
+     * @param id long number
+     */
+    public void deleteEvent(Long id) {
+        if (id == null || id < 0) {
+            throw new IllegalArgumentException("ID must be positive and not null");
+        }
+        try {
+            eventRepository.deleteById(id);
+        } catch (Exception e){
+            throw new ServiceException("Error deleting the event", e);
+        }
+    }
+
+
+
+    /**
      * get event by the id
-     * @param eventId long number
+     * @param id long number
      * @return an event
      */
-    public Event getEventById(long eventId) {
-        return eventRepository.eventById(eventId);
+    public Optional<Event> findEventById(Long id) {
+        if(id==null || (id < 0)){
+            throw new IllegalArgumentException("ID must be positive and not null");
+        }
+        try {
+            return eventRepository.findById(id);
+        } catch (Exception e){
+            throw new ServiceException("Error finding the participant by id", e);
+        }
     }
 
     /**

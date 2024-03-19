@@ -2,6 +2,7 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
+import commons.Participant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,79 +16,61 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static client.utils.AnimationUtil.animateButton;
 import static client.utils.AnimationUtil.animateText;
 
 public class EventOverviewController {
-
     private ServerUtils server;
     private MainController mainController;
-
-
     private Event event;
 
     @FXML
     private BorderPane root;
-
     @FXML
     private ListView<String> participantsListView;
-
     @FXML
     private ComboBox<String> participantDropdown;
-
     @FXML
     private Button showParticipantsButton;
-
     @FXML
     private ListView<String> optionsListView;
-
     @FXML
     private Label titleLabel;
-
     @FXML
     private Label participantsLabel;
-
     @FXML
     private Label expensesLabel;
-
     @FXML
     private Label optionsLabel;
-
     @FXML
     private Button editButton;
-
     @FXML
     private Button addButton;
-
     @FXML
     private Button filterOne;
-
     @FXML
     private Button filterTwo;
-
     @FXML
     private Button sendInvitesButton;
-
     @FXML
     private Button addExpenseButton;
-
     @FXML
     private final ObservableList<String> allOptions = FXCollections
             .observableArrayList("1", "2");
     @FXML
     private final ObservableList<String> filteredOptions = FXCollections.observableArrayList();
-
     @Inject
     public EventOverviewController(ServerUtils server, MainController mainController) {
         this.server = server;
         this.mainController = mainController;
     }
 
+
     public EventOverviewController() {
         // Default constructor
     }
-
 
     /**
      * initializer function does: //TODO
@@ -95,15 +78,15 @@ public class EventOverviewController {
     public void initialize() {
         if (event != null) {
             titleLabel.setText(event.getTitle());
+            initializeParticipants();
             //inviteCodeLabel.setText(String.valueOf(event.getInviteCode()));
         }
     }
     public void setEvent(Event event) {
         this.event = event;
-        initialize(); // Update the UI with event details
+        initialize();
         animateLabels();
         animateButtonsText();
-
     }
 
     /**
@@ -129,10 +112,14 @@ public class EventOverviewController {
 
     private void initializeParticipants() {
         // Assume you have a method to get your participants
-        List<String> participants = Arrays.asList("Participant 1",
-                "Participant 2", "Participant 3");
-        participantsListView.getItems().setAll(participants);
-        participantDropdown.getItems().setAll(participants);
+        List<Participant> participants = event.getPeople();
+        if (participants != null) {
+            List<String> participantNames = participants.stream()
+                    .map(Participant::getFirstName)
+                    .collect(Collectors.toList());
+            participantDropdown.getItems().setAll(participantNames);
+            participantDropdown.getItems().setAll(participantNames);
+        }
     }
 
     private void initializeOptionsListView() {

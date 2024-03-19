@@ -22,11 +22,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import commons.Event;
 import commons.Participant;
 import commons.Expense;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -53,11 +58,41 @@ public class ServerUtils {
 		}
 		*/
 
+        List<Participant> participants = new ArrayList<>();
+        participants.add(new Participant("Johnny","Depp"));
+        participants.add(new Participant("Brad","Pitt"));
 
-		return new Event("test event");
+		//return new Event("test event", participants);
 
 
+		Client client = ClientBuilder.newClient();
+		try {
+			// Send GET request to the server
+			Response response = client.target(SERVER)
+					.path("api/events/inviteCode/" + Long.parseLong(inviteCode))
+					.request(MediaType.APPLICATION_JSON)
+					.get();
+
+			// Check if response is successful (status code 200)
+			if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+				// Deserialize the response entity into an Event object
+				Event event = response.readEntity(Event.class);
+				return event;
+			} else {
+				// Handle non-OK response status code
+				System.err.println("Failed to retrieve event. Status code: " + response.getStatus());
+				return null;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null; // Handle error appropriately
+		} finally {
+			client.close(); // Close the client to release resources
 		}
+
+	}
+
+
 
 
 	/**

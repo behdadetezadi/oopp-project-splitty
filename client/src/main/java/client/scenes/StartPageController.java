@@ -186,6 +186,7 @@ public class StartPageController {
             Scene scene = new Scene(eventOverviewRoot);
             Stage stage = (Stage) codeInput.getScene().getWindow();
             stage.setScene(scene);
+            stage.setTitle("Event Overview - " + event.getTitle());
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
