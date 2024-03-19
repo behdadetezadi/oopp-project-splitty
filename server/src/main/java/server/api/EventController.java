@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.EventService;
+import server.database.EventRepository;
+import server.database.ParticipantRepository;
 
 import java.util.List;
 
@@ -14,6 +16,8 @@ import java.util.List;
 public class EventController {
 
     private final EventService eventService;
+    private EventRepository db;
+
 
     /**
      * Event Controller
@@ -21,8 +25,9 @@ public class EventController {
      */
 
     @Autowired
-    public EventController(EventService eventService) {
+    public EventController(EventService eventService, EventRepository db) {
         this.eventService = eventService;
+        this.db=db;
     }
 
     /**
@@ -88,6 +93,7 @@ public class EventController {
      */
     @PostMapping
     public Event createEvent(@RequestBody Event event) {
+//        db.save(event);
         return eventService.createEvent(event);
     }
 
@@ -99,6 +105,7 @@ public class EventController {
      */
     @PutMapping("/{eventId}")
     public Event updateEvent(@PathVariable long eventId, @RequestBody Event event) {
+//        db.save(event);
         return eventService.updateEvent(eventId, event);
     }
 

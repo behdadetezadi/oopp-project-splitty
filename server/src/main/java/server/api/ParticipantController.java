@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.ParticipantService;
+import server.database.ParticipantRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,14 +17,16 @@ import java.util.Optional;
 public class ParticipantController {
 
     private final ParticipantService participantService;
+    private ParticipantRepository db;
 
     /**
      * Dependency injection through constructor
      * @param participantService ParticipantService
      */
     @Autowired
-    public ParticipantController(ParticipantService participantService) {
+    public ParticipantController(ParticipantService participantService, ParticipantRepository db) {
         this.participantService = participantService;
+        this.db = db;
     }
 
     /**
@@ -35,6 +38,7 @@ public class ParticipantController {
     public ResponseEntity<?> saveParticipant(@RequestBody Participant participant) {
         try {
             Participant savedParticipant = participantService.saveParticipant(participant);
+//            db.save(savedParticipant);
             return new ResponseEntity<>(savedParticipant, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -43,7 +47,6 @@ public class ParticipantController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     /**
      * Retrieve a participant by their ID.
      * @param id Long
@@ -231,4 +234,6 @@ public class ParticipantController {
                     HttpStatus.BAD_REQUEST);
         }
     }
+
+
 }
