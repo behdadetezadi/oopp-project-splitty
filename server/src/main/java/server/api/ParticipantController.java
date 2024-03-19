@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.ParticipantService;
+import server.database.ParticipantRepository;
 
 import java.util.List;
 
@@ -14,14 +15,16 @@ import java.util.List;
 public class ParticipantController {
 
     private final ParticipantService participantService;
+    private ParticipantRepository db;
 
     /**
      * Dependency injection through constructor
      * @param participantService ParticipantService
      */
     @Autowired
-    public ParticipantController(ParticipantService participantService) {
+    public ParticipantController(ParticipantService participantService, ParticipantRepository db) {
         this.participantService = participantService;
+        this.db = db;
     }
 
     /**
@@ -33,13 +36,13 @@ public class ParticipantController {
     public ResponseEntity<?> saveParticipant(@RequestBody Participant participant) {
         try {
             Participant savedParticipant = participantService.saveParticipant(participant);
+            db.save(savedParticipant);
             return new ResponseEntity<>(savedParticipant, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to save the participant.",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     /**
      * Retrieve a participant by their ID.
      * @param id Long
@@ -48,9 +51,10 @@ public class ParticipantController {
     @GetMapping("/{id}")
     public ResponseEntity<?> findParticipantById(@PathVariable Long id) {
         try {
-            return participantService.findParticipantById(id)
+            ResponseEntity<?>  res = participantService.findParticipantById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+            return res;
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to find the participant by ID.",
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -220,4 +224,6 @@ public class ParticipantController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 }

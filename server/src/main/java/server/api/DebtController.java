@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.DebtService;
+import server.database.DebtRepository;
 
 import java.util.*;
 
@@ -17,14 +18,16 @@ import java.util.*;
 public class DebtController {
 
     private final DebtService debtService;
+    private DebtRepository db;
 
     /**
      * dependency injection through constructor
      * @param debtService DebtService
      */
     @Autowired
-    public DebtController(DebtService debtService) {
+    public DebtController(DebtService debtService, DebtRepository db) {
         this.debtService = debtService;
+        this.db=db;
     }
 
     /**

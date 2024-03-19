@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.ExpenseService;
+import server.database.ExpenseRepository;
+import server.database.ParticipantRepository;
 
 import java.util.List;
 
@@ -13,15 +15,17 @@ import java.util.List;
 public class ExpenseController {
 
     private final ExpenseService expenseService;
+    private ExpenseRepository db;
 
     /**
      * dependency injection through constructor
      * @param expenseService the ExpenseService
      */
     @Autowired
-    public ExpenseController(ExpenseService expenseService)
+    public ExpenseController(ExpenseService expenseService, ExpenseRepository db)
     {
         this.expenseService = expenseService;
+        this.db=db;
     }
 
     /**
@@ -37,6 +41,7 @@ public class ExpenseController {
             return ResponseEntity.badRequest().build();
         }
         expenseService.createExpense(expense);
+        db.save(expense);
         return ResponseEntity.ok().build();
     }
 
