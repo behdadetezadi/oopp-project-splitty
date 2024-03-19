@@ -41,7 +41,7 @@ public class ExpenseController {
             return ResponseEntity.badRequest().build();
         }
         expenseService.createExpense(expense);
-        db.save(expense);
+//        db.save(expense);
         return ResponseEntity.ok().build();
     }
 

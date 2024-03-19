@@ -36,7 +36,7 @@ public class ParticipantController {
     public ResponseEntity<?> saveParticipant(@RequestBody Participant participant) {
         try {
             Participant savedParticipant = participantService.saveParticipant(participant);
-            db.save(savedParticipant);
+//            db.save(savedParticipant);
             return new ResponseEntity<>(savedParticipant, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to save the participant.",
