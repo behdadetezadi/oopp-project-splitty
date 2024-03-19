@@ -1,17 +1,24 @@
 package client.scenes;
 
+import client.utils.ServerUtils;
+import commons.Event;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import static client.utils.AnimationUtil.*;
@@ -156,8 +163,42 @@ public class StartPageController {
      * join Meeting //TODO
      */
     public void joinMeeting() {
-        String code = codeInput.getText();
-        // Logic to join meeting with the given code
+        String inviteCode = codeInput.getText();
+        // Call method to send invite code to server and retrieve event details
+        Event event = ServerUtils.getEventByInviteCode(inviteCode);
+
+        if (event != null) {
+            switchToEventOverview(event); // Switch to event overview page
+        } else {
+            showErrorAlert("Invalid invite code. Please try again.");
+        }
+    }
+
+    private void switchToEventOverview(Event event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/EventOverview.fxml"));
+            Parent eventOverviewRoot = loader.load();
+            EventOverviewController eventOverviewController = loader.getController();
+
+            // Pass event details to EventOverviewController
+            eventOverviewController.setEvent(event);
+
+            Scene scene = new Scene(eventOverviewRoot);
+            Stage stage = (Stage) codeInput.getScene().getWindow();
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showErrorAlert("Failed to load event overview page.");
+        }
+    }
+
+    private void showErrorAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     /**

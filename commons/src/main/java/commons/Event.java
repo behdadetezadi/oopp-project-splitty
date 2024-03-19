@@ -1,10 +1,18 @@
 package commons;
 
 import jakarta.persistence.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
+
+
+//for now invite code is equal to id
 
 @Entity
 public class Event {
@@ -34,20 +42,42 @@ public class Event {
         this.title = title;
     }
 
+
+    /**
+     * Constructor for Event
+     * @param people a List of Person s for the people involved in the Event
+     * @param expenses a List of Expense s made in the Event
+     * @param title a string stating the title of the Event
+     */
+    public Event(List<Participant> people, List<Expense> expenses, String title) {
+        this.people = people;
+        this.expenses = expenses;
+        this.inviteCode = this.id;
+        this.title = title;
+    }
+
     /**
      * constructor with just title
      * @param title title of the event
      */
+
     public Event(String title) {
         this.title = title;
         this.people = new ArrayList<>();
         this.expenses = new ArrayList<>();
+        //this.inviteCode = Objects.hash(this.id);
+        this.inviteCode = 5;
+
     }
+
+    //TODO check constructor with invite code
 
     /**
      * Empty public constructor (required)
      */
-    public Event() {}
+    public Event() {
+        this.inviteCode = 5;
+    }
 
     /**
      * constructor with the title and a list of participants (empty array list for expenses + invite code = 0 //TODO)
@@ -58,7 +88,7 @@ public class Event {
         this.title = title;
         this.people = people;
         this.expenses = new ArrayList<>();
-        this.inviteCode = 0;
+        this.inviteCode = 5;
     }
 
 
@@ -197,10 +227,38 @@ public class Event {
     }
 
     /**
+     * equals method using equalsbuilder (we should use this approach)
+     * @param obj object to be compared
+     * @return boolean
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+    /**
+     * hashcode using hashbuilder
+     * @return int representing hash
+     */
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+    /**
+     * toString using ToStringBuilder
+     * @return string
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+    }
+
+
+    /**
      * java generated equals method
      * @param o Object
      * @return boolean
      */
+/*
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -213,20 +271,28 @@ public class Event {
         if (!Objects.equals(people, event.people)) return false;
         return Objects.equals(expenses, event.expenses);
     }
+*/
+
+
+
+
+
 
     /**
      * temporary hashcode look into fixing a failing pipeline (NEEDS TO BE FIXED LATER)
      * @return int
      */
+    /*
     @Override
     public int hashCode() {
         return Objects.hash(title,inviteCode);
     }
-
+    */
     /**
      * default toString
      * @return a type String
      */
+    /*
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder("Event{");
@@ -249,7 +315,7 @@ public class Event {
             stringBuilder.append("expenses=").append(expenses).append(", ");
         }
 
-// Remove the trailing comma and space if any
+
         if (stringBuilder.length() > "Event{".length()) {
             stringBuilder.setLength(stringBuilder.length() - 2);
         }
@@ -258,4 +324,6 @@ public class Event {
         String result = stringBuilder.toString();
         return  result;
     }
+    */
+
 }

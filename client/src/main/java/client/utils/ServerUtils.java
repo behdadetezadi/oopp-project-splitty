@@ -37,6 +37,29 @@ import jakarta.ws.rs.core.GenericType;
 public class ServerUtils {
 	private static final String SERVER = "http://localhost:8080/";
 
+
+
+	public static Event getEventByInviteCode(String inviteCode) {
+		// Placeholder method for retrieving event details from the server
+		// You need to implement the actual server communication logic here
+		// For now, let's just return a mock event
+
+
+		/*
+		if (inviteCode.equals("valid_invite_code")) {
+			return new Event("Sample Event", "Description", "2024-03-20");
+		} else {
+			return null;
+		}
+		*/
+
+
+		return new Event("test event");
+
+
+		}
+
+
 	/**
 	 * Adds an expense
 	 * //TODO

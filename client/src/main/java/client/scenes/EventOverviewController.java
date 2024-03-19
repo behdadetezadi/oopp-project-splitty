@@ -1,6 +1,7 @@
 package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Event;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -23,6 +24,8 @@ public class EventOverviewController {
     private ServerUtils server;
     private MainController mainController;
 
+
+    private Event event;
 
     @FXML
     private BorderPane root;
@@ -81,11 +84,23 @@ public class EventOverviewController {
         this.mainController = mainController;
     }
 
+    public EventOverviewController() {
+        // Default constructor
+    }
+
 
     /**
      * initializer function does: //TODO
      */
     public void initialize() {
+        if (event != null) {
+            titleLabel.setText(event.getTitle());
+            //inviteCodeLabel.setText(String.valueOf(event.getInviteCode()));
+        }
+    }
+    public void setEvent(Event event) {
+        this.event = event;
+        initialize(); // Update the UI with event details
         animateLabels();
         animateButtonsText();
 
@@ -129,7 +144,7 @@ public class EventOverviewController {
      * animates the labels using AnimationUtil
      */
     private void animateLabels() {
-        animateText(titleLabel, "Event Overview");
+        animateText(titleLabel, event.getTitle());
         animateText(participantsLabel, "Participants");
         animateText(expensesLabel, "Expenses");
         animateText(optionsLabel, "Options");

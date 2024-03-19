@@ -12,7 +12,7 @@ import server.database.ParticipantRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("/events")
+@RequestMapping("/api/events")
 public class EventController {
 
     private final EventService eventService;

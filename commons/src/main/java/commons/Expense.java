@@ -1,9 +1,14 @@
 package commons;
 
 import jakarta.persistence.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.List;
 import java.util.Objects;
+
+import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 public class Expense {
@@ -174,11 +179,42 @@ public class Expense {
         this.expenseType = expenseType;
     }
 
+
+    /**
+     * equals method using equalsbuilder (we should use this approach)
+     * @param obj object to be compared
+     * @return boolean
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    /**
+     * hashcode using hashbuilder
+     * @return int representing hash
+     */
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    /**
+     * toString using ToStringBuilder
+     * @return string
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+    }
+
+
     /**
      * Equals method for expenses
      * @param o an object
      * @return whether two expenses are equal or not
      */
+      /*
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -191,11 +227,12 @@ public class Expense {
                 !Objects.equals(splittingOption, expense.splittingOption)) return false;
         return Objects.equals(expenseType, expense.expenseType);
     }
-
+*/
     /**
      * Makes a hashcode
      * @return the hashcode for the expense
      */
+    /*
     @Override
     public int hashCode() {
         int result;
@@ -211,10 +248,13 @@ public class Expense {
         return result;
     }
 
+*/
+
     /**
      * Shows the details of the expense
      * @return a string
      */
+    /*
     @Override
     public String toString() {
         StringBuilder res = new StringBuilder();
@@ -228,4 +268,5 @@ public class Expense {
         }
         return res.toString();
     }
+    */
 }
