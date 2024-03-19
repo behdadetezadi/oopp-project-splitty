@@ -84,26 +84,27 @@ public class EventOverviewController {
         this.mainController = mainController;
     }
 
+    public EventOverviewController() {
+        // Default constructor
+    }
+
 
     /**
      * initializer function does: //TODO
      */
     public void initialize() {
-        animateLabels();
-        animateButtonsText();
-
         if (event != null) {
             titleLabel.setText(event.getTitle());
             //inviteCodeLabel.setText(String.valueOf(event.getInviteCode()));
         }
     }
-
     public void setEvent(Event event) {
         this.event = event;
         initialize(); // Update the UI with event details
+        animateLabels();
+        animateButtonsText();
+
     }
-
-
 
     /**
      * method to switch over to the participant scene when clicked upon
@@ -143,7 +144,7 @@ public class EventOverviewController {
      * animates the labels using AnimationUtil
      */
     private void animateLabels() {
-        animateText(titleLabel, "Event Overview");
+        animateText(titleLabel, event.getTitle());
         animateText(participantsLabel, "Participants");
         animateText(expensesLabel, "Expenses");
         animateText(optionsLabel, "Options");

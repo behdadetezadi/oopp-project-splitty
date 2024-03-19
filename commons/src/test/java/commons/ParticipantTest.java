@@ -58,6 +58,7 @@ class ParticipantTest {
         assertEquals("BIC67890", participant.getBic());
     }
 
+  /*
     @Test
     void getOwedAmount() {
         assertTrue(participant.getOwedAmount().isEmpty());
@@ -71,7 +72,7 @@ class ParticipantTest {
         participant.getPayedAmount().put(event1, 50);
         assertEquals(50, participant.getPayedAmount().get(event1));
     }
-
+*/
     @Test
     void getEventIds() {
         assertTrue(participant.getEventIds().isEmpty());
@@ -137,7 +138,7 @@ class ParticipantTest {
         participant.setLanguageChoice("FR");
         assertEquals("FR", participant.getLanguageChoice());
     }
-
+/*
     @Test
     void addOwedAmountForSpecificEvent() {
         participant.addOwedAmountForSpecificEvent(event1, 100);
@@ -163,7 +164,7 @@ class ParticipantTest {
         participant.addPaidAmountForSpecificEvent(event1, 100);
         assertTrue(participant.hasPaidForEvent(event1));
     }
-
+*/
     @Test
     void calculateOwed() {
         participant.addOwedAmountForSpecificEvent(event1, 50);

@@ -66,7 +66,7 @@ public class Event {
         this.people = new ArrayList<>();
         this.expenses = new ArrayList<>();
         //this.inviteCode = Objects.hash(this.id);
-        this.inviteCode = this.id;
+        this.inviteCode = 5;
 
     }
 
@@ -76,7 +76,7 @@ public class Event {
      * Empty public constructor (required)
      */
     public Event() {
-        this.inviteCode = this.id;
+        this.inviteCode = 5;
     }
 
     /**
@@ -88,7 +88,7 @@ public class Event {
         this.title = title;
         this.people = people;
         this.expenses = new ArrayList<>();
-        this.inviteCode = this.id;
+        this.inviteCode = 5;
     }
 
 

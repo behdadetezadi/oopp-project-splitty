@@ -17,6 +17,7 @@ package client;
 
 import client.scenes.EventOverviewController;
 import client.scenes.ExpenseController;
+import client.scenes.StartPageController;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import javafx.application.Application;
@@ -42,16 +43,16 @@ public class Main extends Application {
 
         // Use MyFXML to load ExpenseController and its view
         MyFXML myFXML = new MyFXML(injector);
-        Pair<EventOverviewController, Parent> expensePair = myFXML.load(EventOverviewController.class,
-                "client/scenes/EventOverview.fxml");
+        Pair<StartPageController, Parent> expensePair = myFXML.load(StartPageController.class,
+                "client/scenes/StartPage.fxml");
 
         // Retrieve the loaded controller and root node for the scene
-        EventOverviewController controller = expensePair.getKey();
+        StartPageController controller = expensePair.getKey();
         Parent root = expensePair.getValue();
 
         // TODO Initialize the controller (this part is broken)
         // TODO FXML loader does not instantiate the ExpenseController as expected (it's null)
-//      controller.initialize();
+        //      controller.initialize();
 
         // Setup and show the primary stage
         primaryStage.setTitle("Matrix Start Page");
