@@ -227,7 +227,8 @@ public class EventOverviewController {
     }
 
     /**
-     * add expense //TODO
+     * This method switches between EventOverview and
+     * AddExpense when the button is clicked
      */
     @FXML
     public void addExpense(ActionEvent event) {

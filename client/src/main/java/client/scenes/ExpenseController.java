@@ -116,6 +116,8 @@ public class ExpenseController {
 
     /**
      * Cancel button handler
+     * If you press the button, it will ask you for confirmation
+     * and switch back to the EventOverview
      * @param event button press
      */
     @FXML
