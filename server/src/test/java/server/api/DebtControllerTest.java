@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Debt;
+import org.hibernate.service.spi.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -137,6 +138,78 @@ class DebtControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedDebts, response.getBody());
     }
+    @Test
+    void testFindDebtByIdNotFound() {
+        when(debtService.findDebtById( anyLong())).thenReturn(Optional.empty());
+
+        ResponseEntity<?> response = debtController.findDebtById(1L);
+
+        assertEquals(HttpStatus.NOT_FOUND,  response.getStatusCode());
+        assertEquals("Debt not found with ID: 1", response.getBody());
+    }
+
+    @Test
+    void testFindDebtByIdThrowsIllegalArgumentException() {
+        when(debtService.findDebtById(anyLong())).thenThrow(new IllegalArgumentException("Invalid id"));
+
+        ResponseEntity<?> response = debtController.findDebtById(-1L);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid id", response.getBody());
+    }
+
+    @Test
+    void testFindDebtByIdThrowsServiceException() {
+        when(debtService.findDebtById(anyLong())).thenThrow(new ServiceException("Internal error"));
+
+        ResponseEntity<?> response = debtController.findDebtById(1L);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Failed to find debt by ID: Internal error", response.getBody());
+    }
+
+    @Test
+    void testSaveDebtThrowsIllegalArgumentException() {
+        Debt invalidDebt = new Debt(); // Assume this debt is somehow invalid
+        when(debtService.saveDebt(any(Debt.class))).thenThrow(new IllegalArgumentException("Invalid debt details"));
+
+        ResponseEntity<?> response = debtController.saveDebt(invalidDebt);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid debt details", response.getBody());
+    }
+
+    @Test
+    void testSaveDebtThrowsServiceException() {
+        Debt debt = new Debt();
+        when(debtService.saveDebt(any(Debt.class))).thenThrow(new ServiceException("Database error"));
+
+        ResponseEntity<?> response = debtController.saveDebt(debt);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Failed to save debt: Database error", response.getBody());
+    }
+
+    @Test
+    void testDeleteDebtByIdThrowsIllegalArgumentException() {
+        doThrow(new IllegalArgumentException("Invalid ID")).when(debtService).deleteDebtById(anyLong());
+
+        ResponseEntity<?> response = debtController.deleteDebtById(-1L);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid ID", response.getBody());
+    }
+
+    @Test
+    void testDeleteDebtByIdThrowsServiceException() {
+        doThrow(new ServiceException("Database error")).when(debtService).deleteDebtById(anyLong());
+
+        ResponseEntity<?> response = debtController.deleteDebtById(1L);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Failed to delete debt: Database error", response.getBody());
+    }
+
 
 
 }

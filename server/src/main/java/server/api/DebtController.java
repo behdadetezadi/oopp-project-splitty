@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Debt;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +38,11 @@ public class DebtController {
         try {
             Debt savedDebt = debtService.saveDebt(debt);
             return new ResponseEntity<>(savedDebt, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to save the debt.",
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            // extra error handling in all methods will be added to help dubugging if necessary
+        } catch (ServiceException e) {
+            return new ResponseEntity<>("Failed to save debt: " + e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -51,11 +55,16 @@ public class DebtController {
     @GetMapping("/{id}")
     public ResponseEntity<?> findDebtById(@PathVariable Long id) {
         try {
-            return debtService.findDebtById(id)
-                    .map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find the debt by ID.",
+            Optional<Debt> debtOptional = debtService.findDebtById(id);
+            if (debtOptional.isPresent()) {
+                return ResponseEntity.ok(debtOptional.get());
+            } else {
+                return new ResponseEntity<>("Debt not found with ID: " + id, HttpStatus.NOT_FOUND);
+            }
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceException e) {
+            return new ResponseEntity<>("Failed to find debt by ID: " + e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -70,8 +79,8 @@ public class DebtController {
         try {
             List<Debt> debts = debtService.findAllDebts();
             return ResponseEntity.ok(debts);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to retrieve all debts.",
+        } catch (ServiceException e) {
+            return new ResponseEntity<>("Failed to retrieve all debts: " + e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -86,8 +95,10 @@ public class DebtController {
         try {
             debtService.deleteDebtById(id);
             return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to delete the debt.",
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceException e) {
+            return new ResponseEntity<>("Failed to delete debt: " + e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -104,9 +115,9 @@ public class DebtController {
         try {
             List<Debt> debts = debtService.findDebtsByLender(lenderId);
             return ResponseEntity.ok(debts);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find debts by lender.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException | ServiceException e) {
+            return new ResponseEntity<>("Failed to find debts by lender: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -120,9 +131,9 @@ public class DebtController {
         try {
             List<Debt> debts = debtService.findDebtsByDebtor(debtorId);
             return ResponseEntity.ok(debts);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find debts by debtor.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException | ServiceException e) {
+            return new ResponseEntity<>("Failed to find debts by debtor: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -154,9 +165,9 @@ public class DebtController {
         try {
             List<Debt> debts = debtService.findDebtsThroughDescription(description);
             return ResponseEntity.ok(debts);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find debts through description.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException | ServiceException e) {
+            return new ResponseEntity<>("Failed to find debts by description: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -170,9 +181,10 @@ public class DebtController {
         try {
             List<Debt> debts = debtService.findCostlierDebts(amount);
             return ResponseEntity.ok(debts);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find costlier debts.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException | ServiceException e) {
+            return new ResponseEntity<>("Failed to find costlier debts: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
+            // instead of internal server errors (for several examples btw), we have bad request
         }
     }
     /**
@@ -185,10 +197,9 @@ public class DebtController {
         try {
             List<Debt> debts = debtService.findCheaperDebts(amount);
             return ResponseEntity.ok(debts);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find cheaper debts.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException | ServiceException e) {
+            return new ResponseEntity<>("Failed to find cheaper debts: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
-
 }
