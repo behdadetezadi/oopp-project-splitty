@@ -93,6 +93,7 @@ public class EventController {
      */
     @PostMapping
     public Event createEvent(@RequestBody Event event) {
+        db.save(event);
         return eventService.createEvent(event);
     }
 
@@ -104,6 +105,7 @@ public class EventController {
      */
     @PutMapping("/{eventId}")
     public Event updateEvent(@PathVariable long eventId, @RequestBody Event event) {
+        db.save(event);
         return eventService.updateEvent(eventId, event);
     }
 

@@ -40,6 +40,7 @@ public class DebtController {
     public ResponseEntity<?> saveDebt(@RequestBody Debt debt) {
         try {
             Debt savedDebt = debtService.saveDebt(debt);
+            db.save(debt);
             return new ResponseEntity<>(savedDebt, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
