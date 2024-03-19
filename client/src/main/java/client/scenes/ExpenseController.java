@@ -17,6 +17,7 @@ import client.utils.AlertUtils;
 
 import commons.Expense;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
 
@@ -106,6 +107,10 @@ public class ExpenseController {
         // Create new expense in backend
         try {
             Expense newExpense = ServerUtils.addExpense(payer, description, amountValue);
+            Stage stage = (Stage) addExpenseButton.getScene().getWindow(); // Get the current stage
+            AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage, "Expense Added", "The expense has been successfully added.");
+            switchToEventOverviewScene();
+
             // TODO show success message, navigate to previous scene etc
         } catch (Exception e) {
             // Catch exception
@@ -143,4 +148,25 @@ public class ExpenseController {
             throw new RuntimeException(e);
         }
     }
+    private void switchToEventOverviewScene() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/EventOverview.fxml"));
+            Parent eventOverviewRoot = loader.load();
+
+            Stage stage = (Stage) addExpenseButton.getScene().getWindow();
+
+            Scene eventOverviewScene = new Scene(eventOverviewRoot);
+            stage.setScene(eventOverviewScene);
+
+            stage.setTitle("Event Overview");
+
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Window owner = addExpenseButton.getScene().getWindow();
+            AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "Navigation Error", "Failed to return to the Event Overview.");
+        }
+    }
+
 }
