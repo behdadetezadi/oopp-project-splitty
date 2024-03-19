@@ -33,7 +33,7 @@ public class DebtController {
      * @param debt Debt
      * @return ResponseEntity<Debt> or error message
      */
-    @PostMapping
+    @PostMapping("/saveDebt")
     public ResponseEntity<?> saveDebt(@RequestBody Debt debt) {
         try {
             Debt savedDebt = debtService.saveDebt(debt);
@@ -74,7 +74,7 @@ public class DebtController {
      * @return response entity of array lists of debts or error message
      */
 
-    @GetMapping
+    @GetMapping("/findAllDebts")
     public ResponseEntity<?> findAllDebts() {
         try {
             List<Debt> debts = debtService.findAllDebts();
@@ -143,8 +143,8 @@ public class DebtController {
      * @return ResponseEntity<List<Debt>> or error message
      */
 
-    @GetMapping("/collective")
-    public ResponseEntity<?> findDebtsByCollectivity(@RequestParam boolean debtCollective) {
+    @GetMapping("/collective/{debtCollective}")
+    public ResponseEntity<?> findDebtsByCollectivity(@PathVariable boolean debtCollective) {
         try {
             List<Debt> debts = debtService.findDebtsByCollectivity(debtCollective);
             return ResponseEntity.ok(debts);
@@ -160,8 +160,8 @@ public class DebtController {
      * @return ResponseEntity<List<Debt>> or error message
      */
 
-    @GetMapping("/description")
-    public ResponseEntity<?> findDebtsThroughDescription(@RequestParam String description) {
+    @GetMapping("/description/{description}")
+    public ResponseEntity<?> findDebtsThroughDescription(@PathVariable String description) {
         try {
             List<Debt> debts = debtService.findDebtsThroughDescription(description);
             return ResponseEntity.ok(debts);
@@ -176,8 +176,8 @@ public class DebtController {
      * @param amount as a double
      * @return ResponseEntity<List<Debt>> or error message
      */
-    @GetMapping("/costlier")
-    public ResponseEntity<?> findCostlierDebts(@RequestParam double amount) {
+    @GetMapping("/costlier/{amount}")
+    public ResponseEntity<?> findCostlierDebts(@PathVariable double amount) {
         try {
             List<Debt> debts = debtService.findCostlierDebts(amount);
             return ResponseEntity.ok(debts);
@@ -192,8 +192,8 @@ public class DebtController {
      * @param amount as a double
      * @return ResponseEntity<List<Debt>> or error message
      */
-    @GetMapping("/cheaper")
-    public ResponseEntity<?> findCheaperDebts(@RequestParam double amount) {
+    @GetMapping("/cheaper/{amount}")
+    public ResponseEntity<?> findCheaperDebts(@PathVariable double amount) {
         try {
             List<Debt> debts = debtService.findCheaperDebts(amount);
             return ResponseEntity.ok(debts);
