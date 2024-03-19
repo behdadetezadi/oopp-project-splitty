@@ -2,6 +2,7 @@ package commons;
 
 import java.util.*;
 
+import jakarta.persistence.OneToMany;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,17 +16,63 @@ class ParticipantTest {
 
     @BeforeEach
     void setUp() {
-        participant = new Participant("username", "John", "Doe", "john.doe@example.com", "IBAN12345", "BIC67890", new HashMap<>(), new HashMap<>(), new HashSet<>(), "EN");
+        participant = new Participant("username", "John", "Doe", "john.doe@example.com",
+                "IBAN12345", "BIC67890", new HashMap<>(), new HashMap<>(), new HashSet<>(), "EN");
 
         event1 = new Event(new ArrayList<>(), new ArrayList<>(), "Event 1", 12345L);
         event2 = new Event(new ArrayList<>(), new ArrayList<>(), "Event 2", 67890L);
 
-        // The expense class is requiring a Person type, that's why this errors, we will have to change the expense class to fix this
         expense1 = new Expense(participant, "Food", 100, "USD", "2024-02-25", new ArrayList<>(), "Equal");
         expense2 = new Expense(participant, "Transport", 50, "USD", "2024-02-26", new ArrayList<>(), "Equal");
 
         event1.getExpenses().add(expense1);
         event2.getExpenses().add(expense2);
+    }
+
+    @Test
+    void testFullConstructor() {
+        assertEquals("username", participant.getUsername());
+        assertEquals("John", participant.getFirstName());
+        assertEquals("Doe", participant.getLastName());
+        assertEquals("john.doe@example.com", participant.getEmail());
+        assertEquals("IBAN12345", participant.getIban());
+        assertEquals("BIC67890", participant.getBic());
+        assertTrue(participant.getOwedAmount().isEmpty());
+        assertTrue(participant.getPayedAmount().isEmpty());
+        assertTrue(participant.getEventIds().isEmpty());
+        assertEquals("EN", participant.getLanguageChoice());
+    }
+
+    @Test
+    void testPartialConstructor() {
+        Participant partialParticipant = new Participant("username", "John", "Doe",
+                "john.doe@example.com", "IBAN12345", "BIC67890", "EN");
+        assertEquals("username", partialParticipant.getUsername());
+        assertEquals("John", partialParticipant.getFirstName());
+        assertEquals("Doe", partialParticipant.getLastName());
+        assertEquals("john.doe@example.com", partialParticipant.getEmail());
+        assertEquals("IBAN12345", partialParticipant.getIban());
+        assertEquals("BIC67890", partialParticipant.getBic());
+        assertEquals("EN", partialParticipant.getLanguageChoice());
+    }
+
+    @Test
+    void testPartialConstructor2() {
+        Participant partialParticipant = new Participant("username", "John", "Doe",
+                "john.doe@example.com", "IBAN12345", "BIC67890");
+        assertEquals("username", partialParticipant.getUsername());
+        assertEquals("John", partialParticipant.getFirstName());
+        assertEquals("Doe", partialParticipant.getLastName());
+        assertEquals("john.doe@example.com", partialParticipant.getEmail());
+        assertEquals("IBAN12345", partialParticipant.getIban());
+        assertEquals("BIC67890", partialParticipant.getBic());
+    }
+
+    @Test
+    void testBasicConstructor2() {
+        Participant basicParticipant = new Participant( "John", "Doe");
+        assertEquals("John", basicParticipant.getFirstName());
+        assertEquals("Doe", basicParticipant.getLastName());
     }
 
     @Test
@@ -61,14 +108,14 @@ class ParticipantTest {
     @Test
     void getOwedAmount() {
         assertTrue(participant.getOwedAmount().isEmpty());
-        participant.getOwedAmount().put(event1, 100);
+        participant.getOwedAmount().put(event1, 100.0);
         assertEquals(100, participant.getOwedAmount().get(event1));
     }
 
     @Test
     void getPayedAmount() {
         assertTrue(participant.getPayedAmount().isEmpty());
-        participant.getPayedAmount().put(event1, 50);
+        participant.getPayedAmount().put(event1, 50.0);
         assertEquals(50, participant.getPayedAmount().get(event1));
     }
 
@@ -109,17 +156,43 @@ class ParticipantTest {
     }
 
     @Test
+    void getOwedAmountForEventTest(){
+        Map<Event, Double> newOwed = new HashMap<>();
+        newOwed.put(event1, 100.0);
+        participant.setOwedAmount(newOwed);
+        assertEquals(100, participant.getOwedAmountForEvent(event1));
+    }
+
+    @Test
+    void getOwedAmountForEventDefault(){
+        assertEquals(0, participant.getOwedAmountForEvent(event1));
+    }
+
+    @Test
+    void getPaidAmountForEventTest(){
+        Map<Event, Double> newOwed = new HashMap<>();
+        newOwed.put(event1, 100.0);
+        participant.setPayedAmount(newOwed);
+        assertEquals(100, participant.getPaidAmountForEvent(event1));
+    }
+
+    @Test
+    void getPaidAmountForEventDefault(){
+        assertEquals(0, participant.getPaidAmountForEvent(event1));
+    }
+
+    @Test
     void setOwedAmount() {
-        Map<Event, Integer> newOwed = new HashMap<>();
-        newOwed.put(event1, 100);
+        Map<Event, Double> newOwed = new HashMap<>();
+        newOwed.put(event1, 100.0);
         participant.setOwedAmount(newOwed);
         assertEquals(newOwed, participant.getOwedAmount());
     }
 
     @Test
     void setPayedAmount() {
-        Map<Event, Integer> newPaid = new HashMap<>();
-        newPaid.put(event1, 100);
+        Map<Event, Double> newPaid = new HashMap<>();
+        newPaid.put(event1, 100.0);
         participant.setPayedAmount(newPaid);
         assertEquals(newPaid, participant.getPayedAmount());
     }
@@ -145,9 +218,23 @@ class ParticipantTest {
     }
 
     @Test
+    void addOwedAmountForSpecificEventNegative() {
+        Exception exception = assertThrows(IllegalArgumentException.class, ()
+                -> participant.addOwedAmountForSpecificEvent(event1,-10.0));
+        assertEquals("Amount of money can't be negative!", exception.getMessage());
+    }
+
+    @Test
     void addPaidAmountForSpecificEvent() {
         participant.addPaidAmountForSpecificEvent(event1, 100);
         assertEquals(100, participant.getPayedAmount().get(event1));
+    }
+
+    @Test
+    void addPaidAmountForSpecificEventNegative() {
+        Exception exception = assertThrows(IllegalArgumentException.class, ()
+                -> participant.addPaidAmountForSpecificEvent(event1,-10.0));
+        assertEquals("Amount of money can't be negative!", exception.getMessage());
     }
 
     @Test

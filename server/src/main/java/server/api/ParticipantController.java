@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Participant;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import server.ParticipantService;
 import server.database.ParticipantRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/participants") // our base endpoint for participants
@@ -38,8 +40,10 @@ public class ParticipantController {
             Participant savedParticipant = participantService.saveParticipant(participant);
 //            db.save(savedParticipant);
             return new ResponseEntity<>(savedParticipant, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to save the participant.",
+            return new ResponseEntity<>("Failed to save the participant: " + e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -51,12 +55,16 @@ public class ParticipantController {
     @GetMapping("/{id}")
     public ResponseEntity<?> findParticipantById(@PathVariable Long id) {
         try {
-            ResponseEntity<?>  res = participantService.findParticipantById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-            return res;
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find the participant by ID.",
+            Optional<Participant> participantOptional = participantService.findParticipantById(id);
+            if(participantOptional.isPresent()){
+                return ResponseEntity.ok(participantOptional.get());
+            } else{
+                return new ResponseEntity<>("Participant not found with ID: " + id, HttpStatus.NOT_FOUND);
+            }
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceException e) {
+            return new ResponseEntity<>("Failed to find Participant by ID: " + e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -71,7 +79,7 @@ public class ParticipantController {
             List<Participant> participants = participantService.findAllParticipants();
             return ResponseEntity.ok(participants);
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to retrieve all participants.",
+            return new ResponseEntity<>("Failed to retrieve all participants: "  + e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -86,8 +94,10 @@ public class ParticipantController {
         try {
             participantService.deleteParticipantById(id);
             return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to delete the participant.",
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceException e) {
+            return new ResponseEntity<>("Failed to delete the participant: " + e.getMessage(),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -106,9 +116,9 @@ public class ParticipantController {
             } else {
                 return ResponseEntity.notFound().build();
             }
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find the participant by username.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException | ServiceException e) {
+            return new ResponseEntity<>("Failed to find the participant by username: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -126,9 +136,9 @@ public class ParticipantController {
             } else {
                 return ResponseEntity.notFound().build();
             }
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find the participant by email.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException | ServiceException e) {
+            return new ResponseEntity<>("Failed to find the participant by email: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -143,9 +153,9 @@ public class ParticipantController {
             List<Participant> participants = participantService
                 .findParticipantsByFirstName(firstName);
             return ResponseEntity.ok(participants);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find participants by first name.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException | ServiceException e) {
+            return new ResponseEntity<>("Failed to find participants by first name: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -160,9 +170,9 @@ public class ParticipantController {
             List<Participant> participants = participantService
                     .findParticipantsByLastName(lastName);
             return ResponseEntity.ok(participants);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find participants by last name.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException | ServiceException e) {
+            return new ResponseEntity<>("Failed to find participants by last name: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -177,9 +187,9 @@ public class ParticipantController {
             List<Participant> participants = participantService
                     .findParticipantsByLanguageChoice(languageChoice);
             return ResponseEntity.ok(participants);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find participants by language choice.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException | ServiceException e) {
+            return new ResponseEntity<>("Failed to find participants by language choice: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -198,9 +208,9 @@ public class ParticipantController {
             } else {
                 return ResponseEntity.noContent().build();
             }
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find participants owing for the event.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException | ServiceException e) {
+            return new ResponseEntity<>("Failed to find participants owing for the event: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -219,9 +229,9 @@ public class ParticipantController {
             } else {
                 return ResponseEntity.noContent().build();
             }
-        } catch (Exception e) {
-            return new ResponseEntity<>("Failed to find participants who have paid for the event.",
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalArgumentException | ServiceException e) {
+            return new ResponseEntity<>("Failed to find participants who have paid for the event: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 

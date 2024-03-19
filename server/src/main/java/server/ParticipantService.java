@@ -1,6 +1,7 @@
 package server;
 
 import commons.Participant;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import server.database.ParticipantRepository;
@@ -25,18 +26,34 @@ public class ParticipantService {
      * Saves or updates a participant in the repository.
      * @param participant the participant to save or update
      * @return the saved or updated participant
+     * @throws IllegalArgumentException if the participant is null.
      */
     public Participant saveParticipant(Participant participant) {
-        return participantRepository.save(participant);
+        if(participant==null){
+            throw new IllegalArgumentException("Participant is not allowed to be null");
+        }
+        try{
+            return participantRepository.save(participant);
+        } catch (Exception e){
+            throw new ServiceException("Error saving the participant", e);
+        }
     }
 
     /**
      * Finds a participant by their ID.
      * @param id the ID of the participant
      * @return an Optional containing the participant if found, or an empty Optional if not
+     * @throws IllegalArgumentException if the id is null or negative.
      */
     public Optional<Participant> findParticipantById(Long id) {
-        return participantRepository.findById(id);
+        if(id==null || id<0){
+            throw new IllegalArgumentException("ID must be positive and not null");
+        }
+        try {
+            return participantRepository.findById(id);
+        } catch (Exception e){
+            throw new ServiceException("Error finding the participant by id", e);
+        }
     }
 
     /**
@@ -44,15 +61,27 @@ public class ParticipantService {
      * @return a list of all participants
      */
     public List<Participant> findAllParticipants() {
-        return participantRepository.findAll();
+        try{
+            return participantRepository.findAll();
+        } catch (Exception e){
+            throw new ServiceException("Error retrieving all the participants", e);
+        }
     }
 
     /**
      * Deletes a participant by their ID.
      * @param id the ID of the participant to delete
+     * @throws IllegalArgumentException if the id is null or negative.
      */
     public void deleteParticipantById(Long id) {
-        participantRepository.deleteById(id);
+        if (id == null || id < 0) {
+            throw new IllegalArgumentException("ID must be positive and not null");
+        }
+        try {
+            participantRepository.deleteById(id);
+        } catch (Exception e){
+            throw new ServiceException("Error deleting the participant", e);
+        }
     }
 
     /**
@@ -61,7 +90,11 @@ public class ParticipantService {
      * @return the participant with the specified username
      */
     public Participant findParticipantByUsername(String username) {
-        return participantRepository.findByUsername(username);
+        try{
+            return participantRepository.findByUsername(username);
+        } catch (Exception e){
+            throw new ServiceException("Error finding the participant by username", e);
+        }
     }
 
     /**
@@ -70,7 +103,11 @@ public class ParticipantService {
      * @return the participant with the specified email
      */
     public Participant findParticipantByEmail(String email) {
-        return participantRepository.findByEmail(email);
+        try {
+            return participantRepository.findByEmail(email);
+        } catch (Exception e){
+            throw new ServiceException("Error finding the participant by email", e);
+        }
     }
 
     /**
@@ -79,7 +116,11 @@ public class ParticipantService {
      * @return a list of participants with the specified first name
      */
     public List<Participant> findParticipantsByFirstName(String firstName) {
-        return participantRepository.findByFirstName(firstName);
+        try {
+            return participantRepository.findByFirstName(firstName);
+        } catch (Exception e){
+            throw new ServiceException("Error finding the participant by first name", e);
+        }
     }
 
     /**
@@ -88,7 +129,11 @@ public class ParticipantService {
      * @return a list of participants with the specified last name
      */
     public List<Participant> findParticipantsByLastName(String lastName) {
-        return participantRepository.findByLastName(lastName);
+        try {
+            return participantRepository.findByLastName(lastName);
+        }catch (Exception e){
+            throw new ServiceException("Error finding the participant by last name", e);
+        }
     }
 
     /**
@@ -97,25 +142,45 @@ public class ParticipantService {
      * @return the participant with the specified IBAN
      */
     public Participant findParticipantByIban(String iban) {
-        return participantRepository.findByIban(iban);
+        try {
+            return participantRepository.findByIban(iban);
+        }catch (Exception e){
+            throw new ServiceException("Error finding the participant by iban", e);
+        }
     }
 
     /**
      * Finds participants who owe money for a specific event.
      * @param eventId the ID of the event
      * @return a list of participants who owe money for the specified event
+     * @throws IllegalArgumentException if the id is null or negative.
      */
     public List<Participant> findParticipantsOwingForEvent(Long eventId) {
-        return participantRepository.findParticipantsOwingForEvent(eventId);
+        if (eventId == null || eventId < 0) {
+            throw new IllegalArgumentException("eventId must be positive and not null");
+        }
+        try {
+            return participantRepository.findParticipantsOwingForEvent(eventId);
+        }catch (Exception e){
+            throw new ServiceException("Error finding the participant by eventId", e);
+        }
     }
 
     /**
      * Finds participants who have paid for a specific event.
      * @param eventId the ID of the event
      * @return a list of participants who have paid for the specified event
+     * @throws IllegalArgumentException if the id is null or negative.
      */
     public List<Participant> findParticipantsPaidForEvent(Long eventId) {
-        return participantRepository.findParticipantsPaidForEvent(eventId);
+        if (eventId == null || eventId < 0) {
+            throw new IllegalArgumentException("eventId must be positive and not null");
+        }
+        try {
+            return participantRepository.findParticipantsPaidForEvent(eventId);
+        }catch (Exception e){
+            throw new ServiceException("Error finding the participants who have paid for a specific event", e);
+        }
     }
 
     /**
@@ -124,6 +189,10 @@ public class ParticipantService {
      * @return a list of participants with the specified language preference
      */
     public List<Participant> findParticipantsByLanguageChoice(String languageChoice) {
-        return participantRepository.findByLanguageChoice(languageChoice);
+        try {
+            return participantRepository.findByLanguageChoice(languageChoice);
+        }catch (Exception e){
+            throw new ServiceException("Error finding the participant by language choice", e);
+        }
     }
 }
