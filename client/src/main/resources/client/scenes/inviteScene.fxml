@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="335.0" prefWidth="594.0" stylesheets="@../../styles.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.InviteController">
+<AnchorPane prefHeight="335.0" prefWidth="594.0" stylesheets="@/styles.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.InviteController">
     <VBox alignment="CENTER" layoutX="25.0" layoutY="-21.0" prefHeight="453.0" prefWidth="543.0" spacing="10.0">
         <Label fx:id="title" prefHeight="88.0" prefWidth="522.0" styleClass="title" text="New Year Party">
             <font>
