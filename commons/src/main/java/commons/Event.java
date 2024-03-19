@@ -34,20 +34,42 @@ public class Event {
         this.title = title;
     }
 
+
+    /**
+     * Constructor for Event
+     * @param people a List of Person s for the people involved in the Event
+     * @param expenses a List of Expense s made in the Event
+     * @param title a string stating the title of the Event
+     */
+    public Event(List<Participant> people, List<Expense> expenses, String title) {
+        this.people = people;
+        this.expenses = expenses;
+        this.inviteCode = this.id;
+        this.title = title;
+    }
+
     /**
      * constructor with just title
      * @param title title of the event
      */
+
     public Event(String title) {
         this.title = title;
         this.people = new ArrayList<>();
         this.expenses = new ArrayList<>();
+        //this.inviteCode = Objects.hash(this.id);
+        this.inviteCode = this.id;
+
     }
+
+    //TODO check constructor with invite code
 
     /**
      * Empty public constructor (required)
      */
-    public Event() {}
+    public Event() {
+        this.inviteCode = this.id;
+    }
 
     /**
      * constructor with the title and a list of participants (empty array list for expenses + invite code = 0 //TODO)
@@ -58,7 +80,7 @@ public class Event {
         this.title = title;
         this.people = people;
         this.expenses = new ArrayList<>();
-        this.inviteCode = 0;
+        this.inviteCode = this.id;
     }
 
 
