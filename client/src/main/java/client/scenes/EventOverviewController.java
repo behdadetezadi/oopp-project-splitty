@@ -193,7 +193,7 @@ public class EventOverviewController {
     }
 
     /**
-     * sendInvites method //TODO
+     * sendInvites method
      */
     @FXML
     public void sendInvites() {
@@ -205,6 +205,9 @@ public class EventOverviewController {
             Scene scene = new Scene(inviteRoot);
             Stage stage = (Stage) root.getScene().getWindow();
             stage.setScene(scene);
+
+            InviteController controller = loader.getController();
+            controller.initData(this.event);
             stage.show();
         } catch (IllegalStateException e) {
             e.printStackTrace();

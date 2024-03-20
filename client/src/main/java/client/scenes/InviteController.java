@@ -8,12 +8,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import commons.Event;
-
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,8 +20,7 @@ import java.util.Scanner;
 public class InviteController implements Initializable {
 
 
-    @FXML
-    private Button backButton;
+
     @FXML
     private Label title;
     @FXML
@@ -94,6 +90,16 @@ public class InviteController implements Initializable {
         Event event = new Event(null, null, "Watching paint dry", 12345);
         title.setText(event.getTitle());
         inviteCode.setText(String.valueOf(event.getInviteCode()));
+    }
+
+
+    /**
+     * method that sets title and invite code according to passed event
+     * @param event the event
+     */
+    public void initData(Event event) {
+        inviteCode.setText(String.valueOf(event.getInviteCode()));
+        title.setText(event.getTitle());
     }
 
 
