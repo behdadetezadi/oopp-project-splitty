@@ -59,7 +59,7 @@ public class InviteController implements Initializable {
 
         if (!flag) {
             AlertHelper.showAlert(Alert.AlertType.INFORMATION, owner, "invites send!",
-                    "tell them to bring me my money");
+                    "MONEY!!!");
         }
         return emailAddresses;
     }

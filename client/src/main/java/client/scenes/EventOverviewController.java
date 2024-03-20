@@ -197,11 +197,22 @@ public class EventOverviewController {
      */
     @FXML
     public void sendInvites() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Invitation Sent");
-        alert.setHeaderText(null);
-        alert.setContentText("Invitations have been sent to all participants.");
-        alert.showAndWait();
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().
+                    getResource("/client/scenes/inviteScene.fxml"));
+            Parent participantRoot = loader.load();
+            Scene scene = new Scene(participantRoot);
+            Stage stage = (Stage) root.getScene().getWindow();
+            stage.setScene(scene);
+            stage.show();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            showErrorAlert("Failed to load the invite scene.");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
     /**
      * edit participant method //TODO
