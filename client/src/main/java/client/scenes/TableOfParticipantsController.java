@@ -5,6 +5,7 @@ package client.scenes;
 import commons.Participant;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,13 +13,14 @@ import javafx.scene.control.*;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 import javafx.stage.Stage;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -141,30 +143,52 @@ public class TableOfParticipantsController {
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        int textFieldWidth = 200;
+
 
         TextField firstNameField = new TextField(participant.getFirstName());
+        firstNameField.setPrefWidth(textFieldWidth);
         TextField lastNameField = new TextField(participant.getLastName());
+        lastNameField.setPrefWidth(textFieldWidth);
         TextField usernameField = new TextField(participant.getUsername());
+        usernameField.setPrefWidth(textFieldWidth);
         TextField emailField = new TextField(participant.getEmail());
+        emailField.setPrefWidth(textFieldWidth);
         TextField ibanField = new TextField(participant.getIban());
+        ibanField.setPrefWidth(textFieldWidth);
         TextField bicField = new TextField(participant.getBic());
+        bicField.setPrefWidth(textFieldWidth);
         TextField languageField = new TextField(participant.getLanguageChoice());
+        languageField.setPrefWidth(textFieldWidth);
+
 
         grid.add(new Label("First Name:"), 0, 0);
         grid.add(firstNameField, 1, 0);
         grid.add(new Label("Last Name:"), 0, 1);
         grid.add(lastNameField, 1, 1);
-        grid.add(new Label("Username:"), 0, 1);
-        grid.add(usernameField, 1, 1);
-        grid.add(new Label("Email:"), 0, 1);
-        grid.add(emailField, 1, 1);
-        grid.add(new Label("IBAN:"), 0, 1);
-        grid.add(ibanField, 1, 1);
+        grid.add(new Label("Username:"), 0, 2);
+        grid.add(usernameField, 1, 2);
+        grid.add(new Label("Email:"), 0, 3);
+        grid.add(emailField, 1, 3);
+        grid.add(new Label("IBAN:"), 0, 4);
+        grid.add(ibanField, 1, 4);
+        grid.add(new Label("BIC:"), 0, 5);
+        grid.add(bicField, 1, 5);
+        grid.add(new Label("Language:"), 0, 6);
+        grid.add(languageField, 1, 6);
         dialog.getDialogPane().setContent(grid);
-        grid.add(new Label("BIC:"), 0, 1);
-        grid.add(bicField, 1, 1);
-        grid.add(new Label("Language Preference:"), 0, 1);
-        grid.add(languageField, 1, 1);
+        dialog.getDialogPane().setMinHeight(350);
+
+        ColumnConstraints columnOneConstraints = new ColumnConstraints(100, 100, Double.MAX_VALUE);
+        columnOneConstraints.setHgrow(Priority.ALWAYS);
+
+        ColumnConstraints columnTwoConstraints = new ColumnConstraints(200, 200, Double.MAX_VALUE);
+        columnTwoConstraints.setHgrow(Priority.ALWAYS);
+
+        grid.getColumnConstraints().addAll(columnOneConstraints, columnTwoConstraints);
+
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
