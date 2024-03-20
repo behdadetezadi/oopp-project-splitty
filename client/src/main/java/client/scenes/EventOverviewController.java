@@ -201,8 +201,8 @@ public class EventOverviewController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().
                     getResource("/client/scenes/inviteScene.fxml"));
-            Parent participantRoot = loader.load();
-            Scene scene = new Scene(participantRoot);
+            Parent inviteRoot = loader.load();
+            Scene scene = new Scene(inviteRoot);
             Stage stage = (Stage) root.getScene().getWindow();
             stage.setScene(scene);
             stage.show();

@@ -22,6 +22,9 @@ import java.util.Scanner;
 
 public class InviteController implements Initializable {
 
+
+    @FXML
+    private Button backButton;
     @FXML
     private Label title;
     @FXML
