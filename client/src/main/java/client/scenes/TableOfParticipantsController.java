@@ -53,6 +53,27 @@ public class TableOfParticipantsController {
         }
     }
 
+    /**
+     * adds a participant
+     */
+    @FXML
+    private void handleAddButton() {
+    }
+
+    /**
+     * edits the participant on the page
+     */
+    @FXML
+    private void handleEditButton() {
+    }
+
+    /**
+     * deletes current participant
+     */
+    @FXML
+    private void handleDeleteButton() {
+    }
+
 
     /**
      * This allows each page to display a single participant with his/her aattributes
