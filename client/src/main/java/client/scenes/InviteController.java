@@ -3,7 +3,6 @@ package client.scenes;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -12,12 +11,10 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import commons.Event;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 import java.util.Scanner;
 
-public class InviteController implements Initializable {
+public class InviteController  {
 
 
 
@@ -74,23 +71,7 @@ public class InviteController implements Initializable {
         return emailAddresses;
     }
 
-    /**
-     * initializes the invite scene with correct title and invite code.
-     * todo: is semi static for now, needs show correct attributes
-     * @param url
-     * The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
-     *
-     * @param resourceBundle
-     * The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
-     */
-    @FXML
-    public void initialize(URL url, ResourceBundle resourceBundle){
-        Event event = new Event(null, null, "Watching paint dry", 12345);
-        title.setText(event.getTitle());
-        inviteCode.setText(String.valueOf(event.getInviteCode()));
-    }
+
 
 
     /**
