@@ -29,6 +29,7 @@ import commons.Participant;
 import commons.Expense;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.client.Client;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -38,7 +39,7 @@ import jakarta.ws.rs.core.GenericType;
 
 public class ServerUtils {
 	private static final String SERVER = "http://localhost:8080/";
-
+	private static final Client client = ClientBuilder.newClient(new ClientConfig());
 
 
 	public static Event getEventByInviteCode(String inviteCode) {
@@ -72,23 +73,17 @@ public class ServerUtils {
 	 */
 	public static Expense addExpense(String username, String description, double amountValue) {
 		try {
-			// first get the participant based on the username provided
-			Participant participant = ClientBuilder.newClient(new ClientConfig())
-					.target(SERVER)
+			Participant participant = client.target(SERVER)
 					.path("api/participants/username/{username}")
 					.resolveTemplate("username", username)
 					.request(APPLICATION_JSON)
 					.accept(APPLICATION_JSON)
 					.get(new GenericType<Participant>() {});
-			// if the username doesn't exist
 			if (participant == null) {
 				throw new RuntimeException("Participant not found with the username: " + username);
 			}
-
 			Expense expense = new Expense(participant, description, amountValue);
-			
-			return ClientBuilder.newClient(new ClientConfig())
-					.target(SERVER)
+			return client.target(SERVER)
 					.path("api/expenses/")
 					.request(APPLICATION_JSON)
 					.accept(APPLICATION_JSON)
