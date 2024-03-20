@@ -72,6 +72,10 @@ public class TableOfParticipantsController {
      */
     @FXML
     private void handleEditButton() {
+        if (participants.isEmpty()) {
+            displayNoParticipantsError();
+            return;
+        }
         int currentPageIndex = pagination.getCurrentPageIndex();
         if(currentPageIndex < participants.size()) {
             Participant participantToEdit = participants.get(currentPageIndex);
@@ -84,7 +88,35 @@ public class TableOfParticipantsController {
      */
     @FXML
     private void handleDeleteButton() {
+        if (participants.isEmpty()) {
+            displayNoParticipantsError();
+            return;
+        }
+        int currentPageIndex = pagination.getCurrentPageIndex();
+        if (currentPageIndex < participants.size()) {
+            Participant participantToDelete = participants.get(currentPageIndex);
+            Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to remove " +
+                    participantToDelete.getFirstName() + " " + participantToDelete.getLastName() + "?", ButtonType.YES, ButtonType.NO);
+            confirmDialog.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.YES) {
+                    participants.remove(participantToDelete);
+
+                    // Recalculate the number of pages
+                    int numberOfPages = participants.isEmpty() ? 0 :
+                            (int) Math.ceil(participants.size()-1 / (double) pagination.getMaxPageIndicatorCount());
+                    pagination.setPageCount(numberOfPages);
+
+                    if (currentPageIndex >= numberOfPages) {
+                        pagination.setCurrentPageIndex(Math.max(0, numberOfPages - 1));
+                    }
+
+                    // Refresh the pagination view
+                    pagination.setPageFactory(this::createPage);
+                }
+            });
+        }
     }
+
 
 
     /**
@@ -211,5 +243,14 @@ public class TableOfParticipantsController {
             pagination.setPageFactory(this::createPage);// to refresh our page with modified user.
         });
     }
-
+    /**
+     * Display an error message when there are no participants.
+     */
+    private void displayNoParticipantsError() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("No Participants Found");
+        alert.setContentText("There are no participants to edit or modify.");
+        alert.showAndWait();
+    }
 }
