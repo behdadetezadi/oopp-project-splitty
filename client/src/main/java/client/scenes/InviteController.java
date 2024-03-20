@@ -2,11 +2,19 @@ package client.scenes;
 
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import commons.Event;
 
+import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -24,6 +32,9 @@ public class InviteController implements Initializable {
 
     @FXML
     private Button submitButton;
+
+    @FXML
+    private AnchorPane root;
 
 
     /**
@@ -80,5 +91,26 @@ public class InviteController implements Initializable {
         Event event = new Event(null, null, "Watching paint dry", 12345);
         title.setText(event.getTitle());
         inviteCode.setText(String.valueOf(event.getInviteCode()));
+    }
+
+
+    /**
+     * handler of the button that takes you back to the overview scene
+     *
+     */
+    @FXML
+    public void handleBackButtonAction() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().
+                    getResource("/client/scenes/EventOverview.fxml"));
+            Parent inviteRoot = loader.load();
+            Scene scene = new Scene(inviteRoot);
+            Stage stage = (Stage) root.getScene().getWindow();
+            stage.setScene(scene);
+            stage.show();
+        } catch (IllegalStateException | IOException e) {
+            e.printStackTrace();
+
+        }
     }
 }
