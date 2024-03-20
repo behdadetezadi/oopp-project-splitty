@@ -27,6 +27,8 @@ import java.util.List;
 import commons.Event;
 import commons.Participant;
 import commons.Expense;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
 import org.glassfish.jersey.client.ClientConfig;
 
 import commons.Quote;
@@ -64,12 +66,40 @@ public class ServerUtils {
 	 * Adds an expense
 	 * //TODO
 	 *
-	 * @param payer       the person who paid for the expense
+	 * @param username       the person who paid for the expense
 	 * @param description description of the expense
 	 * @param amountValue the amount the person has paid for the expense
 	 */
-	public static Expense addExpense(String payer, String description, double amountValue) {
-		throw new RuntimeException("To do");
+	public static Expense addExpense(String username, String description, double amountValue) {
+		try {
+			// first get the participant based on the username provided
+			Participant participant = ClientBuilder.newClient(new ClientConfig())
+					.target(SERVER)
+					.path("api/participants/username/{username}")
+					.resolveTemplate("username", username)
+					.request(APPLICATION_JSON)
+					.accept(APPLICATION_JSON)
+					.get(new GenericType<Participant>() {});
+			// if the username doesn't exist
+			if (participant == null) {
+				throw new RuntimeException("Participant not found with the username: " + username);
+			}
+
+			Expense expense = new Expense(participant, description, amountValue);
+			
+			return ClientBuilder.newClient(new ClientConfig())
+					.target(SERVER)
+					.path("api/expenses/")
+					.request(APPLICATION_JSON)
+					.accept(APPLICATION_JSON)
+					.post(Entity.entity(expense, APPLICATION_JSON), Expense.class);
+		} catch (NotFoundException e) {
+			throw new RuntimeException("Participant not found with the username: " + username);
+		} catch (BadRequestException e) {
+			throw new RuntimeException("Bad request: " + e.getMessage());
+		} catch (RuntimeException e) {
+			throw new RuntimeException("Couldn't add the expense: " + e.getMessage());
+		}
 	}
 
 	/**
