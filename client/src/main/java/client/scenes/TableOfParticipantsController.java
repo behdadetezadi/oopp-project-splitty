@@ -8,16 +8,21 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.Pagination;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 
 public class TableOfParticipantsController {
 
@@ -65,6 +70,11 @@ public class TableOfParticipantsController {
      */
     @FXML
     private void handleEditButton() {
+        int currentPageIndex = pagination.getCurrentPageIndex();
+        if(currentPageIndex < participants.size()) {
+            Participant participantToEdit = participants.get(currentPageIndex);
+            showEditDialog(participantToEdit);
+        }
     }
 
     /**
@@ -115,4 +125,67 @@ public class TableOfParticipantsController {
                         new HashMap<>(), new HashMap<>(), new HashSet<>(),"English")
         );
     }
+
+    /**
+     * edit dialog used to change our participant and the edit button
+     * @param participant
+     */
+    private void showEditDialog(Participant participant) {
+        Dialog<Participant> dialog = new Dialog<>();
+        dialog.setTitle("Edit Participant");
+        dialog.setHeaderText("Edit the details of the participant.");
+
+        ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        TextField firstNameField = new TextField(participant.getFirstName());
+        TextField lastNameField = new TextField(participant.getLastName());
+        TextField usernameField = new TextField(participant.getUsername());
+        TextField emailField = new TextField(participant.getEmail());
+        TextField ibanField = new TextField(participant.getIban());
+        TextField bicField = new TextField(participant.getBic());
+        TextField languageField = new TextField(participant.getLanguageChoice());
+
+        grid.add(new Label("First Name:"), 0, 0);
+        grid.add(firstNameField, 1, 0);
+        grid.add(new Label("Last Name:"), 0, 1);
+        grid.add(lastNameField, 1, 1);
+        grid.add(new Label("Username:"), 0, 1);
+        grid.add(usernameField, 1, 1);
+        grid.add(new Label("Email:"), 0, 1);
+        grid.add(emailField, 1, 1);
+        grid.add(new Label("IBAN:"), 0, 1);
+        grid.add(ibanField, 1, 1);
+        dialog.getDialogPane().setContent(grid);
+        grid.add(new Label("BIC:"), 0, 1);
+        grid.add(bicField, 1, 1);
+        grid.add(new Label("Language Preference:"), 0, 1);
+        grid.add(languageField, 1, 1);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == saveButtonType) {
+                participant.setFirstName(firstNameField.getText());
+                participant.setLastName(lastNameField.getText());
+                participant.setUsername(usernameField.getText());
+                participant.setEmail(emailField.getText());
+                participant.setIban(ibanField.getText());
+                participant.setBic(bicField.getText());
+                participant.setLanguageChoice(languageField.getText());
+                return participant;
+            }
+            return null;
+        });
+
+        Optional<Participant> result = dialog.showAndWait();
+
+        result.ifPresent(updatedParticipant -> {
+            //TODO: Update in server too.
+            pagination.setPageFactory(this::createPage);// to refresh our page with modified user.
+        });
+    }
+
 }
