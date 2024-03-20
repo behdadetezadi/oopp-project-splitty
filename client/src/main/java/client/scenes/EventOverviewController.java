@@ -1,4 +1,5 @@
 package client.scenes;
+
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
@@ -14,7 +15,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +61,12 @@ public class EventOverviewController {
             .observableArrayList("1", "2");
     @FXML
     private final ObservableList<String> filteredOptions = FXCollections.observableArrayList();
+
+    /**
+     * constructor with injection
+     * @param server server
+     * @param mainController maincontroller
+     */
     @Inject
     public EventOverviewController(ServerUtils server, MainController mainController) {
         this.server = server;
@@ -68,6 +74,9 @@ public class EventOverviewController {
     }
 
 
+    /**
+     * default constructor for the program to work (don't know why)
+     */
     public EventOverviewController() {
         // Default constructor
     }
@@ -82,6 +91,11 @@ public class EventOverviewController {
             //inviteCodeLabel.setText(String.valueOf(event.getInviteCode()));
         }
     }
+
+    /**
+     * called by startPage and other pages when setting up this page
+     * @param event event to be set
+     */
     public void setEvent(Event event) {
         this.event = event;
         initialize();

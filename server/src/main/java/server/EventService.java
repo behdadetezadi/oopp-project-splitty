@@ -42,12 +42,12 @@ public class EventService {
      */
     public Event createEvent(Event event) {
         if(event==null){
-            throw new IllegalArgumentException("Participant is not allowed to be null");
+            throw new IllegalArgumentException("Event is not allowed to be null");
         }
         try{
             return eventRepository.save(event);
         } catch (Exception e){
-            throw new ServiceException("Error saving the participant", e);
+            throw new ServiceException("Error saving the event", e);
         }
     }
 
@@ -106,7 +106,7 @@ public class EventService {
      * @param title title of event
      * @return an event
      */
-    public Event getEventByTitle(String title) {
+    public List<Event> getEventByTitle(String title) {
         return eventRepository.eventByTitle(title);
     }
 

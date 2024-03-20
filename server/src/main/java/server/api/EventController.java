@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.EventService;
 import server.database.EventRepository;
-import server.database.ParticipantRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,8 +61,15 @@ public class EventController {
      * @return the event
      */
     @GetMapping("/title/{title}")
-    public Event getEventByTitle(@PathVariable String title) {
-        return eventService.getEventByTitle(title);
+    public ResponseEntity<?> getEventByTitle(@PathVariable String title) {
+        try {
+            List<Event> events = eventService
+                    .getEventByTitle(title);
+            return ResponseEntity.ok(events);
+        } catch (IllegalArgumentException | ServiceException e) {
+            return new ResponseEntity<>("Failed to find event by title: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
+        }
     }
 
     /**

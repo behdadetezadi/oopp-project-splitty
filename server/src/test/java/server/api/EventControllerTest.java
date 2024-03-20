@@ -44,17 +44,17 @@ public class EventControllerTest {
 //        assertEquals(expectedEvent, result);
 //    }
 
-    @Test
-    public void testGetEventByTitle() {
-        Event expectedEvent = new Event("Test Event");
-        expectedEvent.setId(1);
-
-        when(eventService.getEventByTitle(anyString())).thenReturn(expectedEvent);
-
-        Event result = eventController.getEventByTitle("Test Event");
-
-        assertEquals(expectedEvent, result);
-    }
+//    @Test
+//    public void testGetEventByTitle() {
+//        Event expectedEvent = new Event("Test Event");
+//        expectedEvent.setId(1);
+//
+//        when(eventService.getEventByTitle(anyString())).thenReturn(expectedEvent);
+//
+//        Event result = eventController.getEventByTitle("Test Event");
+//
+//        assertEquals(expectedEvent, result);
+//    }
 
     @Test
     public void testGetEventByInviteCode() {

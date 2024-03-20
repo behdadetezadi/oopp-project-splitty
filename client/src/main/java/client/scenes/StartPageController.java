@@ -207,6 +207,19 @@ public class StartPageController {
      */
     public void createEvent() {
         String eventName = eventNameInput.getText();
-        // Logic to create a new event with the given name
+        if (eventName.isEmpty()) {
+            showErrorAlert("Event name cannot be empty.");
+            return;
+        }
+
+        Event newEvent = new Event(eventName);
+
+        Event createdEvent = ServerUtils.addEvent(newEvent);
+
+        if (createdEvent != null) {
+            switchToEventOverview(createdEvent);
+        } else {
+            showErrorAlert("Failed to create event. Please try again.");
+        }
     }
 }
