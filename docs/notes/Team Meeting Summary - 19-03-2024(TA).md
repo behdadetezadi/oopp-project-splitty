@@ -7,7 +7,7 @@
     - Ensuring our theme was accessible (by putting it through a color contrsast website)
 - The chair went around the table asking if everyone managed to finish their code contributions of the week.
 
-## TA Section (Progress, Announcements, Questions )
+## TA Section (Progress, Announcements, Questions)
 
 - Since the frontend and backend of our project were not yet connected, the team didn't really have much to present to the TA this week. We re-assured that the frontend had scenes, and that the backend was working through POSTMAN. We agreed to show the connected variant of our project next Tuesday.
 - We announced the date we were unavailable for our OOPP presentation in week 10. With Behdad and the TA having an exam on Thursday, 18 April, it is not likely for us to present that day.
@@ -16,7 +16,7 @@
 - Finally, there was an issue of figuring out how we will be graded for having 10 clients being able to connect simultaneously. The TA is also unsure and told us he will get back to us.
 
 
-## Planing and GitLab Usage
+## Planning and GitLab Usage
 - In order to get the points for "Tasks and Planning" from the rubric, we agreed on creating the issues and milestones right after the meeting. The chair created the issues on GitLab corresponding to the user stories, and it was agreed instead of dynamic creation of issues, we will just check the basic requirements off. 
 - The issues are created with appropriate labels, and estimations and time spent will be added in the coming weeks as we work on the project.
 
