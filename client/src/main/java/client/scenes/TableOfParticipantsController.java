@@ -227,6 +227,25 @@ public class TableOfParticipantsController {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
+                String validationErrors = validateParticipantDetails(
+                        firstNameField.getText(), lastNameField.getText(), usernameField.getText(),
+                        emailField.getText(), ibanField.getText(), bicField.getText(), languageField.getText()
+                );
+
+                if (!validationErrors.isEmpty()) {
+                    showAlertWithText("Validation Error", "Please correct the following errors:", validationErrors);
+
+                    participant.setFirstName(firstNameField.getText());
+                    participant.setLastName(lastNameField.getText());
+                    participant.setUsername(usernameField.getText());
+                    participant.setEmail(emailField.getText());
+                    participant.setIban(ibanField.getText());
+                    participant.setBic(bicField.getText());
+                    participant.setLanguageChoice(languageField.getText());
+                    showEditDialog(participant);
+                    return null;
+                }
+
                 participant.setFirstName(firstNameField.getText());
                 participant.setLastName(lastNameField.getText());
                 participant.setUsername(usernameField.getText());
@@ -379,10 +398,6 @@ public class TableOfParticipantsController {
                 email.trim().isEmpty() || iban.trim().isEmpty() ||
                 bic.trim().isEmpty() || language.trim().isEmpty()) {
             sb.append("All fields must be filled in.\n");
-        }
-
-        if (participants.stream().anyMatch(p -> p.getUsername().equalsIgnoreCase(username))) {
-            sb.append("Username must be unique.\n");
         }
 
         if (!Character.isUpperCase(firstName.charAt(0)) ||
