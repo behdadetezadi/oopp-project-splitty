@@ -1,5 +1,3 @@
-
-
 package client.scenes;
 
 import commons.Participant;
@@ -31,7 +29,7 @@ public class TableOfParticipantsController {
     @FXML
     private Pagination pagination;
 
-    private ObservableList<Participant> participants = FXCollections.observableArrayList();
+    private final ObservableList<Participant> participants = FXCollections.observableArrayList();
 
     /**
      * this is an initializer method.
@@ -168,7 +166,7 @@ public class TableOfParticipantsController {
 
     /**
      * edit dialog used to change our participant and the edit button
-     * @param participant
+     * @param participant Participant
      */
     private void showEditDialog(Participant participant) {
         Dialog<Participant> dialog = new Dialog<>();
@@ -292,7 +290,6 @@ public class TableOfParticipantsController {
         TextField languageField = new TextField(participant.getLanguageChoice());
         languageField.setPrefWidth(textFieldWidth);
 
-
         grid.add(new Label("First Name:"), 0, 0);
         grid.add(firstNameField, 1, 0);
         grid.add(new Label("Last Name:"), 0, 1);
@@ -318,20 +315,33 @@ public class TableOfParticipantsController {
 
         grid.getColumnConstraints().addAll(columnOneConstraints, columnTwoConstraints);
 
-
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == addButtonType) {
+                String validationErrors = validateParticipantDetails(
+                        firstNameField.getText(), lastNameField.getText(), usernameField.getText(),
+                        emailField.getText(), ibanField.getText(),
+                        bicField.getText(), languageField.getText()
+                );
+
+                if (!validationErrors.isEmpty()) {
+                    showAlertWithText("Validation Error",
+                            "Please correct the following errors to proceed:", validationErrors);
+                    participant.setFirstName(firstNameField.getText());
+                    participant.setLastName(lastNameField.getText());
+                    participant.setUsername(usernameField.getText());
+                    participant.setEmail(emailField.getText());
+                    participant.setIban(ibanField.getText());
+                    participant.setBic(bicField.getText());
+                    participant.setLanguageChoice(languageField.getText());
+                    showAddDialog(participant);
+                    return null;
+                }
+
                 return new Participant(
-                        usernameField.getText(),
-                        firstNameField.getText(),
-                        lastNameField.getText(),
-                        emailField.getText(),
-                        ibanField.getText(),
-                        bicField.getText(),
-                        new HashMap<>(),
-                        new HashMap<>(),
-                        new HashSet<>(),
-                        languageField.getText()
+                        usernameField.getText(), firstNameField.getText(), lastNameField.getText(),
+                        emailField.getText(), ibanField.getText(),
+                        bicField.getText(), new HashMap<>(),
+                        new HashMap<>(), new HashSet<>(), languageField.getText()
                 );
             }
             return null;
@@ -346,4 +356,63 @@ public class TableOfParticipantsController {
             pagination.setPageFactory(this::createPage);
         });
     }
+
+    /**
+     * Validation of participant details and ensuring
+     * they are typed in the correct format for good error handling
+     * @param firstName String
+     * @param lastName String
+     * @param username String
+     * @param email String
+     * @param iban String
+     * @param bic String
+     * @param language String
+     * @return String
+     */
+    private String validateParticipantDetails(String firstName,
+                                              String lastName, String username,
+                                              String email, String iban, String bic,
+                                              String language) {
+        StringBuilder sb = new StringBuilder();
+
+        if (firstName.trim().isEmpty() || lastName.trim().isEmpty() || username.trim().isEmpty() ||
+                email.trim().isEmpty() || iban.trim().isEmpty() ||
+                bic.trim().isEmpty() || language.trim().isEmpty()) {
+            sb.append("All fields must be filled in.\n");
+        }
+
+        if (participants.stream().anyMatch(p -> p.getUsername().equalsIgnoreCase(username))) {
+            sb.append("Username must be unique.\n");
+        }
+
+        if (!Character.isUpperCase(firstName.charAt(0)) ||
+                !Character.isUpperCase(lastName.charAt(0))) {
+            sb.append("First name and last name must start with a capital letter.\n");
+        }
+
+        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            sb.append("Email is in an incorrect format.\n");
+        }
+
+        if (!language.equalsIgnoreCase("English") && !language.equalsIgnoreCase("Dutch")) {
+            sb.append("Language must be only English or Dutch.\n");
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * method that displays the alert
+     * @param title String
+     * @param header String
+     * @param content String
+     */
+    private void showAlertWithText(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
 }
