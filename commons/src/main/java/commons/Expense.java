@@ -47,6 +47,18 @@ public class Expense {
     }
 
     /**
+     * Simpler constructor for the expense
+     * @param participant the participant
+     * @param category the category
+     * @param amount the amount paid
+     */
+    public Expense(Participant participant, String category, double amount) {
+        this.participant = participant;
+        this.category = category;
+        this.amount = amount;
+    }
+
+    /**
      * constructor created for the purpose of persistence.
      */
     public Expense() {}

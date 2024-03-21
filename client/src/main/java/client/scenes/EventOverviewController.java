@@ -6,6 +6,7 @@ import commons.Event;
 import commons.Participant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -255,15 +256,32 @@ public class EventOverviewController {
 //    }
 
     /**
-     * add expense //TODO
+     * This method switches between EventOverview and
+     * AddExpense when the button is clicked
      */
     @FXML
-    public void addExpense() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Expense Added");
-        alert.setHeaderText(null);
-        alert.setContentText("A new expense has been added successfully.");
-        alert.showAndWait();
+    public void addExpense(ActionEvent event) {
+        try {
+            if (event.getSource() instanceof Button) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/AddExpense.fxml"));
+                Parent expenseRoot = loader.load();
+                Scene scene = new Scene(expenseRoot);
+                Stage stage = (Stage)((Button) event.getSource()).getScene().getWindow();
+                stage.setScene(scene);
+                stage.show();
+            } else {
+                throw new IllegalStateException();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // this code was here before, it might need to be moved to the method where the expense is actually created
+//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//        alert.setTitle("Expense Added");
+//        alert.setHeaderText(null);
+//        alert.setContentText("A new expense has been added successfully.");
+//        alert.showAndWait();
     }
 
     /**

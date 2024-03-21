@@ -33,7 +33,7 @@ public class ExpenseController {
      * @param expense the expense to be added
      * @return ResponseEntity<Void> ok or bad request
      */
-    @PostMapping("/add")
+    @PostMapping("/")
     public ResponseEntity<Void> add(@RequestBody Expense expense) {
         if (expense == null || expense.getParticipant() == null ||
                 expense.getParticipant().getFirstName() == null ||
