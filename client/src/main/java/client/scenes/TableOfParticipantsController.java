@@ -197,6 +197,8 @@ public class TableOfParticipantsController {
         bicField.setPrefWidth(textFieldWidth);
         ComboBox<String> languageComboBox = new ComboBox<>();
         languageComboBox.getItems().addAll("English", "Dutch");
+        languageComboBox.setPromptText("Select a Language");
+
 
 
         grid.add(new Label("First Name:"), 0, 0);
@@ -227,10 +229,10 @@ public class TableOfParticipantsController {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
+                String selectedLanguage = languageComboBox.getValue() != null ? languageComboBox.getValue() : "";
                 String validationErrors = validateParticipantDetails(
                         firstNameField.getText(), lastNameField.getText(), usernameField.getText(),
-                        emailField.getText(), ibanField.getText(),
-                        bicField.getText(), languageComboBox.getValue()
+                        emailField.getText(), ibanField.getText(), bicField.getText(), selectedLanguage
                 );
 
                 if (!validationErrors.isEmpty()) {
@@ -310,6 +312,8 @@ public class TableOfParticipantsController {
         bicField.setPrefWidth(textFieldWidth);
         ComboBox<String> languageComboBox = new ComboBox<>();
         languageComboBox.getItems().addAll("English", "Dutch");
+        languageComboBox.setPromptText("Select a Language");
+
 
         grid.add(new Label("First Name:"), 0, 0);
         grid.add(firstNameField, 1, 0);
@@ -338,10 +342,10 @@ public class TableOfParticipantsController {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == addButtonType) {
+                String selectedLanguage = languageComboBox.getValue() != null ? languageComboBox.getValue() : "";
                 String validationErrors = validateParticipantDetails(
                         firstNameField.getText(), lastNameField.getText(), usernameField.getText(),
-                        emailField.getText(), ibanField.getText(),
-                        bicField.getText(), languageComboBox.getValue()
+                        emailField.getText(), ibanField.getText(), bicField.getText(), selectedLanguage
                 );
 
                 if (!validationErrors.isEmpty()) {
@@ -407,6 +411,9 @@ public class TableOfParticipantsController {
         if (!Character.isUpperCase(firstName.charAt(0)) ||
                 !Character.isUpperCase(lastName.charAt(0))) {
             sb.append("First name and last name must start with a capital letter.\n");
+        }
+        if (language.trim().isEmpty()) {
+            sb.append("Language selection is required.\n");
         }
 
         if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
