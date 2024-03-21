@@ -195,8 +195,8 @@ public class TableOfParticipantsController {
         ibanField.setPrefWidth(textFieldWidth);
         TextField bicField = new TextField(participant.getBic());
         bicField.setPrefWidth(textFieldWidth);
-        TextField languageField = new TextField(participant.getLanguageChoice());
-        languageField.setPrefWidth(textFieldWidth);
+        ComboBox<String> languageComboBox = new ComboBox<>();
+        languageComboBox.getItems().addAll("English", "Dutch");
 
 
         grid.add(new Label("First Name:"), 0, 0);
@@ -212,7 +212,7 @@ public class TableOfParticipantsController {
         grid.add(new Label("BIC:"), 0, 5);
         grid.add(bicField, 1, 5);
         grid.add(new Label("Language:"), 0, 6);
-        grid.add(languageField, 1, 6);
+        grid.add(languageComboBox, 1, 6);
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().setMinHeight(350);
 
@@ -230,7 +230,7 @@ public class TableOfParticipantsController {
                 String validationErrors = validateParticipantDetails(
                         firstNameField.getText(), lastNameField.getText(), usernameField.getText(),
                         emailField.getText(), ibanField.getText(),
-                        bicField.getText(), languageField.getText()
+                        bicField.getText(), languageComboBox.getValue()
                 );
 
                 if (!validationErrors.isEmpty()) {
@@ -243,7 +243,7 @@ public class TableOfParticipantsController {
                     participant.setEmail(emailField.getText());
                     participant.setIban(ibanField.getText());
                     participant.setBic(bicField.getText());
-                    participant.setLanguageChoice(languageField.getText());
+                    participant.setLanguageChoice(languageComboBox.getValue());
                     showEditDialog(participant);
                     return null;
                 }
@@ -254,7 +254,7 @@ public class TableOfParticipantsController {
                 participant.setEmail(emailField.getText());
                 participant.setIban(ibanField.getText());
                 participant.setBic(bicField.getText());
-                participant.setLanguageChoice(languageField.getText());
+                participant.setLanguageChoice(languageComboBox.getValue());
                 return participant;
             }
             return null;
@@ -308,8 +308,8 @@ public class TableOfParticipantsController {
         ibanField.setPrefWidth(textFieldWidth);
         TextField bicField = new TextField(participant.getBic());
         bicField.setPrefWidth(textFieldWidth);
-        TextField languageField = new TextField(participant.getLanguageChoice());
-        languageField.setPrefWidth(textFieldWidth);
+        ComboBox<String> languageComboBox = new ComboBox<>();
+        languageComboBox.getItems().addAll("English", "Dutch");
 
         grid.add(new Label("First Name:"), 0, 0);
         grid.add(firstNameField, 1, 0);
@@ -324,7 +324,7 @@ public class TableOfParticipantsController {
         grid.add(new Label("BIC:"), 0, 5);
         grid.add(bicField, 1, 5);
         grid.add(new Label("Language:"), 0, 6);
-        grid.add(languageField, 1, 6);
+        grid.add(languageComboBox, 1, 6);
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().setMinHeight(350);
 
@@ -341,7 +341,7 @@ public class TableOfParticipantsController {
                 String validationErrors = validateParticipantDetails(
                         firstNameField.getText(), lastNameField.getText(), usernameField.getText(),
                         emailField.getText(), ibanField.getText(),
-                        bicField.getText(), languageField.getText()
+                        bicField.getText(), languageComboBox.getValue()
                 );
 
                 if (!validationErrors.isEmpty()) {
@@ -353,7 +353,7 @@ public class TableOfParticipantsController {
                     participant.setEmail(emailField.getText());
                     participant.setIban(ibanField.getText());
                     participant.setBic(bicField.getText());
-                    participant.setLanguageChoice(languageField.getText());
+                    participant.setLanguageChoice(languageComboBox.getValue());
                     showAddDialog(participant);
                     return null;
                 }
@@ -362,7 +362,7 @@ public class TableOfParticipantsController {
                         usernameField.getText(), firstNameField.getText(), lastNameField.getText(),
                         emailField.getText(), ibanField.getText(),
                         bicField.getText(), new HashMap<>(),
-                        new HashMap<>(), new HashSet<>(), languageField.getText()
+                        new HashMap<>(), new HashSet<>(), languageComboBox.getValue()
                 );
             }
             return null;
@@ -412,11 +412,6 @@ public class TableOfParticipantsController {
         if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             sb.append("Email is in an incorrect format.\n");
         }
-
-        if (!language.equalsIgnoreCase("English") && !language.equalsIgnoreCase("Dutch")) {
-            sb.append("Language must be only English or Dutch.\n");
-        }
-
         return sb.toString();
     }
 
