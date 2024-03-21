@@ -229,11 +229,13 @@ public class TableOfParticipantsController {
             if (dialogButton == saveButtonType) {
                 String validationErrors = validateParticipantDetails(
                         firstNameField.getText(), lastNameField.getText(), usernameField.getText(),
-                        emailField.getText(), ibanField.getText(), bicField.getText(), languageField.getText()
+                        emailField.getText(), ibanField.getText(),
+                        bicField.getText(), languageField.getText()
                 );
 
                 if (!validationErrors.isEmpty()) {
-                    showAlertWithText("Validation Error", "Please correct the following errors:", validationErrors);
+                    showAlertWithText("Validation Error",
+                            "Please correct the following errors:", validationErrors);
 
                     participant.setFirstName(firstNameField.getText());
                     participant.setLastName(lastNameField.getText());
@@ -399,7 +401,9 @@ public class TableOfParticipantsController {
                 bic.trim().isEmpty() || language.trim().isEmpty()) {
             sb.append("All fields must be filled in.\n");
         }
-
+        if (!firstName.matches("[a-zA-Z]+") || !lastName.matches("[a-zA-Z]+")) {
+            sb.append("First name and last name must contain only letters.\n");
+        }
         if (!Character.isUpperCase(firstName.charAt(0)) ||
                 !Character.isUpperCase(lastName.charAt(0))) {
             sb.append("First name and last name must start with a capital letter.\n");
