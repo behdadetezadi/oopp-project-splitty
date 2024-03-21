@@ -182,7 +182,6 @@ public class TableOfParticipantsController {
         grid.setPadding(new Insets(20, 150, 10, 10));
         int textFieldWidth = 200;
 
-
         TextField firstNameField = new TextField(participant.getFirstName());
         firstNameField.setPrefWidth(textFieldWidth);
         TextField lastNameField = new TextField(participant.getLastName());
@@ -198,8 +197,6 @@ public class TableOfParticipantsController {
         ComboBox<String> languageComboBox = new ComboBox<>();
         languageComboBox.getItems().addAll("English", "Dutch");
         languageComboBox.setPromptText("Select a Language");
-
-
 
         grid.add(new Label("First Name:"), 0, 0);
         grid.add(firstNameField, 1, 0);
@@ -263,10 +260,13 @@ public class TableOfParticipantsController {
         });
 
         Optional<Participant> result = dialog.showAndWait();
-
         result.ifPresent(updatedParticipant -> {
-            //TODO: Update in server too.
-            pagination.setPageFactory(this::createPage);// to refresh our page with modified user.
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Participant Saved");
+            alert.setHeaderText(null);
+            alert.setContentText("The participant has been successfully saved.");
+            alert.showAndWait();
+            pagination.setPageFactory(this::createPage);
         });
     }
     /**
@@ -350,7 +350,8 @@ public class TableOfParticipantsController {
 
                 if (!validationErrors.isEmpty()) {
                     showAlertWithText("Validation Error",
-                            "Please correct the following errors to proceed:", validationErrors);
+                            "Please correct the following errors:", validationErrors);
+
                     participant.setFirstName(firstNameField.getText());
                     participant.setLastName(lastNameField.getText());
                     participant.setUsername(usernameField.getText());
@@ -358,7 +359,7 @@ public class TableOfParticipantsController {
                     participant.setIban(ibanField.getText());
                     participant.setBic(bicField.getText());
                     participant.setLanguageChoice(languageComboBox.getValue());
-                    showAddDialog(participant);
+                    showEditDialog(participant);
                     return null;
                 }
 
@@ -366,11 +367,12 @@ public class TableOfParticipantsController {
                         usernameField.getText(), firstNameField.getText(), lastNameField.getText(),
                         emailField.getText(), ibanField.getText(),
                         bicField.getText(), new HashMap<>(),
-                        new HashMap<>(), new HashSet<>(), languageComboBox.getValue()
-                );
+                        new HashMap<>(), new HashSet<>(), languageComboBox.getValue());
             }
             return null;
         });
+
+
 
         Optional<Participant> result = dialog.showAndWait();
 
@@ -408,8 +410,8 @@ public class TableOfParticipantsController {
         if (!firstName.matches("[a-zA-Z]+") || !lastName.matches("[a-zA-Z]+")) {
             sb.append("First name and last name must contain only letters.\n");
         }
-        if (!Character.isUpperCase(firstName.charAt(0)) ||
-                !Character.isUpperCase(lastName.charAt(0))) {
+        if (firstName.isEmpty() || !Character.isUpperCase(firstName.charAt(0)) ||
+                lastName.isEmpty() || !Character.isUpperCase(lastName.charAt(0))) {
             sb.append("First name and last name must start with a capital letter.\n");
         }
         if (language.trim().isEmpty()) {
