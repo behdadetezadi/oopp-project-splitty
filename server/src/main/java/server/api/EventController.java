@@ -118,6 +118,25 @@ public class EventController {
         return eventService.createEvent(event);
     }
 
+    /**
+     * updates an events title
+     * @param eventId id of event
+     * @param newTitle the new title
+     * @return response entity
+     */
+    @PutMapping("/{eventId}/updateTitle")
+    public ResponseEntity<?> updateEventTitle(@PathVariable Long eventId, @RequestParam String newTitle) {
+        try {
+            Event updatedEvent = eventService.updateEventTitle(eventId, newTitle);
+            return ResponseEntity.ok(updatedEvent);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceException e) {
+            return new ResponseEntity<>("Failed to update event title: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
  //TODO
 //    /**

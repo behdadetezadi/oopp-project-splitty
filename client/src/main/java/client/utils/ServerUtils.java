@@ -15,29 +15,26 @@
  */
 package client.utils;
 
-import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import commons.Event;
-import commons.Participant;
 import commons.Expense;
+import commons.Participant;
+import commons.Quote;
 import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
-import commons.Quote;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.GenericType;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class ServerUtils {
 	private static final String SERVER = "http://localhost:8080/";
@@ -174,5 +171,38 @@ public class ServerUtils {
 	}
 
 
+    public static void updateEventTitle(Long eventId, String newTitle) {
+        try {
+            // Encode the new title to ensure proper URL formatting
+            String encodedNewTitle = URLEncoder.encode(newTitle, "UTF-8");
+
+            // Construct the URL with the new title as a query parameter
+            String urlString = SERVER + "api/events/" + eventId + "/updateTitle?newTitle=" + encodedNewTitle;
+            URL url = new URL(urlString);
+
+            // Open connection
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("PUT");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+
+            // No need for request body in this case
+
+            // Perform the request
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // If needed, read and handle the response here
+            } else {
+                // Handle unsuccessful response
+                System.err.println("Failed to update event title. Response code: " + responseCode);
+            }
+
+            // Disconnect the connection
+            connection.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle exception appropriately
+        }
+    }
 
 }

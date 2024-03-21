@@ -152,9 +152,26 @@ public class EventService {
      * @param expense the expense
      * @return event corresponding to expense
      */
-
     public Event getEventByExpense(Expense expense) {
         return eventRepository.eventByExpense(expense);
+    }
+
+
+    /**
+     * updates events title in eventRepository
+     * @param eventId the id of event
+     * @param newTitle the new title
+     * @return the changed event
+     */
+    public Event updateEventTitle(Long eventId, String newTitle) {
+        Optional<Event> optionalEvent = eventRepository.findById(eventId);
+        if (optionalEvent.isPresent()) {
+            Event event = optionalEvent.get();
+            event.setTitle(newTitle);
+            return eventRepository.save(event);
+        } else {
+            throw new IllegalArgumentException("Event not found with ID: " + eventId);
+        }
     }
 
 }

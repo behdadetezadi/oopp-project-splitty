@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static client.utils.AnimationUtil.animateButton;
@@ -44,10 +45,10 @@ public class EventOverviewController {
     private Label expensesLabel;
     @FXML
     private Label optionsLabel;
-    @FXML
-    private Button editButton;
-    @FXML
-    private Button addButton;
+//    @FXML
+//    private Button editButton;
+//    @FXML
+//    private Button addButton;
     @FXML
     private Button filterOne;
     @FXML
@@ -87,6 +88,7 @@ public class EventOverviewController {
     public void initialize() {
         if (event != null) {
             titleLabel.setText(event.getTitle());
+            titleLabel.setOnMouseClicked(event -> editTitle());
             initializeParticipants();
             //inviteCodeLabel.setText(String.valueOf(event.getInviteCode()));
         }
@@ -102,6 +104,31 @@ public class EventOverviewController {
         animateLabels();
         animateButtonsText();
     }
+
+    /**
+     * Edit the title directly in the label
+     */
+    private void editTitle() {
+        TextInputDialog dialog = new TextInputDialog(titleLabel.getText());
+        dialog.setTitle("Edit Title");
+        dialog.setHeaderText(null);
+        dialog.setContentText("New Title:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(newTitle -> {
+            titleLabel.setText(newTitle); // Update UI immediately
+            server.updateEventTitle(event.getId(), newTitle); // Send request to server
+            event.setTitle(newTitle); // Update local event object
+        });
+    }
+
+
+
+
+
+
+
+
 
     /**
      * method to switch over to the participant scene when clicked upon
@@ -155,8 +182,8 @@ public class EventOverviewController {
      * animates the buttons using AnimationUtil
      */
     private void animateButtonsText() {
-        animateButton(sendInvitesButton);
-        animateButton(addExpenseButton);
+        //animateButton(sendInvitesButton);
+        //animateButton(addExpenseButton);
         animateButton(filterOne);
         animateButton(filterTwo);
     }
@@ -204,26 +231,28 @@ public class EventOverviewController {
         alert.setContentText("Invitations have been sent to all participants.");
         alert.showAndWait();
     }
-    /**
-     * edit participant method //TODO
-     */
-    @FXML
-    public void editParticipants() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Participant Edited");
-        alert.setHeaderText(null);
-        alert.setContentText("The participant's details have been updated successfully.");
-        alert.showAndWait();
-    }
 
 
-    /**
-     * add participant //TODO
-     */
-    @FXML
-    public void addParticipant() {
-        // Action for adding a new participant
-    }
+//    /**
+//     * edit participant method //TODO
+//     */
+//    @FXML
+//    public void editParticipants() {
+//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//        alert.setTitle("Participant Edited");
+//        alert.setHeaderText(null);
+//        alert.setContentText("The participant's details have been updated successfully.");
+//        alert.showAndWait();
+//    }
+
+
+//    /**
+//     * add participant //TODO
+//     */
+//    @FXML
+//    public void addParticipant() {
+//        // Action for adding a new participant
+//    }
 
     /**
      * add expense //TODO
