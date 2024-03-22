@@ -39,13 +39,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("SELECT e FROM Event e WHERE e.inviteCode = :inviteCode")
     List<Participant> participantsOfEventByInviteCode(long inviteCode);
 
-    /**
-     * method that returns the event with this id
-     * @param id id of the event
-     * @return event corresponding with id
-     */
-    @Query("SELECT e FROM Event e WHERE e.id = :id")
-    Event eventById(long id);
 
     /**
      * method that returns the event with this title
@@ -53,14 +46,14 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * @return event corresponding with title
      */
     @Query("SELECT e FROM Event e WHERE e.title = :title")
-    Event eventByTitle(String title);
+    List<Event> eventByTitle(String title);
 
     /**
      * method that returns the event with this invite code
      * @param inviteCode invite code of the event
      * @return event corresponding with invite code
      */
-    @Query("SELECT e FROM Event e WHERE e.title = :inviteCode")
+    @Query("SELECT e FROM Event e WHERE e.inviteCode = :inviteCode")
     Event eventByInviteCode(long inviteCode);
 
 
