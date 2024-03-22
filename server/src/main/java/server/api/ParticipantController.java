@@ -22,6 +22,7 @@ public class ParticipantController {
     /**
      * Dependency injection through constructor
      * @param participantService ParticipantService
+     * @param db database
      */
     @Autowired
     public ParticipantController(ParticipantService participantService, ParticipantRepository db) {
