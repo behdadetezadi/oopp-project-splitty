@@ -96,6 +96,26 @@ public class ServerUtils {
 			throw new RuntimeException("Couldn't add the expense: " + e.getMessage());
 		}
 	}
+	/**
+	 * Fetches a list of expenses for a specific participant.
+	 *
+	 * @param participantId The unique identifier of the participant.
+	 * @return A list of expenses associated with the given participant.
+	 */
+	public static List<Expense> getExpensesForParticipant(String participantId) {
+		try {
+			return client.target(SERVER)
+					.path("api/expenses/participant/{participantId}")
+					.resolveTemplate("participantId", participantId)
+					.request(APPLICATION_JSON)
+					.accept(APPLICATION_JSON)
+					.get(new GenericType<List<Expense>>() {});
+		} catch (NotFoundException e) {
+			throw new RuntimeException("No expenses found for participant with ID: " + participantId);
+		} catch (Exception e) {
+			throw new RuntimeException("Error fetching expenses for participant: " + e.getMessage());
+		}
+	}
 
 	/**
 	 * gets quotes

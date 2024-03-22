@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -73,6 +74,9 @@ public class EventOverviewController {
 
     @FXML
     private Button addExpenseButton;
+    @FXML
+    private Button showExpensesButton;
+
 
     @FXML
     private final ObservableList<String> allOptions = FXCollections
@@ -99,6 +103,7 @@ public class EventOverviewController {
             titleLabel.setText(event.getTitle());
             //inviteCodeLabel.setText(String.valueOf(event.getInviteCode()));
         }
+        showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
     }
     public void setEvent(Event event) {
         this.event = event;
@@ -254,6 +259,35 @@ public class EventOverviewController {
 //        alert.setContentText("A new expense has been added successfully.");
 //        alert.showAndWait();
     }
+
+    // Add to your EventOverviewController class
+    @FXML
+    private void showExpensesForSelectedParticipant(ActionEvent event) {
+        String selectedParticipant = participantDropdown.getSelectionModel().getSelectedItem();
+        if (selectedParticipant == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Participant Selected");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a participant to view their expenses.");
+            alert.showAndWait();
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/ExpenseOverview.fxml")); // Assume this is your Expense scene
+            Parent root = loader.load();
+            ExpenseController controller = loader.getController();
+            controller.initializeExpensesForParticipant(selectedParticipant); // Make sure to implement this in ExpenseController
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow(); // Cast event source to Node before calling getScene()
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle the exception
+        }
+    }
+
 
     /**
      * Here is just a simple regular error message which we
