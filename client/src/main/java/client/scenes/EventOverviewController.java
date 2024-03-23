@@ -290,7 +290,6 @@ public class EventOverviewController {
 //        alert.showAndWait();
     }
 
-    // Add to your EventOverviewController class
     @FXML
     private void showExpensesForSelectedParticipant(ActionEvent event) {
         String selectedParticipant = participantDropdown.getSelectionModel().getSelectedItem();
@@ -304,12 +303,12 @@ public class EventOverviewController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/ExpenseOverview.fxml")); // Assume this is your Expense scene
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/ParaticipantExpenseOverview.fxml")); 
             Parent root = loader.load();
             ExpenseController controller = loader.getController();
-            controller.initializeExpensesForParticipant(selectedParticipant); // Make sure to implement this in ExpenseController
+            controller.initializeExpensesForParticipant(selectedParticipant); 
 
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow(); // Cast event source to Node before calling getScene()
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow(); 
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {

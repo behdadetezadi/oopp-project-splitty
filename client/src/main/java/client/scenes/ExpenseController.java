@@ -76,14 +76,13 @@ public class ExpenseController {
      *
      * @param participantId The ID of the participant whose expenses you want to view.
      */
-    // Add to your ExpenseController class
     public void initializeExpensesForParticipant(String participantId) {
         List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
         expensesListView.getItems().clear();
         double sumOfExpenses = 0;
         for (Expense expense : expenses) {
             expensesListView.getItems().add(expense.toString());
-            sumOfExpenses += expense.getAmount(); // Assuming getAmount() returns the expense amount
+            sumOfExpenses += expense.getAmount(); 
         }
         sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
     }
