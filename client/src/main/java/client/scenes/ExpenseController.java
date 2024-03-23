@@ -1,6 +1,7 @@
 package client.scenes;
 
 import com.google.inject.Inject;
+import commons.Event;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,6 +26,8 @@ import java.io.IOException;
 public class ExpenseController {
     private ServerUtils server;
     private MainController mainController;
+    private Stage primaryStage;
+
     @FXML
     private Button cancelButton;
     @FXML
@@ -36,15 +39,21 @@ public class ExpenseController {
     @FXML
     private TextField amountPaid;
 
+    private Event event;
+
+
+
     /**
      * Expense controller
      * @param server ServerUtils type
      * @param mainController MainCtrl type
      */
     @Inject
-    public ExpenseController(ServerUtils server, MainController mainController) {
+    public ExpenseController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
+        this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
+        this.event = event;
     }
 
     /**
@@ -58,7 +67,8 @@ public class ExpenseController {
      * Initializer method
      */
     @FXML
-    public void initialize() {
+    public void initialize(Event event) {
+        this.event = event;
         cancelButton.setOnAction(this::handleCancelAction);
         addExpenseButton.setOnAction(this::handleAddExpenseAction);
         amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
@@ -127,46 +137,26 @@ public class ExpenseController {
      */
     @FXML
     public void handleCancelAction(ActionEvent event) {
-        try {
-            if (event.getSource() instanceof Button) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Cancel add expense");
-                alert.setHeaderText(null);
-                alert.setContentText("Are you sure you want to cancel?");
-                if(alert.showAndWait().get() == ButtonType.OK){
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/EventOverview.fxml"));
-                    Parent Root = loader.load();
-                    Scene scene = new Scene(Root);
-                    Stage stage = (Stage)((Button) event.getSource()).getScene().getWindow();
-                    stage.setScene(scene);
-                    stage.show();
-                }
-            } else {
-                throw new IllegalStateException();
+        if (event.getSource() instanceof Button) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Cancel add expense");
+            alert.setHeaderText(null);
+            alert.setContentText("Are you sure you want to cancel?");
+            if (alert.showAndWait().get() == ButtonType.OK) {
+                // Switch to the EventOverview scene using MainController
+                mainController.showEventOverview(this.event); // You may need to pass the event object if required
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } else {
+            throw new IllegalStateException();
         }
     }
+
+
+
+
     private void switchToEventOverviewScene() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/EventOverview.fxml"));
-            Parent eventOverviewRoot = loader.load();
+        mainController.showEventOverview(this.event);
 
-            Stage stage = (Stage) addExpenseButton.getScene().getWindow();
-
-            Scene eventOverviewScene = new Scene(eventOverviewRoot);
-            stage.setScene(eventOverviewScene);
-
-            stage.setTitle("Event Overview");
-
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            Window owner = addExpenseButton.getScene().getWindow();
-            AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "Navigation Error", "Failed to return to the Event Overview.");
-        }
     }
 
 }

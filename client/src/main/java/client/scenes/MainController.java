@@ -21,21 +21,44 @@ public class MainController {
     private ExpenseController expenseCtrl;
     private Scene expenseScene;
 
+    private TableOfParticipantsController tableOfParticipantsController;
+    private Scene tableOfParticipantsScene;
+
+    private ContactDetailsCtrl contactDetailsController;
+    private Scene contactDetailsScene;
+
+    private InviteController inviteController;
+    private Scene inviteScene;
+
 
     public void initialize(Stage primaryStage,
                            Pair<StartPageController, Parent> startPair,
                            Pair<EventOverviewController, Parent> eventOverviewPair,
-                           Pair<ExpenseController, Parent> expense) {
+                           Pair<ExpenseController, Parent> expensePair,
+                           Pair<TableOfParticipantsController, Parent> tableOfParticipantsControllerPair,
+                           Pair<ContactDetailsCtrl, Parent> contactDetailsControllerPair,
+                           Pair<InviteController, Parent> inviteControllerPair)
+    {
 
         this.primaryStage = primaryStage;
 
         this.startScene = new Scene(startPair.getValue());
-        this.eventOverviewScene = new Scene(eventOverviewPair.getValue());
-        this.expenseScene = new Scene(expense.getValue());
-
         this.startPageController = startPair.getKey();
+
+        this.eventOverviewScene = new Scene(eventOverviewPair.getValue());
         this.eventOverviewController = eventOverviewPair.getKey();
-        this.expenseCtrl = expense.getKey();
+
+        this.expenseScene = new Scene(expensePair.getValue());
+        this.expenseCtrl = expensePair.getKey();
+
+        this.tableOfParticipantsScene = new Scene(tableOfParticipantsControllerPair.getValue());
+        this.tableOfParticipantsController = tableOfParticipantsControllerPair.getKey();
+
+        this.contactDetailsScene = new Scene(contactDetailsControllerPair.getValue());
+        this.contactDetailsController = contactDetailsControllerPair.getKey();
+
+        this.inviteScene = new Scene(inviteControllerPair.getValue());
+        this.inviteController =  inviteControllerPair.getKey();
 
         // Show initial scene
         showStartPage();
@@ -58,12 +81,33 @@ public class MainController {
     /**
      * Shows the expense adding scene.
      */
-    public void showAddExpense() {
+    public void showAddExpense(Event event) {
         primaryStage.setTitle("Expenses: Add Expense");
         primaryStage.setScene(expenseScene);
-        expenseCtrl.initialize();
+        expenseCtrl.initialize(event);
     }
 
+    public void showTableOfParticipants() {
+        primaryStage.setTitle("Participants");
+        primaryStage.setScene(tableOfParticipantsScene);
+        tableOfParticipantsController.initialize();
+    }
+
+
+
+    public void showContactDetailsPage(){
+        primaryStage.setTitle("ContactDetails");
+        primaryStage.setScene(contactDetailsScene);
+        contactDetailsController.initialize();
+    }
+
+
+    //TODO
+    public void showInvitePage(){
+        primaryStage.setTitle("InvitePage");
+        primaryStage.setScene(inviteScene);
+        //inviteController.initialize();
+    }
 
     /**
      * Shows the event overview scene.
@@ -74,5 +118,4 @@ public class MainController {
         primaryStage.setScene(eventOverviewScene);
         eventOverviewController.setEvent(event);
     }
-
 }

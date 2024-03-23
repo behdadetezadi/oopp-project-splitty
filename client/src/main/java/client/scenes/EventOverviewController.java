@@ -64,13 +64,16 @@ public class EventOverviewController {
     @FXML
     private final ObservableList<String> filteredOptions = FXCollections.observableArrayList();
 
+    private Stage primaryStage;
+
     /**
      * constructor with injection
      * @param server server
      * @param mainController maincontroller
      */
     @Inject
-    public EventOverviewController(ServerUtils server, MainController mainController) {
+    public EventOverviewController(Stage primaryStage,ServerUtils server, MainController mainController) {
+        this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
     }
@@ -137,18 +140,11 @@ public class EventOverviewController {
     @FXML
     private void showParticipants() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().
-                    getResource("/client/scenes/TableOfParticipants.fxml"));
-            Parent participantRoot = loader.load();
-            Scene scene = new Scene(participantRoot);
-            Stage stage = (Stage) root.getScene().getWindow();
-            stage.setScene(scene);
-            stage.show();
+            mainController.showTableOfParticipants();
+
         } catch (IllegalStateException e) {
             e.printStackTrace();
             showErrorAlert("Failed to load the participant scene.");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -261,19 +257,10 @@ public class EventOverviewController {
      */
     @FXML
     public void addExpense(ActionEvent event) {
-        try {
-            if (event.getSource() instanceof Button) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/AddExpense.fxml"));
-                Parent expenseRoot = loader.load();
-                Scene scene = new Scene(expenseRoot);
-                Stage stage = (Stage)((Button) event.getSource()).getScene().getWindow();
-                stage.setScene(scene);
-                stage.show();
-            } else {
-                throw new IllegalStateException();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (event.getSource() instanceof Button) {
+            mainController.showAddExpense(this.event);
+        } else {
+            throw new IllegalStateException();
         }
 
         // this code was here before, it might need to be moved to the method where the expense is actually created

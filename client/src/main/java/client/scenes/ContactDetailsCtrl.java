@@ -25,8 +25,10 @@ import javafx.stage.Stage;
 
 public class ContactDetailsCtrl {
 
-    private final ServerUtils server;
-    private final MainCtrl mainCtrl;
+    private ServerUtils server;
+    private MainController mainController;
+    private Stage primaryStage;
+
     @FXML
     private TextField userNameField;
     @FXML
@@ -50,12 +52,13 @@ public class ContactDetailsCtrl {
     /**
      * QuoteOverview controller
      * @param server   ServerUtils type
-     * @param mainCtrl MainCtrl type
+     *
      */
     @Inject
-    public ContactDetailsCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public ContactDetailsCtrl(Stage primaryStage,ServerUtils server, MainController mainController) {
         this.server = server;
-        this.mainCtrl = mainCtrl;
+        this.mainController = mainController;
+        this.primaryStage = primaryStage;
     }
 
     /**

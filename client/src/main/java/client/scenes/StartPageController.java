@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import commons.Event;
+import jakarta.inject.Inject;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -48,6 +49,17 @@ public class StartPageController {
 
     @FXML
     private ImageView logo;
+
+    private Stage primaryStage;
+    private MainController mainController;
+
+    @Inject
+    public StartPageController(Stage primaryStage, MainController mainController) {
+        this.primaryStage = primaryStage;
+        this.mainController = mainController;
+    }
+
+
 
 
     /**
@@ -147,7 +159,6 @@ public class StartPageController {
 
     }
 
-
     private void animateTextFields() {
         animateTextField(codeInput);
         animateTextField(eventNameInput);
@@ -168,12 +179,13 @@ public class StartPageController {
         Event event = ServerUtils.getEventByInviteCode(inviteCode);
 
         if (event != null) {
-            switchToEventOverview(event); // Switch to event overview page
+            mainController.showEventOverview(event); // Switch to event overview page
         } else {
             showErrorAlert("Invalid invite code. Please try again.");
         }
     }
 
+    /*
     private void switchToEventOverview(Event event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/EventOverview.fxml"));
@@ -193,7 +205,7 @@ public class StartPageController {
             showErrorAlert("Failed to load event overview page.");
         }
     }
-
+    */
     private void showErrorAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -217,7 +229,7 @@ public class StartPageController {
         Event createdEvent = ServerUtils.addEvent(newEvent);
 
         if (createdEvent != null) {
-            switchToEventOverview(createdEvent);
+            mainController.showEventOverview(createdEvent);
         } else {
             showErrorAlert("Failed to create event. Please try again.");
         }

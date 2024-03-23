@@ -1,9 +1,12 @@
 package client.scenes;
 
 
+import client.utils.ServerUtils;
+import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import commons.Event;
 
@@ -13,6 +16,11 @@ import java.util.ResourceBundle;
 import java.util.Scanner;
 
 public class InviteController implements Initializable {
+
+
+    private ServerUtils server;
+    private MainController mainController;
+    private Stage primaryStage;
 
     @FXML
     private Label title;
@@ -25,6 +33,13 @@ public class InviteController implements Initializable {
     @FXML
     private Button submitButton;
 
+
+    @Inject
+    public InviteController(Stage primaryStage,ServerUtils server, MainController mainController) {
+        this.primaryStage = primaryStage;
+        this.server = server;
+        this.mainController = mainController;
+    }
 
     /**
      * handler for the submit button.
