@@ -59,7 +59,74 @@
     -fx-border-color: lightgreen; /* Adjust border color on hover */
 }
 
+.button-delete {
+    -fx-padding: 4px 6px;
+}
+
+.button-delete:hover {
+    -fx-padding: 3px 6px;
+    -fx-font-weight: bold;
+    -fx-text-fill: red;
+}
+
+.button-export {
+    -fx-padding: 4px 6px;
+}
+
 .list-view .list-cell {
     -fx-background-color: transparent; /* Set background color of cells */
     -fx-border-color: transparent; /* Set border color of cells */
+}
+
+.table-view {
+    -fx-base: black;
+    -fx-control-inner-background: black;
+    -fx-background-color: black;
+    -fx-table-cell-border-color: lime;
+    -fx-text-fill: lime;
+    -fx-font-size: 14px;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header {
+    -fx-background-color: lime;
+}
+
+.table-cell {
+    -fx-border-color: transparent;
+    -fx-alignment: center;
+}
+
+.table-row-cell:filled {
+    -fx-border-color: lime;
+    -fx-border-width: 1 0 1 0;
+}
+
+.table-row-cell:filled .table-cell {
+    -fx-border-color: lime;
+    -fx-border-width: 0 1 0 1;
+}
+
+.table-row-cell:empty {
+    -fx-border-width: 0;
+    -fx-background-color: black;
+}
+
+.table-view .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-background-radius: 5em;
+}
+
+.table-view .scroll-bar .thumb {
+    -fx-background-color: lime;
+    -fx-background-insets: 2;
+    -fx-background-radius: 5em;
+}
+
+.table-view .scroll-bar .increment-button,
+.table-view .scroll-bar .decrement-button {
+    -fx-background-color: lime;
 }

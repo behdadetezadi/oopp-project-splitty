@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<?import javafx.scene.layout.HBox?>
+
+<BorderPane prefHeight="335.0" prefWidth="594.0" stylesheets="@/styles.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AdminController">
+   <top>
+      <VBox spacing="10" alignment="CENTER">
+         <padding>
+            <Insets top="10" right="10" bottom="10" left="10"/>
+         </padding>
+         <HBox alignment="CENTER">
+            <Button text="Import Event" onAction="#importEvent"/>
+         </HBox>
+      </VBox>
+   </top>
+   <center>
+      <TableView fx:id="eventsTable" VBox.vgrow="ALWAYS">
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+         <columns>
+            <TableColumn text="Title" fx:id="titleColumn">
+               <cellValueFactory>
+                  <PropertyValueFactory property="title" />
+               </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Creation Date" fx:id="creationDateColumn">
+               <cellValueFactory>
+                  <PropertyValueFactory property="creationDate" />
+               </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Last Activity" fx:id="lastActivityColumn">
+               <cellValueFactory>
+                  <PropertyValueFactory property="lastActivity" />
+               </cellValueFactory>
+            </TableColumn>
+            <TableColumn text="Actions" fx:id="actionsColumn" minWidth="125" sortable="false">
+            </TableColumn>
+         </columns>
+      </TableView>
+   </center>
+</BorderPane>
