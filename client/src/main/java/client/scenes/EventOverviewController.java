@@ -34,7 +34,7 @@ public class EventOverviewController {
     @FXML
     private ListView<String> participantsListView;
     @FXML
-    private ComboBox<String> participantDropdown;
+    private ComboBox<ParticipantOption> participantDropdown;
     @FXML
     private Button showParticipantsButton;
     @FXML
@@ -159,16 +159,15 @@ public class EventOverviewController {
     }
 
     private void initializeParticipants() {
-        // Assume you have a method to get your participants
         List<Participant> participants = event.getPeople();
         if (participants != null) {
-            List<String> participantNames = participants.stream()
-                    .map(Participant::getFirstName)
+            List<ParticipantOption> participantOptions = participants.stream()
+                    .map(p -> new ParticipantOption(p.getId(), p.getFirstName()))
                     .collect(Collectors.toList());
-            participantDropdown.getItems().setAll(participantNames);
-            participantDropdown.getItems().setAll(participantNames);
+            participantDropdown.getItems().setAll(participantOptions);
         }
     }
+
 
     private void initializeOptionsListView() {
         // If you have specific options to show, add them here
@@ -204,7 +203,7 @@ public class EventOverviewController {
     @FXML
     private void applyFromFilter() {
         // Assuming you want to filter based on a selected participant
-        String selectedParticipant = participantDropdown.getSelectionModel().getSelectedItem();
+        ParticipantOption selectedParticipant = participantDropdown.getSelectionModel().getSelectedItem();
         if (selectedParticipant != null) {
             filteredOptions.clear();
             filteredOptions.add("Filtered option for " + selectedParticipant);
@@ -292,8 +291,8 @@ public class EventOverviewController {
 
     @FXML
     private void showExpensesForSelectedParticipant(ActionEvent event) {
-        String selectedParticipant = participantDropdown.getSelectionModel().getSelectedItem();
-        if (selectedParticipant == null) {
+        ParticipantOption selectedOption = participantDropdown.getSelectionModel().getSelectedItem();
+        if (selectedOption == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No Participant Selected");
             alert.setHeaderText(null);
@@ -302,13 +301,14 @@ public class EventOverviewController {
             return;
         }
 
+        long selectedParticipantId = selectedOption.getId();
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/ParaticipantExpenseOverview.fxml")); 
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/ParticipantExpenseOverview.fxml"));
             Parent root = loader.load();
             ExpenseController controller = loader.getController();
-            controller.initializeExpensesForParticipant(selectedParticipant); 
+            controller.initializeExpensesForParticipant(selectedParticipantId); // Adjust this line according to the actual method signature
 
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow(); 
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {
@@ -316,6 +316,7 @@ public class EventOverviewController {
             // Handle the exception
         }
     }
+
 
 
     /**

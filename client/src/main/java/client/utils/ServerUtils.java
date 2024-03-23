@@ -133,7 +133,7 @@ public class ServerUtils {
 	 * @param participantId The unique identifier of the participant.
 	 * @return A list of expenses associated with the given participant.
 	 */
-	public static List<Expense> getExpensesForParticipant(String participantId) {
+	public static List<Expense> getExpensesForParticipant(Long participantId) {
 		try {
 			return client.target(SERVER)
 					.path("api/expenses/participant/{participantId}")

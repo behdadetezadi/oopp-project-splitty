@@ -76,7 +76,7 @@ public class ExpenseController {
      *
      * @param participantId The ID of the participant whose expenses you want to view.
      */
-    public void initializeExpensesForParticipant(String participantId) {
+    public void initializeExpensesForParticipant(Long participantId) {
         List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
         expensesListView.getItems().clear();
         double sumOfExpenses = 0;
