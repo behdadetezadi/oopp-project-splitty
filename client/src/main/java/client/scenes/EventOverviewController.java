@@ -306,7 +306,7 @@ public class EventOverviewController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/ParticipantExpenseOverview.fxml"));
             Parent root = loader.load();
             ExpenseController controller = loader.getController();
-            controller.initializeExpensesForParticipant(selectedParticipantId); // Adjust this line according to the actual method signature
+            controller.initializeExpensesForParticipant(selectedParticipantId); 
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
