@@ -4,25 +4,18 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.collections.ObservableList;
-import javafx.collections.FXCollections;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
@@ -40,27 +33,42 @@ public class TableOfParticipantsController {
     private Event event;
 
 
+    /**
+     * dependency injection
+     * @param primaryStage primary stage
+     * @param server server
+     * @param mainController mainController
+     * @param event Event we are working on
+     */
     @Inject
-    public TableOfParticipantsController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
+    public TableOfParticipantsController(Stage primaryStage, ServerUtils server,
+                                         MainController mainController, Event event) {
         this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
         this.event = event;
     }
 
-
+    /**
+     *
+     * @param event event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+        initialize();
+    }
 
 
     /**
-     *
-     * @param event
+     * initializer method
      */
     @FXML
-    public void initialize(Event event) {
-        this.event = event;
-        loadParticipants();
-        pagination.setPageCount(participants.size());
-        pagination.setPageFactory(this::createPage);
+    public void initialize() {
+        if(event != null) {
+            loadParticipants();
+            pagination.setPageCount(participants.size());
+            pagination.setPageFactory(this::createPage);
+        }
     }
 
     /**

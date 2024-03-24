@@ -79,21 +79,21 @@ public class MainController {
     public void showAddExpense(Event event) {
         primaryStage.setTitle("Expenses: Add Expense");
         primaryStage.setScene(expenseScene);
-        expenseCtrl.initialize(event);
+        expenseCtrl.setEvent(event);
     }
 
     public void showTableOfParticipants(Event event) {
         primaryStage.setTitle("Participants");
         primaryStage.setScene(tableOfParticipantsScene);
-        tableOfParticipantsController.initialize(event);
+        tableOfParticipantsController.setEvent(event);
     }
 
 
 
-    public void showContactDetailsPage(){
+    public void showContactDetailsPage(Event event){
         primaryStage.setTitle("ContactDetails");
         primaryStage.setScene(contactDetailsScene);
-        contactDetailsController.initialize();
+        contactDetailsController.setEvent(event);
     }
 
 

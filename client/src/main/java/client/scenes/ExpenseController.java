@@ -1,26 +1,19 @@
 package client.scenes;
 
+import client.utils.AlertUtils;
+import client.utils.ServerUtils;
+import client.utils.ValidationUtils;
 import com.google.inject.Inject;
 import commons.Event;
+import commons.Expense;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import client.utils.ServerUtils;
-import client.utils.ValidationUtils;
-import client.utils.AlertUtils;
-
-import commons.Expense;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-
-import java.io.IOException;
 
 
 public class ExpenseController {
@@ -44,10 +37,10 @@ public class ExpenseController {
 
     /**
      *
-     * @param primaryStage
-     * @param server
-     * @param mainController
-     * @param event
+     * @param primaryStage primary stage
+     * @param server server
+     * @param mainController mainController
+     * @param event Event
      */
     @Inject
     public ExpenseController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
@@ -65,15 +58,25 @@ public class ExpenseController {
     }
 
     /**
+     * called by mainController
+     * @param event event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+        initialize();
+    }
+
+    /**
      *
-     * @param event
+     *
      */
     @FXML
-    public void initialize(Event event) {
-        this.event = event;
-        cancelButton.setOnAction(this::handleCancelAction);
-        addExpenseButton.setOnAction(this::handleAddExpenseAction);
-        amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
+    public void initialize() {
+        if(event != null) {
+            cancelButton.setOnAction(this::handleCancelAction);
+            addExpenseButton.setOnAction(this::handleAddExpenseAction);
+            amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
+        }
     }
 
     /**
@@ -120,7 +123,8 @@ public class ExpenseController {
         try {
             Expense newExpense = ServerUtils.addExpense(payer, description, amountValue);
             Stage stage = (Stage) addExpenseButton.getScene().getWindow(); // Get the current stage
-            AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage, "Expense Added", "The expense has been successfully added.");
+            AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
+                    "Expense Added", "The expense has been successfully added.");
             switchToEventOverviewScene();
 
             // TODO show success message, navigate to previous scene etc

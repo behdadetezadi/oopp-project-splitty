@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.google.inject.Inject;
 import client.utils.ServerUtils;
+import commons.Event;
 import commons.Participant;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -49,16 +50,31 @@ public class ContactDetailsCtrl {
     private Scene scene;
     private Parent root;
 
+    private Event event;
+
+
+
     /**
-     * QuoteOverview controller
-     * @param server   ServerUtils type
      *
+     * @param primaryStage primary stage
+     * @param server server
+     * @param mainController main controller
      */
     @Inject
     public ContactDetailsCtrl(Stage primaryStage,ServerUtils server, MainController mainController) {
         this.server = server;
         this.mainController = mainController;
         this.primaryStage = primaryStage;
+    }
+
+
+    /**
+     * sets the event and calls initialize (used by maincontroller)
+     * @param event event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+        initialize();
     }
 
     /**
@@ -158,7 +174,8 @@ public class ContactDetailsCtrl {
                 numericIBAN.append(c);
             }
         }
-         //Switching from Long to BigInteger allows handling of IBANs' numeric conversions beyond Long's limit, ensuring accurate validation without overflow errors.
+         //Switching from Long to BigInteger allows handling of IBANs'
+        // numeric conversions beyond Long's limit, ensuring accurate validation without overflow errors.
         BigInteger ibanValue = new BigInteger(numericIBAN.toString());
         return ibanValue.mod(BigInteger.valueOf(97)).equals(BigInteger.ONE);
     }
@@ -180,6 +197,7 @@ public class ContactDetailsCtrl {
      * switches to the startPage scene, probably needs to be moved to the mainController later
      * @param event an event
      */
+    //TODO use maincontroller
     public void switchToStartPageScene(javafx.event.ActionEvent event){
         try {
             root = FXMLLoader.load(Objects.requireNonNull

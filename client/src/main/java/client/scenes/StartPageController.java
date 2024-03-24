@@ -7,19 +7,18 @@ import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.IOException;
 import java.util.Objects;
 
 import static client.utils.AnimationUtil.*;
@@ -53,6 +52,11 @@ public class StartPageController {
     private Stage primaryStage;
     private MainController mainController;
 
+    /**
+     *
+     * @param primaryStage primary stage
+     * @param mainController mainController
+     */
     @Inject
     public StartPageController(Stage primaryStage, MainController mainController) {
         this.primaryStage = primaryStage;
