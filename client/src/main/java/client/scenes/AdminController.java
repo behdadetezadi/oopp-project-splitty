@@ -147,7 +147,20 @@ public class AdminController {
 
                         try {
                             JsonNode jsonNode = objectMapper.readTree(new File(filepath));
-                            System.out.println(jsonNode.get("title").asText() + "found");
+
+                            try {
+                                String title = jsonNode.get("title").asText();
+                                long id = jsonNode.get("id").asLong();
+                                int inviteCode = jsonNode.get("inviteCode").asInt();
+                                Event e = new Event(title);
+                                e.setId(id);
+                                e.setInviteCode(inviteCode);
+
+                            } catch (Exception e) {
+                                System.out.println("could not find correct attributes ");
+                            }
+
+
                         } catch (IOException e) {
                             e.printStackTrace();
                             throw new RuntimeException(e);
