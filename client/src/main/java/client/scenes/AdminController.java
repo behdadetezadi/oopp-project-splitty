@@ -58,6 +58,26 @@ public class AdminController {
         eventsTable.setItems(eventData);
     }
 
+
+    /**
+     * TODO: Does not work yet
+     * method that updates list with new event
+     * @param e the event to add to the list
+     */
+    @FXML
+    public void update(Event e) {
+        eventData.add(e);
+        eventsTable.setItems(eventData);
+        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        creationDateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
+        lastActivityColumn.setCellValueFactory(new PropertyValueFactory<>("lastActivity"));
+
+        setupActionsColumn();
+        eventsTable.setItems(eventData);
+
+    }
+
+
     private void setupActionsColumn() {
         actionsColumn.setCellFactory(param -> new TableCell<>() {
             private final Button deleteButton = new Button("Delete");
@@ -123,8 +143,9 @@ public class AdminController {
     }
 
     /**
-     * TODO Logic for maybe showing a pop-up to fill in the import JSON
+     * method that creates a pop-up where filepath to event can be inserted
      * @param actionEvent button press
+     *
      */
     @FXML
     public void importEvent(ActionEvent actionEvent) {
@@ -138,6 +159,10 @@ public class AdminController {
         TextArea textArea = new TextArea();
         dialogVbox.getChildren().add(textArea);
         Button button = new Button("submit");
+        Event e = new Event();
+        final String[] title = {null};
+        final long[] id = new long[1];
+        final int[] inviteCode = new int[1];
         button.setOnAction(
                 new EventHandler<ActionEvent>() {
                     @Override
@@ -149,12 +174,11 @@ public class AdminController {
                             JsonNode jsonNode = objectMapper.readTree(new File(filepath));
 
                             try {
-                                String title = jsonNode.get("title").asText();
-                                long id = jsonNode.get("id").asLong();
-                                int inviteCode = jsonNode.get("inviteCode").asInt();
-                                Event e = new Event(title);
-                                e.setId(id);
-                                e.setInviteCode(inviteCode);
+                                title[0] = jsonNode.get("title").asText();
+                                id[0] = jsonNode.get("id").asLong();
+                                inviteCode[0] = jsonNode.get("inviteCode").asInt();
+
+
 
                             } catch (Exception e) {
                                 System.out.println("could not find correct attributes ");
@@ -168,7 +192,10 @@ public class AdminController {
                     }
                 }
         );
-
+        e.setTitle(title[0]);
+        e.setId(id[0]);
+        e.setInviteCode(inviteCode[0]);
+        this.update(e);
         
         dialogVbox.getChildren().add(button);
 
