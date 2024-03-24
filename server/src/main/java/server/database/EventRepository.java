@@ -5,6 +5,7 @@ import commons.Expense;
 import commons.Participant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -13,12 +14,13 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
 
     /**
-     * finds all participants of an event through it's id
-     * @param id the event's id
-     * @return a list containing all participants
+     * Finds participants associated with a specific event ID.
+     *
+     * @param eventId the ID of the event
+     * @return list of participants associated with the event
      */
-    @Query("SELECT e FROM Event e WHERE e.id = :id")
-    List<Participant> participantsOfEventById(long id);
+    @Query("SELECT p FROM Participant p JOIN p.eventIds e WHERE e = :eventId")
+    List<Participant> participantsOfEventById(@Param("eventId") long eventId);
 
     /**
      * finds all participants of an event through its title
