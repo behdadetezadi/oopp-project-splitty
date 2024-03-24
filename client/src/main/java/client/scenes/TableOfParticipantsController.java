@@ -135,10 +135,11 @@ public class TableOfParticipantsController {
                     }
 
                     pagination.setPageFactory(this::createPage);
-                    boolean isDeleted = server.deleteParticipant(participantToDelete.getId());
+                    boolean isDeleted = server.deleteParticipant(participantToDelete.getId(), event.getId());
                     if (isDeleted) {
                         loadParticipants();
                     }
+
                 }
             });
         }
@@ -288,10 +289,11 @@ public class TableOfParticipantsController {
             alert.setContentText("The participant has been successfully saved.");
             alert.showAndWait();
             pagination.setPageFactory(this::createPage);
-            boolean isUpdated = server.updateParticipant(participant);
+            boolean isUpdated = server.updateParticipant(event.getId(), updatedParticipant.getId(), updatedParticipant);
             if (isUpdated) {
                 loadParticipants();
             }
+
         });
     }
     /**

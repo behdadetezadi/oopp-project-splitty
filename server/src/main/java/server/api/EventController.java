@@ -147,13 +147,17 @@ public class EventController {
         List<Participant> participants = eventService.findParticipantsByEventId(id);
         return ResponseEntity.ok(participants);
     }
-    @PostMapping("/events/{eventId}/participants")
+    @PostMapping("/{eventId}/participants")
     public ResponseEntity<Participant> addParticipant(@PathVariable long eventId, @RequestBody Participant participant) {
         Participant addedParticipant = eventService.addParticipantToEvent(eventId, participant);
-        return ResponseEntity.ok(addedParticipant);
+        if (addedParticipant != null) {
+            return ResponseEntity.ok(addedParticipant);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @DeleteMapping("/events/{eventId}/participants/{participantId}")
+    @DeleteMapping("/{eventId}/participants/{participantId}")
     public ResponseEntity<Void> removeParticipant(@PathVariable long eventId, @PathVariable long participantId) {
         eventService.removeParticipantFromEvent(eventId, participantId);
         return ResponseEntity.ok().build();
@@ -173,9 +177,6 @@ public class EventController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
-
-
 
     //TODO
 //    /**

@@ -295,32 +295,42 @@ public class ServerUtils {
 	}
 
 	/**
-	 * updates a participant
-	 * @param participant Participant
-	 * @return a boolean
+	 * updating a participant
+	 * @param eventId long
+	 * @param participantId long
+	 * @param participantDetails participant
+	 * @return participant
 	 */
-	public static boolean updateParticipant(Participant participant) {
+	public static boolean updateParticipant(long eventId, long participantId, Participant participantDetails) {
 		try {
 			Response response = client.target(SERVER)
-					.path("api/participants/" + participant.getId())
+					.path("api/events/" + eventId + "/participants/" + participantId)
 					.request(APPLICATION_JSON)
-					.put(Entity.entity(participant, APPLICATION_JSON));
+					.put(Entity.entity(participantDetails, APPLICATION_JSON));
 
-			return response.getStatus() == Response.Status.OK.getStatusCode();
+			if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+				Participant updatedParticipant = response.readEntity(Participant.class);
+				return updatedParticipant != null; 
+			} else {
+				System.err.println("Update failed with status code: " + response.getStatus());
+				return false;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
+
+
 	/**
 	 * updates a participant
 	 * @param participantId long
 	 * @return a boolean
 	 */
-	public static boolean deleteParticipant(long participantId) {
+	public static boolean deleteParticipant(long participantId, long eventId) {
 		try {
 			Response response = client.target(SERVER)
-					.path("api/participants/" + participantId)
+					.path("api/events/"+eventId+"/participants/" + participantId)
 					.request(APPLICATION_JSON)
 					.delete();
 
