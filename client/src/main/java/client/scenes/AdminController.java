@@ -1,12 +1,15 @@
 package client.scenes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import commons.Event;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -21,6 +24,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class AdminController {
     @FXML
@@ -106,7 +113,7 @@ public class AdminController {
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(new File("client/src/main/resources/JSON/"+ event.getTitle() + ".json"), event);
+            objectMapper.writeValue(new File( event.getTitle() + ".json"), event);
 
 
         } catch (IOException e) {
@@ -121,8 +128,45 @@ public class AdminController {
      */
     @FXML
     public void importEvent(ActionEvent actionEvent) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+
+        final Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        VBox dialogVbox = new VBox(20);
+        dialogVbox.getChildren().add(new Text("Please enter file path: "));
+        TextArea textArea = new TextArea();
+        dialogVbox.getChildren().add(textArea);
+        Button button = new Button("submit");
+        button.setOnAction(
+                new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        String filepath = textArea.getText();
+                        System.out.println(filepath);
+
+                        try {
+                            JsonNode jsonNode = objectMapper.readTree(new File(filepath));
+                            System.out.println(jsonNode.get("title").asText() + "found");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+        );
+
+        
+        dialogVbox.getChildren().add(button);
+
+        Scene dialogScene = new Scene(dialogVbox, 300, 200);
+        dialog.setScene(dialogScene);
+        dialog.show();
+
+
 
     }
+
 
     /**
      * TODO only for testing
