@@ -1,5 +1,8 @@
 package client.scenes;
 
+import client.utils.ServerUtils;
+import com.google.inject.Inject;
+import commons.Event;
 import commons.Participant;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -31,11 +34,30 @@ public class TableOfParticipantsController {
 
     private final ObservableList<Participant> participants = FXCollections.observableArrayList();
 
+    private ServerUtils server;
+    private MainController mainController;
+    private Stage primaryStage;
+    private Event event;
+
+
+    @Inject
+    public TableOfParticipantsController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
+        this.primaryStage = primaryStage;
+        this.server = server;
+        this.mainController = mainController;
+        this.event = event;
+    }
+
+
+
+
     /**
-     * this is an initializer method.
+     *
+     * @param event
      */
     @FXML
-    public void initialize() {
+    public void initialize(Event event) {
+        this.event = event;
         loadParticipants();
         pagination.setPageCount(participants.size());
         pagination.setPageFactory(this::createPage);
@@ -46,17 +68,7 @@ public class TableOfParticipantsController {
      */
     @FXML
     private void handleBackButton() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource
-                    ("/client/scenes/EventOverview.fxml"));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) pagination.getScene().getWindow();
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        mainController.showEventOverview(this.event);
     }
 
     /**

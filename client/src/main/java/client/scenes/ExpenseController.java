@@ -42,11 +42,12 @@ public class ExpenseController {
     private Event event;
 
 
-
     /**
-     * Expense controller
-     * @param server ServerUtils type
-     * @param mainController MainCtrl type
+     *
+     * @param primaryStage
+     * @param server
+     * @param mainController
+     * @param event
      */
     @Inject
     public ExpenseController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
@@ -64,7 +65,8 @@ public class ExpenseController {
     }
 
     /**
-     * Initializer method
+     *
+     * @param event
      */
     @FXML
     public void initialize(Event event) {

@@ -67,9 +67,10 @@ public class EventOverviewController {
     private Stage primaryStage;
 
     /**
-     * constructor with injection
-     * @param server server
-     * @param mainController maincontroller
+     *
+     * @param primaryStage
+     * @param server
+     * @param mainController
      */
     @Inject
     public EventOverviewController(Stage primaryStage,ServerUtils server, MainController mainController) {
@@ -126,21 +127,13 @@ public class EventOverviewController {
         });
     }
 
-
-
-
-
-
-
-
-
     /**
      * method to switch over to the participant scene when clicked upon
      */
     @FXML
     private void showParticipants() {
         try {
-            mainController.showTableOfParticipants();
+            mainController.showTableOfParticipants(this.event);
 
         } catch (IllegalStateException e) {
             e.printStackTrace();
@@ -229,31 +222,9 @@ public class EventOverviewController {
         alert.showAndWait();
     }
 
-
-//    /**
-//     * edit participant method //TODO
-//     */
-//    @FXML
-//    public void editParticipants() {
-//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//        alert.setTitle("Participant Edited");
-//        alert.setHeaderText(null);
-//        alert.setContentText("The participant's details have been updated successfully.");
-//        alert.showAndWait();
-//    }
-
-
-//    /**
-//     * add participant //TODO
-//     */
-//    @FXML
-//    public void addParticipant() {
-//        // Action for adding a new participant
-//    }
-
     /**
-     * This method switches between EventOverview and
-     * AddExpense when the button is clicked
+     *
+     * @param event
      */
     @FXML
     public void addExpense(ActionEvent event) {
@@ -262,13 +233,6 @@ public class EventOverviewController {
         } else {
             throw new IllegalStateException();
         }
-
-        // this code was here before, it might need to be moved to the method where the expense is actually created
-//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//        alert.setTitle("Expense Added");
-//        alert.setHeaderText(null);
-//        alert.setContentText("A new expense has been added successfully.");
-//        alert.showAndWait();
     }
 
     /**
@@ -283,6 +247,5 @@ public class EventOverviewController {
         alert.setContentText(errorMessage);
         alert.showAndWait();
     }
-
 
 }

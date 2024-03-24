@@ -71,15 +71,10 @@ public class MainController {
         startPageController.initialize();
     }
 
-    /*
-    private void showOverview() {
-        primaryStage.setTitle("Overview");
-        primaryStage.setScene(expenseScene);
-        expenseCtrl.initialize();
-    }
-    */
+
     /**
-     * Shows the expense adding scene.
+     *
+     * @param event
      */
     public void showAddExpense(Event event) {
         primaryStage.setTitle("Expenses: Add Expense");
@@ -87,10 +82,10 @@ public class MainController {
         expenseCtrl.initialize(event);
     }
 
-    public void showTableOfParticipants() {
+    public void showTableOfParticipants(Event event) {
         primaryStage.setTitle("Participants");
         primaryStage.setScene(tableOfParticipantsScene);
-        tableOfParticipantsController.initialize();
+        tableOfParticipantsController.initialize(event);
     }
 
 
