@@ -276,4 +276,62 @@ public class ServerUtils {
 		}
 	}
 
+	/**
+	 * adds participant to an event
+	 * @param eventId long
+	 * @param participant a participant
+	 * @return a participant
+	 */
+	public static Participant addParticipantToEvent(long eventId, Participant participant) {
+		try {
+			return client.target(SERVER)
+					.path("api/events/" + eventId + "/participants")
+					.request(APPLICATION_JSON)
+					.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * updates a participant
+	 * @param participant Participant
+	 * @return a boolean
+	 */
+	public static boolean updateParticipant(Participant participant) {
+		try {
+			Response response = client.target(SERVER)
+					.path("api/participants/" + participant.getId())
+					.request(APPLICATION_JSON)
+					.put(Entity.entity(participant, APPLICATION_JSON));
+
+			return response.getStatus() == Response.Status.OK.getStatusCode();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	/**
+	 * updates a participant
+	 * @param participantId long
+	 * @return a boolean
+	 */
+	public static boolean deleteParticipant(long participantId) {
+		try {
+			Response response = client.target(SERVER)
+					.path("api/participants/" + participantId)
+					.request(APPLICATION_JSON)
+					.delete();
+
+			return response.getStatus() == Response.Status.NO_CONTENT.getStatusCode();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+
+
+
 }

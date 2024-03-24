@@ -90,7 +90,7 @@ public class EventOverviewController {
         if (event != null) {
             titleLabel.setText(event.getTitle());
             titleLabel.setOnMouseClicked(event -> editTitle());
-            initializeParticipants();
+//            initializeParticipants();
             //inviteCodeLabel.setText(String.valueOf(event.getInviteCode()));
         }
     }
@@ -102,8 +102,22 @@ public class EventOverviewController {
     public void setEvent(Event event) {
         this.event = event;
         initialize();
+        loadParticipants();
         animateLabels();
         animateButtonsText();
+    }
+
+    /**
+     * loads participants / Trying something and commented out intiialize participants methods
+     */
+    private void loadParticipants() {
+        if (event != null) {
+            List<Participant> fetchedParticipants = ServerUtils.getParticipantsByEventId(event.getId());
+//            ObservableList<String> participantNames = FXCollections.observableArrayList(
+//                    fetchedParticipants.stream().map(Participant::getFirstName).collect(Collectors.toList())
+//            );
+//            participantsListView.setItems(participantNames);
+        }
     }
 
     /**
@@ -137,17 +151,17 @@ public class EventOverviewController {
         }
     }
 
-    private void initializeParticipants() {
-        // Assume you have a method to get your participants
-        List<Participant> participants = event.getPeople();
-        if (participants != null) {
-            List<String> participantNames = participants.stream()
-                    .map(Participant::getFirstName)
-                    .collect(Collectors.toList());
-            participantDropdown.getItems().setAll(participantNames);
-            participantDropdown.getItems().setAll(participantNames);
-        }
-    }
+//    private void initializeParticipants() {
+//        // Assume you have a method to get your participants
+//        List<Participant> participants = event.getPeople();
+//        if (participants != null) {
+//            List<String> participantNames = participants.stream()
+//                    .map(Participant::getFirstName)
+//                    .collect(Collectors.toList());
+//            participantDropdown.getItems().setAll(participantNames);
+//            participantDropdown.getItems().setAll(participantNames);
+//        }
+//    }
 
     private void initializeOptionsListView() {
         // If you have specific options to show, add them here
@@ -244,5 +258,13 @@ public class EventOverviewController {
         alert.setContentText(errorMessage);
         alert.showAndWait();
     }
+
+    /**
+     * self explanatory
+     */
+    public void refreshParticipants() {
+        loadParticipants();
+    }
+
 
 }

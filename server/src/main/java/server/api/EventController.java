@@ -147,9 +147,37 @@ public class EventController {
         List<Participant> participants = eventService.findParticipantsByEventId(id);
         return ResponseEntity.ok(participants);
     }
+    @PostMapping("/events/{eventId}/participants")
+    public ResponseEntity<Participant> addParticipant(@PathVariable long eventId, @RequestBody Participant participant) {
+        Participant addedParticipant = eventService.addParticipantToEvent(eventId, participant);
+        return ResponseEntity.ok(addedParticipant);
+    }
+
+    @DeleteMapping("/events/{eventId}/participants/{participantId}")
+    public ResponseEntity<Void> removeParticipant(@PathVariable long eventId, @PathVariable long participantId) {
+        eventService.removeParticipantFromEvent(eventId, participantId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{eventId}/participants/{participantId}")
+    public ResponseEntity<Participant> updateParticipantInEvent(
+            @PathVariable Long eventId,
+            @PathVariable Long participantId,
+            @RequestBody Participant participantDetails) {
+        try {
+            Participant updatedParticipant = eventService.updateParticipantInEvent(eventId, participantId, participantDetails);
+            return ResponseEntity.ok(updatedParticipant);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 
 
- //TODO
+
+
+    //TODO
 //    /**
 //     * event updates
 //     * @param eventId long number

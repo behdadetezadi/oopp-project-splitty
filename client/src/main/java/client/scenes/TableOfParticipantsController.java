@@ -135,6 +135,10 @@ public class TableOfParticipantsController {
                     }
 
                     pagination.setPageFactory(this::createPage);
+                    boolean isDeleted = server.deleteParticipant(participantToDelete.getId());
+                    if (isDeleted) {
+                        loadParticipants();
+                    }
                 }
             });
         }
@@ -173,11 +177,11 @@ public class TableOfParticipantsController {
      * loaded before the method create Page executes
      */
     private void loadParticipants() {
-        if (event != null) {
-            List<Participant> fetchedParticipants = ServerUtils.getParticipantsByEventId(event.getId());
-            participants.clear();
-            participants.addAll(fetchedParticipants);
-        }
+        List<Participant> fetchedParticipants = ServerUtils.getParticipantsByEventId(event.getId());
+        participants.clear();
+        participants.addAll(fetchedParticipants);
+        pagination.setPageCount(Math.max(1, participants.size()));
+        pagination.setPageFactory(this::createPage);
     }
 
 
@@ -284,6 +288,10 @@ public class TableOfParticipantsController {
             alert.setContentText("The participant has been successfully saved.");
             alert.showAndWait();
             pagination.setPageFactory(this::createPage);
+            boolean isUpdated = server.updateParticipant(participant);
+            if (isUpdated) {
+                loadParticipants();
+            }
         });
     }
     /**
@@ -398,6 +406,11 @@ public class TableOfParticipantsController {
             int newPageCount = participants.size();
             pagination.setPageCount(newPageCount);
             pagination.setPageFactory(this::createPage);
+            Participant addedParticipant = server.addParticipantToEvent(event.getId(), newParticipant);
+            if (addedParticipant != null) {
+                loadParticipants();
+            }
+
         });
     }
 

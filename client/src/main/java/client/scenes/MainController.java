@@ -112,5 +112,7 @@ public class MainController {
         primaryStage.setTitle("Event Overview");
         primaryStage.setScene(eventOverviewScene);
         eventOverviewController.setEvent(event);
+        eventOverviewController.refreshParticipants();
+
     }
 }
