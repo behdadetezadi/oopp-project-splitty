@@ -7,6 +7,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AdminControllerTest {
 
+
+    /**
+     * TBA
+     */
     @Test
     void importEvent() {
         Event event = new Event("chilling");

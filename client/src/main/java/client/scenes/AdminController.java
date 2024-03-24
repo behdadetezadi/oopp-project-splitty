@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.AlertUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import commons.Event;
@@ -133,7 +134,7 @@ public class AdminController {
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writeValue(new File( event.getTitle() + ".json"), event);
+            objectMapper.writeValue(new File( "client/src/main/resources/JSON/" + event.getTitle() + ".json"), event);
 
 
         } catch (IOException e) {
@@ -153,9 +154,11 @@ public class AdminController {
 
 
         final Stage dialog = new Stage();
+
         dialog.initModality(Modality.APPLICATION_MODAL);
         VBox dialogVbox = new VBox(20);
-        dialogVbox.getChildren().add(new Text("Please enter file path: "));
+        Label label = new Label("Please enter file path: ");
+        dialogVbox.getChildren().add(label);
         TextArea textArea = new TextArea();
         dialogVbox.getChildren().add(textArea);
         Button button = new Button("submit");
@@ -167,7 +170,11 @@ public class AdminController {
                 new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        String filepath = textArea.getText();
+
+
+
+                    String filepath = textArea.getText();
+                    filepath = filepath.strip();
                         System.out.println(filepath);
 
                         try {
@@ -177,16 +184,22 @@ public class AdminController {
                                 title[0] = jsonNode.get("title").asText();
                                 id[0] = jsonNode.get("id").asLong();
                                 inviteCode[0] = jsonNode.get("inviteCode").asInt();
+                                AlertUtils.showInformationAlert("Event added!", "you can close the dialogue window");
+
 
 
 
                             } catch (Exception e) {
                                 System.out.println("could not find correct attributes ");
+                                AlertUtils.showErrorAlert("Conversion failed",
+                                        "could not make an event from given json file");
                             }
 
 
                         } catch (IOException e) {
                             e.printStackTrace();
+                            AlertUtils.showErrorAlert("File not found", "could not find given json file");
+
                             throw new RuntimeException(e);
                         }
                     }
@@ -196,12 +209,14 @@ public class AdminController {
         e.setId(id[0]);
         e.setInviteCode(inviteCode[0]);
         this.update(e);
-        
+
         dialogVbox.getChildren().add(button);
 
         Scene dialogScene = new Scene(dialogVbox, 300, 200);
+        dialogScene.getStylesheets().add("styles.css");
         dialog.setScene(dialogScene);
         dialog.show();
+
 
 
 

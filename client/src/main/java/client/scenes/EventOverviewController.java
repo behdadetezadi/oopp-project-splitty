@@ -228,6 +228,17 @@ public class EventOverviewController {
     public void sendInvites() {
 
         try {
+
+            FXMLLoader loader = new FXMLLoader(getClass().
+                    getResource("/client/scenes/AdminOverview.fxml"));
+            Parent inviteRoot = loader.load();
+            Scene scene = new Scene(inviteRoot);
+            Stage stage = (Stage) root.getScene().getWindow();
+            stage.setScene(scene);
+
+            AdminController controller = loader.getController();
+            stage.show();
+            /*
             FXMLLoader loader = new FXMLLoader(getClass().
                     getResource("/client/scenes/inviteScene.fxml"));
             Parent inviteRoot = loader.load();
@@ -238,6 +249,8 @@ public class EventOverviewController {
             InviteController controller = loader.getController();
             controller.initData(this.event);
             stage.show();
+
+             */
         } catch (IllegalStateException e) {
             e.printStackTrace();
             showErrorAlert("Failed to load the invite scene.");
