@@ -173,9 +173,11 @@ public class TableOfParticipantsController {
      * loaded before the method create Page executes
      */
     private void loadParticipants() {
-        participants.clear();
-        List<Participant> fetchedParticipants = server.getAllParticipants();
-        participants.addAll(fetchedParticipants);
+        if (event != null) {
+            List<Participant> fetchedParticipants = ServerUtils.getParticipantsByEventId(event.getId());
+            participants.clear();
+            participants.addAll(fetchedParticipants);
+        }
     }
 
 

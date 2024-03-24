@@ -253,4 +253,27 @@ public class ServerUtils {
 		}
 	}
 
+	/**
+	 * get the participants by the event id
+	 * @param eventId as a long number
+	 * @return an array list of participants
+	 */
+	public static List<Participant> getParticipantsByEventId(long eventId) {
+		try {
+			Response response = client.target(SERVER)
+					.path("api/events/" + eventId + "/participants")
+					.request(MediaType.APPLICATION_JSON)
+					.get();
+			if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+				return response.readEntity(new GenericType<List<Participant>>(){});
+			} else {
+				System.err.println("Error getting participants for event with id: " + eventId + ", Status code: " + response.getStatus());
+				return Collections.emptyList();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+
 }

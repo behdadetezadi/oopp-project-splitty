@@ -124,7 +124,7 @@ public class EventService {
      * @param id id of event
      * @return list containing all participants
      */
-    public List<Participant> getParticipantsById(long id) {
+    public List<Participant> findParticipantsByEventId(long id) {
         return eventRepository.participantsOfEventById(id);
     }
     /**

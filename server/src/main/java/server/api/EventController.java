@@ -137,6 +137,17 @@ public class EventController {
         }
     }
 
+    /**
+     * finds participants by the event id
+     * @param id as a long number
+     * @return an array list of participants if possible (need to modify this later on for try-catch)
+     */
+    @GetMapping("/{id}/participants")
+    public ResponseEntity<List<Participant>> getParticipantsByEventId(@PathVariable Long id) {
+        List<Participant> participants = eventService.findParticipantsByEventId(id);
+        return ResponseEntity.ok(participants);
+    }
+
 
  //TODO
 //    /**
