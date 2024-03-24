@@ -1,5 +1,6 @@
 package client.scenes;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import commons.Event;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,10 +12,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AdminController {
     @FXML
@@ -92,11 +98,20 @@ public class AdminController {
     }
 
     /**
-     * TODO Logic to export the event data as JSON
+     * method that exports given event as json
      * @param event button press
      */
     @FXML
-    private void exportEvent(Event event) {
+    public void exportEvent(Event event) {
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.writeValue(new File("client/src/main/resources/JSON/"+ event.getTitle() + ".json"), event);
+
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
 
     }
 

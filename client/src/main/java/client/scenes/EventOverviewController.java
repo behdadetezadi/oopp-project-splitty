@@ -272,6 +272,7 @@ public class EventOverviewController {
     /**
      * This method switches between EventOverview and
      * AddExpense when the button is clicked
+     * @param event tba
      */
     @FXML
     public void addExpense(ActionEvent event) {
