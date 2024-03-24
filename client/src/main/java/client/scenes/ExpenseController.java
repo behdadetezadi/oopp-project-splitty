@@ -6,10 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import client.utils.ServerUtils;
 import client.utils.ValidationUtils;
@@ -20,6 +17,11 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.io.IOException;
+
+
+import commons.Expense;
+import java.util.List;
+
 
 
 public class ExpenseController {
@@ -35,6 +37,11 @@ public class ExpenseController {
     private TextField expenseDescription;
     @FXML
     private TextField amountPaid;
+    // Add a ListView for displaying participant expenses
+    @FXML
+    private ListView<String> expensesListView; // Assume this ListView is defined in your FXML
+    @FXML
+    private Label sumOfExpensesLabel;
 
     /**
      * Expense controller
@@ -63,6 +70,23 @@ public class ExpenseController {
         addExpenseButton.setOnAction(this::handleAddExpenseAction);
         amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
     }
+
+    /**
+     * Integrates the viewing of expenses for a selected participant.
+     *
+     * @param participantId The ID of the participant whose expenses you want to view.
+     */
+    public void initializeExpensesForParticipant(Long participantId) {
+        List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
+        expensesListView.getItems().clear();
+        double sumOfExpenses = 0;
+        for (Expense expense : expenses) {
+            expensesListView.getItems().add(expense.toString());
+            sumOfExpenses += expense.getAmount(); 
+        }
+        sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
+    }
+
 
     /**
      * This method validates input for the amount
@@ -148,6 +172,7 @@ public class ExpenseController {
             throw new RuntimeException(e);
         }
     }
+    @FXML
     private void switchToEventOverviewScene() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/EventOverview.fxml"));

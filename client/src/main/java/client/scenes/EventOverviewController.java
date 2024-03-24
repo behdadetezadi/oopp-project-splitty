@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -33,7 +34,7 @@ public class EventOverviewController {
     @FXML
     private ListView<String> participantsListView;
     @FXML
-    private ComboBox<String> participantDropdown;
+    private ComboBox<ParticipantOption> participantDropdown;
     @FXML
     private Button showParticipantsButton;
     @FXML
@@ -58,6 +59,10 @@ public class EventOverviewController {
     private Button sendInvitesButton;
     @FXML
     private Button addExpenseButton;
+    @FXML
+    private Button showExpensesButton;
+
+
     @FXML
     private final ObservableList<String> allOptions = FXCollections
             .observableArrayList("1", "2");
@@ -93,6 +98,7 @@ public class EventOverviewController {
             initializeParticipants();
             //inviteCodeLabel.setText(String.valueOf(event.getInviteCode()));
         }
+        showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
     }
 
     /**
@@ -153,16 +159,15 @@ public class EventOverviewController {
     }
 
     private void initializeParticipants() {
-        // Assume you have a method to get your participants
         List<Participant> participants = event.getPeople();
         if (participants != null) {
-            List<String> participantNames = participants.stream()
-                    .map(Participant::getFirstName)
+            List<ParticipantOption> participantOptions = participants.stream()
+                    .map(p -> new ParticipantOption(p.getId(), p.getFirstName()))
                     .collect(Collectors.toList());
-            participantDropdown.getItems().setAll(participantNames);
-            participantDropdown.getItems().setAll(participantNames);
+            participantDropdown.getItems().setAll(participantOptions);
         }
     }
+
 
     private void initializeOptionsListView() {
         // If you have specific options to show, add them here
@@ -198,7 +203,7 @@ public class EventOverviewController {
     @FXML
     private void applyFromFilter() {
         // Assuming you want to filter based on a selected participant
-        String selectedParticipant = participantDropdown.getSelectionModel().getSelectedItem();
+        ParticipantOption selectedParticipant = participantDropdown.getSelectionModel().getSelectedItem();
         if (selectedParticipant != null) {
             filteredOptions.clear();
             filteredOptions.add("Filtered option for " + selectedParticipant);
@@ -297,6 +302,36 @@ public class EventOverviewController {
 //        alert.setContentText("A new expense has been added successfully.");
 //        alert.showAndWait();
     }
+
+    @FXML
+    private void showExpensesForSelectedParticipant(ActionEvent event) {
+        ParticipantOption selectedOption = participantDropdown.getSelectionModel().getSelectedItem();
+        if (selectedOption == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Participant Selected");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a participant to view their expenses.");
+            alert.showAndWait();
+            return;
+        }
+
+        long selectedParticipantId = selectedOption.getId();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/ParticipantExpenseOverview.fxml"));
+            Parent root = loader.load();
+            ExpenseController controller = loader.getController();
+            controller.initializeExpensesForParticipant(selectedParticipantId); 
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle the exception
+        }
+    }
+
+
 
     /**
      * Here is just a simple regular error message which we
