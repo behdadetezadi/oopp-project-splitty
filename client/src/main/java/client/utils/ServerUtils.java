@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import jakarta.ws.rs.BadRequestException;
@@ -228,5 +229,28 @@ public class ServerUtils {
             // Handle exception appropriately
         }
     }
+
+	/**
+	 * gets all participants (will need changing for different events )
+	 * @return an arrray list of participants
+	 */
+	public static List<Participant> getAllParticipants() {
+		try {
+			Response response = client.target(SERVER)
+					.path("api/participants")
+					.request(MediaType.APPLICATION_JSON)
+					.get();
+
+			if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+				return response.readEntity(new GenericType<List<Participant>>(){});
+			} else {
+				System.err.println("Error fetching participants: " + response.getStatus());
+				return Collections.emptyList();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
 
 }

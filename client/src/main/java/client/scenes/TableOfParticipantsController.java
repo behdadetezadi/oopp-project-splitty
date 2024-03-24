@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 public class TableOfParticipantsController {
@@ -64,11 +65,9 @@ public class TableOfParticipantsController {
      */
     @FXML
     public void initialize() {
-        if(event != null) {
-            loadParticipants();
-            pagination.setPageCount(participants.size());
-            pagination.setPageFactory(this::createPage);
-        }
+        loadParticipants();
+        pagination.setPageCount(Math.max(1, participants.size()));
+        pagination.setPageFactory(this::createPage);
     }
 
     /**
@@ -174,15 +173,11 @@ public class TableOfParticipantsController {
      * loaded before the method create Page executes
      */
     private void loadParticipants() {
-        participants.addAll(
-                new Participant("johnDoe", "John", "Doe","john.doe@student.tudelft.com","A1","B2",
-                        new HashMap<>(), new HashMap<>(), new HashSet<>(),"English"),
-                new Participant("janeDoe", "Jane", "Doe","jane.doe@student.tudelft.com","A1","B2",
-                        new HashMap<>(), new HashMap<>(), new HashSet<>(),"Dutch"),
-                new Participant("joshDoe", "Josh", "Doe","josh.doe@student.tudelft.com","A1","B2",
-                        new HashMap<>(), new HashMap<>(), new HashSet<>(),"English")
-        );
+        participants.clear();
+        List<Participant> fetchedParticipants = server.getAllParticipants();
+        participants.addAll(fetchedParticipants);
     }
+
 
     /**
      * edit dialog used to change our participant and the edit button
