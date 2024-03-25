@@ -23,6 +23,15 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Participant> participantsOfEventById(@Param("eventId") long eventId);
 
     /**
+     * Finds expenses associated with a specific event ID.
+     *
+     * @param eventId the ID of the event
+     * @return list of expenses associated with the event
+     */
+    @Query("SELECT p FROM Expense p JOIN p.eventIds e WHERE e = :eventId")
+    List<Expense> expensesOfEventById(@Param("eventId") long eventId);
+
+    /**
      * finds all participants of an event through its title
      * added this method just in case, I think the id method
      * would work better.

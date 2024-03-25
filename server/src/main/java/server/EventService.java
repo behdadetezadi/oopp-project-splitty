@@ -6,6 +6,7 @@ import commons.Participant;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 import server.database.EventRepository;
+import server.database.ExpenseRepository;
 import server.database.ParticipantRepository;
 
 import java.util.*;
@@ -17,16 +18,20 @@ public class EventService {
     //private final Map<Long, Event> events = new HashMap<>();
     private final EventRepository eventRepository;
     private final ParticipantRepository participantRepository;
+    private final ExpenseRepository expenseRepository;
 
     //private long nextId = 1;
     /**
      * constructor
-     * @param eventRepository this eventRepository
+     *
+     * @param eventRepository       this eventRepository
      * @param participantRepository participant repo
+     * @param expenseRepository the expense repository
      */
-    public EventService(EventRepository eventRepository, ParticipantRepository participantRepository) {
+    public EventService(EventRepository eventRepository, ParticipantRepository participantRepository, ExpenseRepository expenseRepository) {
         this.eventRepository = eventRepository;
         this.participantRepository=participantRepository;
+        this.expenseRepository = expenseRepository;
     }
 
     /**
@@ -228,10 +233,73 @@ public class EventService {
         participant.setLanguageChoice(participantDetails.getLanguageChoice());
 
 
-        Participant updatedParticipant = participantRepository.save(participant);
-        return updatedParticipant;
+        return participantRepository.save(participant);
     }
 
+    /**
+     * get expenses of an event by the id
+     * @param id id of event
+     * @return list containing all expenses
+     */
+    public List<Expense> findExpensesByEventId(long id) {
+        return eventRepository.expensesOfEventById(id);
+    }
+
+    /**
+     * adds expense to an event
+     * @param eventId long
+     * @param expense expense
+     * @return an expense
+     */
+    public Expense addExpenseToEvent(long eventId, Expense expense) {
+        expenseRepository.save(expense);
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+        event.getExpenses().add(expense);
+        eventRepository.save(event);
+        return expense;
+    }
+
+    /**
+     * remove expense from an event
+     * @param eventId long
+     * @param expenseId long
+     */
+    public void removeExpenseFromEvent(long eventId, long expenseId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+        event.setExpenses(event.getExpenses().stream()
+                .filter(p -> p.getId() != expenseId)
+                .collect(Collectors.toList()));
+        eventRepository.save(event);
+    }
+
+    /**
+     * updates an expense in the event
+     * @param eventId the event
+     * @param expenseId the expense to be updated
+     * @param updatedExpense the updated expense
+     * @return the updated expense
+     */
+    public Expense updateExpenseInEvent(Long eventId, Long expenseId, Expense updatedExpense) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
+        Expense expense = event.getExpenses()
+                .stream()
+                .filter(p -> p.getId() == expenseId)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Expense with ID: " + expenseId
+                        + " not found in event with ID: " + eventId));
+        expense.setParticipant(updatedExpense.getParticipant());
+        expense.setCategory(updatedExpense.getCategory());
+        expense.setAmount(updatedExpense.getAmount());
+        expense.setCurrency(updatedExpense.getCurrency());
+        expense.setDate(updatedExpense.getDate());
+        expense.setSplittingOption(updatedExpense.getSplittingOption());
+        expense.setExpenseType(updatedExpense.getExpenseType());
+
+        return expenseRepository.save(expense);
+    }
 
 
 }
