@@ -139,6 +139,8 @@ public class AdminController {
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
+            AlertUtils.showInformationAlert("could not write to file", "could not find path");
+
         }
 
     }
