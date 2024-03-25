@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import server.ExpenseService;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -34,7 +35,7 @@ class ExpenseControllerTest {
     @Test
     void addExpenseTest() {
         Expense expense = new Expense(new Participant("Jodie","Zhao"),"CSE tuition fee",16000,
-                "EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
+                "EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education", new HashSet<>());
 
         when(expenseService.createExpense(any(Expense.class))).thenReturn(ResponseEntity.ok("Expense created successfully"));
         ResponseEntity<Void> response = controller.add(expense);
@@ -48,9 +49,9 @@ class ExpenseControllerTest {
     @Test
     void getAllExpensesTest() {
         Expense expense1=new Expense(new Participant("Carlos","Sainz"),"dinner",16000,
-                "EUR","2023-08-31", List.of(new Participant("Carlos","Sainz")),"Food");
+                "EUR","2023-08-31", List.of(new Participant("Carlos","Sainz")),"Food", new HashSet<>());
         Expense expense2=new Expense(new Participant("Steph","Curry"),"dinner",16000,
-                "EUR","2023-08-31",List.of(new Participant("Steph","Curry")),"Food");
+                "EUR","2023-08-31",List.of(new Participant("Steph","Curry")),"Food", new HashSet<>());
         List<Expense> expenses = Arrays.asList(expense1, expense2);
 
         when(expenseService.getAllExpenses()).thenReturn(expenses);
@@ -65,7 +66,7 @@ class ExpenseControllerTest {
     void filterExpensesByDateTest() {
         String date = "2023-08-27";
         Expense expense=new Expense(new Participant("Jodie","Zhao"),"CSE tuition fee",16000,
-                "EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
+                "EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education", new HashSet<>());
         List<Expense> expenses = List.of(expense);
 
         when(expenseService.filterByDate(date)).thenReturn(expenses);
@@ -79,7 +80,7 @@ class ExpenseControllerTest {
     @Test
     void addMoneyTransferTest() {
         Expense transfer = new Expense(new Participant("Jay", "Z"), "dinner", 16000,
-                "EUR", "2023-08-03", List.of(new Participant("Jay", "Z")), "food");
+                "EUR", "2023-08-03", List.of(new Participant("Jay", "Z")), "food", new HashSet<>());
 
         when(expenseService.createExpense(any(Expense.class))).thenReturn(ResponseEntity.ok().body("Success"));
 
@@ -97,7 +98,7 @@ class ExpenseControllerTest {
     void filterExpensesByParticipantTest()
     {
         Expense expense=new Expense(new Participant("Jodie","Zhao"),"CSE tuition fee",16000,
-                "EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
+                "EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education", new HashSet<>());
         Participant participant=new Participant("Jodie","Zhao");
 
         when(expenseService.filterByParticipantId(participant.getId())).thenReturn(List.of(expense));
@@ -114,7 +115,7 @@ class ExpenseControllerTest {
     void filterExpensesInvolvingSomeoneTest()
     {
         Expense expense=new Expense(new Participant("Jodie","Zhao")," CSE tuition fee",16000,
-                "EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
+                "EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education", new HashSet<>());
         Participant participant=new Participant("Jodie","Zhao");
 
         when(expenseService.filterByInvolving(participant.getId())).thenReturn(List.of(expense));
@@ -132,7 +133,7 @@ class ExpenseControllerTest {
     public void testUpdateExpense() {
         long id = 1;
         Expense updatedExpense = new Expense(new Participant("Yanran","Zhao")," CSE tuition fee",16000,
-                "EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education");
+                "EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education", new HashSet<>());
 
         when(expenseService.updateExpense(id, updatedExpense)).thenReturn(updatedExpense);
         ResponseEntity<Void> response = controller.update(id, updatedExpense);
