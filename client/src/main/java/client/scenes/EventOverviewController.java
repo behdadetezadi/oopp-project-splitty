@@ -232,28 +232,11 @@ public class EventOverviewController {
     public void sendInvites() {
 
         try {
-
-            
-            
-            FXMLLoader loader = new FXMLLoader(getClass().
-                    getResource("/client/scenes/inviteScene.fxml"));
-            Parent inviteRoot = loader.load();
-            Scene scene = new Scene(inviteRoot);
-            Stage stage = (Stage) root.getScene().getWindow();
-            stage.setScene(scene);
-
-            InviteController controller = loader.getController();
-            controller.initData(this.event);
-            stage.show();
-
-             
+            mainController.showInvitePage(this.event);
         } catch (IllegalStateException e) {
             e.printStackTrace();
             showErrorAlert("Failed to load the invite scene.");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
-
     }
 
     //TODO
