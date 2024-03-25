@@ -177,7 +177,7 @@ public class TableOfParticipantsController {
      * this method ensures all participants are added and
      * loaded before the method create Page executes
      */
-    private void loadParticipants() {
+    void loadParticipants() {
         List<Participant> fetchedParticipants = ServerUtils.getParticipantsByEventId(event.getId());
         participants.clear();
         participants.addAll(fetchedParticipants);

@@ -335,4 +335,60 @@ class ParticipantControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Failed to find participants who have paid for the event: Internal error", response.getBody());
     }
+
+    @Test
+    void testFindAllParticipantsEmptyList() {
+        when(participantService.findAllParticipants()).thenReturn(List.of());
+
+        ResponseEntity<?> response = participantController.findAllParticipants();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(0, ((List<?>) response.getBody()).size(), "Expected an empty list of participants");
+        verify(participantService).findAllParticipants();
+    }
+
+    @Test
+    void testFindParticipantsByLanguageChoiceEmptyList() {
+        when(participantService.findParticipantsByLanguageChoice("Nonexistent")).thenReturn(List.of());
+
+        ResponseEntity<?> response = participantController.findParticipantsByLanguageChoice("Nonexistent");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(0, ((List<?>) response.getBody()).size(), "Expected an empty list of participants for the language choice");
+    }
+
+    @Test
+    void testFindParticipantsByLastNameNotFound() {
+        when(participantService.findParticipantsByLastName("Unknown")).thenReturn(List.of());
+
+        ResponseEntity<?> response = participantController.findParticipantsByLastName("Unknown");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(0, ((List<?>) response.getBody()).size(), "Expected no participants found for the last name");
+    }
+    @Test
+    void testFindParticipantByEmailNotFound() {
+        when(participantService.findParticipantByEmail("unknown@example.com")).thenReturn(null);
+
+        ResponseEntity<?> response = participantController.findParticipantByEmail("unknown@example.com");
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Expected 404 status for not found email");
+    }
+
+    @Test
+    void testFindParticipantsOwingForEventInternalError() {
+        when(participantService.findParticipantsOwingForEvent(anyLong())).thenThrow(new ServiceException("Database error"));
+        ResponseEntity<?> response = participantController.findParticipantsOwingForEvent(2L);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Failed to find participants owing for the event: Database error", response.getBody());
+    }
+
+    @Test
+    void testFindParticipantsPaidForEventNoContent() {
+        when(participantService.findParticipantsPaidForEvent(anyLong())).thenReturn(List.of());
+        ResponseEntity<?> response = participantController.findParticipantsPaidForEvent(3L);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode(), "Expected 204 status for no participants found who have paid for the event");
+    }
 }
