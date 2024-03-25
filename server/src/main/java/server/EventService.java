@@ -187,12 +187,14 @@ public class EventService {
      * @return a Participant
      */
     public Participant addParticipantToEvent(long eventId, Participant participant) {
+        participantRepository.save(participant);
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
         event.getPeople().add(participant);
         eventRepository.save(event);
         return participant;
     }
+
 
     /**
      * remove participant from an event
