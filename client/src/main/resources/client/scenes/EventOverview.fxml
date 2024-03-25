@@ -57,6 +57,7 @@
             <VBox alignment="CENTER" spacing="10">
                 <ComboBox fx:id="participantDropdown" promptText="Select participant" />
                 <Button fx:id="addExpenseButton" text="Add Expense" onAction="#addExpense" />
+                <Button fx:id="showExpensesButton" text="Show Expenses" onAction="#showExpensesForSelectedParticipant" />
             </VBox>
 
 

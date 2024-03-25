@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ExpenseController">
+    <top>
+        <Button text="Back" fx:id="backButton" onAction="#switchToEventOverviewScene" BorderPane.alignment="TOP_LEFT" />
+    </top>
+    <center>
+        <ListView fx:id="expensesListView" BorderPane.alignment="CENTER"/>
+    </center>
+    <bottom>
+        <Label fx:id="sumOfExpensesLabel" BorderPane.alignment="CENTER" />
+    </bottom>
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20" />
+    </padding>
+</BorderPane>
+
+
+

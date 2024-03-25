@@ -16,6 +16,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 
+import commons.Expense;
+import java.util.List;
+
+
+
 public class ExpenseController {
     private ServerUtils server;
     private MainController mainController;
@@ -31,6 +36,11 @@ public class ExpenseController {
     private TextField expenseDescription;
     @FXML
     private TextField amountPaid;
+    // Add a ListView for displaying participant expenses
+    @FXML
+    private ListView<String> expensesListView; // Assume this ListView is defined in your FXML
+    @FXML
+    private Label sumOfExpensesLabel;
 
     private Event event;
 
@@ -78,6 +88,23 @@ public class ExpenseController {
             amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
         }
     }
+
+    /**
+     * Integrates the viewing of expenses for a selected participant.
+     *
+     * @param participantId The ID of the participant whose expenses you want to view.
+     */
+    public void initializeExpensesForParticipant(Long participantId) {
+        List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
+        expensesListView.getItems().clear();
+        double sumOfExpenses = 0;
+        for (Expense expense : expenses) {
+            expensesListView.getItems().add(expense.toString());
+            sumOfExpenses += expense.getAmount(); 
+        }
+        sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
+    }
+
 
     /**
      * This method validates input for the amount
@@ -156,10 +183,7 @@ public class ExpenseController {
             throw new IllegalStateException();
         }
     }
-
-
-
-
+    @FXML
     private void switchToEventOverviewScene() {
         mainController.showEventOverview(this.event);
 
