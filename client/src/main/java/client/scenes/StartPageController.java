@@ -189,27 +189,10 @@ public class StartPageController {
         }
     }
 
-    /*
-    private void switchToEventOverview(Event event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/EventOverview.fxml"));
-            Parent eventOverviewRoot = loader.load();
-            EventOverviewController eventOverviewController = loader.getController();
-
-            // Pass event details to EventOverviewController
-            eventOverviewController.setEvent(event);
-
-            Scene scene = new Scene(eventOverviewRoot);
-            Stage stage = (Stage) codeInput.getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Event Overview - " + event.getTitle());
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showErrorAlert("Failed to load event overview page.");
-        }
-    }
-    */
+    /**
+     *
+     * @param message message of the error
+     */
     private void showErrorAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");

@@ -40,6 +40,12 @@ public class InviteController  {
     private AnchorPane root;
 
 
+    /**
+     * invite Controller injection
+     * @param primaryStage primary stage
+     * @param server server
+     * @param mainController maincontroller
+     */
     @Inject
     public InviteController(Stage primaryStage,ServerUtils server, MainController mainController) {
         this.primaryStage = primaryStage;

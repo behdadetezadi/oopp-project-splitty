@@ -12,8 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-
-import commons.Expense;
 import java.util.List;
 
 

@@ -30,7 +30,16 @@ public class MainController {
     private InviteController inviteController;
     private Scene inviteScene;
 
-
+    /**
+     * initializer method for mainController
+     * @param primaryStage primary stage
+     * @param startPair startPage pair
+     * @param eventOverviewPair eventOverviewPage pair
+     * @param expensePair expensePage pair
+     * @param tableOfParticipantsControllerPair table of participants page pair
+     * @param contactDetailsControllerPair contactDetails page pair
+     * @param inviteControllerPair invitePage pair
+     */
     public void initialize(Stage primaryStage,
                            Pair<StartPageController, Parent> startPair,
                            Pair<EventOverviewController, Parent> eventOverviewPair,
@@ -74,7 +83,7 @@ public class MainController {
 
     /**
      *
-     * @param event
+     * @param event the event we are working on
      */
     public void showAddExpense(Event event) {
         primaryStage.setTitle("Expenses: Add Expense");
@@ -82,6 +91,10 @@ public class MainController {
         expenseCtrl.setEvent(event);
     }
 
+    /**
+     *
+     * @param event the event we are working on
+     */
     public void showTableOfParticipants(Event event) {
         primaryStage.setTitle("Participants");
         primaryStage.setScene(tableOfParticipantsScene);
@@ -89,7 +102,10 @@ public class MainController {
     }
 
 
-
+    /**
+     *
+     * @param event the event we are working on
+     */
     public void showContactDetailsPage(Event event){
         primaryStage.setTitle("ContactDetails");
         primaryStage.setScene(contactDetailsScene);
@@ -97,7 +113,11 @@ public class MainController {
     }
 
 
-    //TODO
+    //TODO this needs changing since I did not have the updated invite scene
+
+    /**
+     * method to show invitePage
+     */
     public void showInvitePage(){
         primaryStage.setTitle("InvitePage");
         primaryStage.setScene(inviteScene);

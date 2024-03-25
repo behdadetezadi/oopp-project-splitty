@@ -47,10 +47,6 @@ public class EventOverviewController {
     private Label expensesLabel;
     @FXML
     private Label optionsLabel;
-//    @FXML
-//    private Button editButton;
-//    @FXML
-//    private Button addButton;
     @FXML
     private Button filterOne;
     @FXML
@@ -118,7 +114,7 @@ public class EventOverviewController {
     }
 
     /**
-     * loads participants / Trying something and commented out intiialize participants methods
+     * loads participants / Trying something and commented out initialize participants methods
      */
     private void loadParticipants() {
         if (event != null) {
@@ -258,7 +254,7 @@ public class EventOverviewController {
     //TODO
     /**
      *
-     * @param event Actionevent?
+     * @param event Action event?
      */
     @FXML
     public void addExpense(ActionEvent event) {
@@ -313,7 +309,7 @@ public class EventOverviewController {
     }
 
     /**
-     * self explanatory
+     * self-explanatory
      */
     public void refreshParticipants() {
         loadParticipants();

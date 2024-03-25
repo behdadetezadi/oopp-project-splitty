@@ -148,7 +148,7 @@ public class TableOfParticipantsController {
 
 
     /**
-     * This allows each page to display a single participant with his/her aattributes
+     * This allows each page to display a single participant with his/her attributes
      * @param pageIndex as an int
      * @return a Node
      */
@@ -157,13 +157,13 @@ public class TableOfParticipantsController {
         if (pageIndex < participants.size()) {
             Participant participant = participants.get(pageIndex);
             StringBuilder sb = new StringBuilder();
-            sb.append("First Name: "+ participant.getFirstName()+'\n');
-            sb.append("Last Name: "+ participant.getLastName()+'\n');
-            sb.append("Username: "+ participant.getUsername()+'\n');
-            sb.append("Email: "+ participant.getEmail()+'\n');
-            sb.append("IBAN: "+ participant.getIban()+'\n');
-            sb.append("BIC: "+ participant.getBic()+'\n');
-            sb.append("Language Preference: "+ participant.getLanguageChoice()+'\n');
+            sb.append("First Name: ").append(participant.getFirstName()).append('\n');
+            sb.append("Last Name: ").append(participant.getLastName()).append('\n');
+            sb.append("Username: ").append(participant.getUsername()).append('\n');
+            sb.append("Email: ").append(participant.getEmail()).append('\n');
+            sb.append("IBAN: ").append(participant.getIban()).append('\n');
+            sb.append("BIC: ").append(participant.getBic()).append('\n');
+            sb.append("Language Preference: ").append(participant.getLanguageChoice()).append('\n');
             String content = sb.toString();
             Label label = new Label(content);
             label.getStyleClass().add("participant-label");
@@ -174,7 +174,7 @@ public class TableOfParticipantsController {
     }
 
     /**
-     * this methods ensures all participants are added and
+     * this method ensures all participants are added and
      * loaded before the method create Page executes
      */
     private void loadParticipants() {
@@ -315,16 +315,13 @@ public class TableOfParticipantsController {
         Dialog<Participant> dialog = new Dialog<>();
         dialog.setTitle("Add New Participant");
         dialog.setHeaderText("Enter details for the new participant.");
-
         ButtonType addButtonType = new ButtonType("Add", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
-
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
         int textFieldWidth = 200;
-
         TextField firstNameField = new TextField(participant.getFirstName());
         firstNameField.setPrefWidth(textFieldWidth);
         TextField lastNameField = new TextField(participant.getLastName());
@@ -340,8 +337,6 @@ public class TableOfParticipantsController {
         ComboBox<String> languageComboBox = new ComboBox<>();
         languageComboBox.getItems().addAll("English", "Dutch");
         languageComboBox.setPromptText("Select a Language");
-
-
         grid.add(new Label("First Name:"), 0, 0);
         grid.add(firstNameField, 1, 0);
         grid.add(new Label("Last Name:"), 0, 1);
