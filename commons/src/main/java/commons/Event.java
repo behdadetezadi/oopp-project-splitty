@@ -22,7 +22,7 @@ public class Event {
     private long id;
     private String title;
     private long inviteCode;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Participant> people;
     @OneToMany
     private List<Expense> expenses;

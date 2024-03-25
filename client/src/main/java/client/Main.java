@@ -15,18 +15,25 @@
  */
 package client;
 
-import client.scenes.EventOverviewController;
-import client.scenes.ExpenseController;
-import client.scenes.StartPageController;
+import client.scenes.*;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import javafx.application.Application;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import static com.google.inject.Guice.createInjector;
+
 public class Main extends Application {
+
+    private static final Injector INJECTOR = createInjector(new MyModule());
+    private static final MyFXML FXML = new MyFXML(INJECTOR);
+
+
 
     /**
      * START method
@@ -38,26 +45,17 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Set up Guice injector
-        Injector injector = Guice.createInjector(new MyModule());
 
-        // Use MyFXML to load ExpenseController and its view
-        MyFXML myFXML = new MyFXML(injector);
-        Pair<StartPageController, Parent> expensePair = myFXML.load(StartPageController.class,
-                "client/scenes/StartPage.fxml");
+        var startPage = FXML.load(StartPageController.class, "client", "scenes", "StartPage.fxml");
+        var overviewPage = FXML.load(EventOverviewController.class, "client", "scenes", "EventOverview.fxml");
+        var expensePage = FXML.load(ExpenseController.class, "client", "scenes", "AddExpense.fxml");
+        var participantsPage = FXML.load(TableOfParticipantsController.class,"client", "scenes", "TableOfParticipants.fxml");
+        var contactDetailsPage = FXML.load(ContactDetailsCtrl.class, "client", "scenes", "contactDetails.fxml");
+        var invitePage = FXML.load(InviteController.class, "client", "scenes", "inviteScene.fxml");
 
-        // Retrieve the loaded controller and root node for the scene
-        StartPageController controller = expensePair.getKey();
-        Parent root = expensePair.getValue();
+        var mainController = INJECTOR.getInstance(MainController.class);
+        mainController.initialize(primaryStage, startPage, overviewPage, expensePage, participantsPage, contactDetailsPage, invitePage);
 
-        // TODO Initialize the controller (this part is broken)
-        // TODO FXML loader does not instantiate the ExpenseController as expected (it's null)
-        //      controller.initialize();
-
-        // Setup and show the primary stage
-        primaryStage.setTitle("Matrix Start Page");
-        primaryStage.setScene(new Scene(root, 600, 400));
-        primaryStage.show();
     }
 
     /**

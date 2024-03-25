@@ -47,10 +47,6 @@ public class EventOverviewController {
     private Label expensesLabel;
     @FXML
     private Label optionsLabel;
-//    @FXML
-//    private Button editButton;
-//    @FXML
-//    private Button addButton;
     @FXML
     private Button filterOne;
     @FXML
@@ -69,13 +65,17 @@ public class EventOverviewController {
     @FXML
     private final ObservableList<String> filteredOptions = FXCollections.observableArrayList();
 
+    private Stage primaryStage;
+
     /**
-     * constructor with injection
+     *
+     * @param primaryStage primary stage
      * @param server server
      * @param mainController maincontroller
      */
     @Inject
-    public EventOverviewController(ServerUtils server, MainController mainController) {
+    public EventOverviewController(Stage primaryStage,ServerUtils server, MainController mainController) {
+        this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
     }
@@ -95,7 +95,7 @@ public class EventOverviewController {
         if (event != null) {
             titleLabel.setText(event.getTitle());
             titleLabel.setOnMouseClicked(event -> editTitle());
-            initializeParticipants();
+//            initializeParticipants();
             //inviteCodeLabel.setText(String.valueOf(event.getInviteCode()));
         }
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
@@ -108,8 +108,22 @@ public class EventOverviewController {
     public void setEvent(Event event) {
         this.event = event;
         initialize();
+        loadParticipants();
         animateLabels();
         animateButtonsText();
+    }
+
+    /**
+     * loads participants / Trying something and commented out initialize participants methods
+     */
+    private void loadParticipants() {
+        if (event != null) {
+            List<Participant> fetchedParticipants = ServerUtils.getParticipantsByEventId(event.getId());
+//            ObservableList<String> participantNames = FXCollections.observableArrayList(
+//                    fetchedParticipants.stream().map(Participant::getFirstName).collect(Collectors.toList())
+//            );
+//            participantsListView.setItems(participantNames);
+        }
     }
 
     /**
@@ -129,32 +143,17 @@ public class EventOverviewController {
         });
     }
 
-
-
-
-
-
-
-
-
     /**
      * method to switch over to the participant scene when clicked upon
      */
     @FXML
     private void showParticipants() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().
-                    getResource("/client/scenes/TableOfParticipants.fxml"));
-            Parent participantRoot = loader.load();
-            Scene scene = new Scene(participantRoot);
-            Stage stage = (Stage) root.getScene().getWindow();
-            stage.setScene(scene);
-            stage.show();
+            mainController.showTableOfParticipants(this.event);
+
         } catch (IllegalStateException e) {
             e.printStackTrace();
             showErrorAlert("Failed to load the participant scene.");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -252,55 +251,18 @@ public class EventOverviewController {
 
     }
 
-
-//    /**
-//     * edit participant method //TODO
-//     */
-//    @FXML
-//    public void editParticipants() {
-//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//        alert.setTitle("Participant Edited");
-//        alert.setHeaderText(null);
-//        alert.setContentText("The participant's details have been updated successfully.");
-//        alert.showAndWait();
-//    }
-
-
-//    /**
-//     * add participant //TODO
-//     */
-//    @FXML
-//    public void addParticipant() {
-//        // Action for adding a new participant
-//    }
-
+    //TODO
     /**
-     * This method switches between EventOverview and
-     * AddExpense when the button is clicked
+     *
+     * @param event Action event?
      */
     @FXML
     public void addExpense(ActionEvent event) {
-        try {
-            if (event.getSource() instanceof Button) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/AddExpense.fxml"));
-                Parent expenseRoot = loader.load();
-                Scene scene = new Scene(expenseRoot);
-                Stage stage = (Stage)((Button) event.getSource()).getScene().getWindow();
-                stage.setScene(scene);
-                stage.show();
-            } else {
-                throw new IllegalStateException();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (event.getSource() instanceof Button) {
+            mainController.showAddExpense(this.event);
+        } else {
+            throw new IllegalStateException();
         }
-
-        // this code was here before, it might need to be moved to the method where the expense is actually created
-//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//        alert.setTitle("Expense Added");
-//        alert.setHeaderText(null);
-//        alert.setContentText("A new expense has been added successfully.");
-//        alert.showAndWait();
     }
 
     @FXML
@@ -344,6 +306,13 @@ public class EventOverviewController {
         alert.setHeaderText("There was an error.");
         alert.setContentText(errorMessage);
         alert.showAndWait();
+    }
+
+    /**
+     * self-explanatory
+     */
+    public void refreshParticipants() {
+        loadParticipants();
     }
 
 

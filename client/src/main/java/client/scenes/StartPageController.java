@@ -2,23 +2,23 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import commons.Event;
+import jakarta.inject.Inject;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.io.IOException;
 import java.util.Objects;
 
 import static client.utils.AnimationUtil.*;
@@ -48,6 +48,22 @@ public class StartPageController {
 
     @FXML
     private ImageView logo;
+
+    private Stage primaryStage;
+    private MainController mainController;
+
+    /**
+     *
+     * @param primaryStage primary stage
+     * @param mainController mainController
+     */
+    @Inject
+    public StartPageController(Stage primaryStage, MainController mainController) {
+        this.primaryStage = primaryStage;
+        this.mainController = mainController;
+    }
+
+
 
 
     /**
@@ -147,7 +163,6 @@ public class StartPageController {
 
     }
 
-
     private void animateTextFields() {
         animateTextField(codeInput);
         animateTextField(eventNameInput);
@@ -168,32 +183,16 @@ public class StartPageController {
         Event event = ServerUtils.getEventByInviteCode(inviteCode);
 
         if (event != null) {
-            switchToEventOverview(event); // Switch to event overview page
+            mainController.showEventOverview(event); // Switch to event overview page
         } else {
             showErrorAlert("Invalid invite code. Please try again.");
         }
     }
 
-    private void switchToEventOverview(Event event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/EventOverview.fxml"));
-            Parent eventOverviewRoot = loader.load();
-            EventOverviewController eventOverviewController = loader.getController();
-
-            // Pass event details to EventOverviewController
-            eventOverviewController.setEvent(event);
-
-            Scene scene = new Scene(eventOverviewRoot);
-            Stage stage = (Stage) codeInput.getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Event Overview - " + event.getTitle());
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            showErrorAlert("Failed to load event overview page.");
-        }
-    }
-
+    /**
+     *
+     * @param message message of the error
+     */
     private void showErrorAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -217,7 +216,7 @@ public class StartPageController {
         Event createdEvent = ServerUtils.addEvent(newEvent);
 
         if (createdEvent != null) {
-            switchToEventOverview(createdEvent);
+            mainController.showEventOverview(createdEvent);
         } else {
             showErrorAlert("Failed to create event. Please try again.");
         }

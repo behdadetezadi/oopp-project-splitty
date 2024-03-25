@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import jakarta.ws.rs.BadRequestException;
@@ -215,6 +216,7 @@ public class ServerUtils {
 	}
 
 
+	//TODO send something to make sure it works
     public static void updateEventTitle(Long eventId, String newTitle) {
         try {
             // Encode the new title to ensure proper URL formatting
@@ -244,9 +246,124 @@ public class ServerUtils {
             // Disconnect the connection
             connection.disconnect();
         } catch (IOException e) {
-            e.printStackTrace();
+            //TODO better exception handling
+			e.printStackTrace();
             // Handle exception appropriately
         }
     }
+
+	/**
+	 * gets all participants (will need changing for different events )
+	 * @return an arrray list of participants
+	 */
+	public static List<Participant> getAllParticipants() {
+		try {
+			Response response = client.target(SERVER)
+					.path("api/participants")
+					.request(MediaType.APPLICATION_JSON)
+					.get();
+
+			if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+				return response.readEntity(new GenericType<List<Participant>>(){});
+			} else {
+				System.err.println("Error fetching participants: " + response.getStatus());
+				return Collections.emptyList();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+
+	/**
+	 * get the participants by the event id
+	 * @param eventId as a long number
+	 * @return an array list of participants
+	 */
+	public static List<Participant> getParticipantsByEventId(long eventId) {
+		try {
+			Response response = client.target(SERVER)
+					.path("api/events/" + eventId + "/participants")
+					.request(MediaType.APPLICATION_JSON)
+					.get();
+			if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+				return response.readEntity(new GenericType<List<Participant>>(){});
+			} else {
+				System.err.println("Error getting participants for event with id: " + eventId + ", Status code: " + response.getStatus());
+				return Collections.emptyList();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+
+	/**
+	 * adds participant to an event
+	 * @param eventId long
+	 * @param participant a participant
+	 * @return a participant
+	 */
+	public static Participant addParticipantToEvent(long eventId, Participant participant) {
+		try {
+			return client.target(SERVER)
+					.path("api/events/" + eventId + "/participants")
+					.request(APPLICATION_JSON)
+					.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * updating a participant
+	 * @param eventId long
+	 * @param participantId long
+	 * @param participantDetails participant
+	 * @return participant
+	 */
+	public static boolean updateParticipant(long eventId, long participantId, Participant participantDetails) {
+		try {
+			Response response = client.target(SERVER)
+					.path("api/events/" + eventId + "/participants/" + participantId)
+					.request(APPLICATION_JSON)
+					.put(Entity.entity(participantDetails, APPLICATION_JSON));
+
+			if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
+				Participant updatedParticipant = response.readEntity(Participant.class);
+				return updatedParticipant != null; 
+			} else {
+				System.err.println("Update failed with status code: " + response.getStatus());
+				return false;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+
+	/**
+	 * updates a participant
+	 * @param participantId long
+	 * @return a boolean
+	 */
+	public static boolean deleteParticipant(long participantId, long eventId) {
+		try {
+			Response response = client.target(SERVER)
+					.path("api/events/"+eventId+"/participants/" + participantId)
+					.request(APPLICATION_JSON)
+					.delete();
+
+			return response.getStatus() == Response.Status.NO_CONTENT.getStatusCode();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+
+
 
 }

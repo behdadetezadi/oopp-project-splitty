@@ -137,8 +137,48 @@ public class EventController {
         }
     }
 
+    /**
+     * finds participants by the event id
+     * @param id as a long number
+     * @return an array list of participants if possible (need to modify this later on for try-catch)
+     */
+    @GetMapping("/{id}/participants")
+    public ResponseEntity<List<Participant>> getParticipantsByEventId(@PathVariable Long id) {
+        List<Participant> participants = eventService.findParticipantsByEventId(id);
+        return ResponseEntity.ok(participants);
+    }
+    @PostMapping("/{eventId}/participants")
+    public ResponseEntity<Participant> addParticipant(@PathVariable long eventId, @RequestBody Participant participant) {
+        Participant addedParticipant = eventService.addParticipantToEvent(eventId, participant);
+        if (addedParticipant != null) {
+            return ResponseEntity.ok(addedParticipant);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
- //TODO
+    @DeleteMapping("/{eventId}/participants/{participantId}")
+    public ResponseEntity<Void> removeParticipant(@PathVariable long eventId, @PathVariable long participantId) {
+        eventService.removeParticipantFromEvent(eventId, participantId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{eventId}/participants/{participantId}")
+    public ResponseEntity<Participant> updateParticipantInEvent(
+            @PathVariable Long eventId,
+            @PathVariable Long participantId,
+            @RequestBody Participant participantDetails) {
+        try {
+            Participant updatedParticipant = eventService.updateParticipantInEvent(eventId, participantId, participantDetails);
+            return ResponseEntity.ok(updatedParticipant);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    //TODO
 //    /**
 //     * event updates
 //     * @param eventId long number

@@ -13,6 +13,7 @@ import java.util.Optional;
 public class ParticipantService {
     private final ParticipantRepository participantRepository;
 
+
     /**
      * Dependency Injection through the constructor
      * @param participantRepository of type ParticipantRepository
@@ -194,5 +195,20 @@ public class ParticipantService {
         }catch (Exception e){
             throw new ServiceException("Error finding the participant by language choice", e);
         }
+    }
+
+    public Participant updateParticipant(Long participantId, Participant updatedParticipantInfo) {
+        Participant participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new IllegalArgumentException("Participant not found"));
+        participant.setFirstName(updatedParticipantInfo.getFirstName());
+        participant.setLastName(updatedParticipantInfo.getLastName());
+        participant.setUsername(updatedParticipantInfo.getUsername());
+        participant.setEmail(updatedParticipantInfo.getEmail());
+        participant.setIban(updatedParticipantInfo.getIban());
+        participant.setBic(updatedParticipantInfo.getBic());
+        participant.setLanguageChoice(updatedParticipantInfo.getLanguageChoice());
+
+
+        return participantRepository.save(participant);
     }
 }

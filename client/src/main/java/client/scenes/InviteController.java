@@ -1,6 +1,8 @@
 package client.scenes;
 
 
+import client.utils.ServerUtils;
+import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,6 +20,11 @@ public class InviteController  {
 
 
 
+
+    private ServerUtils server;
+    private MainController mainController;
+    private Stage primaryStage;
+
     @FXML
     private Label title;
     @FXML
@@ -32,6 +39,19 @@ public class InviteController  {
     @FXML
     private AnchorPane root;
 
+
+    /**
+     * invite Controller injection
+     * @param primaryStage primary stage
+     * @param server server
+     * @param mainController maincontroller
+     */
+    @Inject
+    public InviteController(Stage primaryStage,ServerUtils server, MainController mainController) {
+        this.primaryStage = primaryStage;
+        this.server = server;
+        this.mainController = mainController;
+    }
 
     /**
      * handler for the submit button.
