@@ -1,27 +1,24 @@
 package client.scenes;
 
+import client.utils.ServerUtils;
+import com.google.inject.Inject;
+import commons.Event;
 import commons.Participant;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.collections.ObservableList;
-import javafx.collections.FXCollections;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 public class TableOfParticipantsController {
@@ -31,13 +28,45 @@ public class TableOfParticipantsController {
 
     private final ObservableList<Participant> participants = FXCollections.observableArrayList();
 
+    private ServerUtils server;
+    private MainController mainController;
+    private Stage primaryStage;
+    private Event event;
+
+
     /**
-     * this is an initializer method.
+     * dependency injection
+     * @param primaryStage primary stage
+     * @param server server
+     * @param mainController mainController
+     * @param event Event we are working on
+     */
+    @Inject
+    public TableOfParticipantsController(Stage primaryStage, ServerUtils server,
+                                         MainController mainController, Event event) {
+        this.primaryStage = primaryStage;
+        this.server = server;
+        this.mainController = mainController;
+        this.event = event;
+    }
+
+    /**
+     *
+     * @param event event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+        initialize();
+    }
+
+
+    /**
+     * initializer method
      */
     @FXML
     public void initialize() {
         loadParticipants();
-        pagination.setPageCount(participants.size());
+        pagination.setPageCount(Math.max(1, participants.size()));
         pagination.setPageFactory(this::createPage);
     }
 
@@ -46,17 +75,7 @@ public class TableOfParticipantsController {
      */
     @FXML
     private void handleBackButton() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource
-                    ("/client/scenes/EventOverview.fxml"));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) pagination.getScene().getWindow();
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        mainController.showEventOverview(this.event);
     }
 
     /**
@@ -116,6 +135,11 @@ public class TableOfParticipantsController {
                     }
 
                     pagination.setPageFactory(this::createPage);
+                    boolean isDeleted = server.deleteParticipant(participantToDelete.getId(), event.getId());
+                    if (isDeleted) {
+                        loadParticipants();
+                    }
+
                 }
             });
         }
@@ -124,7 +148,7 @@ public class TableOfParticipantsController {
 
 
     /**
-     * This allows each page to display a single participant with his/her aattributes
+     * This allows each page to display a single participant with his/her attributes
      * @param pageIndex as an int
      * @return a Node
      */
@@ -133,13 +157,13 @@ public class TableOfParticipantsController {
         if (pageIndex < participants.size()) {
             Participant participant = participants.get(pageIndex);
             StringBuilder sb = new StringBuilder();
-            sb.append("First Name: "+ participant.getFirstName()+'\n');
-            sb.append("Last Name: "+ participant.getLastName()+'\n');
-            sb.append("Username: "+ participant.getUsername()+'\n');
-            sb.append("Email: "+ participant.getEmail()+'\n');
-            sb.append("IBAN: "+ participant.getIban()+'\n');
-            sb.append("BIC: "+ participant.getBic()+'\n');
-            sb.append("Language Preference: "+ participant.getLanguageChoice()+'\n');
+            sb.append("First Name: ").append(participant.getFirstName()).append('\n');
+            sb.append("Last Name: ").append(participant.getLastName()).append('\n');
+            sb.append("Username: ").append(participant.getUsername()).append('\n');
+            sb.append("Email: ").append(participant.getEmail()).append('\n');
+            sb.append("IBAN: ").append(participant.getIban()).append('\n');
+            sb.append("BIC: ").append(participant.getBic()).append('\n');
+            sb.append("Language Preference: ").append(participant.getLanguageChoice()).append('\n');
             String content = sb.toString();
             Label label = new Label(content);
             label.getStyleClass().add("participant-label");
@@ -150,19 +174,17 @@ public class TableOfParticipantsController {
     }
 
     /**
-     * this methods ensures all participants are added and
+     * this method ensures all participants are added and
      * loaded before the method create Page executes
      */
     private void loadParticipants() {
-        participants.addAll(
-                new Participant("johnDoe", "John", "Doe","john.doe@student.tudelft.com","A1","B2",
-                        new HashMap<>(), new HashMap<>(), new HashSet<>(),"English"),
-                new Participant("janeDoe", "Jane", "Doe","jane.doe@student.tudelft.com","A1","B2",
-                        new HashMap<>(), new HashMap<>(), new HashSet<>(),"Dutch"),
-                new Participant("joshDoe", "Josh", "Doe","josh.doe@student.tudelft.com","A1","B2",
-                        new HashMap<>(), new HashMap<>(), new HashSet<>(),"English")
-        );
+        List<Participant> fetchedParticipants = ServerUtils.getParticipantsByEventId(event.getId());
+        participants.clear();
+        participants.addAll(fetchedParticipants);
+        pagination.setPageCount(Math.max(1, participants.size()));
+        pagination.setPageFactory(this::createPage);
     }
+
 
     /**
      * edit dialog used to change our participant and the edit button
@@ -267,6 +289,11 @@ public class TableOfParticipantsController {
             alert.setContentText("The participant has been successfully saved.");
             alert.showAndWait();
             pagination.setPageFactory(this::createPage);
+            boolean isUpdated = server.updateParticipant(event.getId(), updatedParticipant.getId(), updatedParticipant);
+            if (isUpdated) {
+                loadParticipants();
+            }
+
         });
     }
     /**
@@ -288,16 +315,13 @@ public class TableOfParticipantsController {
         Dialog<Participant> dialog = new Dialog<>();
         dialog.setTitle("Add New Participant");
         dialog.setHeaderText("Enter details for the new participant.");
-
         ButtonType addButtonType = new ButtonType("Add", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
-
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
         int textFieldWidth = 200;
-
         TextField firstNameField = new TextField(participant.getFirstName());
         firstNameField.setPrefWidth(textFieldWidth);
         TextField lastNameField = new TextField(participant.getLastName());
@@ -313,8 +337,6 @@ public class TableOfParticipantsController {
         ComboBox<String> languageComboBox = new ComboBox<>();
         languageComboBox.getItems().addAll("English", "Dutch");
         languageComboBox.setPromptText("Select a Language");
-
-
         grid.add(new Label("First Name:"), 0, 0);
         grid.add(firstNameField, 1, 0);
         grid.add(new Label("Last Name:"), 0, 1);
@@ -381,6 +403,11 @@ public class TableOfParticipantsController {
             int newPageCount = participants.size();
             pagination.setPageCount(newPageCount);
             pagination.setPageFactory(this::createPage);
+            Participant addedParticipant = server.addParticipantToEvent(event.getId(), newParticipant);
+            if (addedParticipant != null) {
+                loadParticipants();
+            }
+
         });
     }
 

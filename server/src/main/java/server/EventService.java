@@ -6,21 +6,27 @@ import commons.Participant;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 import server.database.EventRepository;
+import server.database.ParticipantRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
 
     //private final Map<Long, Event> events = new HashMap<>();
     private final EventRepository eventRepository;
+    private final ParticipantRepository participantRepository;
+
     //private long nextId = 1;
     /**
      * constructor
      * @param eventRepository this eventRepository
+     * @param participantRepository participant repo
      */
-    public EventService(EventRepository eventRepository) {
+    public EventService(EventRepository eventRepository, ParticipantRepository participantRepository) {
         this.eventRepository = eventRepository;
+        this.participantRepository=participantRepository;
     }
 
     /**
@@ -124,7 +130,7 @@ public class EventService {
      * @param id id of event
      * @return list containing all participants
      */
-    public List<Participant> getParticipantsById(long id) {
+    public List<Participant> findParticipantsByEventId(long id) {
         return eventRepository.participantsOfEventById(id);
     }
     /**
@@ -173,5 +179,59 @@ public class EventService {
             throw new IllegalArgumentException("Event not found with ID: " + eventId);
         }
     }
+
+    /**
+     * adds participant to an event
+     * @param eventId long
+     * @param participant Participant
+     * @return a Participant
+     */
+    public Participant addParticipantToEvent(long eventId, Participant participant) {
+        participantRepository.save(participant);
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+        event.getPeople().add(participant);
+        eventRepository.save(event);
+        return participant;
+    }
+
+
+    /**
+     * remove participant from an event
+     * @param eventId long
+     * @param participantId long
+     */
+    public void removeParticipantFromEvent(long eventId, long participantId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+        event.setPeople(event.getPeople().stream()
+                .filter(p -> p.getId() != participantId)
+                .collect(Collectors.toList()));
+        eventRepository.save(event);
+    }
+
+    public Participant updateParticipantInEvent(Long eventId, Long participantId, Participant participantDetails) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
+        Participant participant = event.getPeople()
+                .stream()
+                .filter(p -> p.getId() == participantId)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Participant with ID: " + participantId
+                        + " not found in event with ID: " + eventId));
+        participant.setFirstName(participantDetails.getFirstName());
+        participant.setLastName(participantDetails.getLastName());
+        participant.setUsername(participantDetails.getUsername());
+        participant.setEmail(participantDetails.getEmail());
+        participant.setBic(participantDetails.getBic());
+        participant.setIban(participantDetails.getIban());
+        participant.setLanguageChoice(participantDetails.getLanguageChoice());
+
+
+        Participant updatedParticipant = participantRepository.save(participant);
+        return updatedParticipant;
+    }
+
+
 
 }

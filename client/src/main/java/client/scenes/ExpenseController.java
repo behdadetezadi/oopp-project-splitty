@@ -1,30 +1,26 @@
 package client.scenes;
 
-import com.google.inject.Inject;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import client.utils.ValidationUtils;
-import client.utils.AlertUtils;
-
+import com.google.inject.Inject;
+import commons.Event;
 import commons.Expense;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
-import java.io.IOException;
+import java.util.List;
+
 
 
 public class ExpenseController {
     private ServerUtils server;
     private MainController mainController;
+    private Stage primaryStage;
+
     @FXML
     private Button cancelButton;
     @FXML
@@ -35,16 +31,28 @@ public class ExpenseController {
     private TextField expenseDescription;
     @FXML
     private TextField amountPaid;
+    // Add a ListView for displaying participant expenses
+    @FXML
+    private ListView<String> expensesListView; // Assume this ListView is defined in your FXML
+    @FXML
+    private Label sumOfExpensesLabel;
+
+    private Event event;
+
 
     /**
-     * Expense controller
-     * @param server ServerUtils type
-     * @param mainController MainCtrl type
+     *
+     * @param primaryStage primary stage
+     * @param server server
+     * @param mainController mainController
+     * @param event Event
      */
     @Inject
-    public ExpenseController(ServerUtils server, MainController mainController) {
+    public ExpenseController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
+        this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
+        this.event = event;
     }
 
     /**
@@ -55,14 +63,43 @@ public class ExpenseController {
     }
 
     /**
-     * Initializer method
+     * called by mainController
+     * @param event event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+        initialize();
+    }
+
+    /**
+     *
+     *
      */
     @FXML
     public void initialize() {
-        cancelButton.setOnAction(this::handleCancelAction);
-        addExpenseButton.setOnAction(this::handleAddExpenseAction);
-        amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
+        if(event != null) {
+            cancelButton.setOnAction(this::handleCancelAction);
+            addExpenseButton.setOnAction(this::handleAddExpenseAction);
+            amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
+        }
     }
+
+    /**
+     * Integrates the viewing of expenses for a selected participant.
+     *
+     * @param participantId The ID of the participant whose expenses you want to view.
+     */
+    public void initializeExpensesForParticipant(Long participantId) {
+        List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
+        expensesListView.getItems().clear();
+        double sumOfExpenses = 0;
+        for (Expense expense : expenses) {
+            expensesListView.getItems().add(expense.toString());
+            sumOfExpenses += expense.getAmount(); 
+        }
+        sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
+    }
+
 
     /**
      * This method validates input for the amount
@@ -108,7 +145,8 @@ public class ExpenseController {
         try {
             Expense newExpense = ServerUtils.addExpense(payer, description, amountValue);
             Stage stage = (Stage) addExpenseButton.getScene().getWindow(); // Get the current stage
-            AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage, "Expense Added", "The expense has been successfully added.");
+            AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
+                    "Expense Added", "The expense has been successfully added.");
             switchToEventOverviewScene();
 
             // TODO show success message, navigate to previous scene etc
@@ -127,46 +165,23 @@ public class ExpenseController {
      */
     @FXML
     public void handleCancelAction(ActionEvent event) {
-        try {
-            if (event.getSource() instanceof Button) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Cancel add expense");
-                alert.setHeaderText(null);
-                alert.setContentText("Are you sure you want to cancel?");
-                if(alert.showAndWait().get() == ButtonType.OK){
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/EventOverview.fxml"));
-                    Parent Root = loader.load();
-                    Scene scene = new Scene(Root);
-                    Stage stage = (Stage)((Button) event.getSource()).getScene().getWindow();
-                    stage.setScene(scene);
-                    stage.show();
-                }
-            } else {
-                throw new IllegalStateException();
+        if (event.getSource() instanceof Button) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Cancel add expense");
+            alert.setHeaderText(null);
+            alert.setContentText("Are you sure you want to cancel?");
+            if (alert.showAndWait().get() == ButtonType.OK) {
+                // Switch to the EventOverview scene using MainController
+                mainController.showEventOverview(this.event); // You may need to pass the event object if required
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } else {
+            throw new IllegalStateException();
         }
     }
+    @FXML
     private void switchToEventOverviewScene() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/EventOverview.fxml"));
-            Parent eventOverviewRoot = loader.load();
+        mainController.showEventOverview(this.event);
 
-            Stage stage = (Stage) addExpenseButton.getScene().getWindow();
-
-            Scene eventOverviewScene = new Scene(eventOverviewRoot);
-            stage.setScene(eventOverviewScene);
-
-            stage.setTitle("Event Overview");
-
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            Window owner = addExpenseButton.getScene().getWindow();
-            AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "Navigation Error", "Failed to return to the Event Overview.");
-        }
     }
 
 }

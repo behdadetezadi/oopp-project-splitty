@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -33,7 +34,7 @@ public class EventOverviewController {
     @FXML
     private ListView<String> participantsListView;
     @FXML
-    private ComboBox<String> participantDropdown;
+    private ComboBox<ParticipantOption> participantDropdown;
     @FXML
     private Button showParticipantsButton;
     @FXML
@@ -46,10 +47,6 @@ public class EventOverviewController {
     private Label expensesLabel;
     @FXML
     private Label optionsLabel;
-//    @FXML
-//    private Button editButton;
-//    @FXML
-//    private Button addButton;
     @FXML
     private Button filterOne;
     @FXML
@@ -59,18 +56,26 @@ public class EventOverviewController {
     @FXML
     private Button addExpenseButton;
     @FXML
+    private Button showExpensesButton;
+
+
+    @FXML
     private final ObservableList<String> allOptions = FXCollections
             .observableArrayList("1", "2");
     @FXML
     private final ObservableList<String> filteredOptions = FXCollections.observableArrayList();
 
+    private Stage primaryStage;
+
     /**
-     * constructor with injection
+     *
+     * @param primaryStage primary stage
      * @param server server
      * @param mainController maincontroller
      */
     @Inject
-    public EventOverviewController(ServerUtils server, MainController mainController) {
+    public EventOverviewController(Stage primaryStage,ServerUtils server, MainController mainController) {
+        this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
     }
@@ -90,9 +95,10 @@ public class EventOverviewController {
         if (event != null) {
             titleLabel.setText(event.getTitle());
             titleLabel.setOnMouseClicked(event -> editTitle());
-            initializeParticipants();
+//            initializeParticipants();
             //inviteCodeLabel.setText(String.valueOf(event.getInviteCode()));
         }
+        showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
     }
 
     /**
@@ -102,8 +108,22 @@ public class EventOverviewController {
     public void setEvent(Event event) {
         this.event = event;
         initialize();
+        loadParticipants();
         animateLabels();
         animateButtonsText();
+    }
+
+    /**
+     * loads participants / Trying something and commented out initialize participants methods
+     */
+    private void loadParticipants() {
+        if (event != null) {
+            List<Participant> fetchedParticipants = ServerUtils.getParticipantsByEventId(event.getId());
+//            ObservableList<String> participantNames = FXCollections.observableArrayList(
+//                    fetchedParticipants.stream().map(Participant::getFirstName).collect(Collectors.toList())
+//            );
+//            participantsListView.setItems(participantNames);
+        }
     }
 
     /**
@@ -123,46 +143,30 @@ public class EventOverviewController {
         });
     }
 
-
-
-
-
-
-
-
-
     /**
      * method to switch over to the participant scene when clicked upon
      */
     @FXML
     private void showParticipants() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().
-                    getResource("/client/scenes/TableOfParticipants.fxml"));
-            Parent participantRoot = loader.load();
-            Scene scene = new Scene(participantRoot);
-            Stage stage = (Stage) root.getScene().getWindow();
-            stage.setScene(scene);
-            stage.show();
+            mainController.showTableOfParticipants(this.event);
+
         } catch (IllegalStateException e) {
             e.printStackTrace();
             showErrorAlert("Failed to load the participant scene.");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
     private void initializeParticipants() {
-        // Assume you have a method to get your participants
         List<Participant> participants = event.getPeople();
         if (participants != null) {
-            List<String> participantNames = participants.stream()
-                    .map(Participant::getFirstName)
+            List<ParticipantOption> participantOptions = participants.stream()
+                    .map(p -> new ParticipantOption(p.getId(), p.getFirstName()))
                     .collect(Collectors.toList());
-            participantDropdown.getItems().setAll(participantNames);
-            participantDropdown.getItems().setAll(participantNames);
+            participantDropdown.getItems().setAll(participantOptions);
         }
     }
+
 
     private void initializeOptionsListView() {
         // If you have specific options to show, add them here
@@ -198,7 +202,7 @@ public class EventOverviewController {
     @FXML
     private void applyFromFilter() {
         // Assuming you want to filter based on a selected participant
-        String selectedParticipant = participantDropdown.getSelectionModel().getSelectedItem();
+        ParticipantOption selectedParticipant = participantDropdown.getSelectionModel().getSelectedItem();
         if (selectedParticipant != null) {
             filteredOptions.clear();
             filteredOptions.add("Filtered option for " + selectedParticipant);
@@ -252,57 +256,49 @@ public class EventOverviewController {
 
     }
 
-
-//    /**
-//     * edit participant method //TODO
-//     */
-//    @FXML
-//    public void editParticipants() {
-//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//        alert.setTitle("Participant Edited");
-//        alert.setHeaderText(null);
-//        alert.setContentText("The participant's details have been updated successfully.");
-//        alert.showAndWait();
-//    }
-
-
-//    /**
-//     * add participant //TODO
-//     */
-//    @FXML
-//    public void addParticipant() {
-//        // Action for adding a new participant
-//    }
-
+    //TODO
     /**
-     * This method switches between EventOverview and
-     * AddExpense when the button is clicked
-     * @param event tba
+     *
+     * @param event Action event?
      */
     @FXML
     public void addExpense(ActionEvent event) {
-        try {
-            if (event.getSource() instanceof Button) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/AddExpense.fxml"));
-                Parent expenseRoot = loader.load();
-                Scene scene = new Scene(expenseRoot);
-                Stage stage = (Stage)((Button) event.getSource()).getScene().getWindow();
-                stage.setScene(scene);
-                stage.show();
-            } else {
-                throw new IllegalStateException();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (event.getSource() instanceof Button) {
+            mainController.showAddExpense(this.event);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    @FXML
+    private void showExpensesForSelectedParticipant(ActionEvent event) {
+        ParticipantOption selectedOption = participantDropdown.getSelectionModel().getSelectedItem();
+        if (selectedOption == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Participant Selected");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a participant to view their expenses.");
+            alert.showAndWait();
+            return;
         }
 
-        // this code was here before, it might need to be moved to the method where the expense is actually created
-//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//        alert.setTitle("Expense Added");
-//        alert.setHeaderText(null);
-//        alert.setContentText("A new expense has been added successfully.");
-//        alert.showAndWait();
+        long selectedParticipantId = selectedOption.getId();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/ParticipantExpenseOverview.fxml"));
+            Parent root = loader.load();
+            ExpenseController controller = loader.getController();
+            controller.initializeExpensesForParticipant(selectedParticipantId); 
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle the exception
+        }
     }
+
+
 
     /**
      * Here is just a simple regular error message which we
@@ -315,6 +311,13 @@ public class EventOverviewController {
         alert.setHeaderText("There was an error.");
         alert.setContentText(errorMessage);
         alert.showAndWait();
+    }
+
+    /**
+     * self-explanatory
+     */
+    public void refreshParticipants() {
+        loadParticipants();
     }
 
 
