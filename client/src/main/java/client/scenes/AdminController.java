@@ -1,20 +1,34 @@
 package client.scenes;
 
+import client.utils.AlertUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import commons.Event;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class AdminController {
     @FXML
@@ -44,6 +58,26 @@ public class AdminController {
         setupActionsColumn();
         eventsTable.setItems(eventData);
     }
+
+
+    /**
+     * TODO: Does not work yet
+     * method that updates list with new event
+     * @param e the event to add to the list
+     */
+    @FXML
+    public void update(Event e) {
+        eventData.add(e);
+        eventsTable.setItems(eventData);
+        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        creationDateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
+        lastActivityColumn.setCellValueFactory(new PropertyValueFactory<>("lastActivity"));
+
+        setupActionsColumn();
+        eventsTable.setItems(eventData);
+
+    }
+
 
     private void setupActionsColumn() {
         actionsColumn.setCellFactory(param -> new TableCell<>() {
@@ -92,22 +126,107 @@ public class AdminController {
     }
 
     /**
-     * TODO Logic to export the event data as JSON
+     * method that exports given event as json
      * @param event button press
      */
     @FXML
-    private void exportEvent(Event event) {
+    public void exportEvent(Event event) {
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String userHome = System.getProperty("user.home");
+            File outputFile = new File(userHome + "/Splitty/Exports/" + event.getTitle() + ".json");
+
+            objectMapper.writeValue(outputFile, event);
+
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            AlertUtils.showInformationAlert("could not write to file", "could not find path");
+
+        }
 
     }
 
     /**
-     * TODO Logic for maybe showing a pop-up to fill in the import JSON
+     * method that creates a pop-up where filepath to event can be inserted
      * @param actionEvent button press
+     *
      */
     @FXML
     public void importEvent(ActionEvent actionEvent) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+
+        final Stage dialog = new Stage();
+
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        VBox dialogVbox = new VBox(20);
+        Label label = new Label("Please enter file path: ");
+        dialogVbox.getChildren().add(label);
+        TextArea textArea = new TextArea();
+        dialogVbox.getChildren().add(textArea);
+        Button button = new Button("submit");
+        Event e = new Event();
+        final String[] title = {null};
+        final long[] id = new long[1];
+        final int[] inviteCode = new int[1];
+        button.setOnAction(
+                new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+
+
+
+                    String filepath = textArea.getText();
+                    filepath = filepath.strip();
+                        System.out.println(filepath);
+
+                        try {
+                            JsonNode jsonNode = objectMapper.readTree(new File(filepath));
+
+                            try {
+                                title[0] = jsonNode.get("title").asText();
+                                id[0] = jsonNode.get("id").asLong();
+                                inviteCode[0] = jsonNode.get("inviteCode").asInt();
+                                AlertUtils.showInformationAlert("Event added!", "you can close the dialogue window");
+
+
+
+
+                            } catch (Exception e) {
+                                System.out.println("could not find correct attributes ");
+                                AlertUtils.showErrorAlert("Conversion failed",
+                                        "could not make an event from given json file");
+                            }
+
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            AlertUtils.showErrorAlert("File not found", "could not find given json file");
+
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+        );
+        e.setTitle(title[0]);
+        e.setId(id[0]);
+        e.setInviteCode(inviteCode[0]);
+        this.update(e);
+
+        dialogVbox.getChildren().add(button);
+
+        Scene dialogScene = new Scene(dialogVbox, 300, 200);
+        dialogScene.getStylesheets().add("styles.css");
+        dialog.setScene(dialogScene);
+        dialog.show();
+
+
+
 
     }
+
 
     /**
      * TODO only for testing
