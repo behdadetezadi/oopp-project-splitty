@@ -385,30 +385,37 @@ public class TableOfParticipantsController {
                     return null;
                 }
 
-                return new Participant(
+                Participant newParticipant = new Participant(
                         usernameField.getText(), firstNameField.getText(), lastNameField.getText(),
                         emailField.getText(), ibanField.getText(),
                         bicField.getText(), new HashMap<>(),
                         new HashMap<>(), new HashSet<>(), languageComboBox.getValue());
+
+                Participant addedParticipant = server.addParticipantToEvent(event.getId(), newParticipant);
+                if (addedParticipant != null) {
+                    participants.add(addedParticipant);
+                    updatePagination();
+                    return addedParticipant;
+                }
             }
             return null;
         });
-
-
-
         Optional<Participant> result = dialog.showAndWait();
 
         result.ifPresent(newParticipant -> {
-            participants.add(newParticipant);
-            int newPageCount = participants.size();
-            pagination.setPageCount(newPageCount);
-            pagination.setPageFactory(this::createPage);
-            Participant addedParticipant = server.addParticipantToEvent(event.getId(), newParticipant);
-            if (addedParticipant != null) {
-                loadParticipants();
-            }
-
+            showAlertWithText("Participant Added", "Success",
+                    "Participant was successfully added.");
         });
+    }
+
+    /**
+     * refreshes the pagination after we add a participant to show him
+     */
+    private void updatePagination() {
+        int pageCount = participants.size();
+        pagination.setPageCount(Math.max(1, pageCount));
+        pagination.setPageFactory(this::createPage);
+
     }
 
     /**
