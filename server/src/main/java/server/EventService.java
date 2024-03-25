@@ -213,8 +213,12 @@ public class EventService {
     public Participant updateParticipantInEvent(Long eventId, Long participantId, Participant participantDetails) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
-        Participant participant = participantRepository.findById(participantId)
-                .orElseThrow(() -> new IllegalArgumentException("Participant not found with ID: " + participantId));
+        Participant participant = event.getPeople()
+                .stream()
+                .filter(p -> p.getId() == participantId)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Participant with ID: " + participantId
+                        + " not found in event with ID: " + eventId));
         participant.setFirstName(participantDetails.getFirstName());
         participant.setLastName(participantDetails.getLastName());
         participant.setUsername(participantDetails.getUsername());
