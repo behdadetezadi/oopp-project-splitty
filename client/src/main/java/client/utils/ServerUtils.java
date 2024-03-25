@@ -216,6 +216,7 @@ public class ServerUtils {
 	}
 
 
+	//TODO send something to make sure it works
     public static void updateEventTitle(Long eventId, String newTitle) {
         try {
             // Encode the new title to ensure proper URL formatting
@@ -245,7 +246,8 @@ public class ServerUtils {
             // Disconnect the connection
             connection.disconnect();
         } catch (IOException e) {
-            e.printStackTrace();
+            //TODO better exception handling
+			e.printStackTrace();
             // Handle exception appropriately
         }
     }
