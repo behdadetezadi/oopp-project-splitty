@@ -276,7 +276,7 @@ public class TableOfParticipantsController {
                 participant.setIban(ibanField.getText());
                 participant.setBic(bicField.getText());
                 participant.setLanguageChoice(languageComboBox.getValue());
-                return participant;
+
             }
             return null;
         });
@@ -288,9 +288,11 @@ public class TableOfParticipantsController {
             alert.setHeaderText(null);
             alert.setContentText("The participant has been successfully saved.");
             alert.showAndWait();
-            pagination.setPageFactory(this::createPage);
             boolean isUpdated = server.updateParticipant(event.getId(), updatedParticipant.getId(), updatedParticipant);
             if (isUpdated) {
+                refreshParticipantDetails(updatedParticipant);
+                pagination.setPageFactory(pageIndex -> createPage(pagination.getCurrentPageIndex()));
+                updatePagination();
                 loadParticipants();
             }
 
@@ -305,6 +307,21 @@ public class TableOfParticipantsController {
         alert.setHeaderText("No Participants Found");
         alert.setContentText("There are no participants to edit or modify.");
         alert.showAndWait();
+    }
+
+    /**
+     * refreshes participant details frontend
+     * @param updatedParticipant participant with new details
+     */
+    private void refreshParticipantDetails(Participant updatedParticipant) {
+        for (int i = 0; i < participants.size(); i++) {
+            Participant participant = participants.get(i);
+            if (participant.getId()==(updatedParticipant.getId())) {
+                participants.set(i, updatedParticipant);
+                break;
+            }
+        }
+        pagination.setPageFactory(this::createPage);
     }
 
     /**
