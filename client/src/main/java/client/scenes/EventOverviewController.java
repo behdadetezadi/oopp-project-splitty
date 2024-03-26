@@ -95,6 +95,8 @@ public class EventOverviewController {
         if (event != null) {
             titleLabel.setText(event.getTitle());
             titleLabel.setOnMouseClicked(event -> editTitle());
+            Tooltip editTitleTooltip = new Tooltip("Click to edit the title");
+            Tooltip.install(titleLabel, editTitleTooltip);
         }
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
     }
@@ -106,6 +108,7 @@ public class EventOverviewController {
     public void setEvent(Event event) {
         this.event = event;
         initialize();
+        titleLabel.getStyleClass().add("label-hover");
         loadParticipants();
         animateLabels();
         animateButtonsText();
