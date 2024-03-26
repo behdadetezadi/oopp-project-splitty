@@ -185,9 +185,20 @@ public class EventController {
      * @return an array list of expenses if possible
      */
     @GetMapping("/{id}/expenses")
-    public ResponseEntity<List<Expense>> getExpensesByEventId(@PathVariable Long id) {
-        List<Expense> expenses = eventService.findExpensesByEventId(id);
-        return ResponseEntity.ok(expenses);
+    public ResponseEntity<?> getExpensesByEventId(@PathVariable Long id) {
+        try {
+            Optional<Event> eventOptional = eventService.findEventById(id);
+            if(eventOptional.isEmpty()){
+                return new ResponseEntity<>("Event not found with ID: " + id, HttpStatus.NOT_FOUND);
+            }
+            List<Expense> expenses = eventService.findExpensesByEventId(id);
+            return ResponseEntity.ok(expenses);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceException e) {
+            return new ResponseEntity<>("Failed to find the expenses for Event with ID: "
+                    + id + ", Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 
