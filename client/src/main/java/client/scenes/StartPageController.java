@@ -163,6 +163,17 @@ public class StartPageController {
 
     }
 
+
+    /**
+     * clears the textfield when you go to this page
+     */
+    public void clearTextFields() {
+        codeInput.clear();
+        eventNameInput.clear();
+    }
+
+
+
     private void animateTextFields() {
         animateTextField(codeInput);
         animateTextField(eventNameInput);
