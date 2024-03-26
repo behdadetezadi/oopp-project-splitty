@@ -1,3 +1,9 @@
+.dialog-pane .header-panel {
+    -fx-background-color: black;
+}
+
+
+
 .button-hover {
     -fx-background-color: #00fd48;
     -fx-cursor: hand;

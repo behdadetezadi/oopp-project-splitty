@@ -94,6 +94,7 @@ public class TableOfParticipantsController {
     private void handleAddButton() {
         HashSet<Long> eventIds = new HashSet<>();
         eventIds.add(event.getId());
+
         Participant newParticipant = new Participant("", "", "", "", "",
                 "", new HashMap<>(), new HashMap<>(), eventIds, "");
         editParticipant(newParticipant, "Add New Participant", "Enter details for the new participant.",
