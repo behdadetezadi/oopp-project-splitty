@@ -208,7 +208,12 @@ public class EventService {
                 .filter(p -> p.getId() != participantId)
                 .collect(Collectors.toList()));
         eventRepository.save(event);
+        Participant participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new IllegalArgumentException("Participant not found"));
+        participant.getEventIds().removeIf(eId -> eId == eventId);
+        participantRepository.save(participant);
     }
+
 
     public Participant updateParticipantInEvent(Long eventId, Long participantId, Participant participantDetails) {
         Event event = eventRepository.findById(eventId)

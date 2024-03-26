@@ -345,9 +345,9 @@ public class ServerUtils {
 
 
 	/**
-	 * updates a participant
+	 * deletes a participant from an event
 	 * @param participantId long
-	 * @return a boolean
+	 * @return true if the deletion was successful, false otherwise
 	 */
 	public static boolean deleteParticipant(long participantId, long eventId) {
 		try {

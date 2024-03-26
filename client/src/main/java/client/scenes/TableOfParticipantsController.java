@@ -402,11 +402,14 @@ public class TableOfParticipantsController {
                     return null;
                 }
 
+                HashSet<Long> eventIds = new HashSet<>();
+                eventIds.add(event.getId());
+
                 Participant newParticipant = new Participant(
                         usernameField.getText(), firstNameField.getText(), lastNameField.getText(),
                         emailField.getText(), ibanField.getText(),
                         bicField.getText(), new HashMap<>(),
-                        new HashMap<>(), new HashSet<>(), languageComboBox.getValue());
+                        new HashMap<>(), eventIds, languageComboBox.getValue());
 
                 Participant addedParticipant = server.addParticipantToEvent(event.getId(), newParticipant);
                 if (addedParticipant != null) {
