@@ -17,10 +17,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class InviteController  {
-
-
-
-
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
@@ -102,6 +98,7 @@ public class InviteController  {
      */
     public void initData(Event event) {
         this.event = event;
+        inviteCode.setPrefWidth(Double.MAX_VALUE);
         inviteCode.setText(String.valueOf(event.getInviteCode()));
         title.setText(event.getTitle());
     }
