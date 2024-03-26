@@ -332,7 +332,7 @@ public class ServerUtils {
 
 			if (response.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
 				Participant updatedParticipant = response.readEntity(Participant.class);
-				return updatedParticipant != null; 
+				return updatedParticipant != null;
 			} else {
 				System.err.println("Update failed with status code: " + response.getStatus());
 				return false;
@@ -356,7 +356,7 @@ public class ServerUtils {
 					.request(APPLICATION_JSON)
 					.delete();
 
-			return response.getStatus() == Response.Status.NO_CONTENT.getStatusCode();
+			return response.getStatus() == Response.Status.OK.getStatusCode();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

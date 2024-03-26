@@ -2,41 +2,59 @@ package client.utils;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+
+import java.util.Optional;
 
 /**
  * Class for client side alerts
  */
 public class AlertUtils {
-
     /**
-     * Shows an informational alert
-     * @param title title of the alert
-     * @param content description of the alert
+     * A generic method used by specific alert methods to show an alert of a given type.
+     * @param type The type of the alert.
+     * @param title The title of the alert.
+     * @param header The header text of the alert; can be {@code null}.
+     * @param content The content description of the alert.
      */
-    public static void showInformationAlert(String title, String content) {
-        showAlert(AlertType.INFORMATION, title, content);
-    }
-
-    /**
-     * Shows an error alert
-     * @param title title of the alert
-     * @param content description of the alert
-     */
-    public static void showErrorAlert(String title, String content) {
-        showAlert(AlertType.ERROR, title, content);
-    }
-
-    /**
-     * Generic alert method used by the above specific alert methods
-     * @param type type of alert
-     * @param title title of the alert
-     * @param content description of the alert
-     */
-    private static void showAlert(AlertType type, String title, String content) {
+    private static void showAlert(AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
-        alert.setHeaderText(null);
+        alert.setHeaderText(header); // Now accepts and sets header text
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    /**
+     * Shows an informational alert with an optional header.
+     * @param title The title of the alert.
+     * @param header The header text of the alert; can be {@code null} if no header is needed.
+     * @param content The content description of the alert.
+     */
+    public static void showInformationAlert(String title, String header, String content) {
+        showAlert(AlertType.INFORMATION, title, header, content);
+    }
+
+    /**
+     * Shows an error alert with an optional header.
+     * @param title The title of the alert.
+     * @param header The header text of the alert; can be {@code null} if no header is needed.
+     * @param content The content description of the alert.
+     */
+    public static void showErrorAlert(String title, String header, String content) {
+        showAlert(AlertType.ERROR, title, header, content);
+    }
+
+    /**
+     * Shows a confirmation alert and waits for the user's response.
+     * @param title The title of the alert.
+     * @param content The content text of the alert.
+     * @return {@code true} if the user clicked YES, {@code false} otherwise.
+     */
+    public static boolean showConfirmationAlert(String title, String content) {
+        Alert confirmDialog = new Alert(AlertType.CONFIRMATION, content, ButtonType.YES, ButtonType.NO);
+        confirmDialog.setTitle(title);
+        Optional<ButtonType> response = confirmDialog.showAndWait();
+        return response.filter(buttonType -> buttonType == ButtonType.YES).isPresent();
     }
 }

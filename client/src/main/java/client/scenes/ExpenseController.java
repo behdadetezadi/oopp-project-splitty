@@ -127,7 +127,7 @@ public class ExpenseController {
         // Check for a trailing period/comma
         String normalizedAmount = amount.replace(',', '.');
         if (normalizedAmount.endsWith(".")) {
-            AlertUtils.showErrorAlert("Invalid amount",
+            AlertUtils.showErrorAlert("Invalid amount", "Error",
                     "Please enter a valid number for the amount.");
             return;
         }
@@ -136,7 +136,7 @@ public class ExpenseController {
             amountValue = Double.parseDouble(normalizedAmount);
         } catch (NumberFormatException e) {
             // Handle invalid number format
-            AlertUtils.showErrorAlert("Invalid amount",
+            AlertUtils.showErrorAlert("Invalid amount", "Error",
                     "Please enter a valid number for the amount.");
             return;
         }
@@ -152,7 +152,7 @@ public class ExpenseController {
             // TODO show success message, navigate to previous scene etc
         } catch (Exception e) {
             // Catch exception
-            AlertUtils.showErrorAlert("Unexpected Error",
+            AlertUtils.showErrorAlert("Unexpected Error", "Error",
                     "An unexpected error occurred: " + e.getMessage());
         }
     }
