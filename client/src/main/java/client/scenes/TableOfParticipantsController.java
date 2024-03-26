@@ -8,6 +8,7 @@ import commons.Participant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -82,8 +83,10 @@ public class TableOfParticipantsController {
      */
     @FXML
     private void handleAddButton() {
+        HashSet<Long> eventIds = new HashSet<>();
+        eventIds.add(event.getId());
         Participant newParticipant = new Participant("", "", "", "", "",
-                "", new HashMap<>(), new HashMap<>(), new HashSet<>(), "");
+                "", new HashMap<>(), new HashMap<>(), eventIds, "");
         editParticipant(newParticipant, "Add New Participant", "Enter details for the new participant.",
                 this::addParticipant);
     }
@@ -176,7 +179,7 @@ public class TableOfParticipantsController {
      * @param action The action to perform with the edited participant.
      */
     private void editParticipant(Participant participant, String title, String header, ParticipantConsumer action) {
-        ParticipantDialog dialog = new ParticipantDialog(participant, title, header, event.getId());
+        ParticipantDialog dialog = new ParticipantDialog(participant, title, header);
         Optional<Participant> result = dialog.showAndWait();
         result.ifPresent(action::accept);
     }
@@ -270,18 +273,24 @@ public class TableOfParticipantsController {
      * A dialog for creating or editing a participant's details.
      */
     static class ParticipantDialog extends Dialog<Participant> {
-        ParticipantDialog(Participant participant, String title, String header, long eventId) {
+        ParticipantDialog(Participant participant, String title, String header) {
             setTitle(title);
             setHeaderText(header);
 
-            ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+            ButtonType saveButtonType = new ButtonType("Add", ButtonBar.ButtonData.OK_DONE);
             getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+            getDialogPane().setMinHeight(350);
+            getDialogPane().setMinWidth(600);
 
             Pair<GridPane, Map<String, Control>> formPair = ParticipantForm.createParticipantForm(participant);
             GridPane grid = formPair.getKey();
             Map<String, Control> formFields = formPair.getValue();
 
             getDialogPane().setContent(grid);
+
+            String cssPath = this.getClass().getResource("/styles.css").toExternalForm();
+            getDialogPane().getStylesheets().add(cssPath);
 
             setResultConverter(dialogButton -> {
                 if (dialogButton == saveButtonType) {
@@ -304,27 +313,28 @@ public class TableOfParticipantsController {
          */
         static Pair<GridPane, Map<String, Control>> createParticipantForm(Participant participant) {
             GridPane grid = new GridPane();
+            grid.setAlignment(Pos.CENTER);
             grid.setHgap(10);
             grid.setVgap(10);
 
-            TextField firstNameField = createTextField(participant.getFirstName(), "First Name:");
-            TextField lastNameField = createTextField(participant.getLastName(), "Last Name:");
-            TextField usernameField = createTextField(participant.getUsername(), "Username:");
-            TextField emailField = createTextField(participant.getEmail(), "Email:");
-            TextField ibanField = createTextField(participant.getIban(), "IBAN:");
-            TextField bicField = createTextField(participant.getBic(), "BIC:");
+            TextField firstNameField = createTextField(participant.getFirstName(), "First Name");
+            TextField lastNameField = createTextField(participant.getLastName(), "Last Name");
+            TextField usernameField = createTextField(participant.getUsername(), "Username");
+            TextField emailField = createTextField(participant.getEmail(), "Email");
+            TextField ibanField = createTextField(participant.getIban(), "IBAN");
+            TextField bicField = createTextField(participant.getBic(), "BIC");
             ComboBox<String> languageComboBox = createComboBox(participant.getLanguageChoice(),
-                    "Language:", "English", "Dutch");
+                    "Language", "English", "Dutch");
 
             // Store the fields in a map for easy access later
             Map<String, Control> formFields = new HashMap<>();
-            formFields.put("firstName", firstNameField);
-            formFields.put("lastName", lastNameField);
-            formFields.put("username", usernameField);
-            formFields.put("email", emailField);
-            formFields.put("iban", ibanField);
-            formFields.put("bic", bicField);
-            formFields.put("language", languageComboBox);
+            formFields.put("First Name", firstNameField);
+            formFields.put("Last Name", lastNameField);
+            formFields.put("Username", usernameField);
+            formFields.put("Email", emailField);
+            formFields.put("IBAN", ibanField);
+            formFields.put("BIC", bicField);
+            formFields.put("Language", languageComboBox);
 
             // Adding the fields to the grid
             int row = 0;
@@ -346,6 +356,7 @@ public class TableOfParticipantsController {
         static TextField createTextField(String value, String promptText) {
             TextField textField = new TextField(value);
             textField.setPromptText(promptText);
+            textField.setPrefWidth(300);
             return textField;
         }
 
@@ -371,16 +382,15 @@ public class TableOfParticipantsController {
          * @return A new {@link Participant} instance with details extracted from the form fields.
          */
         static Participant extractParticipantFromForm(Map<String, Control> formFields, Participant participant) {
-            participant.setUsername(((TextField) formFields.get("username")).getText());
-            participant.setFirstName(((TextField) formFields.get("firstName")).getText());
-            participant.setLastName(((TextField) formFields.get("lastName")).getText());
-            participant.setEmail(((TextField) formFields.get("email")).getText());
-            participant.setIban(((TextField) formFields.get("iban")).getText());
-            participant.setBic(((TextField) formFields.get("bic")).getText());
-            participant.setLanguageChoice(((ComboBox<String>) formFields.get("language")).getValue());
+            participant.setUsername(((TextField) formFields.get("Username")).getText());
+            participant.setFirstName(((TextField) formFields.get("First Name")).getText());
+            participant.setLastName(((TextField) formFields.get("Last Name")).getText());
+            participant.setEmail(((TextField) formFields.get("Email")).getText());
+            participant.setIban(((TextField) formFields.get("IBAN")).getText());
+            participant.setBic(((TextField) formFields.get("BIC")).getText());
+            participant.setLanguageChoice(((ComboBox<String>) formFields.get("Language")).getValue());
 
             return participant;
         }
     }
 }
-
