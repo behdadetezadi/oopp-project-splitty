@@ -95,8 +95,6 @@ public class EventOverviewController {
         if (event != null) {
             titleLabel.setText(event.getTitle());
             titleLabel.setOnMouseClicked(event -> editTitle());
-//            initializeParticipants();
-            //inviteCodeLabel.setText(String.valueOf(event.getInviteCode()));
         }
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
     }
@@ -124,6 +122,12 @@ public class EventOverviewController {
         animateButtonsText();
         initializeParticipants();
     }
+
+    @FXML
+    private void goBackToStartPage(ActionEvent event) {
+        mainController.showStartPage();
+    }
+
 
     /**
      * loads participants / Trying something and commented out initialize participants methods

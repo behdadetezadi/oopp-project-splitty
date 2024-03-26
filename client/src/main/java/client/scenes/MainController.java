@@ -82,8 +82,12 @@ public class MainController {
         primaryStage.show();
     }
 
-    private void showStartPage() {
+    /**
+     * shows the StartPage
+     */
+    public void showStartPage() {
         primaryStage.setTitle("Start Page");
+        startPageController.clearTextFields();
         primaryStage.setScene(startScene);
         startPageController.initialize();
     }
@@ -111,7 +115,6 @@ public class MainController {
 
 
     /**
-     *
      * @param event the event we are working on
      */
     public void showContactDetailsPage(Event event){
