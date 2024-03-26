@@ -113,14 +113,16 @@ public class MainController {
     }
 
 
-    //TODO this needs changing since I did not have the updated invite scene
+    //TODO it is not using initialize not sure if its ok
 
     /**
-     * method to show invitePage
+     *
+     * @param event event
      */
-    public void showInvitePage(){
+    public void showInvitePage(Event event){
         primaryStage.setTitle("InvitePage");
         primaryStage.setScene(inviteScene);
+        inviteController.initData(event);
         //inviteController.initialize();
     }
 

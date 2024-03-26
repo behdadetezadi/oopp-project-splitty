@@ -3,16 +3,16 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import commons.Event;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -24,6 +24,8 @@ public class InviteController  {
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
+
+    private Event event;
 
     @FXML
     private Label title;
@@ -99,6 +101,7 @@ public class InviteController  {
      * @param event the event
      */
     public void initData(Event event) {
+        this.event = event;
         inviteCode.setText(String.valueOf(event.getInviteCode()));
         title.setText(event.getTitle());
     }
@@ -111,14 +114,8 @@ public class InviteController  {
     @FXML
     public void handleBackButtonAction() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().
-                    getResource("/client/scenes/EventOverview.fxml"));
-            Parent inviteRoot = loader.load();
-            Scene scene = new Scene(inviteRoot);
-            Stage stage = (Stage) root.getScene().getWindow();
-            stage.setScene(scene);
-            stage.show();
-        } catch (IllegalStateException | IOException e) {
+            mainController.showEventOverview(event);
+        } catch (IllegalStateException e) {
             e.printStackTrace();
 
         }
