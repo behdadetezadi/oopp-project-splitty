@@ -26,6 +26,11 @@ public class TableOfParticipantsController {
 
     @FXML
     private Pagination pagination;
+    @FXML
+    private Button addButton;
+
+    @FXML
+    private Button deleteButton;
 
     private final ObservableList<Participant> participants = FXCollections.observableArrayList();
 
@@ -68,6 +73,14 @@ public class TableOfParticipantsController {
     public void initialize() {
         loadParticipants();
         setupPagination();
+
+        addButton.getStyleClass().add("button-hover");
+        deleteButton.getStyleClass().add("button-hover");
+
+        Tooltip addTooltip = new Tooltip("Click to add a participant");
+        Tooltip removeTooltip = new Tooltip("Click to remove the selected participant");
+        Tooltip.install(addButton, addTooltip);
+        Tooltip.install(deleteButton, removeTooltip);
     }
 
     /**

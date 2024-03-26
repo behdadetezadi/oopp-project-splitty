@@ -1,3 +1,15 @@
+.button-hover {
+    -fx-background-color: #00fd48;
+    -fx-cursor: hand;
+}
+
+.button-hover:hover {
+    -fx-background-color: #00fd48;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+
 .label-hover {
     -fx-underline: true;
     -fx-cursor: hand;
