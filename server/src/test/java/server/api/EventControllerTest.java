@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Event;
+import commons.Participant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,9 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class EventControllerTest {
 
@@ -26,35 +27,16 @@ public class EventControllerTest {
 
     @InjectMocks
     private EventController eventController;
+    private Participant participant;
+
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
-
-//    @Test
-//    public void testGetEventById() {
-//        Event expectedEvent = new Event("Test Event");
-//        expectedEvent.setId(1);
-//
-//        when(eventService.getEventById(anyLong())).thenReturn(expectedEvent);
-//
-//        Event result = eventController.getEventById(1);
-//
-//        assertEquals(expectedEvent, result);
-//    }
-
-//    @Test
-//    public void testGetEventByTitle() {
-//        Event expectedEvent = new Event("Test Event");
-//        expectedEvent.setId(1);
-//
-//        when(eventService.getEventByTitle(anyString())).thenReturn(expectedEvent);
-//
-//        Event result = eventController.getEventByTitle("Test Event");
-//
-//        assertEquals(expectedEvent, result);
-//    }
+        MockitoAnnotations.openMocks(this);
+        participant = new Participant();
+        participant.setId(1L);
+        participant.setFirstName("Test");
+        participant.setLastName("User");    }
 
     @Test
     public void testGetEventByInviteCode() {
@@ -109,15 +91,69 @@ public class EventControllerTest {
         assertEquals(createdEvent, result);
     }
 
-//    @Test
-//    public void testUpdateEvent() {
-//        Event eventToUpdate = new Event("Updated Event");
-//        eventToUpdate.setId(1);
-//
-//        when(eventService.updateEvent(anyLong(), any(Event.class))).thenReturn(eventToUpdate);
-//
-//        Event result = eventController.updateEvent(1, eventToUpdate);
-//
-//        assertEquals(eventToUpdate, result);
-//    }
+    @Test
+    public void addParticipant_Success() {
+        when(eventService.addParticipantToEvent(anyLong(), any(Participant.class))).thenReturn(participant);
+        ResponseEntity<Participant> response = eventController.addParticipant(1L, participant);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(participant, response.getBody());
+        verify(eventService).addParticipantToEvent(1L, participant);
+    }
+
+    @Test
+    public void addParticipant_NotFound() {
+        when(eventService.addParticipantToEvent(anyLong(), any(Participant.class))).thenReturn(null);
+        ResponseEntity<Participant> response = eventController.addParticipant(1L, participant);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(eventService).addParticipantToEvent(1L, participant);
+    }
+
+    @Test
+    public void removeParticipant_Success() {
+        doNothing().when(eventService).removeParticipantFromEvent(anyLong(), anyLong());
+        ResponseEntity<Void> response = eventController.removeParticipant(1L, 1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(eventService).removeParticipantFromEvent(1L, 1L);
+    }
+
+    @Test
+    public void updateParticipant_Success() {
+        Participant updatedParticipant = new Participant();
+        updatedParticipant.setId(1L);
+        updatedParticipant.setFirstName("Updated");
+        updatedParticipant.setLastName("User");
+        when(eventService.updateParticipantInEvent(anyLong(), anyLong(), any(Participant.class))).thenReturn(updatedParticipant);
+
+        ResponseEntity<Participant> response = eventController.updateParticipantInEvent(1L, 1L, updatedParticipant);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(updatedParticipant, response.getBody());
+        verify(eventService).updateParticipantInEvent(1L, 1L, updatedParticipant);
+    }
+
+    @Test
+    public void updateParticipant_BadRequest() {
+        when(eventService.updateParticipantInEvent(anyLong(), anyLong(), any(Participant.class))).thenThrow(new IllegalArgumentException("Invalid request"));
+        ResponseEntity<Participant> response = eventController.updateParticipantInEvent(1L, 1L, new Participant());
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(eventService).updateParticipantInEvent(1L, 1L, new Participant());
+    }
+
+    @Test
+    public void updateParticipant_InternalServerError() {
+        when(eventService.updateParticipantInEvent(anyLong(), anyLong(), any(Participant.class))).thenThrow(new RuntimeException("Internal server error"));
+
+        ResponseEntity<Participant> response = eventController.updateParticipantInEvent(1L, 1L, new Participant());
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(eventService).updateParticipantInEvent(1L, 1L, new Participant());
+    }
 }
+

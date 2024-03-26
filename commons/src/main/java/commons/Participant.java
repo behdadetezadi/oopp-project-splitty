@@ -31,7 +31,7 @@ public class Participant {
     @Column(name = "owed_amount")
     private Map<Event, Double> payedAmount; //at the time of the code (no Event class yet).
     @ElementCollection
-    private Set<Integer> eventIds;
+    private Set<Long> eventIds;
     private String languageChoice;
 
     /**
@@ -89,7 +89,7 @@ public class Participant {
      */
     public Participant(String username, String firstName, String lastName, String email,
                        String iban, String bic, Map<Event, Double> owedAmount,
-                       Map<Event, Double> payedAmount, Set<Integer> eventIds,
+                       Map<Event, Double> payedAmount, Set<Long> eventIds,
                        String languageChoice) {
         this.username = username;
         this.firstName = firstName;
@@ -189,7 +189,7 @@ public class Participant {
      * get set of event ids
      * @return hashset
      */
-    public Set<Integer> getEventIds() {
+    public Set<Long> getEventIds() {
         return eventIds;
     }
 
@@ -253,7 +253,7 @@ public class Participant {
      * event ids setter
      * @param eventIds the id of the event
      */
-    public void setEventIds(Set<Integer> eventIds) {
+    public void setEventIds(Set<Long> eventIds) {
         this.eventIds = eventIds;
     }
 

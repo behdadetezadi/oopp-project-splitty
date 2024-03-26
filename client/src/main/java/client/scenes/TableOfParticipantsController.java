@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
@@ -7,16 +8,16 @@ import commons.Participant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +40,7 @@ public class TableOfParticipantsController {
      * @param primaryStage primary stage
      * @param server server
      * @param mainController mainController
-     * @param event Event we are working on
+     * @param event The event we are working on
      */
     @Inject
     public TableOfParticipantsController(Stage primaryStage, ServerUtils server,
@@ -51,7 +52,7 @@ public class TableOfParticipantsController {
     }
 
     /**
-     *
+     * Sets event to make sure we are making changes to the required event
      * @param event event
      */
     public void setEvent(Event event) {
@@ -66,16 +67,15 @@ public class TableOfParticipantsController {
     @FXML
     public void initialize() {
         loadParticipants();
-        pagination.setPageCount(Math.max(1, participants.size()));
-        pagination.setPageFactory(this::createPage);
+        setupPagination();
     }
 
     /**
-     * switching back to event overview page
+     * switching back to the event overview page
      */
     @FXML
     private void handleBackButton() {
-        mainController.showEventOverview(this.event);
+        mainController.showEventOverview(event);
     }
 
     /**
@@ -83,10 +83,12 @@ public class TableOfParticipantsController {
      */
     @FXML
     private void handleAddButton() {
+        HashSet<Long> eventIds = new HashSet<>();
+        eventIds.add(event.getId());
         Participant newParticipant = new Participant("", "", "", "", "",
-                "", new HashMap<>(), new HashMap<>(), new HashSet<>(), "");
-        showAddDialog(newParticipant);
-
+                "", new HashMap<>(), new HashMap<>(), eventIds, "");
+        editParticipant(newParticipant, "Add New Participant", "Enter details for the new participant.",
+                this::addParticipant);
     }
 
     /**
@@ -95,13 +97,14 @@ public class TableOfParticipantsController {
     @FXML
     private void handleEditButton() {
         if (participants.isEmpty()) {
-            displayNoParticipantsError();
+            AlertUtils.showErrorAlert("Error", "No Participants Found",
+                    "There are no participants to edit.");
             return;
         }
-        int currentPageIndex = pagination.getCurrentPageIndex();
-        if(currentPageIndex < participants.size()) {
-            Participant participantToEdit = participants.get(currentPageIndex);
-            showEditDialog(participantToEdit);
+        Participant selectedParticipant = getSelectedParticipant();
+        if (selectedParticipant != null) {
+            editParticipant(selectedParticipant, "Edit Participant", "Edit the details of the participant.",
+                    this::updateParticipant);
         }
     }
 
@@ -110,42 +113,16 @@ public class TableOfParticipantsController {
      */
     @FXML
     private void handleDeleteButton() {
-        if (participants.isEmpty()) {
-            displayNoParticipantsError();
-            return;
-        }
-        int currentPageIndex = pagination.getCurrentPageIndex();
-        if (currentPageIndex < participants.size()) {
-            Participant participantToDelete = participants.get(currentPageIndex);
-            Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION,
-                    "Are you sure you want to remove " +
-                    participantToDelete.getFirstName() + " " +
-                            participantToDelete.getLastName() + "?", ButtonType.YES, ButtonType.NO);
-            confirmDialog.showAndWait().ifPresent(response -> {
-                if (response == ButtonType.YES) {
-                    participants.remove(participantToDelete);
-
-                    int numberOfPages = participants.isEmpty() ? 0 :
-                            (int) Math.ceil(participants.size()-1
-                                    / (double) pagination.getMaxPageIndicatorCount());
-                    pagination.setPageCount(numberOfPages);
-
-                    if (currentPageIndex >= numberOfPages) {
-                        pagination.setCurrentPageIndex(Math.max(0, numberOfPages - 1));
-                    }
-
-                    pagination.setPageFactory(this::createPage);
-                    boolean isDeleted = server.deleteParticipant(participantToDelete.getId(), event.getId());
-                    if (isDeleted) {
-                        loadParticipants();
-                    }
-
-                }
-            });
+        Participant selectedParticipant = getSelectedParticipant();
+        if (selectedParticipant != null) {
+            boolean confirmation = AlertUtils.showConfirmationAlert("Remove participant",
+                    "Are you sure you want to remove " + selectedParticipant.getFirstName()
+                            + " " + selectedParticipant.getLastName() + "?");
+            if (confirmation) {
+                deleteParticipant(selectedParticipant);
+            }
         }
     }
-
-
 
     /**
      * This allows each page to display a single participant with his/her attributes
@@ -156,19 +133,10 @@ public class TableOfParticipantsController {
         VBox box = new VBox(5);
         if (pageIndex < participants.size()) {
             Participant participant = participants.get(pageIndex);
-            StringBuilder sb = new StringBuilder();
-            sb.append("First Name: ").append(participant.getFirstName()).append('\n');
-            sb.append("Last Name: ").append(participant.getLastName()).append('\n');
-            sb.append("Username: ").append(participant.getUsername()).append('\n');
-            sb.append("Email: ").append(participant.getEmail()).append('\n');
-            sb.append("IBAN: ").append(participant.getIban()).append('\n');
-            sb.append("BIC: ").append(participant.getBic()).append('\n');
-            sb.append("Language Preference: ").append(participant.getLanguageChoice()).append('\n');
-            String content = sb.toString();
+            String content = formatParticipantDetails(participant);
             Label label = new Label(content);
             label.getStyleClass().add("participant-label");
             box.getChildren().add(label);
-
         }
         return box;
     }
@@ -179,290 +147,250 @@ public class TableOfParticipantsController {
      */
     private void loadParticipants() {
         List<Participant> fetchedParticipants = ServerUtils.getParticipantsByEventId(event.getId());
-        participants.clear();
-        participants.addAll(fetchedParticipants);
+        participants.setAll(fetchedParticipants);
+        setupPagination();
+    }
+
+    /**
+     * Configures the pagination control based on the number of participants.
+     */
+    private void setupPagination() {
         pagination.setPageCount(Math.max(1, participants.size()));
         pagination.setPageFactory(this::createPage);
     }
 
+    /**
+     * Retrieves the participant currently selected in the pagination control.
+     * @return The currently selected {@link Participant} or {@code null} if no participant is selected.
+     */
+    private Participant getSelectedParticipant() {
+        int currentIndex = pagination.getCurrentPageIndex();
+        if (currentIndex < participants.size()) {
+            return participants.get(currentIndex);
+        }
+        return null;
+    }
 
     /**
-     * edit dialog used to change our participant and the edit button
-     * @param participant Participant
+     * Displays a dialog for editing a participant's details and performs a specified action upon confirmation.
+     * @param participant The {@link Participant} to edit.
+     * @param title The title of the dialog window.
+     * @param header The header text for the dialog.
+     * @param action The action to perform with the edited participant.
      */
-    private void showEditDialog(Participant participant) {
-        Dialog<Participant> dialog = new Dialog<>();
-        dialog.setTitle("Edit Participant");
-        dialog.setHeaderText("Edit the details of the participant.");
-
-        ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-        int textFieldWidth = 200;
-
-        TextField firstNameField = new TextField(participant.getFirstName());
-        firstNameField.setPrefWidth(textFieldWidth);
-        TextField lastNameField = new TextField(participant.getLastName());
-        lastNameField.setPrefWidth(textFieldWidth);
-        TextField usernameField = new TextField(participant.getUsername());
-        usernameField.setPrefWidth(textFieldWidth);
-        TextField emailField = new TextField(participant.getEmail());
-        emailField.setPrefWidth(textFieldWidth);
-        TextField ibanField = new TextField(participant.getIban());
-        ibanField.setPrefWidth(textFieldWidth);
-        TextField bicField = new TextField(participant.getBic());
-        bicField.setPrefWidth(textFieldWidth);
-        ComboBox<String> languageComboBox = new ComboBox<>();
-        languageComboBox.getItems().addAll("English", "Dutch");
-        languageComboBox.setPromptText("Select a Language");
-
-        grid.add(new Label("First Name:"), 0, 0);
-        grid.add(firstNameField, 1, 0);
-        grid.add(new Label("Last Name:"), 0, 1);
-        grid.add(lastNameField, 1, 1);
-        grid.add(new Label("Username:"), 0, 2);
-        grid.add(usernameField, 1, 2);
-        grid.add(new Label("Email:"), 0, 3);
-        grid.add(emailField, 1, 3);
-        grid.add(new Label("IBAN:"), 0, 4);
-        grid.add(ibanField, 1, 4);
-        grid.add(new Label("BIC:"), 0, 5);
-        grid.add(bicField, 1, 5);
-        grid.add(new Label("Language:"), 0, 6);
-        grid.add(languageComboBox, 1, 6);
-        dialog.getDialogPane().setContent(grid);
-        dialog.getDialogPane().setMinHeight(350);
-
-        ColumnConstraints columnOneConstraints = new ColumnConstraints(100, 100, Double.MAX_VALUE);
-        columnOneConstraints.setHgrow(Priority.ALWAYS);
-
-        ColumnConstraints columnTwoConstraints = new ColumnConstraints(200, 200, Double.MAX_VALUE);
-        columnTwoConstraints.setHgrow(Priority.ALWAYS);
-
-        grid.getColumnConstraints().addAll(columnOneConstraints, columnTwoConstraints);
-
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == saveButtonType) {
-                String selectedLanguage = languageComboBox.getValue() != null ? languageComboBox.getValue() : "";
-                String validationErrors = validateParticipantDetails(
-                        firstNameField.getText(), lastNameField.getText(), usernameField.getText(),
-                        emailField.getText(), ibanField.getText(), bicField.getText(), selectedLanguage
-                );
-
-                if (!validationErrors.isEmpty()) {
-                    showAlertWithText("Validation Error",
-                            "Please correct the following errors:", validationErrors);
-
-                    participant.setFirstName(firstNameField.getText());
-                    participant.setLastName(lastNameField.getText());
-                    participant.setUsername(usernameField.getText());
-                    participant.setEmail(emailField.getText());
-                    participant.setIban(ibanField.getText());
-                    participant.setBic(bicField.getText());
-                    participant.setLanguageChoice(languageComboBox.getValue());
-                    showEditDialog(participant);
-                    return null;
-                }
-
-                participant.setFirstName(firstNameField.getText());
-                participant.setLastName(lastNameField.getText());
-                participant.setUsername(usernameField.getText());
-                participant.setEmail(emailField.getText());
-                participant.setIban(ibanField.getText());
-                participant.setBic(bicField.getText());
-                participant.setLanguageChoice(languageComboBox.getValue());
-                return participant;
-            }
-            return null;
-        });
-
+    private void editParticipant(Participant participant, String title, String header, ParticipantConsumer action) {
+        ParticipantDialog dialog = new ParticipantDialog(participant, title, header);
         Optional<Participant> result = dialog.showAndWait();
-        result.ifPresent(updatedParticipant -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Participant Saved");
-            alert.setHeaderText(null);
-            alert.setContentText("The participant has been successfully saved.");
-            alert.showAndWait();
-            pagination.setPageFactory(this::createPage);
-            boolean isUpdated = server.updateParticipant(event.getId(), updatedParticipant.getId(), updatedParticipant);
-            if (isUpdated) {
-                loadParticipants();
-            }
-
-        });
-    }
-    /**
-     * Display an error message when there are no participants.
-     */
-    private void displayNoParticipantsError() {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText("No Participants Found");
-        alert.setContentText("There are no participants to edit or modify.");
-        alert.showAndWait();
+        result.ifPresent(action::accept);
     }
 
     /**
-     * adds a new participant. quite similar to modifying one!
-     * @param participant Participant
+     * Adds a new participant to the event and updates the UI accordingly.
+     * @param participant The {@link Participant} to add to the event.
      */
-    private void showAddDialog(Participant participant) {
-        Dialog<Participant> dialog = new Dialog<>();
-        dialog.setTitle("Add New Participant");
-        dialog.setHeaderText("Enter details for the new participant.");
-        ButtonType addButtonType = new ButtonType("Add", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-        int textFieldWidth = 200;
-        TextField firstNameField = new TextField(participant.getFirstName());
-        firstNameField.setPrefWidth(textFieldWidth);
-        TextField lastNameField = new TextField(participant.getLastName());
-        lastNameField.setPrefWidth(textFieldWidth);
-        TextField usernameField = new TextField(participant.getUsername());
-        usernameField.setPrefWidth(textFieldWidth);
-        TextField emailField = new TextField(participant.getEmail());
-        emailField.setPrefWidth(textFieldWidth);
-        TextField ibanField = new TextField(participant.getIban());
-        ibanField.setPrefWidth(textFieldWidth);
-        TextField bicField = new TextField(participant.getBic());
-        bicField.setPrefWidth(textFieldWidth);
-        ComboBox<String> languageComboBox = new ComboBox<>();
-        languageComboBox.getItems().addAll("English", "Dutch");
-        languageComboBox.setPromptText("Select a Language");
-        grid.add(new Label("First Name:"), 0, 0);
-        grid.add(firstNameField, 1, 0);
-        grid.add(new Label("Last Name:"), 0, 1);
-        grid.add(lastNameField, 1, 1);
-        grid.add(new Label("Username:"), 0, 2);
-        grid.add(usernameField, 1, 2);
-        grid.add(new Label("Email:"), 0, 3);
-        grid.add(emailField, 1, 3);
-        grid.add(new Label("IBAN:"), 0, 4);
-        grid.add(ibanField, 1, 4);
-        grid.add(new Label("BIC:"), 0, 5);
-        grid.add(bicField, 1, 5);
-        grid.add(new Label("Language:"), 0, 6);
-        grid.add(languageComboBox, 1, 6);
-        dialog.getDialogPane().setContent(grid);
-        dialog.getDialogPane().setMinHeight(350);
+    private void addParticipant(Participant participant) {
+        Participant addedParticipant = ServerUtils.addParticipantToEvent(event.getId(), participant);
+        if (addedParticipant != null) {
+            participants.add(addedParticipant);
+            setupPagination();
+            AlertUtils.showInformationAlert("Success", "Participant Added",
+                    "Participant was successfully added.");
+        }
+    }
 
-        ColumnConstraints columnOneConstraints = new ColumnConstraints(100, 100, Double.MAX_VALUE);
-        columnOneConstraints.setHgrow(Priority.ALWAYS);
+    /**
+     * Updates the details of an existing participant in the event and refreshes the UI.
+     * @param participant The {@link Participant} whose details are to be updated.
+     */
+    private void updateParticipant(Participant participant) {
+        long participantId = participant.getId();
+        boolean isUpdated = server.updateParticipant(event.getId(), participantId, participant);
+        if (isUpdated) {
+            refreshParticipantDetails(participant);
+            AlertUtils.showInformationAlert("Success", "Participant Updated",
+                    "Participant details were successfully updated.");
+        }
+    }
 
-        ColumnConstraints columnTwoConstraints = new ColumnConstraints(200, 200, Double.MAX_VALUE);
-        columnTwoConstraints.setHgrow(Priority.ALWAYS);
+    /**
+     * Removes a participant from the event and updates the UI.
+     * @param participant The {@link Participant} to remove.
+     */
+    private void deleteParticipant(Participant participant) {
+        boolean isDeleted = server.deleteParticipant(participant.getId(), event.getId());
+        if (isDeleted) {
+            participants.remove(participant);
+            setupPagination();
+            AlertUtils.showInformationAlert("Success", "Participant Removed",
+                    "Participant was successfully removed.");
+        }
+    }
 
-        grid.getColumnConstraints().addAll(columnOneConstraints, columnTwoConstraints);
+    /**
+     * Refreshes the details of a participant in the UI.
+     * @param updatedParticipant The {@link Participant} with updated details.
+     */
+    private void refreshParticipantDetails(Participant updatedParticipant) {
+        int index = participants.indexOf(updatedParticipant);
+        if (index != -1) {
+            participants.set(index, updatedParticipant);
+        }
+        setupPagination();
+    }
 
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == addButtonType) {
-                String selectedLanguage = languageComboBox.getValue() != null ? languageComboBox.getValue() : "";
-                String validationErrors = validateParticipantDetails(
-                        firstNameField.getText(), lastNameField.getText(), usernameField.getText(),
-                        emailField.getText(), ibanField.getText(), bicField.getText(), selectedLanguage
-                );
+    /**
+     * Formats the details of a participant for display.
+     * @param participant The {@link Participant} whose details are to be formatted.
+     * @return A formatted string containing the participant's details.
+     */
+    private String formatParticipantDetails(Participant participant) {
+        return String.format("""
+                        First Name: %s
+                        Last Name: %s
+                        Username: %s
+                        Email: %s
+                        IBAN: %s
+                        BIC: %s
+                        Language Preference: %s""",
+                participant.getFirstName(),
+                participant.getLastName(),
+                participant.getUsername(),
+                participant.getEmail(),
+                participant.getIban(),
+                participant.getBic(),
+                participant.getLanguageChoice());
+    }
 
-                if (!validationErrors.isEmpty()) {
-                    showAlertWithText("Validation Error",
-                            "Please correct the following errors:", validationErrors);
+    /**
+     * A functional interface for consuming a {@link Participant} instance.
+     */
+    @FunctionalInterface
+    interface ParticipantConsumer {
+        void accept(Participant participant);
+    }
 
-                    participant.setFirstName(firstNameField.getText());
-                    participant.setLastName(lastNameField.getText());
-                    participant.setUsername(usernameField.getText());
-                    participant.setEmail(emailField.getText());
-                    participant.setIban(ibanField.getText());
-                    participant.setBic(bicField.getText());
-                    participant.setLanguageChoice(languageComboBox.getValue());
-                    showEditDialog(participant);
-                    return null;
+    /**
+     * A dialog for creating or editing a participant's details.
+     */
+    static class ParticipantDialog extends Dialog<Participant> {
+        ParticipantDialog(Participant participant, String title, String header) {
+            setTitle(title);
+            setHeaderText(header);
+
+            ButtonType saveButtonType = new ButtonType("Add", ButtonBar.ButtonData.OK_DONE);
+            getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+            getDialogPane().setMinHeight(350);
+            getDialogPane().setMinWidth(600);
+
+            Pair<GridPane, Map<String, Control>> formPair = ParticipantForm.createParticipantForm(participant);
+            GridPane grid = formPair.getKey();
+            Map<String, Control> formFields = formPair.getValue();
+
+            getDialogPane().setContent(grid);
+
+            String cssPath = this.getClass().getResource("/styles.css").toExternalForm();
+            getDialogPane().getStylesheets().add(cssPath);
+
+            setResultConverter(dialogButton -> {
+                if (dialogButton == saveButtonType) {
+                    return ParticipantForm.extractParticipantFromForm(formFields, participant);
                 }
-
-                return new Participant(
-                        usernameField.getText(), firstNameField.getText(), lastNameField.getText(),
-                        emailField.getText(), ibanField.getText(),
-                        bicField.getText(), new HashMap<>(),
-                        new HashMap<>(), new HashSet<>(), languageComboBox.getValue());
-            }
-            return null;
-        });
-
-
-
-        Optional<Participant> result = dialog.showAndWait();
-
-        result.ifPresent(newParticipant -> {
-            participants.add(newParticipant);
-            int newPageCount = participants.size();
-            pagination.setPageCount(newPageCount);
-            pagination.setPageFactory(this::createPage);
-            Participant addedParticipant = server.addParticipantToEvent(event.getId(), newParticipant);
-            if (addedParticipant != null) {
-                loadParticipants();
-            }
-
-        });
+                return null;
+            });
+        }
     }
+
 
     /**
-     * Validation of participant details and ensuring
-     * they are typed in the correct format for good error handling
-     * @param firstName String
-     * @param lastName String
-     * @param username String
-     * @param email String
-     * @param iban String
-     * @param bic String
-     * @param language String
-     * @return String
+     * Utility class for handling participant form creation and data extraction.
      */
-    private String validateParticipantDetails(String firstName,
-                                              String lastName, String username,
-                                              String email, String iban, String bic,
-                                              String language) {
-        StringBuilder sb = new StringBuilder();
+    static class ParticipantForm {
+        /**
+         * Creates a form for entering or editing a participant's details.
+         * @param participant The {@link Participant} whose details are to be used as initial form values.
+         * @return A {@link Pair} containing the form as a {@link GridPane} and a map of form fields.
+         */
+        static Pair<GridPane, Map<String, Control>> createParticipantForm(Participant participant) {
+            GridPane grid = new GridPane();
+            grid.setAlignment(Pos.CENTER);
+            grid.setHgap(10);
+            grid.setVgap(10);
 
-        if (firstName.trim().isEmpty() || lastName.trim().isEmpty() || username.trim().isEmpty() ||
-                email.trim().isEmpty() || iban.trim().isEmpty() ||
-                bic.trim().isEmpty() || language.trim().isEmpty()) {
-            sb.append("All fields must be filled in.\n");
-        }
-        if (!firstName.matches("[a-zA-Z]+") || !lastName.matches("[a-zA-Z]+")) {
-            sb.append("First name and last name must contain only letters.\n");
-        }
-        if (firstName.isEmpty() || !Character.isUpperCase(firstName.charAt(0)) ||
-                lastName.isEmpty() || !Character.isUpperCase(lastName.charAt(0))) {
-            sb.append("First name and last name must start with a capital letter.\n");
-        }
-        if (language.trim().isEmpty()) {
-            sb.append("Language selection is required.\n");
+            TextField firstNameField = createTextField(participant.getFirstName(), "First Name");
+            TextField lastNameField = createTextField(participant.getLastName(), "Last Name");
+            TextField usernameField = createTextField(participant.getUsername(), "Username");
+            TextField emailField = createTextField(participant.getEmail(), "Email");
+            TextField ibanField = createTextField(participant.getIban(), "IBAN");
+            TextField bicField = createTextField(participant.getBic(), "BIC");
+            ComboBox<String> languageComboBox = createComboBox(participant.getLanguageChoice(),
+                    "Language", "English", "Dutch");
+
+            // Store the fields in a map for easy access later
+            Map<String, Control> formFields = new HashMap<>();
+            formFields.put("First Name", firstNameField);
+            formFields.put("Last Name", lastNameField);
+            formFields.put("Username", usernameField);
+            formFields.put("Email", emailField);
+            formFields.put("IBAN", ibanField);
+            formFields.put("BIC", bicField);
+            formFields.put("Language", languageComboBox);
+
+            // Adding the fields to the grid
+            int row = 0;
+            for (Map.Entry<String, Control> entry : formFields.entrySet()) {
+                Label label = new Label(entry.getKey() + ":");
+                grid.add(label, 0, row);
+                grid.add(entry.getValue(), 1, row++);
+            }
+
+            return new Pair<>(grid, formFields);
         }
 
-        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            sb.append("Email is in an incorrect format.\n");
+        /**
+         * Creates a text field with the specified initial value and prompt text.
+         * @param value The initial value for the text field.
+         * @param promptText The prompt text to display in the text field.
+         * @return A {@link TextField} with the specified initial value and prompt text.
+         */
+        static TextField createTextField(String value, String promptText) {
+            TextField textField = new TextField(value);
+            textField.setPromptText(promptText);
+            textField.setPrefWidth(300);
+            return textField;
         }
-        return sb.toString();
+
+        /**
+         * Creates a combo box with the specified initial value, prompt text, and options.
+         * @param value The initial value to select in the combo box.
+         * @param promptText The prompt text to display in the combo box.
+         * @param options The options available for selection in the combo box.
+         * @return A {@link ComboBox} with the specified initial value, prompt text, and options.
+         */
+        static ComboBox<String> createComboBox(String value, String promptText, String... options) {
+            ComboBox<String> comboBox = new ComboBox<>();
+            comboBox.getItems().addAll(options);
+            comboBox.setPromptText(promptText);
+            comboBox.setValue(value);
+            return comboBox;
+        }
+
+        /**
+         * Extracts participant details from the form fields and creates a {@link Participant} instance.
+         * @param formFields The map of form fields containing participant details.
+         * @param participant The original participant.
+         * @return A new {@link Participant} instance with details extracted from the form fields.
+         */
+        static Participant extractParticipantFromForm(Map<String, Control> formFields, Participant participant) {
+            participant.setUsername(((TextField) formFields.get("Username")).getText());
+            participant.setFirstName(((TextField) formFields.get("First Name")).getText());
+            participant.setLastName(((TextField) formFields.get("Last Name")).getText());
+            participant.setEmail(((TextField) formFields.get("Email")).getText());
+            participant.setIban(((TextField) formFields.get("IBAN")).getText());
+            participant.setBic(((TextField) formFields.get("BIC")).getText());
+            participant.setLanguageChoice(((ComboBox<String>) formFields.get("Language")).getValue());
+
+            return participant;
+        }
     }
-
-    /**
-     * method that displays the alert
-     * @param title String
-     * @param header String
-     * @param content String
-     */
-    private void showAlertWithText(String title, String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
 }

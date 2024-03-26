@@ -142,7 +142,9 @@ public class AdminController {
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            AlertUtils.showInformationAlert("could not write to file", "could not find path");
+            AlertUtils.showInformationAlert("Error", "Could not write to file",
+                    "Could not find path");
+
 
         }
 
@@ -189,21 +191,24 @@ public class AdminController {
                                 title[0] = jsonNode.get("title").asText();
                                 id[0] = jsonNode.get("id").asLong();
                                 inviteCode[0] = jsonNode.get("inviteCode").asInt();
-                                AlertUtils.showInformationAlert("Event added!", "you can close the dialogue window");
+                                AlertUtils.showInformationAlert("Success", "Event added!",
+                                        "You can close the dialogue window.");
 
 
 
 
                             } catch (Exception e) {
                                 System.out.println("could not find correct attributes ");
-                                AlertUtils.showErrorAlert("Conversion failed",
-                                        "could not make an event from given json file");
+                                AlertUtils.showErrorAlert("Error", "Conversion failed",
+                                        "Could not make an event from the given JSON file.");
+
                             }
 
 
                         } catch (IOException e) {
                             e.printStackTrace();
-                            AlertUtils.showErrorAlert("File not found", "could not find given json file");
+                            AlertUtils.showErrorAlert("Error", "File not found",
+                                    "Could not find given JSON file");
 
                             throw new RuntimeException(e);
                         }
