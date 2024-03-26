@@ -18,7 +18,7 @@
     <top>
         <VBox alignment="CENTER" spacing="10" fx:id="vbox">
             <!-- Logo -->
-            <ImageView fx:id="logo" fitWidth="300" fitHeight="200" />
+            <ImageView fx:id="logo" fitWidth="400" fitHeight="200" />
 
             <HBox spacing="10" alignment="CENTER">
                 <TextField fx:id="codeInput" promptText="Enter code" />
