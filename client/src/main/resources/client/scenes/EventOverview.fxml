@@ -53,6 +53,7 @@
             </HBox>
 
             <!-- Expenses Section -->
+
             <Label fx:id="expensesLabel" styleClass="section-label" text="Expenses" style="-fx-font-weight: bold;"/>
             <VBox alignment="CENTER" spacing="10">
                 <ComboBox fx:id="participantDropdown" promptText="Select participant" />

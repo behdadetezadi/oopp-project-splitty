@@ -21,6 +21,9 @@ public class MainController {
     private ExpenseController expenseCtrl;
     private Scene expenseScene;
 
+    private ParticipantExpenseViewController participantExpenseViewController;
+    private Scene participantExpenseViewScene;
+
     private TableOfParticipantsController tableOfParticipantsController;
     private Scene tableOfParticipantsScene;
 
@@ -36,6 +39,7 @@ public class MainController {
      * @param startPair startPage pair
      * @param eventOverviewPair eventOverviewPage pair
      * @param expensePair expensePage pair
+     * @param participantExpenseViewControllerPair participantExpenseViewController Pair
      * @param tableOfParticipantsControllerPair table of participants page pair
      * @param contactDetailsControllerPair contactDetails page pair
      * @param inviteControllerPair invitePage pair
@@ -44,6 +48,7 @@ public class MainController {
                            Pair<StartPageController, Parent> startPair,
                            Pair<EventOverviewController, Parent> eventOverviewPair,
                            Pair<ExpenseController, Parent> expensePair,
+                           Pair<ParticipantExpenseViewController, Parent> participantExpenseViewControllerPair,
                            Pair<TableOfParticipantsController, Parent> tableOfParticipantsControllerPair,
                            Pair<ContactDetailsCtrl, Parent> contactDetailsControllerPair,
                            Pair<InviteController, Parent> inviteControllerPair)
@@ -59,6 +64,9 @@ public class MainController {
 
         this.expenseScene = new Scene(expensePair.getValue());
         this.expenseCtrl = expensePair.getKey();
+
+        this.participantExpenseViewScene=new Scene(participantExpenseViewControllerPair.getValue());
+        this.participantExpenseViewController=participantExpenseViewControllerPair.getKey();
 
         this.tableOfParticipantsScene = new Scene(tableOfParticipantsControllerPair.getValue());
         this.tableOfParticipantsController = tableOfParticipantsControllerPair.getKey();
@@ -137,4 +145,14 @@ public class MainController {
         eventOverviewController.refreshParticipants();
 
     }
+    /**
+     * Shows the expense overview of the selected participant.
+     * @param event The event to show overview for.
+     */
+    public void showParticipantExpensesOverview(Event event, Long participantId) {
+        primaryStage.setTitle("Participant Expenses Overview");
+        primaryStage.setScene(participantExpenseViewScene);
+        participantExpenseViewController.initializeExpensesForParticipant(participantId);
+    }
+
 }

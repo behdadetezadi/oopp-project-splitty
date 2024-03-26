@@ -5,11 +5,13 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ExpenseController">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ParticipantExpenseViewController" stylesheets="@/styles.css">
     <top>
+
         <Button text="Back" fx:id="backButton" onAction="#switchToEventOverviewScene" BorderPane.alignment="TOP_LEFT" />
     </top>
     <center>
+
         <ListView fx:id="expensesListView" BorderPane.alignment="CENTER"/>
     </center>
     <bottom>

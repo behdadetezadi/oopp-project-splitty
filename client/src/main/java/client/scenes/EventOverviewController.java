@@ -101,6 +101,17 @@ public class EventOverviewController {
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
     }
 
+    @FXML
+    private void showExpensesForSelectedParticipant(ActionEvent event) {
+        ParticipantOption selectedParticipantOption = participantDropdown.getSelectionModel().getSelectedItem();
+        if (selectedParticipantOption != null) {
+            Long selectedParticipantId = selectedParticipantOption.getId();
+            mainController.showParticipantExpensesOverview(this.event, selectedParticipantId);
+        } else {
+            showErrorAlert("Please select a participant to show expenses.");
+        }
+    }
+
     /**
      * called by startPage and other pages when setting up this page
      * @param event event to be set
@@ -111,6 +122,7 @@ public class EventOverviewController {
         loadParticipants();
         animateLabels();
         animateButtonsText();
+        initializeParticipants();
     }
 
     /**
@@ -157,15 +169,31 @@ public class EventOverviewController {
         }
     }
 
-    private void initializeParticipants() {
-        List<Participant> participants = event.getPeople();
-        if (participants != null) {
-            List<ParticipantOption> participantOptions = participants.stream()
-                    .map(p -> new ParticipantOption(p.getId(), p.getFirstName()))
-                    .collect(Collectors.toList());
-            participantDropdown.getItems().setAll(participantOptions);
-        }
+//    private void initializeParticipants() {
+//        List<Participant> participants = event.getPeople();
+//        if (participants != null) {
+//            List<ParticipantOption> participantOptions = participants.stream()
+//                    .map(p -> new ParticipantOption(p.getId(), p.getFirstName()))
+//                    .collect(Collectors.toList());
+//            participantDropdown.getItems().setAll(participantOptions);
+//        }
+//    }
+    /**
+     * Initializes the participants dropdown with options based on the event's associated participants.
+     */
+
+    public void initializeParticipants() {
+        List<Participant> participants = ServerUtils.getParticipantsByEventId(event.getId());
+        ObservableList<ParticipantOption> participantOptions = FXCollections.observableArrayList(
+                participants.stream()
+                        .map(p -> new ParticipantOption(p.getId(), p.getFirstName() + " " + p.getLastName()))
+                        .collect(Collectors.toList())
+        );
+
+        participantDropdown.getItems().clear(); // Clear existing options
+        participantDropdown.setItems(participantOptions);
     }
+
 
 
     private void initializeOptionsListView() {
@@ -253,33 +281,7 @@ public class EventOverviewController {
         }
     }
 
-    @FXML
-    private void showExpensesForSelectedParticipant(ActionEvent event) {
-        ParticipantOption selectedOption = participantDropdown.getSelectionModel().getSelectedItem();
-        if (selectedOption == null) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("No Participant Selected");
-            alert.setHeaderText(null);
-            alert.setContentText("Please select a participant to view their expenses.");
-            alert.showAndWait();
-            return;
-        }
 
-        long selectedParticipantId = selectedOption.getId();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/ParticipantExpenseOverview.fxml"));
-            Parent root = loader.load();
-            ExpenseController controller = loader.getController();
-            controller.initializeExpensesForParticipant(selectedParticipantId); 
-
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Handle the exception
-        }
-    }
 
 
 
