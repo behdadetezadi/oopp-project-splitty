@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
@@ -24,6 +24,8 @@ public class Expense {
     @OneToMany
     private List<Participant> splittingOption;
     private String expenseType;
+    @ElementCollection
+    private Set<Integer> eventIds;
 
     /**
      * This is the constructor that initialises the expense
@@ -36,7 +38,7 @@ public class Expense {
      * @param expenseType the type of category the expense belongs to
      */
     public Expense(Participant participant, String category, double amount, String currency,
-                    String date, List<Participant> splittingOption, String expenseType) {
+                    String date, List<Participant> splittingOption, String expenseType, Set<Integer> eventIds) {
         this.participant = participant;
         this.category = category;
         this.amount = amount;
@@ -44,6 +46,7 @@ public class Expense {
         this.date = date;
         this.splittingOption = splittingOption;
         this.expenseType = expenseType;
+        this.eventIds=eventIds;
     }
 
     /**
@@ -85,6 +88,22 @@ public class Expense {
      */
     public Participant getParticipant() {
         return participant;
+    }
+
+    /**
+     * getter for eventIds
+     * @return the eventIds
+     */
+    public Set<Integer> getEventIds() {
+        return eventIds;
+    }
+
+    /**
+     * setter for eventIds
+     * @param eventIds a hashset
+     */
+    public void setEventIds(Set<Integer> eventIds) {
+        this.eventIds = eventIds;
     }
 
     /**
@@ -193,7 +212,7 @@ public class Expense {
 
 
     /**
-     * equals method using equalsbuilder (we should use this approach)
+     * equals method using equals builder (we should use this approach)
      * @param obj object to be compared
      * @return boolean
      */
@@ -203,7 +222,7 @@ public class Expense {
     }
 
     /**
-     * hashcode using hashbuilder
+     * hashcode using hash builder
      * @return int representing hash
      */
     @Override
@@ -221,11 +240,11 @@ public class Expense {
     }
 
 
-    /**
-     * Equals method for expenses
-     * @param o an object
-     * @return whether two expenses are equal or not
-     */
+//    /**
+//     * Equals method for expenses
+//     * @param o an object
+//     * @return whether two expenses are equal or not
+//     */
       /*
     @Override
     public boolean equals(Object o) {
@@ -240,10 +259,10 @@ public class Expense {
         return Objects.equals(expenseType, expense.expenseType);
     }
 */
-    /**
-     * Makes a hashcode
-     * @return the hashcode for the expense
-     */
+//    /**
+//     * Makes a hashcode
+//     * @return the hashcode for the expense
+//     */
     /*
     @Override
     public int hashCode() {
@@ -262,10 +281,10 @@ public class Expense {
 
 */
 
-    /**
-     * Shows the details of the expense
-     * @return a string
-     */
+//    /**
+//     * Shows the details of the expense
+//     * @return a string
+//     */
     /*
     @Override
     public String toString() {

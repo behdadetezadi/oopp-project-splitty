@@ -3,6 +3,7 @@ package commons;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -64,7 +65,7 @@ class EventTest {
     void testAddExpense() {
         Participant participant = new Participant("John", "Foo");
         List<Participant> splitOption = new ArrayList<>();
-        Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", splitOption, "food");
+        Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", splitOption, "food", new HashSet<>());
         assertTrue(event.addExpense(a));
         assertTrue(event.getExpenses().contains(a));
     }
@@ -73,7 +74,7 @@ class EventTest {
     void testRemoveExpense() {
         Participant participant = new Participant("John", "Foo");
         List<Participant> splitOption = new ArrayList<>();
-        Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", splitOption, "food");
+        Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", splitOption, "food", new HashSet<>());
         event.addExpense(a);
         assertTrue(event.removeExpense(a));
         assertFalse(event.getExpenses().contains(a));
@@ -119,7 +120,7 @@ class EventTest {
     void testRemoveNonExistingExpense() {
         Participant participant = new Participant("John", "Foo");
         List<Participant> splitOption = new ArrayList<>();
-        Expense a = new Expense(participant, "lunch", 15, "USD", "01-02-2024", splitOption, "food");
+        Expense a = new Expense(participant, "lunch", 15, "USD", "01-02-2024", splitOption, "food", new HashSet<>());
         assertFalse(event.removeExpense(a));
     }
 

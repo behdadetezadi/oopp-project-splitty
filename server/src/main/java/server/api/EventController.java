@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Event;
+import commons.Expense;
 import commons.Participant;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,6 +172,79 @@ public class EventController {
         try {
             Participant updatedParticipant = eventService.updateParticipantInEvent(eventId, participantId, participantDetails);
             return ResponseEntity.ok(updatedParticipant);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * finds expenses by the event id
+     * @param id as a long number
+     * @return an array list of expenses if possible
+     */
+    @GetMapping("/{id}/expenses")
+    public ResponseEntity<?> getExpensesByEventId(@PathVariable Long id) {
+        try {
+            Optional<Event> eventOptional = eventService.findEventById(id);
+            if(eventOptional.isEmpty()){
+                return new ResponseEntity<>("Event not found with ID: " + id, HttpStatus.NOT_FOUND);
+            }
+            List<Expense> expenses = eventService.findExpensesByEventId(id);
+            return ResponseEntity.ok(expenses);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ServiceException e) {
+            return new ResponseEntity<>("Failed to find the expenses for Event with ID: "
+                    + id + ", Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /**
+     * adds expense to an event
+     * @param eventId the event
+     * @param expense the expense
+     * @return response code
+     */
+    @PostMapping("/{eventId}/expenses")
+    public ResponseEntity<Expense> addExpense(@PathVariable long eventId, @RequestBody Expense expense) {
+        Expense addedExpense = eventService.addExpenseToEvent(eventId, expense);
+        if (addedExpense != null) {
+            return ResponseEntity.ok(addedExpense);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * deletes an expense from an event
+     * @param eventId the event
+     * @param expenseId the expense
+     * @return response code
+     */
+    @DeleteMapping("/{eventId}/expenses/{expenseId}")
+    public ResponseEntity<Void> removeExpense(@PathVariable long eventId, @PathVariable long expenseId) {
+        eventService.removeExpenseFromEvent(eventId, expenseId);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * updates an expense from an event
+     * @param eventId the event
+     * @param expenseId the expense id
+     * @param updatedExpense the updated expense
+     * @return response code
+     */
+    @PutMapping("/{eventId}/expenses/{expenseId}")
+    public ResponseEntity<Expense> updateExpenseInEvent(
+            @PathVariable Long eventId,
+            @PathVariable Long expenseId,
+            @RequestBody Expense updatedExpense) {
+        try {
+            Expense updated = eventService.updateExpenseInEvent(eventId, expenseId, updatedExpense);
+            return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         } catch (Exception e) {

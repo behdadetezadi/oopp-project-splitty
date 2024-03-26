@@ -7,7 +7,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
@@ -24,7 +23,7 @@ public class Event {
     private long inviteCode;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Participant> people;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Expense> expenses;
 
 
@@ -253,11 +252,11 @@ public class Event {
     }
 
 
-    /**
-     * java generated equals method
-     * @param o Object
-     * @return boolean
-     */
+//    /**
+//     * java generated equals method
+//     * @param o Object
+//     * @return boolean
+//     */
 /*
     @Override
     public boolean equals(Object o) {
@@ -278,20 +277,20 @@ public class Event {
 
 
 
-    /**
-     * temporary hashcode look into fixing a failing pipeline (NEEDS TO BE FIXED LATER)
-     * @return int
-     */
+//    /**
+//     * temporary hashcode look into fixing a failing pipeline (NEEDS TO BE FIXED LATER)
+//     * @return int
+//     */
     /*
     @Override
     public int hashCode() {
         return Objects.hash(title,inviteCode);
     }
     */
-    /**
-     * default toString
-     * @return a type String
-     */
+//    /**
+//     * default toString
+//     * @return a type String
+//     */
     /*
     @Override
     public String toString() {

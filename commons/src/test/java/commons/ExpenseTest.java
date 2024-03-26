@@ -3,6 +3,7 @@ package commons;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,9 +13,9 @@ class ExpenseTest {
     Participant participant2 = new Participant("John2", "Foo");
     List<Participant> spiltOption = new ArrayList<>();
     List<Participant> spiltOption2 = new ArrayList<>();
-    Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
-    Expense b = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food");
-    Expense c = new Expense(participant, "dinner", 13, "Euros", "01-01-2024", spiltOption, "food");
+    Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food", new HashSet<>());
+    Expense b = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food", new HashSet<>());
+    Expense c = new Expense(participant, "dinner", 13, "Euros", "01-01-2024", spiltOption, "food", new HashSet<>());
 
 
     @Test
