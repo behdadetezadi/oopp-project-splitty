@@ -1,8 +1,7 @@
 package client.scenes;
 
 import client.utils.AlertUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import commons.Event;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,12 +20,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -181,10 +176,8 @@ public class AdminController {
                         System.out.println(filepath);
 
                         try {
-                            JsonNode jsonNode = objectMapper.readTree(new File(filepath));
                             BufferedReader br = new BufferedReader(new FileReader(new File(filepath)));
                             List<String> s = br.lines().toList();
-                            int i = 0;
 
                             try {
 
