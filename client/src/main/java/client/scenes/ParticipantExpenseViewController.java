@@ -1,5 +1,4 @@
 package client.scenes;
-
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
@@ -7,22 +6,31 @@ import commons.Expense;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.util.Callback;
+
 
 import java.util.List;
-
 
 
 public class ParticipantExpenseViewController
 {
     @FXML
-    private ListView<String> expensesListView; // Assume this ListView is defined in your FXML
+    private ListView<String> expensesListView;
     @FXML
     private Label sumOfExpensesLabel;
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
     private Event event;
+
     /**
      *
      * @param primaryStage primary stage
@@ -49,21 +57,12 @@ public class ParticipantExpenseViewController
                 expense.getCurrency(),
                 expense.getAmount());
     }
+
     /**
      * Integrates the viewing of expenses for a selected participant.
      *
      * @param participantId The ID of the participant whose expenses you want to view.
      */
-//    public void initializeExpensesForParticipant(Long participantId) {
-//        List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
-//        expensesListView.getItems().clear();
-//        double sumOfExpenses = 0;
-//        for (Expense expense : expenses) {
-//            expensesListView.getItems().add(formatExpenseForDisplay(expense));
-//            sumOfExpenses += expense.getAmount();
-//        }
-//        sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
-//    }
     public void initializeExpensesForParticipant(Long participantId) {
         System.out.println("Initializing expenses for participant ID: " + participantId);
         List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
@@ -73,16 +72,48 @@ public class ParticipantExpenseViewController
         double sumOfExpenses = 0;
         for (Expense expense : expenses) {
             String expenseDisplay = formatExpenseForDisplay(expense);
-            System.out.println("Adding expense to ListView: " + expenseDisplay);
             expensesListView.getItems().add(expenseDisplay);
             sumOfExpenses += expense.getAmount();
+
+            Button editButton = new Button("Edit");
+            Button deleteButton = new Button("Delete");
+            editButton.setOnAction(event -> System.out.println("Test1"));
+            //handleEditExpense(expense));
+            deleteButton.setOnAction(event -> System.out.println("Test2"));
+            //handleDeleteExpense(expense));
         }
         sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
+        expensesListView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() { //manage the cells in list
+            // customise the cells
+            @Override
+            public ListCell<String> call(ListView<String> listView) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if(empty || item == null) {
+                            setText(null);
+                            setGraphic(null);
+                        }else {
+                            setText(item);
+                            Button editButton = new Button("Edit");
+                            Button deleteButton = new Button("Delete");
+                            editButton.setOnAction(event -> System.out.println("Test1"));
+                            deleteButton.setOnAction(event -> System.out.println("Test2"));
+                            setGraphic(new HBox(editButton, deleteButton));
+                        }
+                    }
+                };
+            }
+        });
     }
+
 
     @FXML
     private void switchToEventOverviewScene() {
         mainController.showEventOverview(this.event);
 
+
     }
 }
+
