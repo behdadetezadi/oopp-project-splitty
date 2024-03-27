@@ -93,6 +93,20 @@ public class ServerUtils {
 	}
 
 
+	private static Participant getParticipant(long participantId) {
+		Response response = client.target(SERVER)
+				.path("api/participants/{id}")
+				.resolveTemplate("id", participantId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.get();
+		if (response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
+			throw new RuntimeException("Participant not found with the id: " + participantId);
+		}else if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
+			throw new RuntimeException("Failed to retrieve participant. Status code: " + response.getStatus());
+		}
+		return response.readEntity(Participant.class);
+	}
 
 
 	/**
@@ -103,16 +117,7 @@ public class ServerUtils {
 	 */
 	public static Expense addExpense(long participantId, String description, double amountValue, long eventId) {
 		try {
-			Participant participant = client.target(SERVER)
-					.path("api/participants/{id}")
-					.resolveTemplate("id", participantId)
-					.request(APPLICATION_JSON)
-					.accept(APPLICATION_JSON)
-					.get(new GenericType<>() {
-					});
-			if (participant == null) {
-				throw new RuntimeException("Participant not found with the id: " + participantId);
-			}
+			Participant participant = getParticipant(participantId);
 			Expense expense = new Expense(participant, description, amountValue);
 			System.out.println(eventId);
 			return client.target(SERVER)
@@ -122,8 +127,6 @@ public class ServerUtils {
 					.accept(APPLICATION_JSON)
 					.post(Entity.entity(expense, APPLICATION_JSON), Expense.class)
 					;
-		} catch (NotFoundException e) {
-			throw new RuntimeException("Participant not found with the id: " + participantId);
 		} catch (BadRequestException e) {
 			throw new RuntimeException("Bad request: " + e.getMessage());
 		} catch (RuntimeException e) {
