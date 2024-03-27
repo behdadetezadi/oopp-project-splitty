@@ -96,30 +96,31 @@ public class ServerUtils {
 
 
 	/**
-	 * Adds an expense
-	 * //TODO
-	 *
-	 * @param username       the person who paid for the expense
+	 * Adds an expense to an event
+	 * @param username the person who paid for the expense
 	 * @param description description of the expense
 	 * @param amountValue the amount the person has paid for the expense
 	 */
-	public static Expense addExpense(String username, String description, double amountValue) {
+	public static Expense addExpense(String username, String description, double amountValue, long eventId) {
 		try {
 			Participant participant = client.target(SERVER)
 					.path("api/participants/username/{username}")
 					.resolveTemplate("username", username)
 					.request(APPLICATION_JSON)
 					.accept(APPLICATION_JSON)
-					.get(new GenericType<Participant>() {});
+					.get(new GenericType<>() {
+					});
 			if (participant == null) {
 				throw new RuntimeException("Participant not found with the username: " + username);
 			}
 			Expense expense = new Expense(participant, description, amountValue);
 			return client.target(SERVER)
-					.path("api/expenses/")
+					.path("api/events/{eventId}/expenses")
+					.resolveTemplate("eventId", eventId)
 					.request(APPLICATION_JSON)
 					.accept(APPLICATION_JSON)
-					.post(Entity.entity(expense, APPLICATION_JSON), Expense.class);
+					.post(Entity.entity(expense, APPLICATION_JSON), Expense.class)
+					;
 		} catch (NotFoundException e) {
 			throw new RuntimeException("Participant not found with the username: " + username);
 		} catch (BadRequestException e) {
@@ -128,6 +129,7 @@ public class ServerUtils {
 			throw new RuntimeException("Couldn't add the expense: " + e.getMessage());
 		}
 	}
+
 	/**
 	 * Fetches a list of expenses for a specific participant.
 	 *

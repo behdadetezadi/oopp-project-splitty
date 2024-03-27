@@ -94,15 +94,13 @@ public class AddExpenseController {
 
     /**
      * Add expense button handler
-     * @param event button press
+     * @param actionEvent button press
      */
     @FXML
-    private void handleAddExpenseAction(ActionEvent event) {
+    private void handleAddExpenseAction(ActionEvent actionEvent) {
         String payer = this.payer.getText();
         String description = this.expenseDescription.getText();
         String amount = this.amountPaid.getText();
-
-        // Convert amount to a number and handle potential exceptions
         double amountValue;
 
         // Check for a trailing period/comma
@@ -122,21 +120,20 @@ public class AddExpenseController {
             return;
         }
 
-        // Create new expense in backend
         try {
-            Expense newExpense = ServerUtils.addExpense(payer, description, amountValue);
+            Expense newExpense = ServerUtils.addExpense(payer, description, amountValue, event.getId());
             Stage stage = (Stage) addExpenseButton.getScene().getWindow(); // Get the current stage
-            AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
-                    "Expense Added", "The expense has been successfully added.");
+            if(newExpense!=null){
+                AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
+                        "Expense Added", "The expense has been successfully added.");
+            }
             switchToEventOverviewScene();
-
-            // TODO show success message, navigate to previous scene etc
         } catch (Exception e) {
-            // Catch exception
             AlertUtils.showErrorAlert("Unexpected Error", "Error",
                     "An unexpected error occurred: " + e.getMessage());
         }
     }
+
 
     /**
      * Cancel button handler
