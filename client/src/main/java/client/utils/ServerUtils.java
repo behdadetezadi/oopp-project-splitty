@@ -92,9 +92,6 @@ public class ServerUtils {
 
 	}
 
-
-
-
 	/**
 	 * Adds an expense
 	 * //TODO
@@ -128,6 +125,50 @@ public class ServerUtils {
 			throw new RuntimeException("Couldn't add the expense: " + e.getMessage());
 		}
 	}
+
+	/**
+	 * Deletes an expense from the database
+	 * @param expenseId the id of the expense
+	 */
+	public static void deleteExpense(long expenseId){
+		try{
+			Response response = client.target(SERVER)
+					.path("api/expenses/{id}")
+					.resolveTemplate("id", expenseId)
+					.request(APPLICATION_JSON)
+					.delete();
+			if(response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()){
+				System.out.println("Expense deleted successfully");
+			} else if(response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()){
+				throw new RuntimeException("Expense not found with ID: " + expenseId);
+			} else{
+				throw new RuntimeException("Failed to delete expense. HTTP status code: " + response.getStatus());
+			}
+		} catch(RuntimeException e){
+			throw new RuntimeException("Failed to delete expense: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Updates an existing expense in an event
+	 * @param expenseId the id of the expense that needs to be updated
+	 * @param updatedExpense the new updated version of the expense
+	 */
+	public static void updateExpense(long expenseId, Expense updatedExpense, long eventId){
+		try {
+			client.target(SERVER)
+					.path("api/events/{eventId}/expenses/{expenseId}")
+					.resolveTemplate("eventId", eventId)
+					.resolveTemplate("expenseId", expenseId)
+					.request()
+					.put(Entity.entity(updatedExpense, APPLICATION_JSON));
+		} catch(NotFoundException e) {
+			throw new RuntimeException("Expense not found with ID: " + expenseId);
+		} catch(RuntimeException e) {
+			throw new RuntimeException("Couldn't update the expense: " + e.getMessage());
+		}
+	}
+
 	/**
 	 * Fetches a list of expenses for a specific participant.
 	 *
