@@ -12,9 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-import java.util.List;
-
-
 
 public class ExpenseController {
     private ServerUtils server;
@@ -34,8 +31,6 @@ public class ExpenseController {
     // Add a ListView for displaying participant expenses
     @FXML
     private ListView<String> expensesListView; // Assume this ListView is defined in your FXML
-    @FXML
-    private Label sumOfExpensesLabel;
 
     private Event event;
 
@@ -84,21 +79,7 @@ public class ExpenseController {
         }
     }
 
-    /**
-     * Integrates the viewing of expenses for a selected participant.
-     *
-     * @param participantId The ID of the participant whose expenses you want to view.
-     */
-    public void initializeExpensesForParticipant(Long participantId) {
-        List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
-        expensesListView.getItems().clear();
-        double sumOfExpenses = 0;
-        for (Expense expense : expenses) {
-            expensesListView.getItems().add(expense.toString());
-            sumOfExpenses += expense.getAmount(); 
-        }
-        sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
-    }
+
 
 
     /**
