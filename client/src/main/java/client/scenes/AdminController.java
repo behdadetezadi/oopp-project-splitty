@@ -16,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 
+import java.io.DataInput;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -173,6 +174,7 @@ public class AdminController {
         final String[] title = {null};
         final long[] id = new long[1];
         final int[] inviteCode = new int[1];
+        final Event[] eventArr = new Event[1];
         button.setOnAction(
                 new EventHandler<ActionEvent>() {
                     @Override
@@ -188,9 +190,9 @@ public class AdminController {
                             JsonNode jsonNode = objectMapper.readTree(new File(filepath));
 
                             try {
-                                title[0] = jsonNode.get("title").asText();
-                                id[0] = jsonNode.get("id").asLong();
-                                inviteCode[0] = jsonNode.get("inviteCode").asInt();
+
+                                Event e = objectMapper.readValue((DataInput) jsonNode, Event.class);
+                                eventArr[0] = e;
                                 AlertUtils.showInformationAlert("Success", "Event added!",
                                         "You can close the dialogue window.");
 
@@ -218,7 +220,7 @@ public class AdminController {
         e.setTitle(title[0]);
         e.setId(id[0]);
         e.setInviteCode(inviteCode[0]);
-        this.update(e);
+        this.update(eventArr[0]);
 
         dialogVbox.getChildren().add(button);
 
