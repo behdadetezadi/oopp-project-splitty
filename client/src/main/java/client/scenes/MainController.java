@@ -97,10 +97,10 @@ public class MainController {
      *
      * @param event the event we are working on
      */
-    public void showAddExpense(Event event) {
+    public void showAddExpense(Event event, long participantId) {
         primaryStage.setTitle("Expenses: Add Expense");
         primaryStage.setScene(expenseScene);
-        expenseCtrl.setEvent(event);
+        expenseCtrl.setEvent(event, participantId);
     }
 
     /**

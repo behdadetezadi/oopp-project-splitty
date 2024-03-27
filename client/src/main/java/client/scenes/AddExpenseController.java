@@ -33,6 +33,7 @@ public class AddExpenseController {
     private ListView<String> expensesListView; // Assume this ListView is defined in your FXML
 
     private Event event;
+    private long selectedParticipantId;
 
 
     /**
@@ -61,8 +62,9 @@ public class AddExpenseController {
      * called by mainController
      * @param event event
      */
-    public void setEvent(Event event) {
+    public void setEvent(Event event, long participantId) {
         this.event = event;
+        this.selectedParticipantId = participantId;
         initialize();
     }
 
@@ -78,9 +80,6 @@ public class AddExpenseController {
             amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
         }
     }
-
-
-
 
     /**
      * This method validates input for the amount
@@ -121,7 +120,7 @@ public class AddExpenseController {
         }
 
         try {
-            Expense newExpense = ServerUtils.addExpense(payer, description, amountValue, event.getId());
+            Expense newExpense = ServerUtils.addExpense(selectedParticipantId, description, amountValue, event.getId());
             Stage stage = (Stage) addExpenseButton.getScene().getWindow(); // Get the current stage
             if(newExpense!=null){
                 AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,

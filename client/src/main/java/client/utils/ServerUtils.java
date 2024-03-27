@@ -97,23 +97,24 @@ public class ServerUtils {
 
 	/**
 	 * Adds an expense to an event
-	 * @param username the person who paid for the expense
+	 * @param participantId the person who paid for the expense
 	 * @param description description of the expense
 	 * @param amountValue the amount the person has paid for the expense
 	 */
-	public static Expense addExpense(String username, String description, double amountValue, long eventId) {
+	public static Expense addExpense(long participantId, String description, double amountValue, long eventId) {
 		try {
 			Participant participant = client.target(SERVER)
-					.path("api/participants/username/{username}")
-					.resolveTemplate("username", username)
+					.path("api/participants/{id}")
+					.resolveTemplate("id", participantId)
 					.request(APPLICATION_JSON)
 					.accept(APPLICATION_JSON)
 					.get(new GenericType<>() {
 					});
 			if (participant == null) {
-				throw new RuntimeException("Participant not found with the username: " + username);
+				throw new RuntimeException("Participant not found with the id: " + participantId);
 			}
 			Expense expense = new Expense(participant, description, amountValue);
+			System.out.println(eventId);
 			return client.target(SERVER)
 					.path("api/events/{eventId}/expenses")
 					.resolveTemplate("eventId", eventId)
@@ -122,7 +123,7 @@ public class ServerUtils {
 					.post(Entity.entity(expense, APPLICATION_JSON), Expense.class)
 					;
 		} catch (NotFoundException e) {
-			throw new RuntimeException("Participant not found with the username: " + username);
+			throw new RuntimeException("Participant not found with the id: " + participantId);
 		} catch (BadRequestException e) {
 			throw new RuntimeException("Bad request: " + e.getMessage());
 		} catch (RuntimeException e) {
