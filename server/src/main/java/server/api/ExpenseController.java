@@ -124,7 +124,7 @@ public class ExpenseController {
      * @param id the id of the expense that needs to be deleted
      * @return ResponseEntity<Void> ok or not found
      */
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") long id) {
         try {
             expenseService.deleteExpense(id);

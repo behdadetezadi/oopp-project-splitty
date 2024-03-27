@@ -4,10 +4,7 @@ import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
@@ -75,16 +72,9 @@ public class ParticipantExpenseViewController
             expensesListView.getItems().add(expenseDisplay);
             sumOfExpenses += expense.getAmount();
 
-            Button editButton = new Button("Edit");
-            Button deleteButton = new Button("Delete");
-            editButton.setOnAction(event -> System.out.println("Test1"));
-            //handleEditExpense(expense));
-            deleteButton.setOnAction(event -> System.out.println("Test2"));
-            //handleDeleteExpense(expense));
         }
         sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
-        expensesListView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() { //manage the cells in list
-            // customise the cells
+        expensesListView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
             @Override
             public ListCell<String> call(ListView<String> listView) {
                 return new ListCell<>() {
@@ -96,10 +86,11 @@ public class ParticipantExpenseViewController
                             setGraphic(null);
                         }else {
                             setText(item);
+                            Expense expense = getExpenseFromListView(getIndex(), participantId);
                             Button editButton = new Button("Edit");
                             Button deleteButton = new Button("Delete");
                             editButton.setOnAction(event -> System.out.println("Test1"));
-                            deleteButton.setOnAction(event -> System.out.println("Test2"));
+                            deleteButton.setOnAction(event -> handleDeleteButton(expense));
                             setGraphic(new HBox(editButton, deleteButton));
                         }
                     }
@@ -108,12 +99,34 @@ public class ParticipantExpenseViewController
         });
     }
 
+    private Expense getExpenseFromListView(int index, long participantId) {
+        List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
+        if (index >= 0 && index < expenses.size()) {
+            return expenses.get(index);
+        } else {
+            return null;
+        }
+    }
 
     @FXML
     private void switchToEventOverviewScene() {
         mainController.showEventOverview(this.event);
-
-
     }
+
+    /**
+     * deletes current expense
+     */
+    @FXML
+    private void handleDeleteButton(Expense expense) {
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION,
+                "Are you sure you want to remove this expense? This action cannot be undone"
+                , ButtonType.YES, ButtonType.NO);
+        confirmDialog.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                ServerUtils.deleteExpense(expense.getId());
+            }
+        });
+    }
+
 }
 
