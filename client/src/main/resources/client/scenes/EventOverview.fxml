@@ -21,7 +21,7 @@
         <VBox spacing="1">
             <!-- Empty Region for spacing -->
             <HBox spacing="10">
-                <Button text="Go Back" onAction="#goBackToStartPage" />
+                <Button fx:id="backToMain" text="Go Back" onAction="#goBackToStartPage" />
                 <Region HBox.hgrow="ALWAYS" />
                 <Button fx:id="sendInvitesButton" text="Send Invites" onAction="#sendInvites" />
             </HBox>
