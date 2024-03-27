@@ -23,6 +23,7 @@ public class ParticipantExpenseViewController
     private MainController mainController;
     private Stage primaryStage;
     private Event event;
+    private long selectedParticipantId;
     /**
      *
      * @param primaryStage primary stage
@@ -38,6 +39,9 @@ public class ParticipantExpenseViewController
         this.event = event;
     }
 
+    public void setEvent(Event event, long participantId) {
+        this.event = event;
+        this.selectedParticipantId = participantId;}
     /** Format the expense information for display
      * @param expense the expense need to be displayed
      */
@@ -78,9 +82,10 @@ public class ParticipantExpenseViewController
         sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
     }
 
+
     @FXML
     private void switchToEventOverviewScene() {
-        mainController.showEventOverview(this.event);
+        mainController.showEventOverview(event);
 
     }
 }

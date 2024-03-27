@@ -321,6 +321,26 @@ public class ServerUtils {
 			return null;
 		}
 	}
+	/**
+	 * Fetches a list of expenses for a specific event.
+	 *
+	 * @param eventId The unique identifier of the event.
+	 * @return A list of expenses associated with the given event.
+	 */
+	public static List<Expense> getExpensesForEvent(Long eventId) {
+		try {
+			return client.target(SERVER)
+					.path("api/events/{eventId}/expenses")
+					.resolveTemplate("eventId", eventId)
+					.request(APPLICATION_JSON)
+					.accept(APPLICATION_JSON)
+					.get(new GenericType<List<Expense>>() {});
+		} catch (NotFoundException e) {
+			throw new RuntimeException("No expenses found for event with ID: " + eventId);
+		} catch (Exception e) {
+			throw new RuntimeException("Error fetching expenses for event: " + e.getMessage());
+		}
+	}
 
 	/**
 	 * updating a participant

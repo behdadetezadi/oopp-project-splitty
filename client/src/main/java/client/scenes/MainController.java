@@ -155,6 +155,7 @@ public class MainController {
     public void showParticipantExpensesOverview(Event event, Long participantId) {
         primaryStage.setTitle("Participant Expenses Overview");
         primaryStage.setScene(participantExpenseViewScene);
+        participantExpenseViewController.setEvent(event,participantId);
         participantExpenseViewController.initializeExpensesForParticipant(participantId);
     }
 
