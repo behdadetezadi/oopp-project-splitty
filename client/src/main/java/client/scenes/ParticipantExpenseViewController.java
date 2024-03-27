@@ -43,10 +43,8 @@ public class ParticipantExpenseViewController
      */
     private String formatExpenseForDisplay(Expense expense)
     {
-        return String.format("%s - %s: %s %.2f",
-                expense.getDate(),
-                expense.getParticipant().getFirstName(),
-                expense.getCurrency(),
+        return String.format("%s: %.2f",
+                expense.getCategory(),
                 expense.getAmount());
     }
     /**
