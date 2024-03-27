@@ -31,7 +31,8 @@ public class AddExpenseController {
     // Add a ListView for displaying participant expenses
     @FXML
     private ListView<String> expensesListView; // Assume this ListView is defined in your FXML
-
+    @FXML
+    private Label participantLabel;
     private Event event;
     private long selectedParticipantId;
 
@@ -65,6 +66,8 @@ public class AddExpenseController {
     public void setEvent(Event event, long participantId) {
         this.event = event;
         this.selectedParticipantId = participantId;
+        participantLabel.setText(ServerUtils.getParticipant(selectedParticipantId).getFirstName()
+                + " " + ServerUtils.getParticipant(selectedParticipantId).getLastName());
         initialize();
     }
 
@@ -97,7 +100,6 @@ public class AddExpenseController {
      */
     @FXML
     private void handleAddExpenseAction(ActionEvent actionEvent) {
-        String payer = this.payer.getText();
         String description = this.expenseDescription.getText();
         String amount = this.amountPaid.getText();
         double amountValue;

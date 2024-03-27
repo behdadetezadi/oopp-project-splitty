@@ -93,7 +93,7 @@ public class ServerUtils {
 	}
 
 
-	private static Participant getParticipant(long participantId) {
+	public static Participant getParticipant(long participantId) {
 		Response response = client.target(SERVER)
 				.path("api/participants/{id}")
 				.resolveTemplate("id", participantId)
