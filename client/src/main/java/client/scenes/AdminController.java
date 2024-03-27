@@ -16,13 +16,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 
-import java.io.DataInput;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -170,17 +169,12 @@ public class AdminController {
         TextArea textArea = new TextArea();
         dialogVbox.getChildren().add(textArea);
         Button button = new Button("submit");
-        Event e = new Event();
-        final String[] title = {null};
-        final long[] id = new long[1];
-        final int[] inviteCode = new int[1];
+
         final Event[] eventArr = new Event[1];
         button.setOnAction(
                 new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-
-
 
                     String filepath = textArea.getText();
                     filepath = filepath.strip();
@@ -188,10 +182,13 @@ public class AdminController {
 
                         try {
                             JsonNode jsonNode = objectMapper.readTree(new File(filepath));
+                            BufferedReader br = new BufferedReader(new FileReader(new File(filepath)));
+                            List<String> s = br.lines().toList();
+                            int i = 0;
 
                             try {
 
-                                Event e = objectMapper.readValue((DataInput) jsonNode, Event.class);
+                                Event e = objectMapper.readValue(s.get(0), Event.class);
                                 eventArr[0] = e;
                                 AlertUtils.showInformationAlert("Success", "Event added!",
                                         "You can close the dialogue window.");
@@ -217,9 +214,7 @@ public class AdminController {
                     }
                 }
         );
-        e.setTitle(title[0]);
-        e.setId(id[0]);
-        e.setInviteCode(inviteCode[0]);
+
         this.update(eventArr[0]);
 
         dialogVbox.getChildren().add(button);
