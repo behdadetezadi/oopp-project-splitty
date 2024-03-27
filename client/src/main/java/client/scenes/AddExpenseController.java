@@ -13,7 +13,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 
-public class ExpenseController {
+public class AddExpenseController {
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
@@ -43,7 +43,7 @@ public class ExpenseController {
      * @param event Event
      */
     @Inject
-    public ExpenseController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
+    public AddExpenseController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
         this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
@@ -53,7 +53,7 @@ public class ExpenseController {
     /**
      * default constructor that JavaFX can use to instantiate the controller.
      */
-    public ExpenseController() {
+    public AddExpenseController() {
         // Default constructor
     }
 

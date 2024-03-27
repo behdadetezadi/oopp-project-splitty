@@ -18,7 +18,7 @@ public class MainController {
     private Scene eventOverviewScene;
     private EventOverviewController eventOverviewController;
 
-    private ExpenseController expenseCtrl;
+    private AddExpenseController expenseCtrl;
     private Scene expenseScene;
 
     private ParticipantExpenseViewController participantExpenseViewController;
@@ -47,7 +47,7 @@ public class MainController {
     public void initialize(Stage primaryStage,
                            Pair<StartPageController, Parent> startPair,
                            Pair<EventOverviewController, Parent> eventOverviewPair,
-                           Pair<ExpenseController, Parent> expensePair,
+                           Pair<AddExpenseController, Parent> expensePair,
                            Pair<ParticipantExpenseViewController, Parent> participantExpenseViewControllerPair,
                            Pair<TableOfParticipantsController, Parent> tableOfParticipantsControllerPair,
                            Pair<ContactDetailsCtrl, Parent> contactDetailsControllerPair,

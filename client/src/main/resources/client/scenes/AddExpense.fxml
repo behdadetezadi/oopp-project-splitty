@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="335.0" prefWidth="594.0" stylesheets="@/styles.css" xmlns="http://javafx.com/javafx/17.0.2-ea" fx:controller="client.scenes.ExpenseController" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="335.0" prefWidth="594.0" stylesheets="@/styles.css" xmlns="http://javafx.com/javafx/17.0.2-ea" fx:controller="client.scenes.AddExpenseController" xmlns:fx="http://javafx.com/fxml/1">
     <VBox alignment="CENTER" layoutX="29.0" layoutY="-41.0" prefHeight="453.0" prefWidth="543.0" spacing="10.0">
         <Label prefHeight="37.0" prefWidth="94.0" text="Add Expense" />
         <TextField fx:id="payer" prefWidth="389.0" promptText="Payer" />
