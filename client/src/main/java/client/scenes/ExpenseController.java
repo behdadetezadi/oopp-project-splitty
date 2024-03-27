@@ -81,6 +81,9 @@ public class ExpenseController {
             cancelButton.setOnAction(this::handleCancelAction);
             addExpenseButton.setOnAction(this::handleAddExpenseAction);
             amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
+            addExpenseButton.getStyleClass().add("button-hover");
+            cancelButton.getStyleClass().add("button-hover");
+
         }
     }
 

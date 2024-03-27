@@ -24,6 +24,11 @@ public class TableOfParticipantsController {
     private Pagination pagination;
     @FXML
     private Button addButton;
+    @FXML
+    private Button backButton;
+
+    @FXML
+    private Button editButton;
 
     @FXML
     private Button deleteButton;
@@ -72,6 +77,10 @@ public class TableOfParticipantsController {
 
         addButton.getStyleClass().add("button-hover");
         deleteButton.getStyleClass().add("button-hover");
+        backButton.getStyleClass().add("button-hover");
+        editButton.getStyleClass().add("button-hover");
+
+
 
         Tooltip addTooltip = new Tooltip("Click to add a participant");
         Tooltip removeTooltip = new Tooltip("Click to remove the selected participant");
