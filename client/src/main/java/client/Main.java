@@ -53,9 +53,9 @@ public class Main extends Application {
         var participantsPage = FXML.load(TableOfParticipantsController.class,"client", "scenes", "TableOfParticipants.fxml");
         var contactDetailsPage = FXML.load(ContactDetailsCtrl.class, "client", "scenes", "contactDetails.fxml");
         var invitePage = FXML.load(InviteController.class, "client", "scenes", "inviteScene.fxml");
-
+        var adminPage = FXML.load(AdminController.class, "client", "scenes", "AdminOverview.fxml");
         var mainController = INJECTOR.getInstance(MainController.class);
-        mainController.initialize(primaryStage, startPage, overviewPage, expensePage, participantExpenseViewPage,participantsPage, contactDetailsPage, invitePage);
+        mainController.initialize(primaryStage, startPage, overviewPage, expensePage, participantExpenseViewPage,participantsPage, contactDetailsPage, invitePage, adminPage);
 
     }
 
