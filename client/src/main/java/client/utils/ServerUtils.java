@@ -92,33 +92,41 @@ public class ServerUtils {
 
 	}
 
+
+	public static Participant getParticipant(long participantId) {
+		Response response = client.target(SERVER)
+				.path("api/participants/{id}")
+				.resolveTemplate("id", participantId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.get();
+		if (response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
+			throw new RuntimeException("Participant not found with the id: " + participantId);
+		}else if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
+			throw new RuntimeException("Failed to retrieve participant. Status code: " + response.getStatus());
+		}
+		return response.readEntity(Participant.class);
+	}
+
+
 	/**
-	 * Adds an expense
-	 * //TODO
-	 *
-	 * @param username       the person who paid for the expense
+	 * Adds an expense to an event
+	 * @param participantId the person who paid for the expense
 	 * @param description description of the expense
 	 * @param amountValue the amount the person has paid for the expense
 	 */
-	public static Expense addExpense(String username, String description, double amountValue) {
+	public static Expense addExpense(long participantId, String description, double amountValue, long eventId) {
 		try {
-			Participant participant = client.target(SERVER)
-					.path("api/participants/username/{username}")
-					.resolveTemplate("username", username)
-					.request(APPLICATION_JSON)
-					.accept(APPLICATION_JSON)
-					.get(new GenericType<Participant>() {});
-			if (participant == null) {
-				throw new RuntimeException("Participant not found with the username: " + username);
-			}
+			Participant participant = getParticipant(participantId);
 			Expense expense = new Expense(participant, description, amountValue);
+			System.out.println(eventId);
 			return client.target(SERVER)
-					.path("api/expenses/")
+					.path("api/events/{eventId}/expenses")
+					.resolveTemplate("eventId", eventId)
 					.request(APPLICATION_JSON)
 					.accept(APPLICATION_JSON)
-					.post(Entity.entity(expense, APPLICATION_JSON), Expense.class);
-		} catch (NotFoundException e) {
-			throw new RuntimeException("Participant not found with the username: " + username);
+					.post(Entity.entity(expense, APPLICATION_JSON), Expense.class)
+					;
 		} catch (BadRequestException e) {
 			throw new RuntimeException("Bad request: " + e.getMessage());
 		} catch (RuntimeException e) {
@@ -354,6 +362,26 @@ public class ServerUtils {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+	/**
+	 * Fetches a list of expenses for a specific event.
+	 *
+	 * @param eventId The unique identifier of the event.
+	 * @return A list of expenses associated with the given event.
+	 */
+	public static List<Expense> getExpensesForEvent(Long eventId) {
+		try {
+			return client.target(SERVER)
+					.path("api/events/{eventId}/expenses")
+					.resolveTemplate("eventId", eventId)
+					.request(APPLICATION_JSON)
+					.accept(APPLICATION_JSON)
+					.get(new GenericType<List<Expense>>() {});
+		} catch (NotFoundException e) {
+			throw new RuntimeException("No expenses found for event with ID: " + eventId);
+		} catch (Exception e) {
+			throw new RuntimeException("Error fetching expenses for event: " + e.getMessage());
 		}
 	}
 

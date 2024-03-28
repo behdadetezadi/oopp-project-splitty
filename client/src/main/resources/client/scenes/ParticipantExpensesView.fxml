@@ -5,13 +5,15 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ParticipantExpenseViewController" stylesheets="@/styles.css">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.scenes.ParticipantExpenseViewController"
+            stylesheets="@/styles.css"
+            prefHeight="335.0"
+            prefWidth="594.0">
     <top>
-
         <Button text="Back" fx:id="backButton" onAction="#switchToEventOverviewScene" BorderPane.alignment="TOP_LEFT" />
     </top>
     <center>
-
         <ListView fx:id="expensesListView" BorderPane.alignment="CENTER"/>
     </center>
     <bottom>
@@ -21,6 +23,3 @@
         <Insets top="20" right="20" bottom="20" left="20" />
     </padding>
 </BorderPane>
-
-
-

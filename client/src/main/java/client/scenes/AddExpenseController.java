@@ -13,7 +13,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 
-public class ExpenseController {
+public class AddExpenseController {
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
@@ -31,8 +31,10 @@ public class ExpenseController {
     // Add a ListView for displaying participant expenses
     @FXML
     private ListView<String> expensesListView; // Assume this ListView is defined in your FXML
-
+    @FXML
+    private Label participantLabel;
     private Event event;
+    private long selectedParticipantId;
 
 
     /**
@@ -43,7 +45,7 @@ public class ExpenseController {
      * @param event Event
      */
     @Inject
-    public ExpenseController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
+    public AddExpenseController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
         this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
@@ -53,7 +55,7 @@ public class ExpenseController {
     /**
      * default constructor that JavaFX can use to instantiate the controller.
      */
-    public ExpenseController() {
+    public AddExpenseController() {
         // Default constructor
     }
 
@@ -61,8 +63,11 @@ public class ExpenseController {
      * called by mainController
      * @param event event
      */
-    public void setEvent(Event event) {
+    public void setEvent(Event event, long participantId) {
         this.event = event;
+        this.selectedParticipantId = participantId;
+        participantLabel.setText(ServerUtils.getParticipant(selectedParticipantId).getFirstName()
+                + " " + ServerUtils.getParticipant(selectedParticipantId).getLastName());
         initialize();
     }
 
@@ -82,9 +87,6 @@ public class ExpenseController {
         }
     }
 
-
-
-
     /**
      * This method validates input for the amount
      * paid field to make sure it's a valid integer/double
@@ -97,15 +99,12 @@ public class ExpenseController {
 
     /**
      * Add expense button handler
-     * @param event button press
+     * @param actionEvent button press
      */
     @FXML
-    private void handleAddExpenseAction(ActionEvent event) {
-        String payer = this.payer.getText();
+    private void handleAddExpenseAction(ActionEvent actionEvent) {
         String description = this.expenseDescription.getText();
         String amount = this.amountPaid.getText();
-
-        // Convert amount to a number and handle potential exceptions
         double amountValue;
 
         // Check for a trailing period/comma
@@ -125,21 +124,20 @@ public class ExpenseController {
             return;
         }
 
-        // Create new expense in backend
         try {
-            Expense newExpense = ServerUtils.addExpense(payer, description, amountValue);
+            Expense newExpense = ServerUtils.addExpense(selectedParticipantId, description, amountValue, event.getId());
             Stage stage = (Stage) addExpenseButton.getScene().getWindow(); // Get the current stage
-            AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
-                    "Expense Added", "The expense has been successfully added.");
+            if(newExpense!=null){
+                AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
+                        "Expense Added", "The expense has been successfully added.");
+            }
             switchToEventOverviewScene();
-
-            // TODO show success message, navigate to previous scene etc
         } catch (Exception e) {
-            // Catch exception
             AlertUtils.showErrorAlert("Unexpected Error", "Error",
                     "An unexpected error occurred: " + e.getMessage());
         }
     }
+
 
     /**
      * Cancel button handler
