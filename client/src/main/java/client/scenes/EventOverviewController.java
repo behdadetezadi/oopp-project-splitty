@@ -296,7 +296,13 @@ public class EventOverviewController {
     @FXML
     public void addExpense(ActionEvent event) {
         if (event.getSource() instanceof Button) {
-            mainController.showAddExpense(this.event);
+            ParticipantOption selectedParticipantOption = participantDropdown.getSelectionModel().getSelectedItem();
+            if(selectedParticipantOption != null) {
+                Long selectedParticipantId = selectedParticipantOption.getId();
+                mainController.showAddExpense(this.event, selectedParticipantId);
+            } else {
+                showErrorAlert("Please select for which participant you want to add an expense.");
+            }
         } else {
             throw new IllegalStateException();
         }

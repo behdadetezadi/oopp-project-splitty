@@ -27,6 +27,7 @@ public class ParticipantExpenseViewController
     private MainController mainController;
     private Stage primaryStage;
     private Event event;
+    private long selectedParticipantId;
 
     /**
      *
@@ -43,15 +44,18 @@ public class ParticipantExpenseViewController
         this.event = event;
     }
 
+    public void setEvent(Event event, long participantId) {
+        this.event = event;
+        this.selectedParticipantId = participantId;
+    }
+
     /** Format the expense information for display
      * @param expense the expense need to be displayed
      */
     private String formatExpenseForDisplay(Expense expense)
     {
-        return String.format("%s - %s: %s %.2f",
-                expense.getDate(),
-                expense.getParticipant().getFirstName(),
-                expense.getCurrency(),
+        return String.format("%s: %.2f",
+                expense.getCategory(),
                 expense.getAmount());
     }
 
@@ -110,7 +114,7 @@ public class ParticipantExpenseViewController
 
     @FXML
     private void switchToEventOverviewScene() {
-        mainController.showEventOverview(this.event);
+        mainController.showEventOverview(event);
     }
 
     /**
