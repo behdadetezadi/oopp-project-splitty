@@ -62,4 +62,52 @@ public class ValidationUtils {
             event.consume();
         }
     }
+
+    /**
+     * checks if the name is valid by only checking it has letters
+     * @param text String
+     * @return a boolean value
+     */
+    public static boolean isValidName(String text) {
+        return text.matches("[a-zA-Z\\s]+");
+    }
+
+    /**
+     * ensures proper username with no weird characters (letters/# are accepted)
+     * @param text String
+     * @return boolean
+     */
+    public static boolean isValidUsername(String text) {
+        return text.matches("\\w+");
+    }
+
+    /**
+     * ensures proper email format
+     * @param text String
+     * @return a boolean
+     */
+    public static boolean isValidEmail(String text) {
+        return text.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
+    }
+
+    /**
+     * ensures *common* IBAN format is used in our code
+     * @param text String
+     * @return boolean
+     */
+    public static boolean isValidIBAN(String text) {
+        return text.matches("[A-Z]{2}\\d{2}[a-zA-Z0-9]{1,30}");
+    }
+
+    /**
+     * ensures *common* BIC format is used in our code
+     * @param text String
+     * @return boolean
+     */
+    public static boolean isValidBIC(String text) {
+        return text.matches("[A-Z]{6}[A-Z2-9][A-NP-Z1-9]");
+    }
+
+
+
 }
