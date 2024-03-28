@@ -1,4 +1,5 @@
 package client.utils;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyEvent;
 
 public class ValidationUtils {
@@ -106,6 +107,24 @@ public class ValidationUtils {
      */
     public static boolean isValidBIC(String text) {
         return text.matches("[A-Z]{6}[A-Z2-9][A-NP-Z1-9]");
+    }
+
+    /**
+     * checks that an option is selected, not left blank
+     * @param languageComboBox  ComboBox<String>
+     * @return a boolean
+     */
+    public static boolean isValidLanguage(ComboBox<String> languageComboBox) {
+        return languageComboBox.getValue() != null;
+    }
+
+    /**
+     * Names start with capital letters
+     * @param text String
+     * @return boolean
+     */
+    public static boolean isValidCapitalizedName(String text) {
+        return text.matches("[A-Z][a-zA-Z\\s]*");
     }
 
 
