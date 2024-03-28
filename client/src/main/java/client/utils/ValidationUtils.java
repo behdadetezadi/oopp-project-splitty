@@ -2,6 +2,8 @@ package client.utils;
 import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyEvent;
 
+import java.util.Optional;
+
 public class ValidationUtils {
     /**
      * Validates if the input string is a valid double with no more than two decimal places.
@@ -92,13 +94,17 @@ public class ValidationUtils {
     }
 
     /**
-     * ensures *common* IBAN format is used in our code
+     * ensures *dutch* IBAN format is used in our code
      * @param text String
      * @return boolean
      */
     public static boolean isValidIBAN(String text) {
-        return text.matches("[A-Z]{2}\\d{2}[a-zA-Z0-9]{1,30}");
+        String sanitizedText = text.replaceAll("\\s+", "");
+        String dutchIbanPattern = "NL\\d{2}[A-Z]{4}\\d{10}";
+
+        return sanitizedText.matches(dutchIbanPattern);
     }
+
 
     /**
      * ensures *common* BIC format is used in our code
@@ -128,3 +134,4 @@ public class ValidationUtils {
     }
 
 }
+
