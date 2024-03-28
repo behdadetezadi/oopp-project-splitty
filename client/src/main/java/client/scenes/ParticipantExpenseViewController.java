@@ -165,6 +165,8 @@ public class ParticipantExpenseViewController
      */
     private void updateExpense(Expense expense) {
         ServerUtils.updateExpense(expense.getId(), expense, event.getId());
+        initializeExpensesForParticipant(selectedParticipantId);
+        // TODO validate the input and throw errors if it goes wrong
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Expense Saved");
         alert.setHeaderText(null);
