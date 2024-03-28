@@ -2,9 +2,12 @@ package client.scenes;
 
 import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.ValidationUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class TableOfParticipantsController {
 
@@ -337,13 +341,26 @@ public class TableOfParticipantsController {
             grid.setVgap(10);
 
             TextField firstNameField = createTextField(participant.getFirstName(), "First Name");
+            firstNameField.focusedProperty().addListener(createFocusChangeListener(firstNameField, ValidationUtils::isValidCapitalizedName));
+
             TextField lastNameField = createTextField(participant.getLastName(), "Last Name");
+            lastNameField.focusedProperty().addListener(createFocusChangeListener(lastNameField, ValidationUtils::isValidCapitalizedName));
+
             TextField usernameField = createTextField(participant.getUsername(), "Username");
+            usernameField.focusedProperty().addListener(createFocusChangeListener(usernameField, ValidationUtils::isValidUsername));
+
             TextField emailField = createTextField(participant.getEmail(), "Email");
+            emailField.focusedProperty().addListener(createFocusChangeListener(emailField, ValidationUtils::isValidEmail));
+
             TextField ibanField = createTextField(participant.getIban(), "IBAN");
+            ibanField.focusedProperty().addListener(createFocusChangeListener(ibanField, ValidationUtils::isValidIBAN));
+
             TextField bicField = createTextField(participant.getBic(), "BIC");
+            bicField.focusedProperty().addListener(createFocusChangeListener(bicField, ValidationUtils::isValidBIC));
+
             ComboBox<String> languageComboBox = createComboBox(participant.getLanguageChoice(),
                     "Language", "English", "Dutch");
+
 
             // Store the fields in a map for easy access later
             Map<String, Control> formFields = new LinkedHashMap<>();
@@ -363,6 +380,23 @@ public class TableOfParticipantsController {
                 grid.add(formFields.get(fieldName), 1, row++);
             }
             return new Pair<>(grid, formFields);
+        }
+
+        /**
+         * helper method for validation
+         * @param field  TextField
+         * @param validationPredicate Predicate<String>
+         * @return  ChangeListener<Boolean>
+         */
+        private static ChangeListener<Boolean> createFocusChangeListener(TextField field, Predicate<String> validationPredicate) {
+            return (ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+                if (!newValue) {
+                    String text = field.getText();
+                    if (!validationPredicate.test(text)) {
+                        field.setText("");
+                    }
+                }
+            };
         }
 
         /**

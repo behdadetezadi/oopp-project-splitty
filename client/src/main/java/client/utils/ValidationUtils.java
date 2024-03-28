@@ -127,6 +127,4 @@ public class ValidationUtils {
         return text.matches("[A-Z][a-zA-Z\\s]*");
     }
 
-
-
 }
