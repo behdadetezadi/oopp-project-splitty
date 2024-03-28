@@ -117,12 +117,13 @@ public class ValidationUtils {
 
     /**
      * checks that an option is selected, not left blank
-     * @param languageComboBox  ComboBox<String>
+     * @param language String
      * @return a boolean
      */
-    public static boolean isValidLanguage(ComboBox<String> languageComboBox) {
-        return languageComboBox.getValue() != null;
+    public static boolean isValidLanguage(String language) {
+        return language.matches("Dutch|English");
     }
+
 
     /**
      * Names start with capital letters

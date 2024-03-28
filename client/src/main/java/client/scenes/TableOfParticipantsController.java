@@ -317,6 +317,9 @@ public class TableOfParticipantsController {
         if (!ValidationUtils.isValidBIC(participant.getBic())) {
             errors.add("BIC must be in a valid format: 6 Starting Characters, Remaining Alphanumeric Characters (e.g., DEUTDEFF).");
         }
+        if (!ValidationUtils.isValidLanguage(participant.getLanguageChoice())) {
+            errors.add("Select a language please.");
+        }
         return errors;
     }
 
