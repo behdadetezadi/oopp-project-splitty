@@ -1,23 +1,22 @@
 package client.scenes;
+
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.stage.Stage;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.util.Callback;
 import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.Pair;
+
 import java.util.*;
 
-import java.util.List;
+import static client.utils.ValidationUtils.isValidDouble;
 
 
 public class ParticipantExpenseViewController
@@ -154,7 +153,7 @@ public class ParticipantExpenseViewController
      * @param action The action to perform with the edited participant.
      */
     private void editExpense(Expense selectedExpense, String title, String header, ExpenseConsumer action) {
-        ExpenseDialog dialog = new ExpenseDialog(selectedExpense, title, header);
+        ExpenseDialog dialog = new ExpenseDialog(selectedExpense, title, header, this::validateExpenseData);
         Optional<Expense> result = dialog.showAndWait();
         result.ifPresent(action::accept);
     }
@@ -166,7 +165,6 @@ public class ParticipantExpenseViewController
     private void updateExpense(Expense expense) {
         ServerUtils.updateExpense(expense.getId(), expense, event.getId());
         initializeExpensesForParticipant(selectedParticipantId);
-        // TODO validate the input and throw errors if it goes wrong
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Expense Saved");
         alert.setHeaderText(null);
@@ -178,7 +176,7 @@ public class ParticipantExpenseViewController
      * A dialog for creating or editing an expense's details.
      */
     static class ExpenseDialog extends Dialog<Expense> {
-        ExpenseDialog(Expense expense, String title, String header) {
+        ExpenseDialog(Expense expense, String title, String header, Validator validator) {
             setTitle(title);
             setHeaderText(header);
 
@@ -195,6 +193,18 @@ public class ParticipantExpenseViewController
             String cssPath = Objects.requireNonNull(this.getClass().getResource("/styles.css")).toExternalForm();
             getDialogPane().getStylesheets().add(cssPath);
 
+             Button saveButton = (Button) getDialogPane().lookupButton(saveButtonType);
+                        saveButton.addEventFilter(ActionEvent.ACTION, event -> {
+                            String amount = ((TextField) formFields.get("Amount")).getText();
+                            String category = ((TextField) formFields.get("Category")).getText();
+                            List<String> validationErrors = validator.validate(amount, category);
+                            if (!validationErrors.isEmpty()) {
+                                event.consume();
+                                Alert alert = new Alert(Alert.AlertType.ERROR, String.join("\n", validationErrors), ButtonType.OK);
+                                alert.setHeaderText("Validation Error");
+                                alert.showAndWait();
+                            }
+                        });
             setResultConverter(dialogButton -> {
                 if (dialogButton == saveButtonType) {
                     return ExpenseForm.extractExpenseFromForm(formFields, expense);
@@ -221,7 +231,6 @@ public class ParticipantExpenseViewController
          *
          * @param expense The {@link Expense} whose details are to be used as initial form values.
          * @return A {@link Pair} containing the form as a {@link GridPane} and a map of form fields.
-         * TODO this method needs to be in the same controller as the expense overview
          */
         static Pair<GridPane, Map<String, Control>> createExpenseForm(Expense expense) {
             GridPane grid = new GridPane();
@@ -265,10 +274,34 @@ public class ParticipantExpenseViewController
          * @return A new {@link Expense} instance with details extracted from the form fields.
          */
         static Expense extractExpenseFromForm(Map<String, Control> formFields, Expense expense) {
-            expense.setCategory(((TextField) formFields.get("Category")).getText());
-            expense.setAmount(Double.parseDouble(((TextField) formFields.get("Amount")).getText()));
+            String category = ((TextField) formFields.get("Category")).getText();
+            String amount = ((TextField) formFields.get("Amount")).getText();
+            expense.setCategory(category);
+            expense.setAmount(Double.parseDouble(amount));
             return expense;
         }
+    }
+
+    @FunctionalInterface
+    public interface Validator {
+        List<String> validate(String amount, String category);
+    }
+
+    /**
+     * method to validate expense data by checking the fields entered
+     * @param amount the entered amount
+     * @param category the entered category
+     * @return a list of strings
+     */
+    private List<String> validateExpenseData(String amount, String category) {
+        List<String> errors = new ArrayList<>();
+        if (!isValidDouble(amount)) {
+            errors.add("Amount must be of format '1.99' and should only contain numbers and periods");
+        }
+        if (category == null || category.isEmpty()) {
+            errors.add("Category cannot be empty.");
+        }
+        return errors;
     }
 
 }
