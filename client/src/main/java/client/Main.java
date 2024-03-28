@@ -48,7 +48,7 @@ public class Main extends Application {
 
         var startPage = FXML.load(StartPageController.class, "client", "scenes", "StartPage.fxml");
         var overviewPage = FXML.load(EventOverviewController.class, "client", "scenes", "EventOverview.fxml");
-        var expensePage = FXML.load(ExpenseController.class, "client", "scenes", "AddExpense.fxml");
+        var expensePage = FXML.load(AddExpenseController.class, "client", "scenes", "AddExpense.fxml");
         var participantExpenseViewPage = FXML.load(ParticipantExpenseViewController.class, "client", "scenes", "ParticipantExpensesView.fxml");
         var participantsPage = FXML.load(TableOfParticipantsController.class,"client", "scenes", "TableOfParticipants.fxml");
         var contactDetailsPage = FXML.load(ContactDetailsCtrl.class, "client", "scenes", "contactDetails.fxml");

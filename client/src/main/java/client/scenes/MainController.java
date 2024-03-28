@@ -18,7 +18,7 @@ public class MainController {
     private Scene eventOverviewScene;
     private EventOverviewController eventOverviewController;
 
-    private ExpenseController expenseCtrl;
+    private AddExpenseController expenseCtrl;
     private Scene expenseScene;
 
     private ParticipantExpenseViewController participantExpenseViewController;
@@ -47,7 +47,7 @@ public class MainController {
     public void initialize(Stage primaryStage,
                            Pair<StartPageController, Parent> startPair,
                            Pair<EventOverviewController, Parent> eventOverviewPair,
-                           Pair<ExpenseController, Parent> expensePair,
+                           Pair<AddExpenseController, Parent> expensePair,
                            Pair<ParticipantExpenseViewController, Parent> participantExpenseViewControllerPair,
                            Pair<TableOfParticipantsController, Parent> tableOfParticipantsControllerPair,
                            Pair<ContactDetailsCtrl, Parent> contactDetailsControllerPair,
@@ -97,10 +97,10 @@ public class MainController {
      *
      * @param event the event we are working on
      */
-    public void showAddExpense(Event event) {
+    public void showAddExpense(Event event, long participantId) {
         primaryStage.setTitle("Expenses: Add Expense");
         primaryStage.setScene(expenseScene);
-        expenseCtrl.setEvent(event);
+        expenseCtrl.setEvent(event, participantId);
     }
 
     /**
@@ -155,6 +155,7 @@ public class MainController {
     public void showParticipantExpensesOverview(Event event, Long participantId) {
         primaryStage.setTitle("Participant Expenses Overview");
         primaryStage.setScene(participantExpenseViewScene);
+        participantExpenseViewController.setEvent(event,participantId);
         participantExpenseViewController.initializeExpensesForParticipant(participantId);
     }
 
