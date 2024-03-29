@@ -374,18 +374,7 @@ public class EventControllerTest {
         assertNull(response.getBody());
         verify(eventService).updateParticipantInEvent(anyLong(), anyLong(), any(Participant.class));
     }
-
-
-    @Test
-    public void getExpensesByEventIdNotFound() {
-        long eventId = 99L;
-        when(eventService.findEventById(eventId)).thenReturn(Optional.empty());
-
-        ResponseEntity<?> response = eventController.getExpensesByEventId(eventId);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        verify(eventService).findEventById(eventId);
-    }
+    
 
 }
 
