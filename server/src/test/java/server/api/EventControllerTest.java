@@ -253,6 +253,6 @@ public class EventControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         verify(eventService).findEventById(eventId);
     }
-    
+
 }
 
