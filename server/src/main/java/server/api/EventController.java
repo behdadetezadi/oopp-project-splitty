@@ -7,6 +7,8 @@ import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import server.EventService;
 import server.database.EventRepository;
@@ -165,7 +167,6 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
-    
 
     @PutMapping("/{eventId}/participants/{participantId}")
     public ResponseEntity<Participant> updateParticipantInEvent(
@@ -180,6 +181,14 @@ public class EventController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @MessageMapping("/participants")
+    @SendTo("/topic/participants")
+    public void updateParticipantWebSockets( @PathVariable Long eventId,
+                                             @PathVariable Long participantId,
+                                             @RequestBody Participant participantDetails){
+        updateParticipantInEvent(eventId, participantId, participantDetails);
     }
 
     /**
