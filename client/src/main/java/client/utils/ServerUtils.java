@@ -138,23 +138,44 @@ public class ServerUtils {
 	 * Deletes an expense from the database
 	 * @param expenseId the id of the expense
 	 */
-	public static void deleteExpense(long expenseId){
+	public static void deleteExpense(long expenseId, long eventId){
 		try{
-			Response response = client.target(SERVER)
-					.path("api/expenses/{id}")
-					.resolveTemplate("id", expenseId)
-					.request(APPLICATION_JSON)
-					.delete();
-			if(response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()){
-				System.out.println("Expense deleted successfully");
-			} else if(response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()){
-				throw new RuntimeException("Expense not found with ID: " + expenseId);
+			Response response = deleteExpenseFromEvent(expenseId, eventId);
+			if(response.getStatus() == Response.Status.OK.getStatusCode()) {
+				response = client.target(SERVER)
+						.path("api/expenses/{id}")
+						.resolveTemplate("id", expenseId)
+						.request(APPLICATION_JSON)
+						.delete();
+				if(response.getStatus() == Response.Status.OK.getStatusCode()) {
+					System.out.println("Expense deleted successfully");
+				} else if (response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
+					throw new RuntimeException("Expense not found with ID: " + expenseId);
+				} else {
+					throw new RuntimeException("Failed to delete expense. HTTP status code: " + response.getStatus());
+				}
 			} else{
-				throw new RuntimeException("Failed to delete expense. HTTP status code: " + response.getStatus());
+				throw new RuntimeException("Failed to remove expense from event. HTTP status code: " + response.getStatus());
 			}
 		} catch(RuntimeException e){
 			throw new RuntimeException("Failed to delete expense: " + e.getMessage());
 		}
+	}
+
+	/**
+	 * deletes an expense from the event
+	 * @param expenseId the expense id
+	 * @param eventId the event id
+	 * @return a response
+	 */
+	private static Response deleteExpenseFromEvent(long expenseId, long eventId) {
+		Response response = client.target(SERVER)
+				.path("api/events/{eventId}/expenses/{expenseId}")
+				.resolveTemplate("eventId", eventId)
+				.resolveTemplate("expenseId", expenseId)
+				.request(APPLICATION_JSON)
+				.delete();
+		return response;
 	}
 
 	/**

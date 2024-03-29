@@ -108,7 +108,7 @@ public class ExpenseController {
      * @param updatedExpense the new updated version of the expense
      * @return ResponseEntity<Void> ok or not found
      */
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable("id")
                                            long id, @RequestBody Expense updatedExpense) {
         try {
