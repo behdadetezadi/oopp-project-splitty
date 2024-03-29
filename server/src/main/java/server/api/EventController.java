@@ -165,6 +165,8 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
+    
+
     @PutMapping("/{eventId}/participants/{participantId}")
     public ResponseEntity<Participant> updateParticipantInEvent(
             @PathVariable Long eventId,
