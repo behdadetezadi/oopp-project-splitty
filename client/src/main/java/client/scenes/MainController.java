@@ -99,6 +99,7 @@ public class MainController {
      */
     public void showAddExpense(Event event, long participantId) {
         primaryStage.setTitle("Expenses: Add Expense");
+        expenseCtrl.clearTextFields();
         primaryStage.setScene(expenseScene);
         expenseCtrl.setEvent(event, participantId);
     }
