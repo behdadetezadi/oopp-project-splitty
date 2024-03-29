@@ -129,7 +129,21 @@ public class ParticipantExpenseViewController
                 , ButtonType.YES, ButtonType.NO);
         confirmDialog.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
-                ServerUtils.deleteExpense(expense.getId());
+                try {
+                    ServerUtils.deleteExpense(expense.getId(), event.getId());
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Expense Deleted");
+                    alert.setHeaderText(null);
+                    alert.setContentText("The expense has been successfully deleted.");
+                    alert.showAndWait();
+                } catch (Exception e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Failed to delete expense: " + e.getMessage());
+                    alert.showAndWait();
+                }
+                initializeExpensesForParticipant(selectedParticipantId);
             }
         });
     }
