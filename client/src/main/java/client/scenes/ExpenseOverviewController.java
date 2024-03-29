@@ -42,7 +42,7 @@ public class ExpenseOverviewController {
      *
      * @param expense the expense need to be displayed
      */
-    private String formatExpenseForDisplay(Expense expense) {
+    public String formatExpenseForDisplay(Expense expense) {
         return String.format("%s - %s: $%.2f",
                 expense.getParticipant().getFirstName(),
                 expense.getCategory(),
@@ -103,6 +103,21 @@ public void initializeExpensesForEvent() {
         sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
     }
 
+    public ListView<String> getExpensesListView() {
+        return expensesListView;
+    }
+
+    public Label getSumOfExpensesLabel() {
+        return sumOfExpensesLabel;
+    }
+
+    public void setExpensesListView(ListView<String> expensesListView) {
+        this.expensesListView = expensesListView;
+    }
+
+    public void setSumOfExpensesLabel(Label sumOfExpensesLabel) {
+        this.sumOfExpensesLabel = sumOfExpensesLabel;
+    }
 }
 
 
