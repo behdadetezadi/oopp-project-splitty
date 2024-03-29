@@ -2,11 +2,15 @@ package client.scenes;
 
 import client.utils.AlertUtils;
 import client.utils.ServerUtils;
+import client.utils.ValidationUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -17,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class TableOfParticipantsController {
 
@@ -55,6 +60,11 @@ public class TableOfParticipantsController {
         this.server = server;
         this.mainController = mainController;
         this.event = event;
+    }
+
+    @FunctionalInterface
+    public interface Validator {
+        List<String> validate(Participant participant);
     }
 
     /**
@@ -164,7 +174,7 @@ public class TableOfParticipantsController {
      * this method ensures all participants are added and
      * loaded before the method create Page executes
      */
-    private void loadParticipants() {
+    protected void loadParticipants() {
         List<Participant> fetchedParticipants = ServerUtils.getParticipantsByEventId(event.getId());
         participants.setAll(fetchedParticipants);
         setupPagination();
@@ -198,7 +208,7 @@ public class TableOfParticipantsController {
      * @param action The action to perform with the edited participant.
      */
     private void editParticipant(Participant participant, String title, String header, ParticipantConsumer action) {
-        ParticipantDialog dialog = new ParticipantDialog(participant, title, header);
+        ParticipantDialog dialog = new ParticipantDialog(participant, title, header, this::validateParticipantData);
         Optional<Participant> result = dialog.showAndWait();
         result.ifPresent(action::accept);
     }
@@ -257,6 +267,62 @@ public class TableOfParticipantsController {
         setupPagination();
     }
 
+
+    /**
+     * collects data from the form
+     * @param formFields Hashmap
+     * @return Participant
+     */
+    private Participant collectDataFromForm(Map<String, Control> formFields) {
+        String firstName = ((TextField) formFields.get("First Name")).getText();
+        String lastName = ((TextField) formFields.get("Last Name")).getText();
+        String username = ((TextField) formFields.get("Username")).getText();
+        String email = ((TextField) formFields.get("Email")).getText();
+        String iban = ((TextField) formFields.get("IBAN")).getText();
+        String bic = ((TextField) formFields.get("BIC")).getText();
+        String languageChoice = ((ComboBox<String>) formFields.get("Language")).getValue();
+
+        return new Participant(firstName, lastName, username, email, iban, bic, languageChoice);
+    }
+
+    /**
+     * method to validate participant data by checking the fields entered
+     * @param participant a Participant
+     * @return an array list of strings
+     */
+    private List<String> validateParticipantData(Participant participant) {
+        List<String> errors = new ArrayList<>();
+
+        if (!ValidationUtils.isValidCapitalizedName(participant.getFirstName())) {
+            errors.add("First Name must begin with a capital letter. (e.g., Sam)");
+        }
+        if (!ValidationUtils.isValidName(participant.getFirstName())) {
+            errors.add("First Name must only contain letters.");
+        }
+        if (!ValidationUtils.isValidCapitalizedName(participant.getLastName())) {
+            errors.add("Last Name must begin with a capital letter. (e.g., Shelby)");
+        }
+        if (!ValidationUtils.isValidName(participant.getLastName())) {
+            errors.add("Last Name must only contain letters.");
+        }
+        if (!ValidationUtils.isValidUsername(participant.getUsername())) {
+            errors.add("Username must contain only letters, digits, and underscores.");
+        }
+        if (!ValidationUtils.isValidEmail(participant.getEmail())) {
+            errors.add("Email must be in a valid format (e.g., user@example.com).");
+        }
+        if (!ValidationUtils.isValidIBAN(participant.getIban())) {
+            errors.add("IBAN must be in a valid Dutch format (e.g., NL89 BANK 0123 4567 89).");
+        }
+        if (!ValidationUtils.isValidBIC(participant.getBic())) {
+            errors.add("BIC must be in a valid format: 6 Starting Characters, Remaining Alphanumeric Characters (e.g., DEUTDEFF).");
+        }
+        if (!ValidationUtils.isValidLanguage(participant.getLanguageChoice())) {
+            errors.add("Select a language please.");
+        }
+        return errors;
+    }
+
     /**
      * Formats the details of a participant for display.
      * @param participant The {@link Participant} whose details are to be formatted.
@@ -292,11 +358,11 @@ public class TableOfParticipantsController {
      * A dialog for creating or editing a participant's details.
      */
     static class ParticipantDialog extends Dialog<Participant> {
-        ParticipantDialog(Participant participant, String title, String header) {
+        ParticipantDialog(Participant participant, String title, String header,Validator validator) {
             setTitle(title);
             setHeaderText(header);
 
-            ButtonType saveButtonType = new ButtonType("Add", ButtonBar.ButtonData.OK_DONE);
+            ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
             getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
 
             getDialogPane().setMinHeight(350);
@@ -310,6 +376,19 @@ public class TableOfParticipantsController {
 
             String cssPath = this.getClass().getResource("/styles.css").toExternalForm();
             getDialogPane().getStylesheets().add(cssPath);
+
+            Button saveButton = (Button) getDialogPane().lookupButton(saveButtonType);
+            saveButton.addEventFilter(ActionEvent.ACTION, event -> {
+                Participant tempParticipant = ParticipantForm.
+                        extractParticipantFromForm(formFields, new Participant());
+                List<String> validationErrors = validator.validate(tempParticipant);
+                if (!validationErrors.isEmpty()) {
+                    event.consume();
+                    Alert alert = new Alert(Alert.AlertType.ERROR, String.join("\n", validationErrors), ButtonType.OK);
+                    alert.setHeaderText("Validation Error");
+                    alert.showAndWait();
+                }
+            });
 
             setResultConverter(dialogButton -> {
                 if (dialogButton == saveButtonType) {
@@ -337,13 +416,20 @@ public class TableOfParticipantsController {
             grid.setVgap(10);
 
             TextField firstNameField = createTextField(participant.getFirstName(), "First Name");
+
             TextField lastNameField = createTextField(participant.getLastName(), "Last Name");
+
             TextField usernameField = createTextField(participant.getUsername(), "Username");
+
             TextField emailField = createTextField(participant.getEmail(), "Email");
+
             TextField ibanField = createTextField(participant.getIban(), "IBAN");
+
             TextField bicField = createTextField(participant.getBic(), "BIC");
+
             ComboBox<String> languageComboBox = createComboBox(participant.getLanguageChoice(),
                     "Language", "English", "Dutch");
+
 
             // Store the fields in a map for easy access later
             Map<String, Control> formFields = new LinkedHashMap<>();
@@ -364,6 +450,7 @@ public class TableOfParticipantsController {
             }
             return new Pair<>(grid, formFields);
         }
+
 
         /**
          * Creates a text field with the specified initial value and prompt text.

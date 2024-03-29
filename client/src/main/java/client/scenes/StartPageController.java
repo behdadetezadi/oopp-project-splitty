@@ -95,6 +95,9 @@ public class StartPageController {
         logo.setImage(image);
 
         animateTextFields();
+        createEventButton.getStyleClass().add("button-hover");
+        joinButton.getStyleClass().add("button-hover");
+
         animateButtonsText();
         // Delay setting focus to prevent text field from being selected immediately
         PauseTransition delay = new PauseTransition(Duration.seconds(0.01));

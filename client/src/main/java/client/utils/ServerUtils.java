@@ -92,6 +92,7 @@ public class ServerUtils {
 
 	}
 
+
 	public static Participant getParticipant(long participantId) {
 		Response response = client.target(SERVER)
 				.path("api/participants/{id}")
@@ -106,6 +107,7 @@ public class ServerUtils {
 		}
 		return response.readEntity(Participant.class);
 	}
+
 
 	/**
 	 * Adds an expense to an event

@@ -1,5 +1,8 @@
 package client.utils;
+import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyEvent;
+
+import java.util.Optional;
 
 public class ValidationUtils {
     /**
@@ -62,4 +65,74 @@ public class ValidationUtils {
             event.consume();
         }
     }
+
+    /**
+     * checks if the name is valid by only checking it has letters
+     * @param text String
+     * @return a boolean value
+     */
+    public static boolean isValidName(String text) {
+        return text.matches("[a-zA-Z\\s]+");
+    }
+
+    /**
+     * ensures proper username with no weird characters (letters/# are accepted)
+     * @param text String
+     * @return boolean
+     */
+    public static boolean isValidUsername(String text) {
+        return text.matches("\\w+");
+    }
+
+    /**
+     * ensures proper email format
+     * @param text String
+     * @return a boolean
+     */
+    public static boolean isValidEmail(String text) {
+        return text.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
+    }
+
+    /**
+     * ensures *dutch* IBAN format is used in our code
+     * @param text String
+     * @return boolean
+     */
+    public static boolean isValidIBAN(String text) {
+        String sanitizedText = text.replaceAll("\\s+", "");
+        String dutchIbanPattern = "NL\\d{2}[A-Z]{4}\\d{10}";
+
+        return sanitizedText.matches(dutchIbanPattern);
+    }
+
+
+    /**
+     * ensures *common* BIC format is used in our code
+     * @param text String
+     * @return boolean
+     */
+    public static boolean isValidBIC(String text) {
+        return text.matches("[A-Z]{6}[A-Z2-9][A-NP-Z1-9]");
+    }
+
+    /**
+     * checks that an option is selected, not left blank
+     * @param language String
+     * @return a boolean
+     */
+    public static boolean isValidLanguage(String language) {
+        return language.matches("Dutch|English");
+    }
+
+
+    /**
+     * Names start with capital letters
+     * @param text String
+     * @return boolean
+     */
+    public static boolean isValidCapitalizedName(String text) {
+        return text.matches("[A-Z][a-zA-Z\\s]*");
+    }
+
 }
+
