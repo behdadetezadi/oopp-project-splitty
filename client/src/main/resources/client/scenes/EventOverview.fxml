@@ -28,6 +28,9 @@
             <HBox alignment="CENTER" spacing="1">
                 <Label fx:id="titleLabel" styleClass="title-label" style="-fx-font-weight: bold;"/>
             </HBox>
+            <HBox alignment="CENTER">
+                <Button fx:id="showAllExpensesButton" text="Show All Expenses" onAction="#showAllExpensesOverview" />
+            </HBox>
         </VBox>
     </top>
 
