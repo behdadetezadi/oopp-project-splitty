@@ -5,6 +5,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -80,12 +81,22 @@ public class TableOfParticipantsController {
         backButton.getStyleClass().add("button-hover");
         editButton.getStyleClass().add("button-hover");
 
-
-
         Tooltip addTooltip = new Tooltip("Click to add a participant");
         Tooltip removeTooltip = new Tooltip("Click to remove the selected participant");
         Tooltip.install(addButton, addTooltip);
         Tooltip.install(deleteButton, removeTooltip);
+
+        server.registerForUpdates(event.getId(),this::handleParticipantUpdate);
+    }
+
+    private void handleParticipantUpdate(Participant participant) {
+        Platform.runLater(() -> {
+            participants.add(participant);
+            setupPagination();
+        });
+    }
+    public void stop(){
+        server.stop();
     }
 
     /**
