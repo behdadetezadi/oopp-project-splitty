@@ -200,7 +200,6 @@ public class EventService {
         return participant;
     }
 
-
     /**
      * remove participant from an event
      * @param eventId long
@@ -277,6 +276,10 @@ public class EventService {
                 .filter(p -> p.getId() != expenseId)
                 .collect(Collectors.toList()));
         eventRepository.save(event);
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new IllegalArgumentException("Expense not found"));
+        expense.getEventIds().removeIf(eId -> eId == eventId);
+        expenseRepository.save(expense);
     }
 
     /**
