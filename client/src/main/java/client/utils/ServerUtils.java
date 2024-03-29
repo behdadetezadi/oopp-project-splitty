@@ -30,13 +30,24 @@ import org.glassfish.jersey.client.ClientConfig;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
+
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 
 public class ServerUtils {
@@ -450,6 +461,45 @@ public class ServerUtils {
 			return false;
 		}
 	}
+
+
+
+	private StompSession session = connect("ws://localhost:8080/websocket");
+	private StompSession connect (String url){
+		var client = new StandardWebSocketClient();
+		var stomp = new WebSocketStompClient(client);
+		stomp.setMessageConverter(new MappingJackson2MessageConverter());
+		try{
+			return stomp.connect(url, new StompSessionHandlerAdapter() {}).get();}
+		catch(InterruptedException e ){
+			Thread.currentThread().interrupt();
+		}
+		catch (ExecutionException e ){
+			throw new RuntimeException(e);
+		}
+		throw new IllegalStateException();
+	}
+
+	public void registerForMessages(String dest, Long eventId, Long participantId, Consumer<Participant> consumer){
+		session.subscribe(dest, new StompFrameHandler() {
+			@Override
+			public Type getPayloadType(StompHeaders headers) {
+				return Participant.class;
+			}
+
+			@Override
+			public void handleFrame(StompHeaders headers, Object payload) {
+				consumer.accept((Participant) payload);
+			}
+		});
+
+
+	}
+
+	public void send(String dest, Object o){
+		session.send(dest,o);
+	}
+
 
 
 

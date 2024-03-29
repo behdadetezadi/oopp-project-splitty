@@ -5,6 +5,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,8 +16,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class TableOfParticipantsController {
 
@@ -41,6 +44,7 @@ public class TableOfParticipantsController {
     private Event event;
 
 
+
     /**
      * dependency injection
      * @param primaryStage primary stage
@@ -55,6 +59,14 @@ public class TableOfParticipantsController {
         this.server = server;
         this.mainController = mainController;
         this.event = event;
+
+        registerForParticipantUpdates();
+    }
+
+    private void registerForParticipantUpdates() {
+        if (event != null && server != null) {
+            server.registerForMessages("/topic/participants", event.getId(), null, this::handleParticipantUpdate);
+        }
     }
 
     /**
@@ -224,12 +236,29 @@ public class TableOfParticipantsController {
     private void updateParticipant(Participant participant) {
         long participantId = participant.getId();
         boolean isUpdated = server.updateParticipant(event.getId(), participantId, participant);
+        server.send("app/participants",participant);
         if (isUpdated) {
             refreshParticipantDetails(participant);
             AlertUtils.showInformationAlert("Success", "Participant Updated",
                     "Participant details were successfully updated.");
         }
     }
+
+    private void handleParticipantUpdate(Participant updatedParticipant) {
+        Platform.runLater(() -> {
+            OptionalInt indexOpt = IntStream.range(0, participants.size())
+                    .filter(i -> participants.get(i).getId()==(updatedParticipant.getId()))
+                    .findFirst();
+
+            if (indexOpt.isPresent()) {
+                participants.set(indexOpt.getAsInt(), updatedParticipant);
+            } else {
+                participants.add(updatedParticipant);
+            }
+            setupPagination();
+        });
+    }
+
 
     /**
      * Removes a participant from the event and updates the UI.

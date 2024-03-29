@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import server.EventService;
 import server.database.EventRepository;
@@ -22,6 +23,10 @@ public class EventController {
 
     private final EventService eventService;
     private EventRepository db;
+
+    @Autowired
+    private SimpMessagingTemplate template;
+
 
 
     /**
@@ -175,6 +180,8 @@ public class EventController {
             @RequestBody Participant participantDetails) {
         try {
             Participant updatedParticipant = eventService.updateParticipantInEvent(eventId, participantId, participantDetails);
+            template.convertAndSend("/topic/participants", updatedParticipant);
+
             return ResponseEntity.ok(updatedParticipant);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
