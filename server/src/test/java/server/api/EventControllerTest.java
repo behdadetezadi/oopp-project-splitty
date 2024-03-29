@@ -1,7 +1,9 @@
 package server.api;
 
 import commons.Event;
+import commons.Expense;
 import commons.Participant;
+import org.hibernate.service.spi.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,11 +14,11 @@ import org.springframework.http.ResponseEntity;
 import server.EventService;
 import server.api.EventController;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -155,5 +157,102 @@ public class EventControllerTest {
         assertNull(response.getBody());
         verify(eventService).updateParticipantInEvent(1L, 1L, new Participant());
     }
+
+    @Test
+    public void getEventByIdNotFoundCase() {
+        long eventId = 2L;
+        when(eventService.findEventById(eventId)).thenReturn(Optional.empty());
+        ResponseEntity<?> response = eventController.getEventById(eventId);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Event not found with ID: " + eventId, response.getBody());
+        verify(eventService).findEventById(eventId);
+    }
+
+    @Test
+    public void getEventByTitleNoEventsFound() {
+        String title = "Nonexistent";
+        when(eventService.getEventByTitle(title)).thenReturn(Collections.emptyList());
+        ResponseEntity<?> response = eventController.getEventByTitle(title);
+
+        assertTrue(((List<?>) response.getBody()).isEmpty());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(eventService).getEventByTitle(title);
+    }
+
+
+    @Test
+    public void updateEventTitleEventNotFound() {
+        long eventId = 1L;
+        String newTitle = "Updated Title";
+        when(eventService.updateEventTitle(eventId, newTitle)).thenThrow(new ServiceException("Event not found"));
+
+        ResponseEntity<?> response = eventController.updateEventTitle(eventId, new String(newTitle));
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Failed to update event title: Event not found", ((ResponseEntity<String>)response).getBody());
+        verify(eventService).updateEventTitle(eventId, newTitle);
+    }
+
+    @Test
+    public void addExpenseSuccessful() {
+        long eventId = 1L;
+        Expense expense = new Expense();
+        expense.setExpenseType("Lunch");
+        expense.setAmount(20.0);
+
+        when(eventService.addExpenseToEvent(eq(eventId), any(Expense.class))).thenReturn(expense);
+
+        ResponseEntity<Expense> response = eventController.addExpense(eventId, expense);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Lunch", response.getBody().getExpenseType());
+        verify(eventService).addExpenseToEvent(eq(eventId), any(Expense.class));
+    }
+
+
+    @Test
+    public void updateEventTitleNotFound() {
+        long eventId = 99L;
+        String newTitle = "Nonexistent Event";
+        when(eventService.updateEventTitle(eq(eventId), anyString())).thenThrow(new ServiceException("Event not found"));
+
+        ResponseEntity<?> response = eventController.updateEventTitle(eventId, newTitle);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        verify(eventService).updateEventTitle(eq(eventId), anyString());
+    }
+
+
+    @Test
+    public void updateParticipantNotFound() {
+        Participant updatedParticipant = new Participant();
+        updatedParticipant.setId(1L);
+        updatedParticipant.setFirstName("Nonexistent");
+        updatedParticipant.setLastName("Participant");
+
+        when(eventService.updateParticipantInEvent(anyLong(), anyLong(), any(Participant.class)))
+                .thenThrow(new ServiceException("Participant not found"));
+
+        ResponseEntity<Participant> response = eventController.updateParticipantInEvent(1L, 1L, updatedParticipant);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(eventService).updateParticipantInEvent(anyLong(), anyLong(), any(Participant.class));
+    }
+
+
+    @Test
+    public void getExpensesByEventIdNotFound() {
+        long eventId = 99L;
+        when(eventService.findEventById(eventId)).thenReturn(Optional.empty());
+
+        ResponseEntity<?> response = eventController.getExpensesByEventId(eventId);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(eventService).findEventById(eventId);
+    }
+    
 }
 
