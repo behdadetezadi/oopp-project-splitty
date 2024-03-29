@@ -1,6 +1,7 @@
 package client.scenes;
 
 import commons.Event;
+import commons.Expense;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -23,6 +24,8 @@ public class MainController {
 
     private ParticipantExpenseViewController participantExpenseViewController;
     private Scene participantExpenseViewScene;
+    private ExpenseOverviewController expenseOverviewController;
+    private Scene expenseOverviewScene;
 
     private TableOfParticipantsController tableOfParticipantsController;
     private Scene tableOfParticipantsScene;
@@ -40,6 +43,7 @@ public class MainController {
      * @param eventOverviewPair eventOverviewPage pair
      * @param expensePair expensePage pair
      * @param participantExpenseViewControllerPair participantExpenseViewController Pair
+     * @param expenseOverviewControllerPair expenseOverviewScene Pair
      * @param tableOfParticipantsControllerPair table of participants page pair
      * @param contactDetailsControllerPair contactDetails page pair
      * @param inviteControllerPair invitePage pair
@@ -49,6 +53,7 @@ public class MainController {
                            Pair<EventOverviewController, Parent> eventOverviewPair,
                            Pair<AddExpenseController, Parent> expensePair,
                            Pair<ParticipantExpenseViewController, Parent> participantExpenseViewControllerPair,
+                           Pair<ExpenseOverviewController,Parent>expenseOverviewControllerPair,
                            Pair<TableOfParticipantsController, Parent> tableOfParticipantsControllerPair,
                            Pair<ContactDetailsCtrl, Parent> contactDetailsControllerPair,
                            Pair<InviteController, Parent> inviteControllerPair)
@@ -67,6 +72,9 @@ public class MainController {
 
         this.participantExpenseViewScene=new Scene(participantExpenseViewControllerPair.getValue());
         this.participantExpenseViewController=participantExpenseViewControllerPair.getKey();
+
+        this.expenseOverviewScene=new Scene(expenseOverviewControllerPair.getValue());
+        this.expenseOverviewController=expenseOverviewControllerPair.getKey();
 
         this.tableOfParticipantsScene = new Scene(tableOfParticipantsControllerPair.getValue());
         this.tableOfParticipantsController = tableOfParticipantsControllerPair.getKey();
@@ -157,6 +165,17 @@ public class MainController {
         primaryStage.setScene(participantExpenseViewScene);
         participantExpenseViewController.setEvent(event,participantId);
         participantExpenseViewController.initializeExpensesForParticipant(participantId);
+    }
+    public void showExpenseOverview(Event event)
+    {
+        primaryStage.setTitle("Expenses Overview");
+        primaryStage.setScene(expenseOverviewScene);
+        expenseOverviewController.setEvent(event);
+    }
+    public void refreshExpensesOverview(Event event) {
+        if (expenseOverviewController != null && event!= null) {
+            expenseOverviewController.refreshExpensesList(event);
+        }
     }
 
 }

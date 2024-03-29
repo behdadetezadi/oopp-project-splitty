@@ -3,6 +3,7 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
+import commons.Expense;
 import commons.Participant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -98,6 +99,10 @@ public class EventOverviewController {
         }
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
     }
+    /**
+     * show expenses of selected participant
+     * @param event the targeted event
+     */
 
     @FXML
     private void showExpensesForSelectedParticipant(ActionEvent event) {
@@ -109,6 +114,14 @@ public class EventOverviewController {
             showErrorAlert("Please select a participant to show expenses.");
         }
     }
+    /**
+     * show expenses overview of the event
+     */
+    @FXML
+    private void showAllExpensesOverview() {
+        mainController.showExpenseOverview(this.event);
+    }
+
 
     /**
      * called by startPage and other pages when setting up this page
@@ -173,15 +186,7 @@ public class EventOverviewController {
         }
     }
 
-//    private void initializeParticipants() {
-//        List<Participant> participants = event.getPeople();
-//        if (participants != null) {
-//            List<ParticipantOption> participantOptions = participants.stream()
-//                    .map(p -> new ParticipantOption(p.getId(), p.getFirstName()))
-//                    .collect(Collectors.toList());
-//            participantDropdown.getItems().setAll(participantOptions);
-//        }
-//    }
+//
     /**
      * Initializes the participants dropdown with options based on the event's associated participants.
      */
@@ -314,6 +319,7 @@ public class EventOverviewController {
     public void refreshParticipants() {
         loadParticipants();
     }
+
 
 
 }

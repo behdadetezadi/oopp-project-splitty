@@ -56,31 +56,43 @@ public class ParticipantExpenseViewController
      *
      * @param participantId The ID of the participant whose expenses you want to view.
      */
+    public void initializeExpensesForParticipant(Long participantId)
+    {
+        if (this.event != null) {
+            try
+            {
+                List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
+                expensesListView.getItems().clear();
+                double sumOfExpenses = 0;
+                for (Expense expense : expenses) {
+                    expensesListView.getItems().add(formatExpenseForDisplay(expense));
+                    sumOfExpenses += expense.getAmount();
+                }
+                sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
+            }catch (RuntimeException ex) {
+                // Handle case where no expenses are found
+                expensesListView.getItems().clear();
+                expensesListView.getItems().add("No expenses recorded yet.");
+                sumOfExpensesLabel.setText("Total: $0.00");
+            }
+        }
+    }
+
 //    public void initializeExpensesForParticipant(Long participantId) {
+//        System.out.println("Initializing expenses for participant ID: " + participantId);
 //        List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
+//        System.out.println("Number of expenses fetched: " + expenses.size());
+//
 //        expensesListView.getItems().clear();
 //        double sumOfExpenses = 0;
 //        for (Expense expense : expenses) {
-//            expensesListView.getItems().add(formatExpenseForDisplay(expense));
+//            String expenseDisplay = formatExpenseForDisplay(expense);
+//            System.out.println("Adding expense to ListView: " + expenseDisplay);
+//            expensesListView.getItems().add(expenseDisplay);
 //            sumOfExpenses += expense.getAmount();
 //        }
 //        sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
 //    }
-    public void initializeExpensesForParticipant(Long participantId) {
-        System.out.println("Initializing expenses for participant ID: " + participantId);
-        List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
-        System.out.println("Number of expenses fetched: " + expenses.size());
-
-        expensesListView.getItems().clear();
-        double sumOfExpenses = 0;
-        for (Expense expense : expenses) {
-            String expenseDisplay = formatExpenseForDisplay(expense);
-            System.out.println("Adding expense to ListView: " + expenseDisplay);
-            expensesListView.getItems().add(expenseDisplay);
-            sumOfExpenses += expense.getAmount();
-        }
-        sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
-    }
 
 
     @FXML
