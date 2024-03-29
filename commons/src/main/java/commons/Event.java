@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
@@ -23,7 +24,7 @@ public class Event {
     private long inviteCode;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Participant> people;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.REMOVE)
     private List<Expense> expenses;
 
 
@@ -51,7 +52,7 @@ public class Event {
     public Event(List<Participant> people, List<Expense> expenses, String title) {
         this.people = people;
         this.expenses = expenses;
-        this.inviteCode = this.id;
+        this.inviteCode = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
         this.title = title;
     }
 
@@ -65,7 +66,7 @@ public class Event {
         this.people = new ArrayList<>();
         this.expenses = new ArrayList<>();
         //this.inviteCode = Objects.hash(this.id);
-        this.inviteCode = 5;
+        this.inviteCode = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
 
     }
 
@@ -75,7 +76,7 @@ public class Event {
      * Empty public constructor (required)
      */
     public Event() {
-        this.inviteCode = 5;
+        this.inviteCode = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
     }
 
     /**
@@ -87,7 +88,7 @@ public class Event {
         this.title = title;
         this.people = people;
         this.expenses = new ArrayList<>();
-        this.inviteCode = 5;
+        this.inviteCode = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
     }
 
 

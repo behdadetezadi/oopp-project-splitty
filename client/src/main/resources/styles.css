@@ -1,3 +1,33 @@
+.dialog-pane .header-panel {
+    -fx-background-color: black;
+}
+
+
+
+.button-hover {
+    -fx-background-color: #00fd48;
+    -fx-cursor: hand;
+}
+
+.button-hover:hover {
+    -fx-background-color: #00fd48;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+
+.label-hover {
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+.label-hover:hover {
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
+    -fx-text-fill: lime;
+}
+
+
 .root {
     -fx-background-color: black;
     -fx-font-family: "Courier New", monospace;

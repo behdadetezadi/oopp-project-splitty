@@ -23,14 +23,9 @@ public class AddExpenseController {
     @FXML
     private Button addExpenseButton;
     @FXML
-    private TextField payer;
-    @FXML
     private TextField expenseDescription;
     @FXML
     private TextField amountPaid;
-    // Add a ListView for displaying participant expenses
-    @FXML
-    private ListView<String> expensesListView; // Assume this ListView is defined in your FXML
     @FXML
     private Label participantLabel;
     private Event event;
@@ -81,6 +76,9 @@ public class AddExpenseController {
             cancelButton.setOnAction(this::handleCancelAction);
             addExpenseButton.setOnAction(this::handleAddExpenseAction);
             amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
+            addExpenseButton.getStyleClass().add("button-hover");
+            cancelButton.getStyleClass().add("button-hover");
+
         }
     }
 
@@ -162,6 +160,14 @@ public class AddExpenseController {
     private void switchToEventOverviewScene() {
         mainController.showEventOverview(this.event);
 
+    }
+
+    /**
+     * clears the text field when you go to this page
+     */
+    public void clearTextFields() {
+        expenseDescription.clear();
+        amountPaid.clear();
     }
 
 }

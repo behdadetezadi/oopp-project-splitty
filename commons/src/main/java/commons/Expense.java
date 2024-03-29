@@ -16,12 +16,18 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     @ManyToOne
+    @JoinColumn(name = "participant_id", referencedColumnName = "id")
     private Participant participant;
     private String category;
     private double amount;
     private String currency;
     private String date;
-    @OneToMany
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "expense_splitting_option",
+            joinColumns = @JoinColumn(name = "expense_id"),
+            inverseJoinColumns = @JoinColumn(name = "participant_id")
+    )
     private List<Participant> splittingOption;
     private String expenseType;
     @ElementCollection

@@ -16,16 +16,22 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class TableOfParticipantsController {
 
     @FXML
     private Pagination pagination;
+    @FXML
+    private Button addButton;
+    @FXML
+    private Button backButton;
+
+    @FXML
+    private Button editButton;
+
+    @FXML
+    private Button deleteButton;
 
     private final ObservableList<Participant> participants = FXCollections.observableArrayList();
 
@@ -68,6 +74,18 @@ public class TableOfParticipantsController {
     public void initialize() {
         loadParticipants();
         setupPagination();
+
+        addButton.getStyleClass().add("button-hover");
+        deleteButton.getStyleClass().add("button-hover");
+        backButton.getStyleClass().add("button-hover");
+        editButton.getStyleClass().add("button-hover");
+
+
+
+        Tooltip addTooltip = new Tooltip("Click to add a participant");
+        Tooltip removeTooltip = new Tooltip("Click to remove the selected participant");
+        Tooltip.install(addButton, addTooltip);
+        Tooltip.install(deleteButton, removeTooltip);
     }
 
     /**
@@ -85,6 +103,7 @@ public class TableOfParticipantsController {
     private void handleAddButton() {
         HashSet<Long> eventIds = new HashSet<>();
         eventIds.add(event.getId());
+
         Participant newParticipant = new Participant("", "", "", "", "",
                 "", new HashMap<>(), new HashMap<>(), eventIds, "");
         editParticipant(newParticipant, "Add New Participant", "Enter details for the new participant.",
@@ -327,7 +346,7 @@ public class TableOfParticipantsController {
                     "Language", "English", "Dutch");
 
             // Store the fields in a map for easy access later
-            Map<String, Control> formFields = new HashMap<>();
+            Map<String, Control> formFields = new LinkedHashMap<>();
             formFields.put("First Name", firstNameField);
             formFields.put("Last Name", lastNameField);
             formFields.put("Username", usernameField);
@@ -338,12 +357,11 @@ public class TableOfParticipantsController {
 
             // Adding the fields to the grid
             int row = 0;
-            for (Map.Entry<String, Control> entry : formFields.entrySet()) {
-                Label label = new Label(entry.getKey() + ":");
+            for (String fieldName : formFields.keySet()) {
+                Label label = new Label(fieldName + ":");
                 grid.add(label, 0, row);
-                grid.add(entry.getValue(), 1, row++);
+                grid.add(formFields.get(fieldName), 1, row++);
             }
-
             return new Pair<>(grid, formFields);
         }
 

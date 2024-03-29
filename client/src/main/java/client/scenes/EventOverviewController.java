@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,6 +30,9 @@ public class EventOverviewController {
     private ServerUtils server;
     private MainController mainController;
     private Event event;
+
+    @FXML
+    private Button backToMain;
 
     @FXML
     private BorderPane root;
@@ -96,6 +100,18 @@ public class EventOverviewController {
         if (event != null) {
             titleLabel.setText(event.getTitle());
             titleLabel.setOnMouseClicked(event -> editTitle());
+            Tooltip editTitleTooltip = new Tooltip("Click to edit the title");
+            Tooltip.install(titleLabel, editTitleTooltip);
+
+            showParticipantsButton.getStyleClass().add("button-hover");
+            filterOne.getStyleClass().add("button-hover");
+            filterTwo.getStyleClass().add("button-hover");
+            sendInvitesButton.getStyleClass().add("button-hover");
+            addExpenseButton.getStyleClass().add("button-hover");
+            showExpensesButton.getStyleClass().add("button-hover");
+            backToMain.getStyleClass().add("button-hover");
+
+
         }
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
     }
@@ -130,6 +146,7 @@ public class EventOverviewController {
     public void setEvent(Event event) {
         this.event = event;
         initialize();
+        titleLabel.getStyleClass().add("label-hover");
         loadParticipants();
         animateLabels();
         animateButtonsText();
