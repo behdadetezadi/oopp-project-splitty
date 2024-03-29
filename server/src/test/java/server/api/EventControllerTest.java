@@ -12,7 +12,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import server.EventService;
-import server.api.EventController;
+import java.util.Optional;
 
 import java.util.*;
 import java.util.List;
@@ -38,7 +38,82 @@ public class EventControllerTest {
         participant = new Participant();
         participant.setId(1L);
         participant.setFirstName("Test");
-        participant.setLastName("User");    }
+        participant.setLastName("User");
+    }
+    @Test
+    void testGetEventById() {
+        Event expectedEvent = new Event();
+        when(eventService.findEventById(1L)).thenReturn(Optional.of(expectedEvent));
+
+        ResponseEntity<?> responseEntity = eventController.getEventById(1L);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(expectedEvent, responseEntity.getBody());
+
+        verify(eventService, times(1)).findEventById(1L);
+    }
+
+    @Test
+    void testGetEventByIdNotFound() {
+        long eventId = 1L;
+        when(eventService.findEventById(eventId)).thenReturn(Optional.empty());
+
+        ResponseEntity<?> responseEntity = eventController.getEventById(eventId);
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        assertEquals("Event not found with ID: " + eventId, responseEntity.getBody());
+
+        verify(eventService, times(1)).findEventById(eventId);
+    }
+
+    @Test
+    void testGetEventByInvalidId() {
+        long eventId = -1L;
+        ResponseEntity<?> responseEntity = eventController.getEventById(eventId);
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void testGetEventByIdServiceException() {
+        long eventId = 1L;
+        when(eventService.findEventById(eventId)).thenThrow(new ServiceException("Service exception"));
+
+        ResponseEntity<?> responseEntity = eventController.getEventById(eventId);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+
+        verify(eventService, times(1)).findEventById(eventId);
+    }
+
+     @Test
+        void testGetEventByTitle() {
+            List<Event> events = List.of(new Event());
+            when(eventService.getEventByTitle("test")).thenReturn(events);
+
+            ResponseEntity<?> responseEntity = eventController.getEventByTitle("test");
+            assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+            assertEquals(events, responseEntity.getBody());
+
+            verify(eventService, times(1)).getEventByTitle("test");
+        }
+
+        @Test
+        void testGetEventByTitleException() {
+            when(eventService.getEventByTitle("title")).thenThrow(new IllegalArgumentException("Invalid title"));
+            ResponseEntity<?> responseEntity = eventController.getEventByTitle("title");
+            assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+            assertEquals("Failed to find event by title: Invalid title", responseEntity.getBody());
+
+            verify(eventService, times(1)).getEventByTitle("title");
+        }
+
+        @Test
+        void testGetEventByTitle_ServiceException() {
+            when(eventService.getEventByTitle("title")).thenThrow(new ServiceException("Service exception"));
+            ResponseEntity<?> responseEntity = eventController.getEventByTitle("title");
+            assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+
+            verify(eventService, times(1)).getEventByTitle("title");
+        }
+
+
 
     @Test
     public void testGetEventByInviteCode() {
@@ -53,6 +128,14 @@ public class EventControllerTest {
     }
 
     @Test
+    void testGetEventByInviteCodeNotFound() {
+        when(eventService.getEventByInviteCode(anyLong())).thenReturn(null);
+        Event result = eventController.getEventByInviteCode(999999L);
+
+        assertNull(result);
+    }
+
+    @Test
     public void testDeleteEventById_Success() {
         doNothing().when(eventService).deleteEvent(anyLong());
 
@@ -64,7 +147,13 @@ public class EventControllerTest {
 
     @Test
     public void testDeleteEventById_Failure() {
-        //TODO
+        doAnswer(invocation -> {
+            throw new Exception("Failed to delete event");
+        }).when(eventService).deleteEvent(anyLong());
+        ResponseEntity<?> responseEntity = eventController.deleteEventById(1L);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertEquals("Failed deletion.", responseEntity.getBody());
     }
 
     @Test
@@ -94,6 +183,41 @@ public class EventControllerTest {
     }
 
     @Test
+    void testUpdateEventTitle_Success() {
+        when(eventService.updateEventTitle(anyLong(), anyString()))
+                .thenReturn(new Event(new ArrayList<>(), new ArrayList<>(), "test", 1L));
+
+        ResponseEntity<?> responseEntity = eventController.updateEventTitle(1L, "new");
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+        verify(eventService, times(1)).updateEventTitle(1L, "new");
+    }
+
+    @Test
+    void testUpdateEventTitleError() {
+        when(eventService.updateEventTitle(anyLong(), anyString()))
+                .thenThrow(new ServiceException("Update failed"));
+
+        ResponseEntity<?> responseEntity = eventController.updateEventTitle(1L, "new");
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertEquals("Failed to update event title: Update failed", responseEntity.getBody());
+
+        verify(eventService, times(1)).updateEventTitle(1L, "new");
+    }
+
+    @Test
+    void testGetParticipantsByEventId() {
+        List<Participant> participants = new ArrayList<>();
+        participants.add(new Participant("ab", "cd"));
+        when(eventService.findParticipantsByEventId(anyLong())).thenReturn(participants);
+
+        ResponseEntity<List<Participant>> responseEntity = eventController.getParticipantsByEventId(1L);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(participants, responseEntity.getBody());
+
+        verify(eventService, times(1)).findParticipantsByEventId(1L);
+    }
+    @Test
     public void addParticipant_Success() {
         when(eventService.addParticipantToEvent(anyLong(), any(Participant.class))).thenReturn(participant);
         ResponseEntity<Participant> response = eventController.addParticipant(1L, participant);
@@ -120,6 +244,15 @@ public class EventControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(eventService).removeParticipantFromEvent(1L, 1L);
+    }
+
+    @Test
+    void testRemoveParticipantError() {
+        doThrow(new RuntimeException("Failed to remove participant")).when(eventService).removeParticipantFromEvent(anyLong(), anyLong());
+
+        assertThrows(RuntimeException.class, () -> eventController.removeParticipant(1L, 1L));
+
+        verify(eventService, times(1)).removeParticipantFromEvent(1L, 1L);
     }
 
     @Test

@@ -108,7 +108,7 @@ public class ExpenseController {
      * @param updatedExpense the new updated version of the expense
      * @return ResponseEntity<Void> ok or not found
      */
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable("id")
                                            long id, @RequestBody Expense updatedExpense) {
         try {
@@ -124,7 +124,7 @@ public class ExpenseController {
      * @param id the id of the expense that needs to be deleted
      * @return ResponseEntity<Void> ok or not found
      */
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") long id) {
         try {
             expenseService.deleteExpense(id);
