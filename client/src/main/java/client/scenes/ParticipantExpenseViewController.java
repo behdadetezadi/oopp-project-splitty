@@ -30,7 +30,6 @@ public class ParticipantExpenseViewController
     private Stage primaryStage;
     private Event event;
     private long selectedParticipantId;
-
     /**
      *
      * @param primaryStage primary stage
@@ -117,6 +116,7 @@ public class ParticipantExpenseViewController
     @FXML
     private void switchToEventOverviewScene() {
         mainController.showEventOverview(event);
+
     }
 
     /**

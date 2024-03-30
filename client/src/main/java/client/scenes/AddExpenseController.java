@@ -125,6 +125,7 @@ public class AddExpenseController {
             if(newExpense!=null){
                 AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
                         "Expense Added", "The expense has been successfully added.");
+                mainController.refreshExpensesOverview(event);
             }
             switchToEventOverviewScene();
         } catch (Exception e) {
