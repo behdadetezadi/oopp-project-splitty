@@ -58,6 +58,10 @@ public class Main extends Application {
         var mainController = INJECTOR.getInstance(MainController.class);
         mainController.initialize(primaryStage, startPage, overviewPage, expensePage, participantExpenseViewPage,expenseOverviewPage,participantsPage, contactDetailsPage, invitePage);
 
+        primaryStage.setOnCloseRequest(e -> {
+            participantsPage.getKey().stop();
+        });
+
     }
 
     /**
