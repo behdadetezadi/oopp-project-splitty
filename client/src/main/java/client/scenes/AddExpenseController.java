@@ -98,13 +98,13 @@ public class AddExpenseController {
      */
     @FXML
     private void handleAddExpenseAction(ActionEvent actionEvent) {
-        String description = this.expenseDescription.getText();
+        String category = this.expenseDescription.getText();
         String amount = this.amountPaid.getText();
         double amountValue;
 
-        if(description == null || description.isEmpty()){
+        if(category == null || category.isEmpty()){
             AlertUtils.showErrorAlert("Invalid description", "Error",
-                    "The description cannot be empty.");
+                    "The category cannot be empty.");
             return;
         }
 
@@ -126,8 +126,8 @@ public class AddExpenseController {
         }
 
         try {
-            Expense newExpense = ServerUtils.addExpense(selectedParticipantId, description, amountValue, event.getId());
-            Stage stage = (Stage) addExpenseButton.getScene().getWindow(); // Get the current stage
+            Expense newExpense = ServerUtils.addExpense(selectedParticipantId, category, amountValue, event.getId());
+            Stage stage = (Stage) addExpenseButton.getScene().getWindow();
             if(newExpense!=null){
                 AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
                         "Expense Added", "The expense has been successfully added.");
