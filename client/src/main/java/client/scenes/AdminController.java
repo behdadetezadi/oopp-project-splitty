@@ -2,7 +2,12 @@ package client.scenes;
 
 import client.utils.AlertUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import commons.Event;
+import commons.Expense;
+import commons.Participant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -65,8 +70,16 @@ public class AdminController {
      */
 
     public void update(Event e) {
+        List<Participant> p = new ArrayList<>();
+        Participant part = new Participant("Albert", "Hein");
+        p.add(part);
+        List<Expense> ex= new ArrayList<>();
+        ex.add(new Expense(part, "being chill", 21));
+        Event test = new Event(p, ex,"chilling");
+        Event test2 = new Event("doing nothing");
         eventsTable.getItems().add(e);
         ObservableList<Event> i = eventsTable.getItems();
+        //i.add(test2);
         eventsTable.setItems(i);
         setupActionsColumn();
 
@@ -180,7 +193,7 @@ public class AdminController {
 
                             try {
 
-                                Event e = objectMapper.readValue(s.get(0), Event.class);
+                                Event e = objectMapper.readValue(s.get(0), new TypeReference<Event>(){});
                                 eventArr[0] = e;
                                 update(eventArr[0]);
 
@@ -190,11 +203,11 @@ public class AdminController {
 
 
 
-                            } catch (Exception e) {
+                            } catch (JsonProcessingException e) {
                                 System.out.println("could not find correct attributes ");
                                 AlertUtils.showErrorAlert("Error", "Conversion failed",
                                         "Could not make an event from the given JSON file.");
-
+                                System.out.println(e.getMessage());
                             }
 
 
