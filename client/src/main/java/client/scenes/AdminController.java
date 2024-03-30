@@ -129,8 +129,7 @@ public class AdminController {
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            String userHome = System.getProperty("user.home");
-            File outputFile = new File(userHome + "/Splitty/Exports/" + event.getTitle() + ".json");
+            File outputFile = new File("client/src/main/resources/JSON/" + event.getTitle() + ".json");
 
             objectMapper.writeValue(outputFile, event);
 
