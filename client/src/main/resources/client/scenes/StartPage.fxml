@@ -1,40 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
 <BorderPane fx:id="root" prefHeight="400" prefWidth="600" stylesheets="@/styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartPageController">
     <padding>
         <Insets top="20" />
     </padding>
 
     <top>
-        <VBox alignment="CENTER" spacing="10" fx:id="vbox">
-            <!-- Logo -->
-            <ImageView fx:id="logo" fitWidth="400" fitHeight="200" />
-
-            <HBox spacing="10" alignment="CENTER">
-                <TextField fx:id="codeInput" promptText="Enter code" />
-                <Button fx:id="joinButton" onAction="#joinMeeting" text="Join Meeting" />
+        <VBox fx:id="vbox" alignment="CENTER" spacing="10">
+            <HBox prefHeight="4.0" prefWidth="600.0">
+                <children>
+                    <ComboBox fx:id="languageComboBox">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="English" />
+                                <String fx:value="Deutsch" />
+                                <String fx:value="Nederlands" />
+                                <!-- Add more languages as needed -->
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </children>
             </HBox>
-            <HBox spacing="10" alignment="CENTER">
-                <TextField fx:id="eventNameInput" promptText="Enter event name" />
-                <Button fx:id="createEventButton" onAction="#createEvent" text="Create Event" />
+            <!-- Logo -->
+            <ImageView fx:id="logo" fitHeight="200" fitWidth="400" />
+
+            <HBox alignment="CENTER" spacing="10">
+                <TextField fx:id="codeInput" promptText="%enter_code" />
+                <Button fx:id="joinButton" onAction="#joinMeeting" text="%join_meeting" />
+            </HBox>
+            <HBox alignment="CENTER" spacing="10">
+                <TextField fx:id="eventNameInput" promptText="%enter_event_name" />
+                <Button fx:id="createEventButton" onAction="#createEvent" text="%create_event" />
             </HBox>
             <Region prefHeight="20" />
         </VBox>
+
     </top>
 
     <center>
         <VBox alignment="CENTER">
-            <Label fx:id="recentEventsLabel" alignment="CENTER" styleClass="black-background-label" text="Recent Events" />
+            <Label fx:id="recentEventsLabel" alignment="CENTER" styleClass="black-background-label" text="%recent_events" />
             <ListView fx:id="recentEventsList" />
         </VBox>
     </center>
