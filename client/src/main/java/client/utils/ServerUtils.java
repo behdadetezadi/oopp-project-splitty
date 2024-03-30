@@ -96,6 +96,7 @@ public class ServerUtils {
 
 	}
 
+
 	public static Participant getParticipant(long participantId) {
 		Response response = client.target(SERVER)
 				.path("api/participants/{id}")
@@ -110,6 +111,7 @@ public class ServerUtils {
 		}
 		return response.readEntity(Participant.class);
 	}
+
 
 	/**
 	 * Adds an expense to an event
@@ -215,11 +217,34 @@ public class ServerUtils {
 					.accept(APPLICATION_JSON)
 					.get(new GenericType<List<Expense>>() {});
 		} catch (NotFoundException e) {
-			throw new RuntimeException("No expenses found for participant with ID: " + participantId);
+			return new ArrayList<>();
 		} catch (Exception e) {
 			throw new RuntimeException("Error fetching expenses for participant: " + e.getMessage());
 		}
 	}
+	/**
+	 * Fetches a list of expenses for a specific event.
+	 *
+	 * @param eventId The unique identifier of the event.
+	 * @return A list of expenses associated with the given event.
+	 */
+	public static List<Expense> getExpensesForEvent(Long eventId) {
+		try {
+			List<Expense> expenses = client.target(SERVER)
+					.path("api/events/{eventId}/expenses")
+					.resolveTemplate("eventId", eventId)
+					.request(APPLICATION_JSON)
+					.accept(APPLICATION_JSON)
+					.get(new GenericType<List<Expense>>() {});
+			return expenses;
+		} catch (NotFoundException e) {
+			// Instead of throwing an exception, return an empty list
+			return new ArrayList<>();
+		} catch (Exception e) {
+			throw new RuntimeException("Error fetching expenses for event: " + e.getMessage());
+		}
+	}
+
 
 	/**
 	 * gets quotes
@@ -387,26 +412,7 @@ public class ServerUtils {
 			return null;
 		}
 	}
-	/**
-	 * Fetches a list of expenses for a specific event.
-	 *
-	 * @param eventId The unique identifier of the event.
-	 * @return A list of expenses associated with the given event.
-	 */
-	public static List<Expense> getExpensesForEvent(Long eventId) {
-		try {
-			return client.target(SERVER)
-					.path("api/events/{eventId}/expenses")
-					.resolveTemplate("eventId", eventId)
-					.request(APPLICATION_JSON)
-					.accept(APPLICATION_JSON)
-					.get(new GenericType<List<Expense>>() {});
-		} catch (NotFoundException e) {
-			throw new RuntimeException("No expenses found for event with ID: " + eventId);
-		} catch (Exception e) {
-			throw new RuntimeException("Error fetching expenses for event: " + e.getMessage());
-		}
-	}
+
 
 	/**
 	 * updating a participant

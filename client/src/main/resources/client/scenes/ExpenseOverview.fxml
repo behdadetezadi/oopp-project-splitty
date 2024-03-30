@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="client.scenes.ExpenseOverviewController"
+            stylesheets="@/styles.css"
+            prefHeight="335.0"
+            prefWidth="594.0">
+    <top>
+        <HBox alignment="CENTER_LEFT">
+            <Button text="Back" onAction="#switchToEventOverviewScene"/>
+        </HBox>
+    </top>
+    <center>
+        <ListView fx:id="expensesListView" VBox.vgrow="ALWAYS" prefHeight="200" prefWidth="300"/>
+    </center>
+    <bottom>
+        <Label fx:id="sumOfExpensesLabel" style="-fx-font-size: 14px;"/>
+    </bottom>
+</BorderPane>
