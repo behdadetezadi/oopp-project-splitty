@@ -41,6 +41,7 @@ public class AdminController {
     /**
      * Initializer method
      */
+
     @FXML
     public void initialize() {
         List<Event> dummyEvents = createDummyEvents(15); // TODO only for testing
@@ -52,6 +53,8 @@ public class AdminController {
 
         setupActionsColumn();
         eventsTable.setItems(eventData);
+
+
     }
 
 
@@ -60,19 +63,14 @@ public class AdminController {
      * method that updates list with new event
      * @param e the event to add to the list
      */
-    @FXML
-    public void update(Event e) {
-        eventData.add(e);
-        eventsTable.setItems(eventData);
-        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
-        creationDateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
-        lastActivityColumn.setCellValueFactory(new PropertyValueFactory<>("lastActivity"));
 
+    public void update(Event e) {
+        eventsTable.getItems().add(e);
+        ObservableList<Event> i = eventsTable.getItems();
+        eventsTable.setItems(i);
         setupActionsColumn();
-        eventsTable.setItems(eventData);
 
     }
-
 
     private void setupActionsColumn() {
         actionsColumn.setCellFactory(param -> new TableCell<>() {
@@ -132,11 +130,13 @@ public class AdminController {
             File outputFile = new File("client/src/main/resources/JSON/" + event.getTitle() + ".json");
 
             objectMapper.writeValue(outputFile, event);
+            AlertUtils.showInformationAlert("event Exported!", "Exported to:",
+                    "client/src/main/resources/JSON/\" + event.getTitle() + \".json");
 
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            AlertUtils.showInformationAlert("Error", "Could not write to file",
+            AlertUtils.showErrorAlert("Error", "Could not write to file",
                     "Could not find path");
 
 
@@ -182,6 +182,8 @@ public class AdminController {
 
                                 Event e = objectMapper.readValue(s.get(0), Event.class);
                                 eventArr[0] = e;
+                                update(eventArr[0]);
+
                                 AlertUtils.showInformationAlert("Success", "Event added!",
                                         "You can close the dialogue window.");
 
@@ -207,7 +209,6 @@ public class AdminController {
                 }
         );
 
-        this.update(eventArr[0]);
 
         dialogVbox.getChildren().add(button);
 
@@ -237,4 +238,66 @@ public class AdminController {
 
         return events;
     }
+
+/*  method used for testing
+
+    @Override
+    public void start(Stage stage) {
+        Scene scene = new Scene(new Group());
+        stage.setTitle("Admin Page");
+        stage.setWidth(550);
+        stage.setHeight(550);
+
+        List<Event> dummyEvents = createDummyEvents(15); // TODO only for testing
+        eventsTable = new TableView<>();
+        eventsTable.setEditable(true);
+
+
+
+        titleColumn = new TableColumn<>("Title");
+        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+        creationDateColumn = new TableColumn<>("creation date");
+        creationDateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
+
+        lastActivityColumn = new TableColumn<>("last activity");
+        lastActivityColumn.setCellValueFactory(new PropertyValueFactory<>("lastActivity"));
+
+        eventsTable.setItems(eventData);
+        eventsTable.getColumns().addAll(titleColumn, creationDateColumn, lastActivityColumn);
+
+        final Button addButton = new Button("Add");
+        String filepath = "client/src/main/resources/JSON/Event 14.json";
+        filepath = filepath.strip();
+        ObjectMapper objectMapper = new ObjectMapper();
+        Event[] events = new Event[1];
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(new File(filepath)));
+            List<String> s = br.lines().toList();
+
+            try {
+                Event ev = objectMapper.readValue(s.get(0), Event.class);
+                events[0]= ev;
+            } catch (Exception e) {
+
+            }
+        } catch (Exception e) {
+
+        }
+        addButton.setOnAction((ActionEvent e) -> {
+            eventData.add(events[0]);
+            eventData.addAll(dummyEvents);
+
+        });
+
+        final VBox vbox = new VBox();
+        vbox.getChildren().addAll(eventsTable, addButton);
+
+        ((Group) scene.getRoot()).getChildren().addAll(vbox);
+
+        stage.setScene(scene);
+        stage.show();
+
+    }
+*/
 }

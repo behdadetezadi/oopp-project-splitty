@@ -132,6 +132,21 @@ public class Event {
         return expenses;
     }
 
+    /**
+     * method that returns the date (when we eventually implement that overwrite this)
+     * @return IMPORTANT!!! METHOD RETURNS STATIC MAGIC NUMBER STRING FOR NOW!!!
+     */
+    public String getCreationDate() {
+        return "28-02-2024";
+    }
+    /**
+     * method that returns the last activity (when we eventually implement that overwrite this)
+     * @return IMPORTANT!!! METHOD RETURNS STATIC MAGIC NUMBER STRING FOR NOW!!!
+     */
+    public String getLastActivity() {
+        return "28-02-2024";
+    }
+
 
     /**
      * setter for the ID (might need to delete later)
