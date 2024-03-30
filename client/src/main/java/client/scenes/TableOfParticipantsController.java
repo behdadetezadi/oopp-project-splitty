@@ -38,13 +38,17 @@ public class TableOfParticipantsController {
     @FXML
     private Button deleteButton;
 
+    @FXML
+    private Label titleLabel;
+
     private final ObservableList<Participant> participants = FXCollections.observableArrayList();
 
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
     private Event event;
-
+    private Locale activeLocale;
+    private ResourceBundle resourceBundle;
 
 
     /**
@@ -80,9 +84,23 @@ public class TableOfParticipantsController {
      * Sets event to make sure we are making changes to the required event
      * @param event event
      */
-    public void setEvent(Event event) {
+    public void setEvent(Event event, Locale locale) {
+        this.resourceBundle = ResourceBundle.getBundle("message", locale);
+        this.activeLocale = locale;
         this.event = event;
-        initialize();
+        updateUIElements();
+        initialize(resourceBundle);
+
+    }
+
+
+
+    public void updateUIElements() {
+        titleLabel.setText(resourceBundle.getString("Participant_Overview"));
+        backButton.setText(resourceBundle.getString("Leave"));
+        editButton.setText(resourceBundle.getString("Modify"));
+        addButton.setText(resourceBundle.getString("plus"));
+        deleteButton.setText(resourceBundle.getString("minus"));
     }
 
 
@@ -90,7 +108,10 @@ public class TableOfParticipantsController {
      * initializer method
      */
     @FXML
-    public void initialize() {
+    public void initialize(ResourceBundle resourceBundle) {
+
+        this.resourceBundle = resourceBundle;
+
         loadParticipants();
         setupPagination();
 
@@ -99,8 +120,8 @@ public class TableOfParticipantsController {
         backButton.getStyleClass().add("button-hover");
         editButton.getStyleClass().add("button-hover");
 
-        Tooltip addTooltip = new Tooltip("Click to add a participant");
-        Tooltip removeTooltip = new Tooltip("Click to remove the selected participant");
+        Tooltip addTooltip = new Tooltip(resourceBundle.getString("Click_to_add_a_participant"));
+        Tooltip removeTooltip = new Tooltip(resourceBundle.getString("Click_to_remove_the_selected_participant"));
         Tooltip.install(addButton, addTooltip);
         Tooltip.install(deleteButton, removeTooltip);
 
@@ -127,7 +148,7 @@ public class TableOfParticipantsController {
      */
     @FXML
     private void handleBackButton() {
-        mainController.showEventOverview(event);
+        mainController.showEventOverview(event, activeLocale);
     }
 
     /**
@@ -140,7 +161,7 @@ public class TableOfParticipantsController {
 
         Participant newParticipant = new Participant("", "", "", "", "",
                 "", new HashMap<>(), new HashMap<>(), eventIds, "");
-        editParticipant(newParticipant, "Add New Participant", "Enter details for the new participant.",
+        editParticipant(newParticipant, "Add New Participant", resourceBundle.getString("Enter_details_for_the_new_participant."),
                 this::addParticipant);
     }
 
@@ -151,7 +172,7 @@ public class TableOfParticipantsController {
     private void handleEditButton() {
         if (participants.isEmpty()) {
             AlertUtils.showErrorAlert("Error", "No Participants Found",
-                    "There are no participants to edit.");
+                    resourceBundle.getString("There_are_no_participants_to_edit."));
             return;
         }
         Participant selectedParticipant = getSelectedParticipant();
@@ -169,7 +190,7 @@ public class TableOfParticipantsController {
         Participant selectedParticipant = getSelectedParticipant();
         if (selectedParticipant != null) {
             boolean confirmation = AlertUtils.showConfirmationAlert("Remove participant",
-                    "Are you sure you want to remove " + selectedParticipant.getFirstName()
+                    resourceBundle.getString("Are_you_sure_you_want_to_remove")+ " " + selectedParticipant.getFirstName()
                             + " " + selectedParticipant.getLastName() + "?");
             if (confirmation) {
                 deleteParticipant(selectedParticipant);
@@ -251,7 +272,7 @@ public class TableOfParticipantsController {
             participants.add(addedParticipant);
             setupPagination();
             AlertUtils.showInformationAlert("Success", "Participant Added",
-                    "Participant was successfully added.");
+                    resourceBundle.getString("Participant_was_successfully_added."));
         }}
     }
 
@@ -266,7 +287,7 @@ public class TableOfParticipantsController {
         if (isUpdated) {
             refreshParticipantDetails(participant);
             AlertUtils.showInformationAlert("Success", "Participant Updated",
-                    "Participant details were successfully updated.");
+                    resourceBundle.getString("Participant_details_were_successfully_updated."));
         }
     }
 
@@ -296,7 +317,7 @@ public class TableOfParticipantsController {
             participants.remove(participant);
             setupPagination();
             AlertUtils.showInformationAlert("Success", "Participant Removed",
-                    "Participant was successfully removed.");
+                    resourceBundle.getString("Participant_was_successfully_removed."));
         }
     }
 
