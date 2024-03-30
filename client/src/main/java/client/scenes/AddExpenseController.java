@@ -102,6 +102,12 @@ public class AddExpenseController {
         String amount = this.amountPaid.getText();
         double amountValue;
 
+        if(description == null || description.isEmpty()){
+            AlertUtils.showErrorAlert("Invalid description", "Error",
+                    "The description cannot be empty.");
+            return;
+        }
+
         // Check for a trailing period/comma
         String normalizedAmount = amount.replace(',', '.');
         if (normalizedAmount.endsWith(".")) {
