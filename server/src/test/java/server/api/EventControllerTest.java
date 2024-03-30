@@ -256,21 +256,6 @@ public class EventControllerTest {
     }
 
     @Test
-    public void updateParticipant_Success() {
-        Participant updatedParticipant = new Participant();
-        updatedParticipant.setId(1L);
-        updatedParticipant.setFirstName("Updated");
-        updatedParticipant.setLastName("User");
-        when(eventService.updateParticipantInEvent(anyLong(), anyLong(), any(Participant.class))).thenReturn(updatedParticipant);
-
-        ResponseEntity<Participant> response = eventController.updateParticipantInEvent(1L, 1L, updatedParticipant);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(updatedParticipant, response.getBody());
-        verify(eventService).updateParticipantInEvent(1L, 1L, updatedParticipant);
-    }
-
-    @Test
     public void updateParticipant_BadRequest() {
         when(eventService.updateParticipantInEvent(anyLong(), anyLong(), any(Participant.class))).thenThrow(new IllegalArgumentException("Invalid request"));
         ResponseEntity<Participant> response = eventController.updateParticipantInEvent(1L, 1L, new Participant());

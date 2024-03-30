@@ -7,6 +7,9 @@ import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import server.EventService;
@@ -21,6 +24,10 @@ public class EventController {
 
     private final EventService eventService;
     private EventRepository db;
+
+    @Autowired
+    private SimpMessagingTemplate template;
+
 
 
     /**
@@ -186,6 +193,7 @@ private Map<Object, Consumer<Participant>> listeners = new HashMap<>();
         return ResponseEntity.ok().build();
     }
 
+
     @PutMapping("/{eventId}/participants/{participantId}")
     public ResponseEntity<Participant> updateParticipantInEvent(
             @PathVariable Long eventId,
@@ -193,12 +201,22 @@ private Map<Object, Consumer<Participant>> listeners = new HashMap<>();
             @RequestBody Participant participantDetails) {
         try {
             Participant updatedParticipant = eventService.updateParticipantInEvent(eventId, participantId, participantDetails);
+            template.convertAndSend("/topic/participants", updatedParticipant);
+
             return ResponseEntity.ok(updatedParticipant);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @MessageMapping("/participants")
+    @SendTo("/topic/participants")
+    public void updateParticipantWebSockets( @PathVariable Long eventId,
+                                             @PathVariable Long participantId,
+                                             @RequestBody Participant participantDetails){
+        updateParticipantInEvent(eventId, participantId, participantDetails);
     }
 
     /**
