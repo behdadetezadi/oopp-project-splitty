@@ -67,7 +67,7 @@ public class TableOfParticipantsController {
 
     private void registerForParticipantUpdates() {
         if (event != null && server != null) {
-            server.registerForMessages("/topic/participants", event.getId(), null, this::handleParticipantUpdate);
+            server.registerForMessages("/topic/participants", event.getId(), null, this::handleParticipantUpdates);
         }
     }
 
@@ -104,7 +104,7 @@ public class TableOfParticipantsController {
         Tooltip.install(addButton, addTooltip);
         Tooltip.install(deleteButton, removeTooltip);
 
-        server.registerForUpdates(event.getId(),this::handleParticipantUpdate);
+        server.registerForUpdates(event.getId(),this::handleParticipantUpdates);
     }
 
     private void handleParticipantUpdate(Participant participant) {
@@ -270,7 +270,7 @@ public class TableOfParticipantsController {
         }
     }
 
-    private void handleParticipantUpdate(Participant updatedParticipant) {
+    private void handleParticipantUpdates(Participant updatedParticipant) {
         Platform.runLater(() -> {
             OptionalInt indexOpt = IntStream.range(0, participants.size())
                     .filter(i -> participants.get(i).getId()==(updatedParticipant.getId()))
