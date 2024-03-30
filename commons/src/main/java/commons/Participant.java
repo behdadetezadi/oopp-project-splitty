@@ -1,14 +1,12 @@
 package commons;
 
 import jakarta.persistence.*;
-
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 public class Participant {
-    //Participant ID
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -23,13 +21,13 @@ public class Participant {
             joinColumns = @JoinColumn(name = "participant_id"))
     @MapKeyJoinColumn(name = "event_id")
     @Column(name = "owed_amount")
-    private Map<Event, Double> owedAmount; //at the time of the code (no Event class yet).
+    private Map<Event, Double> owedAmount;
     @ElementCollection
     @CollectionTable(name = "participant_owed_amount",
             joinColumns = @JoinColumn(name = "participant_id"))
     @MapKeyJoinColumn(name = "event_id")
     @Column(name = "owed_amount")
-    private Map<Event, Double> payedAmount; //at the time of the code (no Event class yet).
+    private Map<Event, Double> payedAmount;
     @ElementCollection
     private Set<Long> eventIds;
     private String languageChoice;
@@ -291,7 +289,6 @@ public class Participant {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Participant that)) return false;
-
         if (id != that.id) return false;
         if (!Objects.equals(username, that.username)) return false;
         if (!Objects.equals(firstName, that.firstName)) return false;
@@ -360,7 +357,6 @@ public class Participant {
                 append("\n");
         return sb.toString();
     }
-
 
     /**
      * adding into hashmap owed amount
