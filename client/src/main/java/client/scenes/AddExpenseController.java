@@ -102,6 +102,12 @@ public class AddExpenseController {
         String amount = this.amountPaid.getText();
         double amountValue;
 
+        if(description == null || description.isEmpty()){
+            AlertUtils.showErrorAlert("Invalid category", "Error",
+                    "Category cannot be empty.");
+            return;
+        }
+
         // Check for a trailing period/comma
         String normalizedAmount = amount.replace(',', '.');
         if (normalizedAmount.endsWith(".")) {
@@ -121,7 +127,7 @@ public class AddExpenseController {
 
         try {
             Expense newExpense = ServerUtils.addExpense(selectedParticipantId, description, amountValue, event.getId());
-            Stage stage = (Stage) addExpenseButton.getScene().getWindow(); // Get the current stage
+            Stage stage = (Stage) addExpenseButton.getScene().getWindow();
             if(newExpense!=null){
                 AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
                         "Expense Added", "The expense has been successfully added.");
