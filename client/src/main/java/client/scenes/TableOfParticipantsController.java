@@ -99,12 +99,27 @@ public class TableOfParticipantsController {
         backButton.getStyleClass().add("button-hover");
         editButton.getStyleClass().add("button-hover");
 
-
-
         Tooltip addTooltip = new Tooltip("Click to add a participant");
         Tooltip removeTooltip = new Tooltip("Click to remove the selected participant");
         Tooltip.install(addButton, addTooltip);
         Tooltip.install(deleteButton, removeTooltip);
+
+        server.registerForUpdates(event.getId(),this::handleParticipantUpdate);
+    }
+
+    private void handleParticipantUpdate(Participant participant) {
+        Platform.runLater(() -> {
+            boolean exists = participants.stream()
+                    .anyMatch(p -> p.getId() == participant.getId());
+
+            if (!exists) {
+                participants.add(participant);
+                setupPagination();
+            }
+        });
+    }
+    public void stop(){
+        server.stop();
     }
 
     /**
@@ -227,13 +242,17 @@ public class TableOfParticipantsController {
      * @param participant The {@link Participant} to add to the event.
      */
     private void addParticipant(Participant participant) {
+        boolean exists = participants.stream()
+                .anyMatch(p -> p.getId() == participant.getId());
+
+        if (!exists){
         Participant addedParticipant = ServerUtils.addParticipantToEvent(event.getId(), participant);
         if (addedParticipant != null) {
             participants.add(addedParticipant);
             setupPagination();
             AlertUtils.showInformationAlert("Success", "Participant Added",
                     "Participant was successfully added.");
-        }
+        }}
     }
 
     /**

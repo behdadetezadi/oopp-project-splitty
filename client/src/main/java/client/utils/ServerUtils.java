@@ -468,7 +468,35 @@ public class ServerUtils {
 		}
 	}
 
+	/**
+	 * Long polling of Participants
+	 * @param eventId as a long
+	 * @return an array list of participants
+	 */
 
+	private static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
+
+	public static void registerForUpdates(long eventId, Consumer<Participant> consumer) {
+		EXEC.submit(()->{
+			while (!Thread.interrupted()) {
+				var res = ClientBuilder.newClient(new ClientConfig())
+						.target(SERVER).path("api/events/" + eventId + "/participants/updates")
+						.request(APPLICATION_JSON)
+						.accept(APPLICATION_JSON)
+						.get(Response.class);
+				if (res.getStatus()==204){
+					continue;
+				}
+				var q = res.readEntity(Participant.class);
+				consumer.accept(q);
+			}
+		});
+
+	}
+
+	public void stop(){
+		EXEC.shutdownNow();
+	}
 
 	private StompSession session = connect("ws://localhost:8080/websocket");
 	private StompSession connect (String url){

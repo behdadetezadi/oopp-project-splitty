@@ -11,11 +11,12 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import server.EventService;
 import server.database.EventRepository;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/api/events")
@@ -156,10 +157,30 @@ public class EventController {
         return ResponseEntity.ok(participants);
     }
 
+
+private Map<Object, Consumer<Participant>> listeners = new HashMap<>();
+    @GetMapping("/{id}/participants/updates")
+    public DeferredResult<ResponseEntity<Participant>> getParticipantUpdatesByEventId(@PathVariable Long id) {
+        var noContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        var res = new DeferredResult<ResponseEntity<Participant>>(5000L,noContent);
+
+        var key = new Object();//since never equal to each other (always diff instances)
+        listeners.put(key, participant -> {
+            res.setResult( ResponseEntity.ok(participant));
+        });
+
+        res.onCompletion(() ->{
+            listeners.remove(key);
+        });
+
+        return res;
+
+    }
     @PostMapping("/{eventId}/participants")
     public ResponseEntity<Participant> addParticipant(@PathVariable long eventId, @RequestBody Participant participant) {
         Participant addedParticipant = eventService.addParticipantToEvent(eventId, participant);
         if (addedParticipant != null) {
+            listeners.forEach((k,l) ->{l.accept(addedParticipant);});
             return ResponseEntity.ok(addedParticipant);
         } else {
             return ResponseEntity.notFound().build();
