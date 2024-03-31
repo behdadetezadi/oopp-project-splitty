@@ -118,9 +118,15 @@ public class AddExpenseController {
      */
     @FXML
     private void handleAddExpenseAction(ActionEvent actionEvent) {
-        String description = this.expenseDescription.getText();
+        String category = this.expenseDescription.getText();
         String amount = this.amountPaid.getText();
         double amountValue;
+
+        if(category == null || category.isEmpty()){
+            AlertUtils.showErrorAlert("Invalid description", "Error",
+                    "The category cannot be empty.");
+            return;
+        }
 
         // Check for a trailing period/comma
         String normalizedAmount = amount.replace(',', '.');
@@ -140,8 +146,8 @@ public class AddExpenseController {
         }
 
         try {
-            Expense newExpense = ServerUtils.addExpense(selectedParticipantId, description, amountValue, event.getId());
-            Stage stage = (Stage) addExpenseButton.getScene().getWindow(); // Get the current stage
+            Expense newExpense = ServerUtils.addExpense(selectedParticipantId, category, amountValue, event.getId());
+            Stage stage = (Stage) addExpenseButton.getScene().getWindow();
             if(newExpense!=null){
                 AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
                         "Expense Added", resourceBundle.getString("The_expense_has_been_successfully_added."));

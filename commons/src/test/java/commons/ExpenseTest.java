@@ -2,9 +2,7 @@ package commons;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,6 +15,30 @@ class ExpenseTest {
     Expense b = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food", new HashSet<>());
     Expense c = new Expense(participant, "dinner", 13, "Euros", "01-01-2024", spiltOption, "food", new HashSet<>());
 
+
+    @Test
+    void testFullExpenseConstructor() {
+        Participant participant = new Participant("John", "Foo");
+        List<Participant> splittingOption = new ArrayList<>();
+        splittingOption.add(participant);
+        Set<Integer> eventIds = new HashSet<>();
+        String category = "dinner";
+        double amount = 12;
+        String currency = "Euros";
+        String date = "01-01-2024";
+        String expenseType = "food";
+
+        Expense expense = new Expense(participant, category, amount, currency,
+                date, splittingOption, expenseType, eventIds);
+        assertEquals(participant, expense.getParticipant());
+        assertEquals(category, expense.getCategory());
+        assertEquals(amount, expense.getAmount());
+        assertEquals(currency, expense.getCurrency());
+        assertEquals(date, expense.getDate());
+        assertEquals(splittingOption, expense.getSplittingOption());
+        assertEquals(expenseType, expense.getExpenseType());
+        assertEquals(eventIds, expense.getEventIds());
+    }
 
     @Test
     public void equalsTest(){
@@ -115,5 +137,30 @@ class ExpenseTest {
     public void setExpenseTypeTest(){
         a.setExpenseType("drinks");
         assertEquals("drinks", a.getExpenseType());
+    }
+
+    @Test
+    void testGetId() {
+        assertEquals(0, participant.getId());
+    }
+
+    @Test
+    void testSetId() {
+        participant.setId(12345);
+        assertEquals(12345, participant.getId());
+    }
+
+    @Test
+    void testSetEventIds() {
+        Set<Integer> eventIds = new HashSet<>();
+        eventIds.add(1);
+        eventIds.add(2);
+        eventIds.add(3);
+        a.setEventIds(eventIds);
+
+        assertEquals(eventIds, a.getEventIds());
+        assertTrue(a.getEventIds().contains(1));
+        assertTrue(a.getEventIds().contains(2));
+        assertTrue(a.getEventIds().contains(3));
     }
 }
