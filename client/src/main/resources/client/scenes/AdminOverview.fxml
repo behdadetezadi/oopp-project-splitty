@@ -14,7 +14,7 @@
             <Insets top="10" right="10" bottom="10" left="10"/>
          </padding>
          <HBox alignment="CENTER">
-            <Button text="Import Event" onAction="#importEvent"/>
+            <Button text="%Import_Event" onAction="#importEvent"/>
          </HBox>
       </VBox>
    </top>
@@ -24,22 +24,22 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
          <columns>
-            <TableColumn text="Title" fx:id="titleColumn">
+            <TableColumn text="%Title" fx:id="titleColumn">
                <cellValueFactory>
                   <PropertyValueFactory property="title" />
                </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Creation Date" fx:id="creationDateColumn">
+            <TableColumn text="%Creation_Date" fx:id="creationDateColumn">
                <cellValueFactory>
                   <PropertyValueFactory property="creationDate" />
                </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Last Activity" fx:id="lastActivityColumn">
+            <TableColumn text="%Last_Activity" fx:id="lastActivityColumn">
                <cellValueFactory>
                   <PropertyValueFactory property="lastActivity" />
                </cellValueFactory>
             </TableColumn>
-            <TableColumn text="Actions" fx:id="actionsColumn" minWidth="125" sortable="false">
+            <TableColumn text="%Actions" fx:id="actionsColumn" minWidth="125" sortable="false">
             </TableColumn>
          </columns>
       </TableView>

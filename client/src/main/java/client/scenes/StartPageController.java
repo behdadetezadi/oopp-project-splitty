@@ -19,7 +19,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.util.Locale;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 import static client.utils.AnimationUtil.*;
 
@@ -48,6 +50,13 @@ public class StartPageController {
 
     @FXML
     private ImageView logo;
+    @FXML
+    private ComboBox<String> languageComboBox;
+
+    private ResourceBundle resourceBundle;
+
+    private Locale activeLocale;
+
 
     private Stage primaryStage;
     private MainController mainController;
@@ -81,7 +90,21 @@ public class StartPageController {
     /**
      * initialize method of the start page controller
      */
-    public void initialize() {
+    public void initialize(Locale locale) {
+
+        // Load default language
+        //loadLanguage(Locale.getDefault());
+
+        loadLanguage(locale);
+        activeLocale = locale;
+
+        // Populate language combo box
+        languageComboBox.setOnAction(event -> {
+            String selectedLanguage = languageComboBox.getValue();
+            switchLanguage(selectedLanguage);
+        });
+
+        languageComboBox.setValue(locale.getDisplayLanguage(locale));
 
         // Set fixed width for text fields
         codeInput.setPrefWidth(200);
@@ -126,7 +149,7 @@ public class StartPageController {
         VBox.setMargin(recentEventsLabel, new Insets(0, 0, 10, 0)); // Adjust insets as needed
         // Ensure the label expands to fill available space horizontally
         HBox.setHgrow(recentEventsLabel, Priority.ALWAYS);
-        animateText(recentEventsLabel, "Recent Events");
+        animateText(recentEventsLabel, resourceBundle.getString("recent_events"));
 
         recentEventsList.setItems(EVENT_TITLES);
 
@@ -166,6 +189,39 @@ public class StartPageController {
 
     }
 
+    private void loadLanguage(Locale locale) {
+        resourceBundle = ResourceBundle.getBundle("message", locale);
+        activeLocale = locale;
+        updateUIElements();
+    }
+
+    private void switchLanguage(String language) {
+        switch (language) {
+            case "English":
+                loadLanguage(Locale.ENGLISH);
+                break;
+            case "Deutsch":
+                loadLanguage(Locale.GERMAN);
+                break;
+            case "Nederlands":
+                loadLanguage(new Locale("nl"));
+                break;
+            default:
+                // Default to English
+                loadLanguage(Locale.ENGLISH);
+                break;
+        }
+    }
+
+    public void updateUIElements() {
+        codeInput.setPromptText(resourceBundle.getString("enter_code"));
+        eventNameInput.setPromptText(resourceBundle.getString("enter_event_name"));
+        joinButton.setText(resourceBundle.getString("join_meeting"));
+        createEventButton.setText(resourceBundle.getString("create_event"));
+        recentEventsLabel.setText(resourceBundle.getString("recent_events"));
+    }
+
+
 
     /**
      * clears the textfield when you go to this page
@@ -193,13 +249,18 @@ public class StartPageController {
      */
     public void joinMeeting() {
         String inviteCode = codeInput.getText();
-        // Call method to send invite code to server and retrieve event details
-        Event event = ServerUtils.getEventByInviteCode(inviteCode);
+        try {
+            long codeAsLong = Long.parseLong(inviteCode);
 
-        if (event != null) {
-            mainController.showEventOverview(event); // Switch to event overview page
-        } else {
-            showErrorAlert("Invalid invite code. Please try again.");
+            Event event = ServerUtils.getEventByInviteCode(inviteCode);
+
+            if (event != null) {
+                mainController.showEventOverview(event, activeLocale); // Switch to event overview page
+            } else {
+                showErrorAlert(resourceBundle.getString("Invalid_invite_code._Please_try_again."));
+            }
+        } catch (NumberFormatException e) {
+            showErrorAlert(resourceBundle.getString("Invalid_invite_code._Please_try_again."));
         }
     }
 
@@ -221,7 +282,7 @@ public class StartPageController {
     public void createEvent() {
         String eventName = eventNameInput.getText();
         if (eventName.isEmpty()) {
-            showErrorAlert("Event name cannot be empty.");
+            showErrorAlert(resourceBundle.getString("Event_name_cannot_be_empty."));
             return;
         }
 
@@ -230,9 +291,9 @@ public class StartPageController {
         Event createdEvent = ServerUtils.addEvent(newEvent);
 
         if (createdEvent != null) {
-            mainController.showEventOverview(createdEvent);
+            mainController.showEventOverview(createdEvent, activeLocale);
         } else {
-            showErrorAlert("Failed to create event. Please try again.");
+            showErrorAlert(resourceBundle.getString("Failed_to_create_event._Please_try_again."));
         }
     }
 }

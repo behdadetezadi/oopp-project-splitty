@@ -25,11 +25,15 @@ public class ParticipantExpenseViewController
     private ListView<String> expensesListView;
     @FXML
     private Label sumOfExpensesLabel;
+    @FXML
+    private Button backButton;
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
     private Event event;
     private long selectedParticipantId;
+    private Locale activeLocale;
+    private ResourceBundle resourceBundle;
     /**
      *
      * @param primaryStage primary stage
@@ -45,9 +49,16 @@ public class ParticipantExpenseViewController
         this.event = event;
     }
 
-    public void setEvent(Event event, long participantId) {
+    public void setEvent(Event event, long participantId, Locale locale) {
+        this.activeLocale = locale;
+        this.resourceBundle = ResourceBundle.getBundle("message", locale);
+        updateUIElements();
         this.event = event;
-        this.selectedParticipantId = participantId;
+        this.selectedParticipantId = participantId;}
+
+    public void updateUIElements() {
+        backButton.setText(resourceBundle.getString("back"));
+
     }
 
     /** Format the expense information for display
@@ -115,7 +126,7 @@ public class ParticipantExpenseViewController
 
     @FXML
     private void switchToEventOverviewScene() {
-        mainController.showEventOverview(event);
+        mainController.showEventOverview(event, activeLocale);
 
     }
 
