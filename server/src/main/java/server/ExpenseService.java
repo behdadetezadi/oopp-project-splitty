@@ -71,38 +71,12 @@ public class ExpenseService {
             throw new IllegalArgumentException("Invalid date format. Please use yyyy-MM-dd.");
         }
 
-        // Proceed with finding expenses by date
         try {
             return expenseRepository.findAllByDate(date);
         } catch (DataAccessException ex) {
             throw new ServiceException("Error accessing the data source to filter by date.", ex);
         }
     }
-
-    /**
-     * Add a money transfer to the repository.
-     *
-     * @param transfer The money transfer to be added.
-     * @return ResponseEntity indicating the success of the operation.
-     */
-    public ResponseEntity<String> addMoneyTransfer(@RequestBody Expense transfer) {
-        if (transfer == null) {
-            return ResponseEntity.badRequest().body("Transfer cannot be null.");
-        }
-        if (transfer.getParticipant() == null) {
-            return ResponseEntity.badRequest().body("Participant cannot be null.");
-        }
-        if (transfer.getParticipant().getFirstName() == null || transfer.getParticipant().getLastName() == null) {
-            return ResponseEntity.badRequest().body("Participant's first name and last name cannot be null.");
-        }
-        try {
-            expenseRepository.save(transfer);
-            return ResponseEntity.ok().body("Transfer added successfully.");
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error saving the transfer: " + e.getMessage());
-        }
-    }
-
 
 
     /**
@@ -139,7 +113,6 @@ public class ExpenseService {
         }
         return expenses;
     }
-
 
     /**
      * Get details of an expense by its ID.
