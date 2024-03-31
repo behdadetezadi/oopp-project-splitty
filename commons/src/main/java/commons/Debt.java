@@ -47,6 +47,24 @@ public class Debt {
         this.description = ""; //again by default
     }
 
+    /**
+     * constructor used by the jackson methods
+     * @param id the id of a debt
+     * @param debtor the debtor
+     * @param lender the lender
+     * @param amountOfMoney the amount of money owed
+     * @param debtCollective the debt collective
+     * @param description the debt description
+     */
+    public Debt(long id, Participant debtor, Participant lender,
+                double amountOfMoney, boolean debtCollective, String description) {
+        this.id = id;
+        this.debtor = debtor;
+        this.lender = lender;
+        this.amountOfMoney = amountOfMoney;
+        this.debtCollective = debtCollective;
+        this.description = description;
+    }
 
     /**
      * empty constructor added for persistence.
