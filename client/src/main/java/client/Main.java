@@ -55,9 +55,13 @@ public class Main extends Application {
         var contactDetailsPage = FXML.load(ContactDetailsCtrl.class, "client", "scenes", "contactDetails.fxml");
         var invitePage = FXML.load(InviteController.class, "client", "scenes", "inviteScene.fxml");
         var adminPage = FXML.load(AdminController.class, "client", "scenes", "AdminOverview.fxml");
+        var loginPage = FXML.load(LoginController.class, "client", "scenes", "LoginPage.fxml");
         var mainController = INJECTOR.getInstance(MainController.class);
 
-        mainController.initialize(primaryStage, startPage, overviewPage, expensePage, participantExpenseViewPage,expenseOverviewPage,participantsPage, contactDetailsPage, invitePage, adminPage);
+        loginPage.getKey().setMainController(mainController);
+
+        mainController.initialize(primaryStage, startPage, overviewPage, expensePage, participantExpenseViewPage,
+                expenseOverviewPage, participantsPage, contactDetailsPage, invitePage, loginPage, adminPage);
 
         primaryStage.setOnCloseRequest(e -> {
             participantsPage.getKey().stop();

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="400" prefWidth="600" stylesheets="@/styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.LoginController">
+    <top>
+        <VBox alignment="CENTER" spacing="10">
+            <ImageView fx:id="logo" fitWidth="400" fitHeight="200" />
+        </VBox>
+    </top>
+    <center>
+        <VBox alignment="CENTER" spacing="20">
+            <Button fx:id="userLoginButton" onAction="#handleUserLogin" text="User Login" />
+            <Button fx:id="adminLoginButton" onAction="#handleAdminLoginPrompt" text="Admin Login" />
+        </VBox>
+    </center>
+</BorderPane>
