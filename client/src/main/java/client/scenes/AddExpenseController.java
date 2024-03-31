@@ -145,7 +145,6 @@ public class AddExpenseController {
             if(newExpense!=null){
                 AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
                         "Expense Added", resourceBundle.getString("The_expense_has_been_successfully_added."));
-                mainController.refreshExpensesOverview(event);
             }
             switchToEventOverviewScene();
         } catch (Exception e) {
