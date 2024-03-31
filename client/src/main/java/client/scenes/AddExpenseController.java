@@ -12,12 +12,20 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 
 public class AddExpenseController {
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
-
+    private Locale activeLocale;
+    private ResourceBundle resourceBundle;
+    @FXML
+    private TextField payer;
+    @FXML
+    private Label expenseFor;
     @FXML
     private Button cancelButton;
     @FXML
@@ -58,13 +66,25 @@ public class AddExpenseController {
      * called by mainController
      * @param event event
      */
-    public void setEvent(Event event, long participantId) {
+    public void setEvent(Event event, long participantId, Locale locale) {
+        this.activeLocale = locale;
+        this.resourceBundle = ResourceBundle.getBundle("message", locale);
+        updateUIElements();
         this.event = event;
         this.selectedParticipantId = participantId;
         participantLabel.setText(ServerUtils.getParticipant(selectedParticipantId).getFirstName()
                 + " " + ServerUtils.getParticipant(selectedParticipantId).getLastName());
         initialize();
     }
+    public void updateUIElements() {
+        expenseFor.setText(resourceBundle.getString("Add_Expense_for"));
+        participantLabel.setText(resourceBundle.getString("participant"));
+        expenseDescription.setPromptText(resourceBundle.getString("Expense"));
+        amountPaid.setPromptText(resourceBundle.getString("Amount_paid"));
+        cancelButton.setText(resourceBundle.getString("Cancel"));
+        addExpenseButton.setText(resourceBundle.getString("Add_expense"));
+    }
+
 
     /**
      *
@@ -106,7 +126,7 @@ public class AddExpenseController {
         String normalizedAmount = amount.replace(',', '.');
         if (normalizedAmount.endsWith(".")) {
             AlertUtils.showErrorAlert("Invalid amount", "Error",
-                    "Please enter a valid number for the amount.");
+                    resourceBundle.getString("Please_enter_a_valid_number_for_the_amount."));
             return;
         }
 
@@ -115,7 +135,7 @@ public class AddExpenseController {
         } catch (NumberFormatException e) {
             // Handle invalid number format
             AlertUtils.showErrorAlert("Invalid amount", "Error",
-                    "Please enter a valid number for the amount.");
+                    resourceBundle.getString("Please_enter_a_valid_number_for_the_amount."));
             return;
         }
 
@@ -124,13 +144,13 @@ public class AddExpenseController {
             Stage stage = (Stage) addExpenseButton.getScene().getWindow(); // Get the current stage
             if(newExpense!=null){
                 AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
-                        "Expense Added", "The expense has been successfully added.");
+                        "Expense Added", resourceBundle.getString("The_expense_has_been_successfully_added."));
                 mainController.refreshExpensesOverview(event);
             }
             switchToEventOverviewScene();
         } catch (Exception e) {
             AlertUtils.showErrorAlert("Unexpected Error", "Error",
-                    "An unexpected error occurred: " + e.getMessage());
+                    resourceBundle.getString("An_unexpected_error_occurred") + e.getMessage());
         }
     }
 
@@ -147,10 +167,10 @@ public class AddExpenseController {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Cancel add expense");
             alert.setHeaderText(null);
-            alert.setContentText("Are you sure you want to cancel?");
+            alert.setContentText(resourceBundle.getString("Are_you_sure_you_want_to_cancel?"));
             if (alert.showAndWait().get() == ButtonType.OK) {
                 // Switch to the EventOverview scene using MainController
-                mainController.showEventOverview(this.event); // You may need to pass the event object if required
+                mainController.showEventOverview(this.event, activeLocale); // You may need to pass the event object if required
             }
         } else {
             throw new IllegalStateException();
@@ -158,7 +178,7 @@ public class AddExpenseController {
     }
     @FXML
     private void switchToEventOverviewScene() {
-        mainController.showEventOverview(this.event);
+        mainController.showEventOverview(this.event, activeLocale);
 
     }
 

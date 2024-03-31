@@ -2,9 +2,7 @@ package client.scenes;
 
 import java.math.BigInteger;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.google.inject.Inject;
@@ -18,6 +16,7 @@ import javafx.scene.control.Alert;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.scene.Parent;
@@ -29,7 +28,12 @@ public class ContactDetailsCtrl {
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
-
+    private Locale activeLocale;
+    private ResourceBundle resourceBundle;
+    @FXML
+    private Label contactDetails;
+    @FXML
+    private Label addEdit;
     @FXML
     private TextField userNameField;
     @FXML
@@ -72,9 +76,22 @@ public class ContactDetailsCtrl {
      * sets the event and calls initialize (used by maincontroller)
      * @param event event
      */
-    public void setEvent(Event event) {
+    public void setEvent(Event event, Locale locale) {
+        this.activeLocale = locale;
+        this.resourceBundle = ResourceBundle.getBundle("message", locale);
+        updateUIElements();
         this.event = event;
         initialize();
+    }
+    public void updateUIElements() {
+        contactDetails.setText(resourceBundle.getString("Contact_Details"));
+        addEdit.setText(resourceBundle.getString("Add/Edit_Participant"));
+        userNameField.setPromptText(resourceBundle.getString("User_Name"));
+        firstNameField.setPromptText(resourceBundle.getString("First_Name"));
+        lastNameField.setPromptText(resourceBundle.getString("Last_Name"));
+        cancelButton.setText(resourceBundle.getString("Cancel"));
+        contactButton.setText(resourceBundle.getString("Ok"));
+
     }
 
     /**
