@@ -10,6 +10,9 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 public class ExpenseOverviewController {
     @FXML
     private ListView<String> expensesListView; // Assuming this ListView is defined in your FXML
@@ -19,6 +22,8 @@ public class ExpenseOverviewController {
     private MainController mainController;
     private Stage primaryStage;
     private Event event;
+    private ResourceBundle resourceBundle;
+    private Locale activeLocale;
 
     @Inject
     public ExpenseOverviewController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
@@ -32,7 +37,9 @@ public class ExpenseOverviewController {
      * Set the event and initialize expenses
      * @param
      */
-    public void setEvent(Event event) {
+    public void setEvent(Event event, Locale locale) {
+        activeLocale = locale;
+        this.resourceBundle = ResourceBundle.getBundle("message", locale);
         this.event = event;
         initializeExpensesForEvent();
     }
@@ -51,7 +58,7 @@ public class ExpenseOverviewController {
 
     @FXML
     private void switchToEventOverviewScene() {
-        mainController.showEventOverview(event);
+        mainController.showEventOverview(event, activeLocale);
 
     }
 

@@ -25,6 +25,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -42,6 +46,8 @@ public class AdminController {
     @FXML
     private TableColumn<Event, Void> actionsColumn;
     private ObservableList<Event> eventData = FXCollections.observableArrayList();
+    private Locale activeLocale;
+    private ResourceBundle resourceBundle;
 
     /**
      * Initializer method

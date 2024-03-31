@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.util.Locale;
+
 /**
  * This is the main controller which controls the switching between scenes
  */
@@ -94,7 +96,7 @@ public class MainController {
         this.adminController = adminControllerPair.getKey();
 
         // Show initial scene
-        showStartPage();
+        showStartPage(Locale.getDefault());
         primaryStage.show();
     }
 
@@ -109,11 +111,11 @@ public class MainController {
     /**
      * shows the StartPage
      */
-    public void showStartPage() {
+    public void showStartPage(Locale locale) {
         primaryStage.setTitle("Start Page");
         startPageController.clearTextFields();
         primaryStage.setScene(startScene);
-        startPageController.initialize();
+        startPageController.initialize(locale);
     }
 
 
@@ -121,31 +123,31 @@ public class MainController {
      *
      * @param event the event we are working on
      */
-    public void showAddExpense(Event event, long participantId) {
+    public void showAddExpense(Event event, long participantId, Locale locale) {
         primaryStage.setTitle("Expenses: Add Expense");
         expenseCtrl.clearTextFields();
         primaryStage.setScene(expenseScene);
-        expenseCtrl.setEvent(event, participantId);
+        expenseCtrl.setEvent(event, participantId, locale);
     }
 
     /**
      *
      * @param event the event we are working on
      */
-    public void showTableOfParticipants(Event event) {
+    public void showTableOfParticipants(Event event, Locale locale) {
         primaryStage.setTitle("Participants");
         primaryStage.setScene(tableOfParticipantsScene);
-        tableOfParticipantsController.setEvent(event);
+        tableOfParticipantsController.setEvent(event, locale);
     }
 
 
     /**
      * @param event the event we are working on
      */
-    public void showContactDetailsPage(Event event){
+    public void showContactDetailsPage(Event event, Locale locale){
         primaryStage.setTitle("ContactDetails");
         primaryStage.setScene(contactDetailsScene);
-        contactDetailsController.setEvent(event);
+        contactDetailsController.setEvent(event, locale);
     }
 
 
@@ -155,10 +157,10 @@ public class MainController {
      *
      * @param event event
      */
-    public void showInvitePage(Event event){
+    public void showInvitePage(Event event, Locale locale){
         primaryStage.setTitle("InvitePage");
         primaryStage.setScene(inviteScene);
-        inviteController.initData(event);
+        inviteController.initData(event, locale);
         //inviteController.initialize();
     }
 
@@ -166,28 +168,28 @@ public class MainController {
      * Shows the event overview scene.
      * @param event The event to show overview for.
      */
-    public void showEventOverview(Event event) {
+    public void showEventOverview(Event event, Locale locale) {
         primaryStage.setTitle("Event Overview");
         primaryStage.setScene(eventOverviewScene);
-        eventOverviewController.setEvent(event);
+        eventOverviewController.setEvent(event, locale);
         eventOverviewController.refreshParticipants();
-
     }
     /**
      * Shows the expense overview of the selected participant.
      * @param event The event to show overview for.
      */
-    public void showParticipantExpensesOverview(Event event, Long participantId) {
+    public void showParticipantExpensesOverview(Event event, Long participantId, Locale locale) {
         primaryStage.setTitle("Participant Expenses Overview");
         primaryStage.setScene(participantExpenseViewScene);
-        participantExpenseViewController.setEvent(event,participantId);
+        participantExpenseViewController.setEvent(event,participantId, locale);
         participantExpenseViewController.initializeExpensesForParticipant(participantId);
     }
-    public void showExpenseOverview(Event event)
+
+    public void showExpenseOverview(Event event, Locale locale)
     {
         primaryStage.setTitle("Expenses Overview");
         primaryStage.setScene(expenseOverviewScene);
-        expenseOverviewController.setEvent(event);
+        expenseOverviewController.setEvent(event, locale);
     }
     public void refreshExpensesOverview(Event event) {
         if (expenseOverviewController != null && event!= null) {
