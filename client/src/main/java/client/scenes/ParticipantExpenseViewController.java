@@ -65,44 +65,6 @@ public class ParticipantExpenseViewController
      *
      * @param participantId The ID of the participant whose expenses you want to view.
      */
-//    public void initializeExpensesForParticipant(Long participantId) {
-//        System.out.println("Initializing expenses for participant ID: " + participantId);
-//        List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
-//        System.out.println("Number of expenses fetched: " + expenses.size());
-//
-//        expensesListView.getItems().clear();
-//        double sumOfExpenses = 0;
-//        for (Expense expense : expenses) {
-//            String expenseDisplay = formatExpenseForDisplay(expense);
-//            expensesListView.getItems().add(expenseDisplay);
-//            sumOfExpenses += expense.getAmount();
-//
-//        }
-//        sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
-//        expensesListView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
-//            @Override
-//            public ListCell<String> call(ListView<String> listView) {
-//                return new ListCell<>() {
-//                    @Override
-//                    protected void updateItem(String item, boolean empty) {
-//                        super.updateItem(item, empty);
-//                        if(empty || item == null) {
-//                            setText(null);
-//                            setGraphic(null);
-//                        }else {
-//                            setText(item);
-//                            Expense expense = getExpenseFromListView(getIndex(), participantId);
-//                            Button editButton = new Button("Edit");
-//                            Button deleteButton = new Button("Delete");
-//                            editButton.setOnAction(event -> handleEditButton(expense));
-//                            deleteButton.setOnAction(event -> handleDeleteButton(expense));
-//                            setGraphic(new HBox(editButton, deleteButton));
-//                        }
-//                    }
-//                };
-//            }
-//        });
-//    }
     public void initializeExpensesForParticipant(Long participantId) {
         System.out.println("Initializing expenses for participant ID: " + participantId);
         List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
