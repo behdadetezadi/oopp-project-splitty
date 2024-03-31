@@ -114,6 +114,38 @@ public class Participant {
     }
 
     /**
+     * constructor that takes everything
+     * used by the jackson methods in admin controller
+     * @param id the id
+     * @param owedAmount the owed amount
+     * @param username the username
+     * @param firstName the first name
+     * @param lastName the last name
+     * @param email the email
+     * @param iban the iban
+     * @param bic the bic
+     * @param payedAmount the payed amount
+     * @param eventIds ids of events where participant is participating in
+     * @param languageChoice the participants language choice */
+    public Participant(long id, String username, String firstName,
+                       String lastName, String email, String iban,
+                       String bic, Map<Event, Double> owedAmount,
+                       Map<Event, Double> payedAmount, Set<Long> eventIds,
+                       String languageChoice) {
+        this.id = id;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.iban = iban;
+        this.bic = bic;
+        this.owedAmount = owedAmount;
+        this.payedAmount = payedAmount;
+        this.eventIds = eventIds;
+        this.languageChoice = languageChoice;
+    }
+
+    /**
      * Default constructor for persistence.
      */
     public Participant() {}
