@@ -41,6 +41,9 @@ public class MainController {
     private AdminController adminController;
     private Scene adminScene;
 
+    private LoginController loginController;
+    private Scene loginScene;
+
     /**
      * initializer method for mainController
      * @param primaryStage primary stage
@@ -52,6 +55,7 @@ public class MainController {
      * @param tableOfParticipantsControllerPair table of participants page pair
      * @param contactDetailsControllerPair contactDetails page pair
      * @param inviteControllerPair invitePage pair
+     * @param loginControllerPair adminController pair
      * @param adminControllerPair adminController pair
      */
     public void initialize(Stage primaryStage,
@@ -63,6 +67,7 @@ public class MainController {
                            Pair<TableOfParticipantsController, Parent> tableOfParticipantsControllerPair,
                            Pair<ContactDetailsCtrl, Parent> contactDetailsControllerPair,
                            Pair<InviteController, Parent> inviteControllerPair,
+                           Pair<LoginController, Parent> loginControllerPair,
                            Pair<AdminController, Parent> adminControllerPair)
     {
 
@@ -95,16 +100,27 @@ public class MainController {
         this.adminScene = new Scene(adminControllerPair.getValue());
         this.adminController = adminControllerPair.getKey();
 
+        this.loginScene = new Scene(loginControllerPair.getValue());
+        this.loginController = loginControllerPair.getKey();
+
         // Show initial scene
-        showStartPage(Locale.getDefault());
+        showLoginPage(Locale.getDefault());
         primaryStage.show();
+    }
+
+    /**
+     * shows the LoginPage
+     */
+    public void showLoginPage(Locale locale) {
+        primaryStage.setTitle("Login");
+        primaryStage.setScene(loginScene);
     }
 
     /**
      * shows the AdminPage
      */
-    public void adminPage() {
-        primaryStage.setTitle("admin Page");
+    public void showAdminPage() {
+        primaryStage.setTitle("Admin Page");
         primaryStage.setScene(adminScene);
         adminController.initialize();
     }
