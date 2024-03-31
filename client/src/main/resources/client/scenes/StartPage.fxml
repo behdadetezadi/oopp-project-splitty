@@ -54,7 +54,7 @@
     <center>
         <VBox alignment="CENTER">
             <Label fx:id="recentEventsLabel" alignment="CENTER" styleClass="black-background-label" text="%recent_events" />
-            <ListView fx:id="recentEventsList" />
+            <ListView fx:id="recentEventsList" minWidth="300" minHeight="200"/>
         </VBox>
     </center>
 

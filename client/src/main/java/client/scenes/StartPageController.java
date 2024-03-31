@@ -173,7 +173,7 @@ public class StartPageController {
                     });
                     HBox buttonBox = new HBox(removeButton);
                     buttonBox.setAlignment(Pos.CENTER_RIGHT);
-                    VBox cellBox = new VBox(eventNameLabel, buttonBox);
+                    VBox cellBox = new VBox(buttonBox, eventNameLabel);
                     cellBox.setSpacing(10);
                     cellBox.setAlignment(Pos.CENTER_LEFT);
                     setGraphic(cellBox);
@@ -259,6 +259,8 @@ public class StartPageController {
             Event event = ServerUtils.getEventByInviteCode(inviteCode);
 
             if (event != null) {
+                events.add(event); // Add the created event to the list
+                recentEventsList.setItems(events);
                 mainController.showEventOverview(event, activeLocale); // Switch to event overview page
             } else {
                 showErrorAlert(resourceBundle.getString("Invalid_invite_code._Please_try_again."));
