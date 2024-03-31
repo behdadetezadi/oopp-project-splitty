@@ -68,6 +68,33 @@ public class Expense {
     }
 
     /**
+     * constructor used by the jackson methods
+     * @param id the expense id
+     * @param participant the person who paid
+     * @param category what the expense was for
+     * @param amount the amount that was spent
+     * @param currency what currency was used for the expense
+     * @param date when the expense was made
+     * @param splittingOption shows a list of people that are included in the splitting option
+     * @param expenseType the type of category the expense belongs to
+     * @param eventIds the event Ids
+     */
+    public Expense(long id, Participant participant, String category,
+                   double amount, String currency, String date,
+                   List<Participant> splittingOption, String expenseType,
+                   Set<Integer> eventIds) {
+        this.id = id;
+        this.participant = participant;
+        this.category = category;
+        this.amount = amount;
+        this.currency = currency;
+        this.date = date;
+        this.splittingOption = splittingOption;
+        this.expenseType = expenseType;
+        this.eventIds = eventIds;
+    }
+
+    /**
      * constructor created for the purpose of persistence.
      */
     public Expense() {}
@@ -244,66 +271,4 @@ public class Expense {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
-
-
-//    /**
-//     * Equals method for expenses
-//     * @param o an object
-//     * @return whether two expenses are equal or not
-//     */
-      /*
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Expense expense)) return false;
-        if (amount != expense.amount ||
-                !Objects.equals(participant, expense.participant)) return false;
-        if (!Objects.equals(category, expense.category)||
-                !Objects.equals(currency, expense.currency)) return false;
-        if (!Objects.equals(date, expense.date) ||
-                !Objects.equals(splittingOption, expense.splittingOption)) return false;
-        return Objects.equals(expenseType, expense.expenseType);
-    }
-*/
-//    /**
-//     * Makes a hashcode
-//     * @return the hashcode for the expense
-//     */
-    /*
-    @Override
-    public int hashCode() {
-        int result;
-        long temp;
-        result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (participant != null ? participant.hashCode() : 0);
-        result = 31 * result + (category != null ? category.hashCode() : 0);
-        temp = Double.doubleToLongBits(amount);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (currency != null ? currency.hashCode() : 0);
-        result = 31 * result + (splittingOption != null ? splittingOption.hashCode() : 0);
-        result = 31 * result + (expenseType != null ? expenseType.hashCode() : 0);
-        return result;
-    }
-
-*/
-
-//    /**
-//     * Shows the details of the expense
-//     * @return a string
-//     */
-    /*
-    @Override
-    public String toString() {
-        StringBuilder res = new StringBuilder();
-        res.append("Expense: " + participant + " paid " + amount + " " + currency +
-                "for " + category  + " on " + date + ". The bill is split between " );
-        for(int i=0; i<splittingOption.size(); i++) {
-            res.append(splittingOption.get(i));
-            if (i != splittingOption.size() - 1) {
-                res.append(", ");
-            }
-        }
-        return res.toString();
-    }
-    */
 }

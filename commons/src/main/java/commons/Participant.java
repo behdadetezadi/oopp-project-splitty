@@ -1,14 +1,12 @@
 package commons;
 
 import jakarta.persistence.*;
-
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 public class Participant {
-    //Participant ID
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -23,13 +21,13 @@ public class Participant {
             joinColumns = @JoinColumn(name = "participant_id"))
     @MapKeyJoinColumn(name = "event_id")
     @Column(name = "owed_amount")
-    private Map<Event, Double> owedAmount; //at the time of the code (no Event class yet).
+    private Map<Event, Double> owedAmount;
     @ElementCollection
     @CollectionTable(name = "participant_owed_amount",
             joinColumns = @JoinColumn(name = "participant_id"))
     @MapKeyJoinColumn(name = "event_id")
     @Column(name = "owed_amount")
-    private Map<Event, Double> payedAmount; //at the time of the code (no Event class yet).
+    private Map<Event, Double> payedAmount;
     @ElementCollection
     private Set<Long> eventIds;
     private String languageChoice;
@@ -111,6 +109,38 @@ public class Participant {
     public Participant(String firstName, String lastName){
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    /**
+     * constructor that takes everything
+     * used by the jackson methods in admin controller
+     * @param id the id
+     * @param owedAmount the owed amount
+     * @param username the username
+     * @param firstName the first name
+     * @param lastName the last name
+     * @param email the email
+     * @param iban the iban
+     * @param bic the bic
+     * @param payedAmount the payed amount
+     * @param eventIds ids of events where participant is participating in
+     * @param languageChoice the participants language choice */
+    public Participant(long id, String username, String firstName,
+                       String lastName, String email, String iban,
+                       String bic, Map<Event, Double> owedAmount,
+                       Map<Event, Double> payedAmount, Set<Long> eventIds,
+                       String languageChoice) {
+        this.id = id;
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.iban = iban;
+        this.bic = bic;
+        this.owedAmount = owedAmount;
+        this.payedAmount = payedAmount;
+        this.eventIds = eventIds;
+        this.languageChoice = languageChoice;
     }
 
     /**
@@ -291,7 +321,6 @@ public class Participant {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Participant that)) return false;
-
         if (id != that.id) return false;
         if (!Objects.equals(username, that.username)) return false;
         if (!Objects.equals(firstName, that.firstName)) return false;
@@ -360,7 +389,6 @@ public class Participant {
                 append("\n");
         return sb.toString();
     }
-
 
     /**
      * adding into hashmap owed amount
