@@ -20,7 +20,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import static client.utils.AnimationUtil.animateButton;
@@ -30,7 +32,14 @@ public class EventOverviewController {
     private ServerUtils server;
     private MainController mainController;
     private Event event;
+    private ResourceBundle resourceBundle;
+    private Locale activeLocale;
+    private Stage primaryStage;
 
+
+
+    @FXML
+    private ComboBox<String> languageComboBox;
     @FXML
     private Button backToMain;
 
@@ -70,7 +79,7 @@ public class EventOverviewController {
     @FXML
     private final ObservableList<String> filteredOptions = FXCollections.observableArrayList();
 
-    private Stage primaryStage;
+
 
     /**
      *
@@ -96,11 +105,25 @@ public class EventOverviewController {
     /**
      * initializer function does: //TODO
      */
-    public void initialize() {
+    public void initialize(Locale locale) {
+
+        // Load default language
+
+        loadLanguage(locale);
+        activeLocale = locale;
+
+        // Populate language combo box
+        languageComboBox.setOnAction(event -> {
+            String selectedLanguage = languageComboBox.getValue();
+            switchLanguage(selectedLanguage);
+        });
+
+        languageComboBox.setValue(locale.getDisplayLanguage(locale));
+
         if (event != null) {
             titleLabel.setText(event.getTitle());
             titleLabel.setOnMouseClicked(event -> editTitle());
-            Tooltip editTitleTooltip = new Tooltip("Click to edit the title");
+            Tooltip editTitleTooltip = new Tooltip(resourceBundle.getString("Click_to_edit_the_title"));
             Tooltip.install(titleLabel, editTitleTooltip);
 
             showParticipantsButton.getStyleClass().add("button-hover");
@@ -115,6 +138,44 @@ public class EventOverviewController {
         }
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
     }
+    private void loadLanguage(Locale locale) {
+        resourceBundle = ResourceBundle.getBundle("message", locale);
+        activeLocale = locale;
+        updateUIElements();
+    }
+
+    private void switchLanguage(String language) {
+        switch (language) {
+            case "English":
+                loadLanguage(Locale.ENGLISH);
+                break;
+            case "Deutsch":
+                loadLanguage(Locale.GERMAN);
+                break;
+            case "Nederlands":
+                loadLanguage(new Locale("nl"));
+                break;
+            default:
+                // Default to English
+                loadLanguage(Locale.ENGLISH);
+                break;
+        }
+    }
+
+    private void updateUIElements() {
+        backToMain.setText(resourceBundle.getString("Go_Back"));
+        participantsLabel.setText(resourceBundle.getString("Participants"));
+        showParticipantsButton.setText(resourceBundle.getString("Show_Participants"));
+        expensesLabel.setText(resourceBundle.getString("Expenses"));
+        participantDropdown.setPromptText(resourceBundle.getString("Select_participant"));
+        addExpenseButton.setText(resourceBundle.getString("Add_Expense"));
+        showExpensesButton.setText(resourceBundle.getString("Show_Expenses"));
+        optionsLabel.setText(resourceBundle.getString("Options"));
+        filterOne.setText(resourceBundle.getString("From"));
+        filterTwo.setText(resourceBundle.getString("Including"));
+        sendInvitesButton.setText(resourceBundle.getString("Send_Invites"));
+    }
+
     /**
      * show expenses of selected participant
      * @param event the targeted event
@@ -125,9 +186,9 @@ public class EventOverviewController {
         ParticipantOption selectedParticipantOption = participantDropdown.getSelectionModel().getSelectedItem();
         if (selectedParticipantOption != null) {
             Long selectedParticipantId = selectedParticipantOption.getId();
-            mainController.showParticipantExpensesOverview(this.event, selectedParticipantId);
+            mainController.showParticipantExpensesOverview(this.event, selectedParticipantId, activeLocale);
         } else {
-            showErrorAlert("Please select a participant to show expenses.");
+            showErrorAlert(resourceBundle.getString("Please_select_a_participant_to_show_expenses"));
         }
     }
     /**
@@ -135,7 +196,7 @@ public class EventOverviewController {
      */
     @FXML
     private void showAllExpensesOverview() {
-        mainController.showExpenseOverview(this.event);
+        mainController.showExpenseOverview(this.event, activeLocale);
     }
 
 
@@ -143,9 +204,9 @@ public class EventOverviewController {
      * called by startPage and other pages when setting up this page
      * @param event event to be set
      */
-    public void setEvent(Event event) {
+    public void setEvent(Event event, Locale locale) {
         this.event = event;
-        initialize();
+        initialize(locale);
         titleLabel.getStyleClass().add("label-hover");
         loadParticipants();
         animateLabels();
@@ -155,7 +216,7 @@ public class EventOverviewController {
 
     @FXML
     private void goBackToStartPage(ActionEvent event) {
-        mainController.showStartPage();
+        mainController.showStartPage(activeLocale);
     }
 
 
@@ -177,9 +238,9 @@ public class EventOverviewController {
      */
     private void editTitle() {
         TextInputDialog dialog = new TextInputDialog(titleLabel.getText());
-        dialog.setTitle("Edit Title");
+        dialog.setTitle(resourceBundle.getString("Edit_Title"));
         dialog.setHeaderText(null);
-        dialog.setContentText("New Title:");
+        dialog.setContentText(resourceBundle.getString("New_Title"));
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(newTitle -> {
@@ -195,11 +256,11 @@ public class EventOverviewController {
     @FXML
     private void showParticipants() {
         try {
-            mainController.showTableOfParticipants(this.event);
+            mainController.showTableOfParticipants(this.event, activeLocale);
 
         } catch (IllegalStateException e) {
             e.printStackTrace();
-            showErrorAlert("Failed to load the participant scene.");
+            showErrorAlert(resourceBundle.getString("Failed_to_load_the_participant_scene"));
         }
     }
 
@@ -232,9 +293,9 @@ public class EventOverviewController {
      */
     private void animateLabels() {
         animateText(titleLabel, event.getTitle());
-        animateText(participantsLabel, "Participants");
-        animateText(expensesLabel, "Expenses");
-        animateText(optionsLabel, "Options");
+        animateText(participantsLabel, resourceBundle.getString("Participants"));
+        animateText(expensesLabel, resourceBundle.getString("Expenses"));
+        animateText(optionsLabel, resourceBundle.getString("Options"));
     }
 
     /**
@@ -259,7 +320,7 @@ public class EventOverviewController {
         ParticipantOption selectedParticipant = participantDropdown.getSelectionModel().getSelectedItem();
         if (selectedParticipant != null) {
             filteredOptions.clear();
-            filteredOptions.add("Filtered option for " + selectedParticipant);
+            filteredOptions.add(resourceBundle.getString("Filtered_option_for") + selectedParticipant);
             optionsListView.setItems(filteredOptions);
         }
     }
@@ -274,7 +335,7 @@ public class EventOverviewController {
         String selectedParticipant = null; // Get selected participant
         if (selectedParticipant != null) {
             filteredOptions.clear();
-            filteredOptions.add("Including " + selectedParticipant);
+            filteredOptions.add(resourceBundle.getString("Including")+ " " + selectedParticipant);
             optionsListView.setItems(filteredOptions);
         }
     }
@@ -286,10 +347,10 @@ public class EventOverviewController {
     public void sendInvites() {
 
         try {
-            mainController.showInvitePage(this.event);
+            mainController.showInvitePage(this.event, activeLocale);
         } catch (IllegalStateException e) {
             e.printStackTrace();
-            showErrorAlert("Failed to load the invite scene.");
+            showErrorAlert(resourceBundle.getString("Failed_to_load_the_invite_scene"));
         }
     }
 
@@ -304,9 +365,9 @@ public class EventOverviewController {
             ParticipantOption selectedParticipantOption = participantDropdown.getSelectionModel().getSelectedItem();
             if(selectedParticipantOption != null) {
                 Long selectedParticipantId = selectedParticipantOption.getId();
-                mainController.showAddExpense(this.event, selectedParticipantId);
+                mainController.showAddExpense(this.event, selectedParticipantId, activeLocale);
             } else {
-                showErrorAlert("Please select for which participant you want to add an expense.");
+                showErrorAlert(resourceBundle.getString("Please_select_for_which_participant_you_want_to_add_an_expense."));
             }
         } else {
             throw new IllegalStateException();

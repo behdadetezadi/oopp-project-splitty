@@ -14,12 +14,16 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 
 public class InviteController  {
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
+    private Locale activeLocale;
+    private ResourceBundle resourceBundle;
 
     private Event event;
 
@@ -36,8 +40,13 @@ public class InviteController  {
 
     @FXML
     private AnchorPane root;
+    @FXML
+    private Label textBeforeCode;
+    @FXML
+    private Label invitePeople;
 
-
+    @FXML
+    private Button backButton;
     /**
      * invite Controller injection
      * @param primaryStage primary stage
@@ -96,13 +105,23 @@ public class InviteController  {
      * method that sets title and invite code according to passed event
      * @param event the event
      */
-    public void initData(Event event) {
+    public void initData(Event event, Locale locale) {
+        this.activeLocale = locale;
+        resourceBundle = ResourceBundle.getBundle("message", locale);
+        updateUIElements();
         this.event = event;
         inviteCode.setPrefWidth(Double.MAX_VALUE);
         inviteCode.setText(String.valueOf(event.getInviteCode()));
         title.setText(event.getTitle());
     }
 
+    public void updateUIElements() {
+        textBeforeCode.setText(resourceBundle.getString("Give_people_the_following_invite_Code"));
+        invitePeople.setText(resourceBundle.getString("Invite_the_following_people_by_email_(one_address_per_line)"));
+        emailsField.setPromptText(resourceBundle.getString("emails_go_here"));
+        backButton.setText(resourceBundle.getString("back"));
+        submitButton.setText(resourceBundle.getString("Send_Invites"));
+    }
 
     /**
      * handler of the button that takes you back to the overview scene
@@ -111,7 +130,7 @@ public class InviteController  {
     @FXML
     public void handleBackButtonAction() {
         try {
-            mainController.showEventOverview(event);
+            mainController.showEventOverview(event, activeLocale);
         } catch (IllegalStateException e) {
             e.printStackTrace();
 
