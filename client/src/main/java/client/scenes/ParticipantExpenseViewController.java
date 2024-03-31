@@ -82,14 +82,28 @@ public class ParticipantExpenseViewController
         System.out.println("Number of expenses fetched: " + expenses.size());
 
         expensesListView.getItems().clear();
-        double sumOfExpenses = 0;
-        for (Expense expense : expenses) {
-            String expenseDisplay = formatExpenseForDisplay(expense);
-            expensesListView.getItems().add(expenseDisplay);
-            sumOfExpenses += expense.getAmount();
+        if (expenses.isEmpty()) {
+            // Display message for no expenses and set sum to $0.00
+            expensesListView.getItems().add("No Expense has been recorded yet");
+            sumOfExpensesLabel.setText("Total: $0.00");
+            // Make the ListView non-interactive in this case
+            expensesListView.setMouseTransparent(true);
+            expensesListView.setFocusTraversable(false);
+        } else {
+            // Reset ListView to be interactive for listing actual expenses
+            expensesListView.setMouseTransparent(false);
+            expensesListView.setFocusTraversable(true);
 
+            double sumOfExpenses = 0;
+            for (Expense expense : expenses) {
+                String expenseDisplay = formatExpenseForDisplay(expense);
+                expensesListView.getItems().add(expenseDisplay);
+                sumOfExpenses += expense.getAmount();
+            }
+            sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
         }
-        sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
+
+        // Set cell factory for ListView regardless of whether expenses exist or not
         expensesListView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
             @Override
             public ListCell<String> call(ListView<String> listView) {
@@ -97,23 +111,36 @@ public class ParticipantExpenseViewController
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
-                        if(empty || item == null) {
+                        if (empty || item == null) {
                             setText(null);
                             setGraphic(null);
-                        }else {
+                        } else if (!item.equals("No Expense has been recorded yet")) { // Only add edit/delete for actual expenses
                             setText(item);
                             Expense expense = getExpenseFromListView(getIndex(), participantId);
-                            Button editButton = new Button("Edit");
-                            Button deleteButton = new Button("Delete");
-                            editButton.setOnAction(event -> handleEditButton(expense));
-                            deleteButton.setOnAction(event -> handleDeleteButton(expense));
-                            setGraphic(new HBox(editButton, deleteButton));
+                            if (expense != null) { // Ensure the item corresponds to a valid expense
+                                Button editButton = new Button("Edit");
+                                Button deleteButton = new Button("Delete");
+                                editButton.setOnAction(event -> handleEditButton(expense));
+                                deleteButton.setOnAction(event -> handleDeleteButton(expense));
+                                HBox buttonsBox = new HBox(editButton, deleteButton);
+                                buttonsBox.setSpacing(10); // Ensure there's some spacing between buttons for better UI
+                                setGraphic(buttonsBox);
+                            }
+                        } else {
+                            // Handle the display of the no expenses message without interactive elements
+                            setText(item);
+                            setGraphic(null);
                         }
                     }
                 };
             }
         });
+
+        // Call to refresh the ListView might not be necessary depending on your JavaFX version,
+        // but it's here to ensure updates are visually reflected.
+        expensesListView.refresh();
     }
+
 
     private Expense getExpenseFromListView(int index, long participantId) {
         List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);

@@ -225,11 +225,12 @@ public class ServerUtils {
 					.request(APPLICATION_JSON)
 					.accept(APPLICATION_JSON)
 					.get(new GenericType<List<Expense>>() {});
-		} catch (NotFoundException e) {
-			return new ArrayList<>();
 		} catch (Exception e) {
-			throw new RuntimeException("Error fetching expenses for participant: " + e.getMessage());
+			return new ArrayList<>();
 		}
+//		 catch (Exception e) {
+//			throw new RuntimeException("Error fetching expenses for participant: " + e.getMessage());
+//		}
 	}
 	/**
 	 * Fetches a list of expenses for a specific event.
