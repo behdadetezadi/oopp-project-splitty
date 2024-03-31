@@ -68,6 +68,33 @@ public class Expense {
     }
 
     /**
+     * constructor used by the jackson methods
+     * @param id the expense id
+     * @param participant the person who paid
+     * @param category what the expense was for
+     * @param amount the amount that was spent
+     * @param currency what currency was used for the expense
+     * @param date when the expense was made
+     * @param splittingOption shows a list of people that are included in the splitting option
+     * @param expenseType the type of category the expense belongs to
+     * @param eventIds the event Ids
+     */
+    public Expense(long id, Participant participant, String category,
+                   double amount, String currency, String date,
+                   List<Participant> splittingOption, String expenseType,
+                   Set<Integer> eventIds) {
+        this.id = id;
+        this.participant = participant;
+        this.category = category;
+        this.amount = amount;
+        this.currency = currency;
+        this.date = date;
+        this.splittingOption = splittingOption;
+        this.expenseType = expenseType;
+        this.eventIds = eventIds;
+    }
+
+    /**
      * constructor created for the purpose of persistence.
      */
     public Expense() {}

@@ -70,6 +70,23 @@ public class Event {
 
     }
 
+    /**
+     * constructor
+     * @param id event id
+     * @param participants a List of Person s for the people involved in the Event
+     * @param expenses a List of Expense s made in the Event
+     * @param title a string stating the title of the Event
+     * @param inviteCode the invitation code for sharing the Event (for now type long)
+     */
+    public Event (long id, String title, long inviteCode, List<Participant> participants, List<Expense> expenses) {
+        this.id = id;
+        this.title =title;
+        this.inviteCode = inviteCode;
+        this.people = participants;
+        this.expenses = expenses;
+    }
+
+
     //TODO check constructor with invite code
 
     /**
@@ -132,7 +149,26 @@ public class Event {
         return expenses;
     }
 
+    /**
+     * method that returns the date (when we eventually implement that overwrite this)
+     * @return IMPORTANT!!! METHOD RETURNS STATIC MAGIC NUMBER STRING FOR NOW!!!
+     */
+    /*
+    public String getCreationDate() {
 
+        return "28-02-2024";
+    }
+    */
+    /**
+     * method that returns the last activity (when we eventually implement that overwrite this)
+     * @return IMPORTANT!!! METHOD RETURNS STATIC MAGIC NUMBER STRING FOR NOW!!!
+     */
+    /*
+    public String getLastActivity() {
+        return "28-02-2024";
+    }
+
+*/
     /**
      * setter for the ID (might need to delete later)
      * @param id Respective Events ID

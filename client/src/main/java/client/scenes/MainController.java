@@ -38,6 +38,9 @@ public class MainController {
     private InviteController inviteController;
     private Scene inviteScene;
 
+    private AdminController adminController;
+    private Scene adminScene;
+
     /**
      * initializer method for mainController
      * @param primaryStage primary stage
@@ -49,6 +52,7 @@ public class MainController {
      * @param tableOfParticipantsControllerPair table of participants page pair
      * @param contactDetailsControllerPair contactDetails page pair
      * @param inviteControllerPair invitePage pair
+     * @param adminControllerPair adminController pair
      */
     public void initialize(Stage primaryStage,
                            Pair<StartPageController, Parent> startPair,
@@ -58,7 +62,8 @@ public class MainController {
                            Pair<ExpenseOverviewController,Parent>expenseOverviewControllerPair,
                            Pair<TableOfParticipantsController, Parent> tableOfParticipantsControllerPair,
                            Pair<ContactDetailsCtrl, Parent> contactDetailsControllerPair,
-                           Pair<InviteController, Parent> inviteControllerPair)
+                           Pair<InviteController, Parent> inviteControllerPair,
+                           Pair<AdminController, Parent> adminControllerPair)
     {
 
         this.primaryStage = primaryStage;
@@ -87,11 +92,22 @@ public class MainController {
         this.inviteScene = new Scene(inviteControllerPair.getValue());
         this.inviteController =  inviteControllerPair.getKey();
 
+        this.adminScene = new Scene(adminControllerPair.getValue());
+        this.adminController = adminControllerPair.getKey();
+
         // Show initial scene
         showStartPage(Locale.getDefault());
         primaryStage.show();
     }
 
+    /**
+     * shows the AdminPage
+     */
+    public void adminPage() {
+        primaryStage.setTitle("admin Page");
+        primaryStage.setScene(adminScene);
+        adminController.initialize();
+    }
     /**
      * shows the StartPage
      */
