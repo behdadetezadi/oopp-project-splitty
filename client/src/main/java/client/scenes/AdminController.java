@@ -189,11 +189,18 @@ public class AdminController {
 
                         try {
                             BufferedReader br = new BufferedReader(new FileReader(new File(filepath)));
-                            List<String> s = br.lines().toList();
+                            List<String> lines = br.lines().toList();
+                            StringBuilder sb = new StringBuilder();
+                            for (String s : lines) {
+                                sb.append(s);
+                            }
+                            String finalString = sb.toString();
+                            finalString = finalString.replaceAll("\\s+", "");
+                            int i = 0;
 
                             try {
 
-                                Event e = objectMapper.readValue(s.get(0), new TypeReference<Event>(){});
+                                Event e = objectMapper.readValue(finalString, new TypeReference<Event>(){});
                                 eventArr[0] = e;
                                 update(eventArr[0]);
 
