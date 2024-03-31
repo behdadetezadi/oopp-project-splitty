@@ -30,13 +30,26 @@ import org.glassfish.jersey.client.ClientConfig;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
+
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 
 public class ServerUtils {
@@ -93,41 +106,111 @@ public class ServerUtils {
 	}
 
 
+	public static Participant getParticipant(long participantId) {
+		Response response = client.target(SERVER)
+				.path("api/participants/{id}")
+				.resolveTemplate("id", participantId)
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
+				.get();
+		if (response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
+			throw new RuntimeException("Participant not found with the id: " + participantId);
+		}else if (response.getStatusInfo().getFamily() != Response.Status.Family.SUCCESSFUL) {
+			throw new RuntimeException("Failed to retrieve participant. Status code: " + response.getStatus());
+		}
+		return response.readEntity(Participant.class);
+	}
 
 
 	/**
-	 * Adds an expense
-	 * //TODO
-	 *
-	 * @param username       the person who paid for the expense
+	 * Adds an expense to an event
+	 * @param participantId the person who paid for the expense
 	 * @param description description of the expense
 	 * @param amountValue the amount the person has paid for the expense
 	 */
-	public static Expense addExpense(String username, String description, double amountValue) {
+	public static Expense addExpense(long participantId, String description, double amountValue, long eventId) {
 		try {
-			Participant participant = client.target(SERVER)
-					.path("api/participants/username/{username}")
-					.resolveTemplate("username", username)
-					.request(APPLICATION_JSON)
-					.accept(APPLICATION_JSON)
-					.get(new GenericType<Participant>() {});
-			if (participant == null) {
-				throw new RuntimeException("Participant not found with the username: " + username);
-			}
+			Participant participant = getParticipant(participantId);
 			Expense expense = new Expense(participant, description, amountValue);
+			System.out.println(eventId);
 			return client.target(SERVER)
-					.path("api/expenses/")
+					.path("api/events/{eventId}/expenses")
+					.resolveTemplate("eventId", eventId)
 					.request(APPLICATION_JSON)
 					.accept(APPLICATION_JSON)
-					.post(Entity.entity(expense, APPLICATION_JSON), Expense.class);
-		} catch (NotFoundException e) {
-			throw new RuntimeException("Participant not found with the username: " + username);
+					.post(Entity.entity(expense, APPLICATION_JSON), Expense.class)
+					;
 		} catch (BadRequestException e) {
 			throw new RuntimeException("Bad request: " + e.getMessage());
 		} catch (RuntimeException e) {
 			throw new RuntimeException("Couldn't add the expense: " + e.getMessage());
 		}
 	}
+
+	/**
+	 * Deletes an expense from the database
+	 * @param expenseId the id of the expense
+	 */
+	public static void deleteExpense(long expenseId, long eventId){
+		try{
+			Response response = deleteExpenseFromEvent(expenseId, eventId);
+			if(response.getStatus() == Response.Status.OK.getStatusCode()) {
+				response = client.target(SERVER)
+						.path("api/expenses/{id}")
+						.resolveTemplate("id", expenseId)
+						.request(APPLICATION_JSON)
+						.delete();
+				if(response.getStatus() == Response.Status.OK.getStatusCode()) {
+					System.out.println("Expense deleted successfully");
+				} else if (response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
+					throw new RuntimeException("Expense not found with ID: " + expenseId);
+				} else {
+					throw new RuntimeException("Failed to delete expense. HTTP status code: " + response.getStatus());
+				}
+			} else{
+				throw new RuntimeException("Failed to remove expense from event. HTTP status code: " + response.getStatus());
+			}
+		} catch(RuntimeException e){
+			throw new RuntimeException("Failed to delete expense: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * deletes an expense from the event
+	 * @param expenseId the expense id
+	 * @param eventId the event id
+	 * @return a response
+	 */
+	private static Response deleteExpenseFromEvent(long expenseId, long eventId) {
+		Response response = client.target(SERVER)
+				.path("api/events/{eventId}/expenses/{expenseId}")
+				.resolveTemplate("eventId", eventId)
+				.resolveTemplate("expenseId", expenseId)
+				.request(APPLICATION_JSON)
+				.delete();
+		return response;
+	}
+
+	/**
+	 * Updates an existing expense in an event
+	 * @param expenseId the id of the expense that needs to be updated
+	 * @param updatedExpense the new updated version of the expense
+	 */
+	public static void updateExpense(long expenseId, Expense updatedExpense, long eventId){
+		try {
+			client.target(SERVER)
+					.path("api/events/{eventId}/expenses/{expenseId}")
+					.resolveTemplate("eventId", eventId)
+					.resolveTemplate("expenseId", expenseId)
+					.request()
+					.put(Entity.entity(updatedExpense, APPLICATION_JSON));
+		} catch(NotFoundException e) {
+			throw new RuntimeException("Expense not found with ID: " + expenseId);
+		} catch(RuntimeException e) {
+			throw new RuntimeException("Couldn't update the expense: " + e.getMessage());
+		}
+	}
+
 	/**
 	 * Fetches a list of expenses for a specific participant.
 	 *
@@ -143,11 +226,34 @@ public class ServerUtils {
 					.accept(APPLICATION_JSON)
 					.get(new GenericType<List<Expense>>() {});
 		} catch (NotFoundException e) {
-			throw new RuntimeException("No expenses found for participant with ID: " + participantId);
+			return new ArrayList<>();
 		} catch (Exception e) {
 			throw new RuntimeException("Error fetching expenses for participant: " + e.getMessage());
 		}
 	}
+	/**
+	 * Fetches a list of expenses for a specific event.
+	 *
+	 * @param eventId The unique identifier of the event.
+	 * @return A list of expenses associated with the given event.
+	 */
+	public static List<Expense> getExpensesForEvent(Long eventId) {
+		try {
+			List<Expense> expenses = client.target(SERVER)
+					.path("api/events/{eventId}/expenses")
+					.resolveTemplate("eventId", eventId)
+					.request(APPLICATION_JSON)
+					.accept(APPLICATION_JSON)
+					.get(new GenericType<List<Expense>>() {});
+			return expenses;
+		} catch (NotFoundException e) {
+			// Instead of throwing an exception, return an empty list
+			return new ArrayList<>();
+		} catch (Exception e) {
+			throw new RuntimeException("Error fetching expenses for event: " + e.getMessage());
+		}
+	}
+
 
 	/**
 	 * gets quotes
@@ -316,6 +422,7 @@ public class ServerUtils {
 		}
 	}
 
+
 	/**
 	 * updating a participant
 	 * @param eventId long
@@ -361,6 +468,72 @@ public class ServerUtils {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	/**
+	 * Long polling of Participants
+	 * @param eventId as a long
+	 * @return an array list of participants
+	 */
+
+	private static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
+
+	public static void registerForUpdates(long eventId, Consumer<Participant> consumer) {
+		EXEC.submit(()->{
+			while (!Thread.interrupted()) {
+				var res = ClientBuilder.newClient(new ClientConfig())
+						.target(SERVER).path("api/events/" + eventId + "/participants/updates")
+						.request(APPLICATION_JSON)
+						.accept(APPLICATION_JSON)
+						.get(Response.class);
+				if (res.getStatus()==204){
+					continue;
+				}
+				var q = res.readEntity(Participant.class);
+				consumer.accept(q);
+			}
+		});
+
+	}
+
+	public void stop(){
+		EXEC.shutdownNow();
+	}
+
+	private StompSession session = connect("ws://localhost:8080/websocket");
+	private StompSession connect (String url){
+		var client = new StandardWebSocketClient();
+		var stomp = new WebSocketStompClient(client);
+		stomp.setMessageConverter(new MappingJackson2MessageConverter());
+		try{
+			return stomp.connect(url, new StompSessionHandlerAdapter() {}).get();}
+		catch(InterruptedException e ){
+			Thread.currentThread().interrupt();
+		}
+		catch (ExecutionException e ){
+			throw new RuntimeException(e);
+		}
+		throw new IllegalStateException();
+	}
+
+	public void registerForMessages(String dest, Long eventId, Long participantId, Consumer<Participant> consumer){
+		session.subscribe(dest, new StompFrameHandler() {
+			@Override
+			public Type getPayloadType(StompHeaders headers) {
+				return Participant.class;
+			}
+
+			@Override
+			public void handleFrame(StompHeaders headers, Object payload) {
+				consumer.accept((Participant) payload);
+			}
+		});
+
+
+	}
+
+	public void send(String dest, Object o){
+		session.send(dest,o);
 	}
 
 

@@ -29,7 +29,19 @@ dependencies {
 
 
 	implementation 'com.google.inject:guice:7.0.0'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket:3.2.2'
+
 	implementation 'org.openjfx:javafx-controls:21.0.2'
 	implementation 'org.openjfx:javafx-fxml:21.0.2'
 
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+	testImplementation 'org.mockito:mockito-core:3.6.0'
+	testImplementation 'org.mockito:mockito-junit-jupiter:3.6.0'
+
+}
+
+test {
+	useJUnitPlatform() // This enables JUnit 5 tests to be run
 }

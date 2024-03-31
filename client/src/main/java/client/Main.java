@@ -48,14 +48,20 @@ public class Main extends Application {
 
         var startPage = FXML.load(StartPageController.class, "client", "scenes", "StartPage.fxml");
         var overviewPage = FXML.load(EventOverviewController.class, "client", "scenes", "EventOverview.fxml");
-        var expensePage = FXML.load(ExpenseController.class, "client", "scenes", "AddExpense.fxml");
+        var expensePage = FXML.load(AddExpenseController.class, "client", "scenes", "AddExpense.fxml");
         var participantExpenseViewPage = FXML.load(ParticipantExpenseViewController.class, "client", "scenes", "ParticipantExpensesView.fxml");
+        var expenseOverviewPage = FXML.load(ExpenseOverviewController.class,"client", "scenes","ExpenseOverview.fxml");
         var participantsPage = FXML.load(TableOfParticipantsController.class,"client", "scenes", "TableOfParticipants.fxml");
         var contactDetailsPage = FXML.load(ContactDetailsCtrl.class, "client", "scenes", "contactDetails.fxml");
         var invitePage = FXML.load(InviteController.class, "client", "scenes", "inviteScene.fxml");
         var adminPage = FXML.load(AdminController.class, "client", "scenes", "AdminOverview.fxml");
         var mainController = INJECTOR.getInstance(MainController.class);
-        mainController.initialize(primaryStage, startPage, overviewPage, expensePage, participantExpenseViewPage,participantsPage, contactDetailsPage, invitePage, adminPage);
+
+        mainController.initialize(primaryStage, startPage, overviewPage, expensePage, participantExpenseViewPage,expenseOverviewPage,participantsPage, contactDetailsPage, invitePage, adminPage);
+
+        primaryStage.setOnCloseRequest(e -> {
+            participantsPage.getKey().stop();
+        });
 
     }
 

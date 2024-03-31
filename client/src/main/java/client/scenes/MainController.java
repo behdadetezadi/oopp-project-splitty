@@ -1,6 +1,7 @@
 package client.scenes;
 
 import commons.Event;
+import commons.Expense;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -18,11 +19,13 @@ public class MainController {
     private Scene eventOverviewScene;
     private EventOverviewController eventOverviewController;
 
-    private ExpenseController expenseCtrl;
+    private AddExpenseController expenseCtrl;
     private Scene expenseScene;
 
     private ParticipantExpenseViewController participantExpenseViewController;
     private Scene participantExpenseViewScene;
+    private ExpenseOverviewController expenseOverviewController;
+    private Scene expenseOverviewScene;
 
     private TableOfParticipantsController tableOfParticipantsController;
     private Scene tableOfParticipantsScene;
@@ -43,6 +46,7 @@ public class MainController {
      * @param eventOverviewPair eventOverviewPage pair
      * @param expensePair expensePage pair
      * @param participantExpenseViewControllerPair participantExpenseViewController Pair
+     * @param expenseOverviewControllerPair expenseOverviewScene Pair
      * @param tableOfParticipantsControllerPair table of participants page pair
      * @param contactDetailsControllerPair contactDetails page pair
      * @param inviteControllerPair invitePage pair
@@ -51,8 +55,9 @@ public class MainController {
     public void initialize(Stage primaryStage,
                            Pair<StartPageController, Parent> startPair,
                            Pair<EventOverviewController, Parent> eventOverviewPair,
-                           Pair<ExpenseController, Parent> expensePair,
+                           Pair<AddExpenseController, Parent> expensePair,
                            Pair<ParticipantExpenseViewController, Parent> participantExpenseViewControllerPair,
+                           Pair<ExpenseOverviewController,Parent>expenseOverviewControllerPair,
                            Pair<TableOfParticipantsController, Parent> tableOfParticipantsControllerPair,
                            Pair<ContactDetailsCtrl, Parent> contactDetailsControllerPair,
                            Pair<InviteController, Parent> inviteControllerPair,
@@ -72,6 +77,9 @@ public class MainController {
 
         this.participantExpenseViewScene=new Scene(participantExpenseViewControllerPair.getValue());
         this.participantExpenseViewController=participantExpenseViewControllerPair.getKey();
+
+        this.expenseOverviewScene=new Scene(expenseOverviewControllerPair.getValue());
+        this.expenseOverviewController=expenseOverviewControllerPair.getKey();
 
         this.tableOfParticipantsScene = new Scene(tableOfParticipantsControllerPair.getValue());
         this.tableOfParticipantsController = tableOfParticipantsControllerPair.getKey();
@@ -113,10 +121,11 @@ public class MainController {
      *
      * @param event the event we are working on
      */
-    public void showAddExpense(Event event) {
+    public void showAddExpense(Event event, long participantId) {
         primaryStage.setTitle("Expenses: Add Expense");
+        expenseCtrl.clearTextFields();
         primaryStage.setScene(expenseScene);
-        expenseCtrl.setEvent(event);
+        expenseCtrl.setEvent(event, participantId);
     }
 
     /**
@@ -171,7 +180,19 @@ public class MainController {
     public void showParticipantExpensesOverview(Event event, Long participantId) {
         primaryStage.setTitle("Participant Expenses Overview");
         primaryStage.setScene(participantExpenseViewScene);
+        participantExpenseViewController.setEvent(event,participantId);
         participantExpenseViewController.initializeExpensesForParticipant(participantId);
+    }
+    public void showExpenseOverview(Event event)
+    {
+        primaryStage.setTitle("Expenses Overview");
+        primaryStage.setScene(expenseOverviewScene);
+        expenseOverviewController.setEvent(event);
+    }
+    public void refreshExpensesOverview(Event event) {
+        if (expenseOverviewController != null && event!= null) {
+            expenseOverviewController.refreshExpensesList(event);
+        }
     }
 
 }

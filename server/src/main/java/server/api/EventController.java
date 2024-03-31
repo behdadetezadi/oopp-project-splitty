@@ -7,12 +7,16 @@ import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import server.EventService;
 import server.database.EventRepository;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Consumer;
 
 @RestController
 @RequestMapping("/api/events")
@@ -20,6 +24,10 @@ public class EventController {
 
     private final EventService eventService;
     private EventRepository db;
+
+    @Autowired
+    private SimpMessagingTemplate template;
+
 
 
     /**
@@ -148,10 +156,31 @@ public class EventController {
         List<Participant> participants = eventService.findParticipantsByEventId(id);
         return ResponseEntity.ok(participants);
     }
+
+
+private Map<Object, Consumer<Participant>> listeners = new HashMap<>();
+    @GetMapping("/{id}/participants/updates")
+    public DeferredResult<ResponseEntity<Participant>> getParticipantUpdatesByEventId(@PathVariable Long id) {
+        var noContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        var res = new DeferredResult<ResponseEntity<Participant>>(5000L,noContent);
+
+        var key = new Object();//since never equal to each other (always diff instances)
+        listeners.put(key, participant -> {
+            res.setResult( ResponseEntity.ok(participant));
+        });
+
+        res.onCompletion(() ->{
+            listeners.remove(key);
+        });
+
+        return res;
+
+    }
     @PostMapping("/{eventId}/participants")
     public ResponseEntity<Participant> addParticipant(@PathVariable long eventId, @RequestBody Participant participant) {
         Participant addedParticipant = eventService.addParticipantToEvent(eventId, participant);
         if (addedParticipant != null) {
+            listeners.forEach((k,l) ->{l.accept(addedParticipant);});
             return ResponseEntity.ok(addedParticipant);
         } else {
             return ResponseEntity.notFound().build();
@@ -164,6 +193,7 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
+
     @PutMapping("/{eventId}/participants/{participantId}")
     public ResponseEntity<Participant> updateParticipantInEvent(
             @PathVariable Long eventId,
@@ -171,12 +201,22 @@ public class EventController {
             @RequestBody Participant participantDetails) {
         try {
             Participant updatedParticipant = eventService.updateParticipantInEvent(eventId, participantId, participantDetails);
+            template.convertAndSend("/topic/participants", updatedParticipant);
+
             return ResponseEntity.ok(updatedParticipant);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @MessageMapping("/participants")
+    @SendTo("/topic/participants")
+    public void updateParticipantWebSockets( @PathVariable Long eventId,
+                                             @PathVariable Long participantId,
+                                             @RequestBody Participant participantDetails){
+        updateParticipantInEvent(eventId, participantId, participantDetails);
     }
 
     /**
@@ -186,21 +226,13 @@ public class EventController {
      */
     @GetMapping("/{id}/expenses")
     public ResponseEntity<?> getExpensesByEventId(@PathVariable Long id) {
-        try {
-            Optional<Event> eventOptional = eventService.findEventById(id);
-            if(eventOptional.isEmpty()){
-                return new ResponseEntity<>("Event not found with ID: " + id, HttpStatus.NOT_FOUND);
-            }
-            List<Expense> expenses = eventService.findExpensesByEventId(id);
+        List<Expense> expenses = eventService.findExpensesByEventId(id);
+        if (expenses.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
             return ResponseEntity.ok(expenses);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (ServiceException e) {
-            return new ResponseEntity<>("Failed to find the expenses for Event with ID: "
-                    + id + ", Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     /**
      * adds expense to an event
@@ -214,7 +246,7 @@ public class EventController {
         if (addedExpense != null) {
             return ResponseEntity.ok(addedExpense);
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
@@ -226,8 +258,12 @@ public class EventController {
      */
     @DeleteMapping("/{eventId}/expenses/{expenseId}")
     public ResponseEntity<Void> removeExpense(@PathVariable long eventId, @PathVariable long expenseId) {
-        eventService.removeExpenseFromEvent(eventId, expenseId);
-        return ResponseEntity.ok().build();
+        try {
+            eventService.removeExpenseFromEvent(eventId, expenseId);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**

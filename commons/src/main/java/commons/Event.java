@@ -24,7 +24,7 @@ public class Event {
     private long inviteCode;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Participant> people;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.REMOVE)
     private List<Expense> expenses;
 
 
