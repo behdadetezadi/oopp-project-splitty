@@ -278,7 +278,10 @@ public class EventService {
         eventRepository.save(event);
         Expense expense = expenseRepository.findById(expenseId)
                 .orElseThrow(() -> new IllegalArgumentException("Expense not found"));
-        expense.getEventIds().removeIf(eId -> eId == eventId);
+        if(expense.getEventId()==eventId)
+        {
+            expense.setEventId(null);
+        }
         expenseRepository.save(expense);
     }
 

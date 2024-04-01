@@ -58,8 +58,8 @@ class EventTest {
         participants.add(new Participant("John", "Doe"));
         participants.add(new Participant("Jane", "Smith"));
         List<Expense> expenses = new ArrayList<>();
-        expenses.add(new Expense(new Participant("John", "Foo"), "food", 12));
-        expenses.add(new Expense(new Participant("Jane", "Doe"), "food", 13));
+        expenses.add(new Expense(new Participant("John", "Foo"), "food", 12,123));
+        expenses.add(new Expense(new Participant("Jane", "Doe"), "food", 13,456));
 
         Event event = new Event(1L, "Test Event", 123456, participants, expenses);
 
@@ -113,8 +113,8 @@ class EventTest {
     @Test
     void testSetExpenses() {
         List<Expense> expenses = new ArrayList<>();
-        expenses.add(new Expense(new Participant("John", "Foo"), "food", 12));
-        expenses.add(new Expense(new Participant("Jane", "Doe"), "food", 13));
+        expenses.add(new Expense(new Participant("John", "Foo"), "food", 12,890));
+        expenses.add(new Expense(new Participant("Jane", "Doe"), "food", 13,678));
         event.setExpenses(expenses);
         assertEquals(expenses, event.getExpenses());
     }
@@ -164,7 +164,7 @@ class EventTest {
     void testAddExpense() {
         Participant participant = new Participant("John", "Foo");
         List<Participant> splitOption = new ArrayList<>();
-        Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", splitOption, "food", new HashSet<>());
+        Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", splitOption, "food", (long)123);
         assertTrue(event.addExpense(a));
         assertTrue(event.getExpenses().contains(a));
     }
@@ -173,7 +173,7 @@ class EventTest {
     void testRemoveExpense() {
         Participant participant = new Participant("John", "Foo");
         List<Participant> splitOption = new ArrayList<>();
-        Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", splitOption, "food", new HashSet<>());
+        Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", splitOption, "food", (long)1237);
         event.addExpense(a);
         assertTrue(event.removeExpense(a));
         assertFalse(event.getExpenses().contains(a));
@@ -217,7 +217,7 @@ class EventTest {
     void testRemoveNonExistingExpense() {
         Participant participant = new Participant("John", "Foo");
         List<Participant> splitOption = new ArrayList<>();
-        Expense a = new Expense(participant, "lunch", 15, "USD", "01-02-2024", splitOption, "food", new HashSet<>());
+        Expense a = new Expense(participant, "lunch", 15, "USD", "01-02-2024", splitOption, "food", (long)123);
         assertFalse(event.removeExpense(a));
     }
 }

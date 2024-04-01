@@ -11,9 +11,9 @@ class ExpenseTest {
     Participant participant2 = new Participant("John2", "Foo");
     List<Participant> spiltOption = new ArrayList<>();
     List<Participant> spiltOption2 = new ArrayList<>();
-    Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food", new HashSet<>());
-    Expense b = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food", new HashSet<>());
-    Expense c = new Expense(participant, "dinner", 13, "Euros", "01-01-2024", spiltOption, "food", new HashSet<>());
+    Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food",(long)2305);
+    Expense b = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", spiltOption, "food",(long)2306);
+    Expense c = new Expense(participant, "dinner", 13, "Euros", "01-01-2024", spiltOption, "food", (long)2307);
 
 
     @Test
@@ -21,7 +21,7 @@ class ExpenseTest {
         Participant participant = new Participant("John", "Foo");
         List<Participant> splittingOption = new ArrayList<>();
         splittingOption.add(participant);
-        Set<Integer> eventIds = new HashSet<>();
+        long eventId=1234;
         String category = "dinner";
         double amount = 12;
         String currency = "Euros";
@@ -29,7 +29,7 @@ class ExpenseTest {
         String expenseType = "food";
 
         Expense expense = new Expense(participant, category, amount, currency,
-                date, splittingOption, expenseType, eventIds);
+                date, splittingOption, expenseType, eventId);
         assertEquals(participant, expense.getParticipant());
         assertEquals(category, expense.getCategory());
         assertEquals(amount, expense.getAmount());
@@ -37,15 +37,14 @@ class ExpenseTest {
         assertEquals(date, expense.getDate());
         assertEquals(splittingOption, expense.getSplittingOption());
         assertEquals(expenseType, expense.getExpenseType());
-        assertEquals(eventIds, expense.getEventIds());
+        assertEquals(eventId, expense.getEventId());
     }
 
     @Test
     void testJacksonExpenseConstructor() {
         List<Participant> splittingOption = new ArrayList<>();
         splittingOption.add(new Participant("Jane", "Smith"));
-        Set<Integer> eventIds = new HashSet<>();
-        eventIds.add(123);
+        long eventIds = 3456;
 
         Expense expense = new Expense(1L, participant, "Food", 50.0, "USD", "2024-03-19", splittingOption, "Personal", eventIds);
 
@@ -57,7 +56,7 @@ class ExpenseTest {
         assertEquals("2024-03-19", expense.getDate());
         assertEquals(splittingOption, expense.getSplittingOption());
         assertEquals("Personal", expense.getExpenseType());
-        assertEquals(eventIds, expense.getEventIds());
+        assertEquals(eventIds, expense.getEventId());
     }
     @Test
     public void equalsTest(){
@@ -169,17 +168,17 @@ class ExpenseTest {
         assertEquals(12345, participant.getId());
     }
 
-    @Test
-    void testSetEventIds() {
-        Set<Integer> eventIds = new HashSet<>();
-        eventIds.add(1);
-        eventIds.add(2);
-        eventIds.add(3);
-        a.setEventIds(eventIds);
-
-        assertEquals(eventIds, a.getEventIds());
-        assertTrue(a.getEventIds().contains(1));
-        assertTrue(a.getEventIds().contains(2));
-        assertTrue(a.getEventIds().contains(3));
-    }
+//    @Test
+//    void testSetEventIds() {
+//        Set<Integer> eventIds = new HashSet<>();
+//        eventIds.add(1);
+//        eventIds.add(2);
+//        eventIds.add(3);
+//        a.setEventIds(eventIds);
+//
+//        assertEquals(eventIds, a.getEventIds());
+//        assertTrue(a.getEventIds().contains(1));
+//        assertTrue(a.getEventIds().contains(2));
+//        assertTrue(a.getEventIds().contains(3));
+//    }
 }

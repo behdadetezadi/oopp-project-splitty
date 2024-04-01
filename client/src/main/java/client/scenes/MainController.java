@@ -191,10 +191,5 @@ public class MainController {
         primaryStage.setScene(expenseOverviewScene);
         expenseOverviewController.setEvent(event, locale);
     }
-    public void refreshExpensesOverview(Event event) {
-        if (expenseOverviewController != null && event!= null) {
-            expenseOverviewController.refreshExpensesList(event);
-        }
-    }
 
 }
