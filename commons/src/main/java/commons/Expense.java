@@ -30,8 +30,7 @@ public class Expense {
     )
     private List<Participant> splittingOption;
     private String expenseType;
-    @ElementCollection
-    private Set<Integer> eventIds;
+    private Long eventId;
 
     /**
      * This is the constructor that initialises the expense
@@ -44,7 +43,7 @@ public class Expense {
      * @param expenseType the type of category the expense belongs to
      */
     public Expense(Participant participant, String category, double amount, String currency,
-                    String date, List<Participant> splittingOption, String expenseType, Set<Integer> eventIds) {
+                    String date, List<Participant> splittingOption, String expenseType, Long eventId) {
         this.participant = participant;
         this.category = category;
         this.amount = amount;
@@ -52,7 +51,7 @@ public class Expense {
         this.date = date;
         this.splittingOption = splittingOption;
         this.expenseType = expenseType;
-        this.eventIds=eventIds;
+        this.eventId=eventId;
     }
 
     /**
@@ -61,10 +60,11 @@ public class Expense {
      * @param category the category
      * @param amount the amount paid
      */
-    public Expense(Participant participant, String category, double amount) {
+    public Expense(Participant participant, String category, double amount,long eventId) {
         this.participant = participant;
         this.category = category;
         this.amount = amount;
+        this.eventId=eventId;
     }
 
     /**
@@ -77,12 +77,12 @@ public class Expense {
      * @param date when the expense was made
      * @param splittingOption shows a list of people that are included in the splitting option
      * @param expenseType the type of category the expense belongs to
-     * @param eventIds the event Ids
+     * @param eventId the event Ids
      */
     public Expense(long id, Participant participant, String category,
                    double amount, String currency, String date,
                    List<Participant> splittingOption, String expenseType,
-                   Set<Integer> eventIds) {
+                   long eventId) {
         this.id = id;
         this.participant = participant;
         this.category = category;
@@ -91,7 +91,7 @@ public class Expense {
         this.date = date;
         this.splittingOption = splittingOption;
         this.expenseType = expenseType;
-        this.eventIds = eventIds;
+        this.eventId = eventId;
     }
 
     /**
@@ -127,16 +127,16 @@ public class Expense {
      * getter for eventIds
      * @return the eventIds
      */
-    public Set<Integer> getEventIds() {
-        return eventIds;
+    public Long getEventId() {
+        return eventId;
     }
 
     /**
      * setter for eventIds
-     * @param eventIds a hashset
+     * @param eventId a hashset
      */
-    public void setEventIds(Set<Integer> eventIds) {
-        this.eventIds = eventIds;
+    public void setEventId(Long eventId) {
+        this.eventId = eventId;
     }
 
     /**

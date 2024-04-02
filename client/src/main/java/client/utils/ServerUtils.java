@@ -131,7 +131,7 @@ public class ServerUtils {
 	public static Expense addExpense(long participantId, String description, double amountValue, long eventId) {
 		try {
 			Participant participant = getParticipant(participantId);
-			Expense expense = new Expense(participant, description, amountValue);
+			Expense expense = new Expense(participant, description, amountValue,eventId);
 			System.out.println(eventId);
 			return client.target(SERVER)
 					.path("api/events/{eventId}/expenses")

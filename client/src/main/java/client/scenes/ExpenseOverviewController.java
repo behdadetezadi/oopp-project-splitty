@@ -63,51 +63,33 @@ public class ExpenseOverviewController {
     }
 
 
-//    public void initializeExpensesForEvent() {
-//        if (this.event != null) {
-//            try {
-//                List<Expense> expenses = server.getExpensesForEvent(this.event.getId());
-//                expensesListView.getItems().clear(); // Clear existing items
-//                double sumOfExpenses = 0;
-//                for (Expense expense : expenses) {
-//                    String expenseDisplay = formatExpenseForDisplay(expense);
-//                    expensesListView.getItems().add(expenseDisplay);
-//                    sumOfExpenses += expense.getAmount();
-//                }
-//                sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
-//            } catch (RuntimeException ex) {
-//                // Handle case where no expenses are found
-//                expensesListView.getItems().clear();
-//                expensesListView.getItems().add("No expenses recorded yet.");
-//                sumOfExpensesLabel.setText("Total: $0.00");
-//            }
-//        }
-//    }
-public void initializeExpensesForEvent() {
-    if (this.event != null) {
-        List<Expense> expenses = server.getExpensesForEvent(this.event.getId());
-        expensesListView.getItems().clear(); // Clear existing items
-        if (expenses.isEmpty()) {
-            expensesListView.getItems().add("No expenses recorded yet.");
-            sumOfExpensesLabel.setText("Total: $0.00");
-        }
-    }
-}
-
-
-    public void refreshExpensesList(Event event)
-    {
-        List<Expense> expenses = server.getExpensesForEvent(event.getId());
-        expensesListView.getItems().clear(); // Clear existing items
-        double sumOfExpenses = 0;
-        for (Expense expense : expenses) {
-            if (expense != null) {
-                String expenseDisplay = formatExpenseForDisplay(expense);
-                expensesListView.getItems().add(expenseDisplay);
-                sumOfExpenses += expense.getAmount();
+    public void initializeExpensesForEvent() {
+        if (this.event != null) {
+            try {
+                List<Expense> expenses = server.getExpensesForEvent(this.event.getId());
+                expensesListView.getItems().clear(); // Clear existing items
+                double sumOfExpenses = 0;
+                for (Expense expense : expenses)
+                {
+                    if(expense==null)
+                    {
+                        expensesListView.getItems().add("No expenses recorded yet.");
+                    }
+                    else
+                    {
+                        String expenseDisplay = formatExpenseForDisplay(expense);
+                        expensesListView.getItems().add(expenseDisplay);
+                        sumOfExpenses += expense.getAmount();
+                    }
+                }
+                sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
+            } catch (RuntimeException ex) {
+                // Handle case where no expenses are found
+                expensesListView.getItems().clear();
+                expensesListView.getItems().add("No expenses recorded yet.");
+                sumOfExpensesLabel.setText("Total: $0.00");
             }
         }
-        sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
     }
 
     public ListView<String> getExpensesListView() {

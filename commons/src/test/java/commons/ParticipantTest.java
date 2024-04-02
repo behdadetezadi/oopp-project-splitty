@@ -18,8 +18,8 @@ class ParticipantTest {
                 "IBAN12345", "BIC67890", new HashMap<>(), new HashMap<>(), new HashSet<>(), "EN");
         event1 = new Event(new ArrayList<>(), new ArrayList<>(), "Event 1", 12345L);
         event2 = new Event(new ArrayList<>(), new ArrayList<>(), "Event 2", 67890L);
-        expense1 = new Expense(participant, "Food", 100);
-        expense2 = new Expense(participant, "Transport", 50);
+        expense1 = new Expense(participant, "Food", 100,123);
+        expense2 = new Expense(participant, "Transport", 50,456);
         event1.getExpenses().add(expense1);
         event2.getExpenses().add(expense2);
     }

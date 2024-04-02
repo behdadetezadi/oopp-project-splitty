@@ -80,7 +80,7 @@ public class AdminController {
         Participant part = new Participant("Albert", "Hein");
         p.add(part);
         List<Expense> ex= new ArrayList<>();
-        ex.add(new Expense(part, "being chill", 21));
+        ex.add(new Expense(part, "being chill", 21,0));
         Event test = new Event(p, ex,"chilling");
         Event test2 = new Event("doing nothing");
         eventsTable.getItems().add(e);
