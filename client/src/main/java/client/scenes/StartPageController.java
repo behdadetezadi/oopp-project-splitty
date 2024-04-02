@@ -12,6 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -40,7 +41,7 @@ public class StartPageController {
     private Label recentEventsLabel;
 
     @FXML
-    private ListView<String> recentEventsList;
+    private ListView<Event> recentEventsList;
 
     @FXML
     private Button joinButton;
@@ -61,6 +62,8 @@ public class StartPageController {
     private Stage primaryStage;
     private MainController mainController;
 
+    private ObservableList<Event> events = FXCollections.observableArrayList();
+
     /**
      *
      * @param primaryStage primary stage
@@ -79,13 +82,6 @@ public class StartPageController {
      * initializer method //TODO
      */
 
-    private static final ObservableList<String> EVENT_TITLES = FXCollections.observableArrayList(
-            "Conference",
-            "Workshop",
-            "Seminar",
-            "Hackathon",
-            "Webinar"
-    );
 
     /**
      * initialize method of the start page controller
@@ -151,20 +147,20 @@ public class StartPageController {
         HBox.setHgrow(recentEventsLabel, Priority.ALWAYS);
         animateText(recentEventsLabel, resourceBundle.getString("recent_events"));
 
-        recentEventsList.setItems(EVENT_TITLES);
+        //recentEventsList.setItems(EVENT_TITLES);
 
 
         // Set the cell factory for the recentEventsList
-        recentEventsList.setCellFactory(listView -> new ListCell<>() {
+        recentEventsList.setCellFactory(listView -> new ListCell<Event>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
+            protected void updateItem(Event selectedEvent, boolean empty) {
+                super.updateItem(selectedEvent, empty);
+                if (empty || selectedEvent == null) {
                     setText(null);
                     setGraphic(null);
                 } else {
                     // Create the cell content as before
-                    Label eventNameLabel = new Label(item);
+                    Label eventNameLabel = new Label(selectedEvent.getTitle());
                     // Create button and handle actions
                     Button removeButton = new Button();
                     removeButton.setStyle("-fx-background-color: transparent;");
@@ -172,21 +168,29 @@ public class StartPageController {
                     removeImage.setFitWidth(16);
                     removeImage.setFitHeight(16);
                     removeButton.setGraphic(removeImage);
-                    removeButton.setOnAction(event -> {
-                        getListView().getItems().remove(item);
+                    removeButton.setOnAction(removeEvent -> {
+                        events.remove(selectedEvent); // Remove event from the list
                     });
                     HBox buttonBox = new HBox(removeButton);
                     buttonBox.setAlignment(Pos.CENTER_RIGHT);
-                    VBox cellBox = new VBox(eventNameLabel, buttonBox);
+                    VBox cellBox = new VBox(buttonBox, eventNameLabel);
                     cellBox.setSpacing(10);
                     cellBox.setAlignment(Pos.CENTER_LEFT);
                     setGraphic(cellBox);
                     setText(null);
+
+                    // Add event listener to the cell
+                    setOnMouseClicked(mouseEvent -> {
+                        if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                            if (mouseEvent.getClickCount() == 1) {
+                                // Call method to switch to event overview scene
+                                mainController.showEventOverview(selectedEvent, activeLocale);
+                            }
+                        }
+                    });
                 }
             }
         });
-
-
     }
 
     private void loadLanguage(Locale locale) {
@@ -255,6 +259,8 @@ public class StartPageController {
             Event event = ServerUtils.getEventByInviteCode(inviteCode);
 
             if (event != null) {
+                events.add(event); // Add the created event to the list
+                recentEventsList.setItems(events);
                 mainController.showEventOverview(event, activeLocale); // Switch to event overview page
             } else {
                 showErrorAlert(resourceBundle.getString("Invalid_invite_code._Please_try_again."));
@@ -291,6 +297,8 @@ public class StartPageController {
         Event createdEvent = ServerUtils.addEvent(newEvent);
 
         if (createdEvent != null) {
+            events.add(createdEvent); // Add the created event to the list
+            recentEventsList.setItems(events);
             mainController.showEventOverview(createdEvent, activeLocale);
         } else {
             showErrorAlert(resourceBundle.getString("Failed_to_create_event._Please_try_again."));

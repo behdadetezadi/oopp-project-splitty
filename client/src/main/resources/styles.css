@@ -160,3 +160,14 @@
 .table-view .scroll-bar .decrement-button {
     -fx-background-color: lime;
 }
+
+#recentEventsLabel {
+    -fx-font-size: 24px; /* Set the font size */
+    -fx-font-weight: bold; /* Make the font bold */
+    -fx-alignment: center; /* Center the text */
+}
+
+.list-cell .label {
+    -fx-font-size: 18px; /* Set the font size for list items */
+    -fx-font-weight: bold; /* Make the font bold */
+}
