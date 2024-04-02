@@ -71,6 +71,23 @@ class ParticipantTest {
     }
 
     @Test
+    void testJacksonConstructor2() {
+        Participant participant = new Participant(1L, "username", "firstName", "lastName", "email",
+                "iban", "bic", new HashMap<>(), new HashMap<>(), new HashSet<>(), "languageChoice");
+        assertEquals(1L, participant.getId());
+        assertEquals("username", participant.getUsername());
+        assertEquals("firstName", participant.getFirstName());
+        assertEquals("lastName", participant.getLastName());
+        assertEquals("email", participant.getEmail());
+        assertEquals("iban", participant.getIban());
+        assertEquals("bic", participant.getBic());
+        assertEquals(new HashMap<>(), participant.getOwedAmount());
+        assertEquals(new HashMap<>(), participant.getPayedAmount());
+        assertEquals(new HashSet<>(), participant.getEventIds());
+        assertEquals("languageChoice", participant.getLanguageChoice());
+    }
+
+    @Test
     public void testGetId() {
         long expectedId = 123;
         participant.setId(expectedId);
@@ -272,22 +289,24 @@ class ParticipantTest {
         participant.getPayedAmount().put(event2, 50.0);
 
 
-        String expected = "Participant Info:\n" +
-                "ID: 0\n" +
-                "Username: username\n" +
-                "Name: John Doe\n" +
-                "Email: john.doe@example.com\n" +
-                "Bank Info:\n" +
-                "IBAN: IBAN12345\n" +
-                "BIC: BIC67890\n" +
-                "Language Choice: EN\n" +
-                "Events Owed Amount:\n" +
-                "Owes for Event 1: 50.0\n" +
-                "Owes for Event 2: 100.0\n" +
-                "Events Paid Amount:\n" +
-                "Paid for Event 1: 25.0\n" +
-                "Paid for Event 2: 50.0\n" +
-                "Event IDs: [0]\n";
+        String expected = """
+                Participant Info:
+                ID: 0
+                Username: username
+                Name: John Doe
+                Email: john.doe@example.com
+                Bank Info:
+                IBAN: IBAN12345
+                BIC: BIC67890
+                Language Choice: EN
+                Events Owed Amount:
+                Owes for Event 1: 50.0
+                Owes for Event 2: 100.0
+                Events Paid Amount:
+                Paid for Event 1: 25.0
+                Paid for Event 2: 50.0
+                Event IDs: [0]
+                """;
         assertEquals(expected, participant.toString());
     }
 

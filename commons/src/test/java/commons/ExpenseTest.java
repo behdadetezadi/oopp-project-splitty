@@ -41,6 +41,25 @@ class ExpenseTest {
     }
 
     @Test
+    void testJacksonExpenseConstructor() {
+        List<Participant> splittingOption = new ArrayList<>();
+        splittingOption.add(new Participant("Jane", "Smith"));
+        Set<Integer> eventIds = new HashSet<>();
+        eventIds.add(123);
+
+        Expense expense = new Expense(1L, participant, "Food", 50.0, "USD", "2024-03-19", splittingOption, "Personal", eventIds);
+
+        assertEquals(1L, expense.getId());
+        assertEquals(participant, expense.getParticipant());
+        assertEquals("Food", expense.getCategory());
+        assertEquals(50.0, expense.getAmount(), 0.001);
+        assertEquals("USD", expense.getCurrency());
+        assertEquals("2024-03-19", expense.getDate());
+        assertEquals(splittingOption, expense.getSplittingOption());
+        assertEquals("Personal", expense.getExpenseType());
+        assertEquals(eventIds, expense.getEventIds());
+    }
+    @Test
     public void equalsTest(){
         spiltOption.add(participant);
         assertEquals(a, b);

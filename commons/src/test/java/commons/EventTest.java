@@ -20,10 +20,109 @@ class EventTest {
         event = new Event(people, expenses, "Test Event", 123456);
     }
 
+    @Test
+        void testConstructor() {
+            assertNotNull(event);
+            assertEquals(people, event.getPeople());
+            assertEquals(expenses, event.getExpenses());
+            assertEquals("Test Event", event.getTitle());
+            assertEquals(123456, event.getInviteCode());
+        }
+
+    @Test
+    void testConstructorWithNullTitle() {
+        List<Participant> people = new ArrayList<>();
+        List<Expense> expenses = new ArrayList<>();
+        Event event = new Event(people, expenses, null);
+        assertNotNull(event);
+        assertEquals(people, event.getPeople());
+        assertEquals(expenses, event.getExpenses());
+    }
+
+    @Test
+    void testConstructorWithJustTitle() {
+        String title = "Test Event";
+        Event event = new Event(title);
+        assertNotNull(event);
+        assertEquals(title, event.getTitle());
+        assertNotNull(event.getPeople());
+        assertTrue(event.getPeople().isEmpty());
+        assertNotNull(event.getExpenses());
+        assertTrue(event.getExpenses().isEmpty());
+        assertNotEquals(0, event.getInviteCode());
+    }
+
+    @Test
+    void testConstructor3() {
+        List<Participant> participants = new ArrayList<>();
+        participants.add(new Participant("John", "Doe"));
+        participants.add(new Participant("Jane", "Smith"));
+        List<Expense> expenses = new ArrayList<>();
+        expenses.add(new Expense(new Participant("John", "Foo"), "food", 12));
+        expenses.add(new Expense(new Participant("Jane", "Doe"), "food", 13));
+
+        Event event = new Event(1L, "Test Event", 123456, participants, expenses);
+
+        assertNotNull(event);
+        assertEquals(1L, event.getId());
+        assertEquals("Test Event", event.getTitle());
+        assertEquals(123456, event.getInviteCode());
+        assertEquals(participants, event.getPeople());
+        assertEquals(expenses, event.getExpenses());
+    }
+    @Test
+    void testConstructor4() {
+        List<Participant> people = new ArrayList<>();
+        people.add(new Participant("John", "Foo"));
+        people.add(new Participant("Jane", "Doe"));
+        Event event = new Event("test", people);
+
+        assertNotNull(event);
+        assertEquals("test", event.getTitle());
+        assertEquals(people, event.getPeople());
+        assertNotNull(event.getExpenses());
+        assertNotEquals(0L, event.getInviteCode());
+    }
+
+    @Test
+    void testSetId() {
+        event.setId(12345L);
+        assertEquals(12345L, event.getId());
+    }
+
+    @Test
+    void testSetTitle() {
+        event.setTitle("new title");
+        assertEquals("new title", event.getTitle());
+    }
+
+    @Test
+    void testSetInviteCode() {
+        event.setInviteCode(987654321L);
+        assertEquals(987654321L, event.getInviteCode());
+    }
+
+    @Test
+    void testSetPeople() {
+        List<Participant> people = new ArrayList<>();
+        people.add(new Participant("John", "Foo"));
+        event.setPeople(people);
+        assertEquals(people, event.getPeople());
+    }
+
+    @Test
+    void testSetExpenses() {
+        List<Expense> expenses = new ArrayList<>();
+        expenses.add(new Expense(new Participant("John", "Foo"), "food", 12));
+        expenses.add(new Expense(new Participant("Jane", "Doe"), "food", 13));
+        event.setExpenses(expenses);
+        assertEquals(expenses, event.getExpenses());
+    }
+
 
     @Test
     void testGetId() {
-        assertEquals(0, event.getId()); // Assuming default ID is 0
+        assertEquals(0, event.getId());
     }
 
     @Test
@@ -98,8 +197,6 @@ class EventTest {
         assertNotNull(event.toString());
     }
 
-    // Additional test cases for boundary conditions and edge cases
-
     @Test
     void testAddNullParticipant() {
         assertFalse(event.addParticipant(null));
@@ -123,7 +220,5 @@ class EventTest {
         Expense a = new Expense(participant, "lunch", 15, "USD", "01-02-2024", splitOption, "food", new HashSet<>());
         assertFalse(event.removeExpense(a));
     }
-
-    //TODO Unit Tests for Setters
 }
 

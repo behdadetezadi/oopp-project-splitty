@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import server.ExpenseService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +46,63 @@ class ExpenseControllerTest {
         verify(expenseService, times(1)).createExpense(any(Expense.class));
     }
 
+    @Test
+    void testAddBadRequest() {
+        Expense expense = new Expense();
+        ResponseEntity<Void> responseEntity = controller.add(expense);
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        verify(expenseService, never()).createExpense(any());
+    }
 
+
+    @Test
+    void testGetAll() {
+        List<Expense> expenses = new ArrayList<>();
+        expenses.add(new Expense());
+        expenses.add(new Expense());
+        when(expenseService.getAllExpenses()).thenReturn(expenses);
+        List<Expense> result = controller.getAll();
+        assertNotNull(result);
+        assertEquals(expenses.size(), result.size());
+        verify(expenseService, times(1)).getAllExpenses();
+    }
+
+    @Test
+    void testFilterByDate() {
+        List<Expense> filteredExpenses = new ArrayList<>();
+
+        when(expenseService.filterByDate("2024-03-31")).thenReturn(filteredExpenses);
+        List<Expense> result = controller.filterByDate("2024-03-31");
+
+        assertNotNull(result);
+        assertEquals(filteredExpenses.size(), result.size());
+        verify(expenseService, times(1)).filterByDate("2024-03-31");
+    }
+
+    @Test
+    void testGetDetails() {
+        Expense expense = new Expense();
+        when(expenseService.getExpenseById(anyLong())).thenReturn(expense);
+        ResponseEntity<String> response = controller.getDetails(1L);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(expense.toString(), response.getBody());
+        verify(expenseService, times(1)).getExpenseById(1L);
+
+    }
+
+    @Test
+    void testGetDetailsException() {
+        when(expenseService.getExpenseById(anyLong())).thenThrow(new IllegalArgumentException());
+        ResponseEntity<String> response = controller.getDetails(1L);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(expenseService, times(1)).getExpenseById(1L);
+    }
     @Test
     void getAllExpensesTest() {
         Expense expense1=new Expense(new Participant("Carlos","Sainz"),"dinner",16000,
@@ -143,6 +200,19 @@ class ExpenseControllerTest {
     }
 
     @Test
+    public void testUpdateExpenseException() {
+        long id = 1;
+        Expense updatedExpense = new Expense(new Participant("Yanran","Zhao")," CSE tuition fee",16000,
+                "EUR","2023-08-27",List.of(new Participant("Jodie","Zhao")),"Education", new HashSet<>());
+
+        when(expenseService.updateExpense(id, updatedExpense)).thenThrow(new IllegalArgumentException());
+        ResponseEntity<Void> response = controller.update(id, updatedExpense);
+        verify(expenseService, times(1)).updateExpense(id, updatedExpense);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
     public void testDeleteExpense() {
         long id = 1;
         when(expenseService.deleteExpense(id)).thenReturn(ResponseEntity.ok().build());
@@ -152,6 +222,16 @@ class ExpenseControllerTest {
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void deleteExpenseNotFoundTest() {
+        doThrow(new IllegalArgumentException()).when(expenseService).deleteExpense(anyLong());
+        ResponseEntity<Void> response = controller.delete(1L);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(expenseService, times(1)).deleteExpense(1L);
     }
 
 }
