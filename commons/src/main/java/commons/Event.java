@@ -11,9 +11,6 @@ import java.util.UUID;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
-
-//for now invite code is equal to id
-
 @Entity
 public class Event {
 
@@ -42,7 +39,6 @@ public class Event {
         this.title = title;
     }
 
-
     /**
      * Constructor for Event
      * @param people a List of Person s for the people involved in the Event
@@ -60,14 +56,11 @@ public class Event {
      * constructor with just title
      * @param title title of the event
      */
-
     public Event(String title) {
         this.title = title;
         this.people = new ArrayList<>();
         this.expenses = new ArrayList<>();
-        //this.inviteCode = Objects.hash(this.id);
         this.inviteCode = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
-
     }
 
     /**
@@ -85,7 +78,6 @@ public class Event {
         this.people = participants;
         this.expenses = expenses;
     }
-
 
     //TODO check constructor with invite code
 
@@ -287,79 +279,5 @@ public class Event {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
-
-
-//    /**
-//     * java generated equals method
-//     * @param o Object
-//     * @return boolean
-//     */
-/*
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Event event = (Event) o;
-
-        if (id != event.id || inviteCode != event.inviteCode) return false;
-        if (!Objects.equals(title, event.title)) return false;
-        if (!Objects.equals(people, event.people)) return false;
-        return Objects.equals(expenses, event.expenses);
-    }
-*/
-
-
-
-
-
-
-//    /**
-//     * temporary hashcode look into fixing a failing pipeline (NEEDS TO BE FIXED LATER)
-//     * @return int
-//     */
-    /*
-    @Override
-    public int hashCode() {
-        return Objects.hash(title,inviteCode);
-    }
-    */
-//    /**
-//     * default toString
-//     * @return a type String
-//     */
-    /*
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder("Event{");
-
-        stringBuilder.append("id=").append(id).append(", ");
-
-        if (title != null && !title.isEmpty()) {
-            stringBuilder.append("title='").append(title).append("', ");
-        }
-
-        if (inviteCode != 0) {
-            stringBuilder.append("inviteCode=").append(inviteCode).append(", ");
-        }
-
-        if (people != null && !people.isEmpty()) {
-            stringBuilder.append("people=").append(people).append(", ");
-        }
-
-        if (expenses != null && !expenses.isEmpty()) {
-            stringBuilder.append("expenses=").append(expenses).append(", ");
-        }
-
-
-        if (stringBuilder.length() > "Event{".length()) {
-            stringBuilder.setLength(stringBuilder.length() - 2);
-        }
-
-        stringBuilder.append('}');
-        String result = stringBuilder.toString();
-        return  result;
-    }
-    */
 
 }

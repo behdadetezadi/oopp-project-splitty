@@ -29,12 +29,23 @@ class DebtTest {
     }
 
     @Test
+    void testJacksonDebtConstructor() {
+
+        Debt debt = new Debt(1L, participant1, participant2, 100.0, true, "Test Debt Description");
+        assertEquals(1L, debt.getId());
+        assertEquals(participant1, debt.getDebtor());
+        assertEquals(participant2, debt.getLender());
+        assertEquals(100.0, debt.getAmountOfMoney());
+        assertTrue(debt.isDebtCollective());
+        assertEquals("Test Debt Description", debt.getDescription());
+    }
+
+    @Test
     void testEquals() {
         Debt debt1 = new Debt(participant1, participant2, 50.0, true, "Expense");
         Debt debt2 = new Debt(participant1, participant2, 50.0, true, "Expense");
         assertEquals(debt1, debt2);
     }
-
 
     @Test
     void testNotEquals() {
@@ -102,5 +113,4 @@ class DebtTest {
                 "  Description: Expense";
         assertEquals(expected, debt.toString());
     }
-
 }

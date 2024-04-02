@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Expense;
+import org.hibernate.service.spi.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import server.ExpenseService;
 import server.database.ExpenseRepository;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -23,7 +21,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ExpenseServiceTest {
     @InjectMocks
     private ExpenseService expenseService;
-
+    @InjectMocks
+    private ExpenseController controller;
     @Mock
     private ExpenseRepository expenseRepository;
 
@@ -67,6 +66,12 @@ public class ExpenseServiceTest {
     }
 
     @Test
+    void getAllExpensesException(){
+        when(expenseRepository.findAll()).thenThrow(new RuntimeException());
+        assertThrows(ServiceException.class, () -> expenseService.getAllExpenses());
+    }
+
+    @Test
     void createExpenseSuccess() {
         Expense expense = new Expense();
         when(expenseRepository.save(any(Expense.class))).thenReturn(expense);
@@ -74,7 +79,7 @@ public class ExpenseServiceTest {
         ResponseEntity<String> response = expenseService.createExpense(expense);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().contains("Expense created successfully"));
+        assertTrue(Objects.requireNonNull(response.getBody()).contains("Expense created successfully"));
     }
 
     @Test
@@ -86,7 +91,7 @@ public class ExpenseServiceTest {
         ResponseEntity<String> response = expenseService.createExpense(expense);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertTrue(response.getBody().contains("Error creating expense"));
+        assertTrue(Objects.requireNonNull(response.getBody()).contains("Error creating expense"));
     }
 
     @Test
@@ -111,6 +116,13 @@ public class ExpenseServiceTest {
     }
 
     @Test
+    void filterByDateDataAccessExceptionTest() {
+        when(expenseRepository.findAllByDate("2024-03-19")).thenThrow(new DataAccessException("test") {});
+
+        assertThrows(ServiceException.class, () -> expenseService.filterByDate("2024-03-19"));
+    }
+
+    @Test
     void filterByParticipantIdFound() {
         long participantId = 1L;
         List<Expense> expectedExpenses = Arrays.asList(new Expense(), new Expense());
@@ -125,7 +137,7 @@ public class ExpenseServiceTest {
     @Test
     void filterByParticipantIdNotFound() {
         long participantId = 1L;
-        when(expenseRepository.findAllByParticipantId(participantId)).thenReturn(Arrays.asList());
+        when(expenseRepository.findAllByParticipantId(participantId)).thenReturn(List.of());
 
         Exception exception = assertThrows(NoSuchElementException.class, () ->
                 expenseService.filterByParticipantId(participantId));
@@ -135,7 +147,7 @@ public class ExpenseServiceTest {
     @Test
     void filterByInvolvingFound() {
         long participantId = 1L;
-        List<Expense> expectedExpenses = Arrays.asList(new Expense());
+        List<Expense> expectedExpenses = List.of(new Expense());
         when(expenseRepository.findAllBySplittingOptionContaining(participantId)).thenReturn(expectedExpenses);
 
         List<Expense> result = expenseService.filterByInvolving(participantId);
@@ -147,7 +159,7 @@ public class ExpenseServiceTest {
     @Test
     void filterByInvolvingNotFound() {
         long participantId = 1L;
-        when(expenseRepository.findAllBySplittingOptionContaining(participantId)).thenReturn(Arrays.asList());
+        when(expenseRepository.findAllBySplittingOptionContaining(participantId)).thenReturn(List.of());
 
         Exception exception = assertThrows(NoSuchElementException.class, () ->
                 expenseService.filterByInvolving(participantId));
@@ -198,6 +210,56 @@ public class ExpenseServiceTest {
         ResponseEntity<Void> response = expenseService.deleteExpense(expenseId);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void filterByParticipantIdTest() {
+        when(expenseRepository.findAllByParticipantId(1L)).thenReturn(List.of(new Expense()));
+
+        List<Expense> result = expenseService.filterByParticipantId(1L);
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        verify(expenseRepository, times(1)).findAllByParticipantId(1L);
+    }
+
+    @Test
+    void filterByParticipantIdNegativeIdTest() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> expenseService.filterByParticipantId(-1L));
+        assertEquals("Participant ID must be positive.", exception.getMessage());
+        verifyNoInteractions(expenseRepository);
+    }
+
+    @Test
+    void filterByParticipantIdNoExpensesFoundTest() {
+        when(expenseRepository.findAllByParticipantId(1L)).thenReturn(new ArrayList<>());
+
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> expenseService.filterByParticipantId(1L));
+        assertEquals("No expenses found for participant ID: " + 1L, exception.getMessage());
+        verify(expenseRepository, times(1)).findAllByParticipantId(1L);
+    }
+
+    @Test
+    void getDetailsFoundTest() {
+        Expense expense = new Expense();
+        when(expenseRepository.findById(1L)).thenReturn(Optional.of(expense));
+
+        ResponseEntity<String> response = expenseService.getDetails(1L);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expense.toString(), response.getBody());
+        verify(expenseRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void getDetailsNotFoundTest() {
+        when(expenseRepository.findById(1L)).thenReturn(Optional.empty());
+
+        ResponseEntity<String> response = expenseService.getDetails(1L);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(expenseRepository, times(1)).findById(1L);
     }
 }
 
