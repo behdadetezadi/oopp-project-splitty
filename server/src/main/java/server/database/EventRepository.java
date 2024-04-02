@@ -28,7 +28,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * @param eventId the ID of the event
      * @return list of expenses associated with the event
      */
-    @Query("SELECT p FROM Expense p JOIN p.eventIds e WHERE e = :eventId")
+    @Query("SELECT p FROM Expense p WHERE p.eventId = :eventId")
     List<Expense> expensesOfEventById(@Param("eventId") long eventId);
 
     /**
