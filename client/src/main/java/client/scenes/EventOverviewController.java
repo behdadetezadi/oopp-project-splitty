@@ -42,7 +42,8 @@ public class EventOverviewController {
     private ComboBox<String> languageComboBox;
     @FXML
     private Button backToMain;
-
+    @FXML
+    private Button showAllExpensesButton;
     @FXML
     private BorderPane root;
     @FXML
@@ -175,6 +176,7 @@ public class EventOverviewController {
         filterOne.setText(resourceBundle.getString("From"));
         filterTwo.setText(resourceBundle.getString("Including"));
         sendInvitesButton.setText(resourceBundle.getString("Send_Invites"));
+        showAllExpensesButton.setText(resourceBundle.getString("Show_All_Expenses"));
     }
 
     /**

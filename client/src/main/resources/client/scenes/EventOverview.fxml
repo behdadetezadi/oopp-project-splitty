@@ -47,7 +47,7 @@
                 <Label fx:id="titleLabel" style="-fx-font-weight: bold;" styleClass="title-label" />
             </HBox>
             <HBox alignment="CENTER">
-                <Button fx:id="showAllExpensesButton" text="Show All Expenses" onAction="#showAllExpensesOverview" />
+                <Button fx:id="showAllExpensesButton" text="%Show_All_Expenses" onAction="#showAllExpensesOverview" />
             </HBox>
 
         </VBox>
