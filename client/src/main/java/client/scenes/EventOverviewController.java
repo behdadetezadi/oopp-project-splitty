@@ -142,6 +142,7 @@ public class EventOverviewController {
         resourceBundle = ResourceBundle.getBundle("message", locale);
         activeLocale = locale;
         updateUIElements();
+        mainController.storeLanguagePreference(locale);
     }
 
     private void switchLanguage(String language) {
