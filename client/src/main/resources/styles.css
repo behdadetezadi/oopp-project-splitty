@@ -2,11 +2,10 @@
     -fx-background-color: black;
 }
 
-
-
 .button-hover {
     -fx-background-color: #00fd48;
     -fx-cursor: hand;
+    -fx-font-weight: bold; /* Making button text bold */
 }
 
 .button-hover:hover {
@@ -15,10 +14,10 @@
     -fx-scale-y: 1.05;
 }
 
-
 .label-hover {
     -fx-underline: true;
     -fx-cursor: hand;
+    -fx-font-weight: bold; /* Making label text bold */
 }
 
 .label-hover:hover {
@@ -27,18 +26,18 @@
     -fx-text-fill: lime;
 }
 
-
 .root {
     -fx-background-color: black;
     -fx-font-family: "Courier New", monospace;
+    -fx-font-weight: bold; /* Making root text bold */
 }
 
-
-.black-background-label, .label{
+.black-background-label,
+.label {
     -fx-background-color: black;
     -fx-text-fill: lime;
     -fx-font-size: 14px;
-
+    -fx-font-weight: bold; /* Making label text bold */
 }
 
 .label-button {
@@ -46,10 +45,13 @@
     -fx-border: none;
     -fx-text-fill: lime;
     -fx-font-size: 20px;
+    -fx-font-weight: bold; /* Making label button text bold */
 }
 
-
-.text-field, .text-area, .list-view, .list-cell {
+.text-field,
+.text-area,
+.list-view,
+.list-cell {
     -fx-background-color: black;
     -fx-text-fill: lime;
     -fx-font-size: 14px;
@@ -61,6 +63,7 @@
 
 .button {
     -fx-background-radius: 20px; /* Increase radius for buttons */
+    -fx-font-weight: bold; /* Making button text bold */
 }
 
 .list-view {
