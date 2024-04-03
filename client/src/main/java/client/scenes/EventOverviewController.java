@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,10 +20,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static client.utils.AnimationUtil.animateButton;
@@ -137,6 +135,14 @@ public class EventOverviewController {
 
         }
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
+
+        server.registerForEventUpdates("/topic/eventTitle", event.getId(), null, event1 -> {
+            Platform.runLater(() -> {
+                event = event1;
+                titleLabel.setText(event.getTitle());
+            });
+
+        });
     }
     private void loadLanguage(Locale locale) {
         resourceBundle = ResourceBundle.getBundle("message", locale);
@@ -246,7 +252,16 @@ public class EventOverviewController {
         result.ifPresent(newTitle -> {
             titleLabel.setText(newTitle); // Update UI immediately
             server.updateEventTitle(event.getId(), newTitle); // Send request to server
+
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("eventId", event.getId());
+            payload.put("newTitle", newTitle);
+
+            server.send("/app/eventTitle", payload);
             event.setTitle(newTitle); // Update local event object
+            initialize(activeLocale);
+
+
         });
     }
 

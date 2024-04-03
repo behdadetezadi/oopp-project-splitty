@@ -28,7 +28,7 @@ public class Participant {
     @MapKeyJoinColumn(name = "event_id")
     @Column(name = "owed_amount")
     private Map<Event, Double> payedAmount;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<Long> eventIds;
     private String languageChoice;
 
