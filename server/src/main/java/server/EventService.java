@@ -205,7 +205,7 @@ public class EventService {
      * @param eventId long
      * @param participantId long
      */
-    public void removeParticipantFromEvent(long eventId, long participantId) {
+    public Participant removeParticipantFromEvent(long eventId, long participantId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
         event.setPeople(event.getPeople().stream()
@@ -216,6 +216,7 @@ public class EventService {
                 .orElseThrow(() -> new IllegalArgumentException("Participant not found"));
         participant.getEventIds().removeIf(eId -> eId == eventId);
         participantRepository.save(participant);
+        return participant;
     }
 
 

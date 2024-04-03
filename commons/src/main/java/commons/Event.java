@@ -19,7 +19,7 @@ public class Event {
     private long id;
     private String title;
     private long inviteCode;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Participant> people;
     @OneToMany(cascade = CascadeType.REMOVE)
     private List<Expense> expenses;
