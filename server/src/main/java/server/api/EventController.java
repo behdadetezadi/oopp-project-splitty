@@ -191,7 +191,12 @@ private Map<Object, Consumer<Participant>> listeners = new HashMap<>();
     @DeleteMapping("/{eventId}/participants/{participantId}")
     public ResponseEntity<Participant> removeParticipant(@PathVariable long eventId, @PathVariable long participantId) {
         Participant participant = eventService.removeParticipantFromEvent(eventId, participantId);
-        return ResponseEntity.ok(participant);
+        if (participant != null) {
+            template.convertAndSend("/topic/participantDeletion", new ParticipantDeletionRequest(eventId, participantId));
+            return ResponseEntity.ok(participant);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @MessageMapping("/participantDeletion")

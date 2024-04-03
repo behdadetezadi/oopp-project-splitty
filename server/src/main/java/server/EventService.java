@@ -3,6 +3,7 @@ package server;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
+import jakarta.transaction.Transactional;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 import server.database.EventRepository;
@@ -205,6 +206,7 @@ public class EventService {
      * @param eventId long
      * @param participantId long
      */
+    @Transactional
     public Participant removeParticipantFromEvent(long eventId, long participantId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));

@@ -4,6 +4,14 @@ public class ParticipantDeletionRequest {
     private long eventId;
     private long participantId;
 
+    public ParticipantDeletionRequest(long eventId, long participantId){
+        this.eventId=eventId;
+        this.participantId=participantId;
+    }
+
+    public ParticipantDeletionRequest(){}
+
+
     public long getEventId() {
         return eventId;
     }
