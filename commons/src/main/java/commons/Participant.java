@@ -16,13 +16,13 @@ public class Participant {
     private String email;
     private String iban; // international bank account number.
     private String bic; // bank identifier code. Similar to the iban, it is required in the backlog.
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "participant_owed_amount",
             joinColumns = @JoinColumn(name = "participant_id"))
     @MapKeyJoinColumn(name = "event_id")
     @Column(name = "owed_amount")
     private Map<Event, Double> owedAmount;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "participant_owed_amount",
             joinColumns = @JoinColumn(name = "participant_id"))
     @MapKeyJoinColumn(name = "event_id")

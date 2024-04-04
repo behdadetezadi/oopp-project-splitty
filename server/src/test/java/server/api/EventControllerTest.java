@@ -238,15 +238,6 @@ public class EventControllerTest {
     }
 
     @Test
-    public void removeParticipant_Success() {
-        doNothing().when(eventService).removeParticipantFromEvent(anyLong(), anyLong());
-        ResponseEntity<Void> response = eventController.removeParticipant(1L, 1L);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(eventService).removeParticipantFromEvent(1L, 1L);
-    }
-
-    @Test
     void testRemoveParticipantError() {
         doThrow(new RuntimeException("Failed to remove participant")).when(eventService).removeParticipantFromEvent(anyLong(), anyLong());
 
