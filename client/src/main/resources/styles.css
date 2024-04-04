@@ -171,3 +171,11 @@
     -fx-font-size: 18px; /* Set the font size for list items */
     -fx-font-weight: bold; /* Make the font bold */
 }
+
+.text-area {
+    text-area-background: black ;
+}
+
+.text-area .content {
+    -fx-background-color: text-area-background ;
+}

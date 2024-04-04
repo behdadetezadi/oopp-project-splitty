@@ -120,6 +120,7 @@ public class InviteController  {
         Tooltip inviteCodeToolTip = new Tooltip(resourceBundle.getString("Click_to_copy_the_invite_code"));
         Tooltip.install(inviteCode,inviteCodeToolTip);
         this.inviteCode.getStyleClass().add("label-hover");
+        this.emailsField.setStyle("text-area");
 
     }
 
