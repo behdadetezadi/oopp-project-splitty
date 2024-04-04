@@ -24,6 +24,9 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import org.checkerframework.checker.units.qual.C;
 
 import static client.utils.AnimationUtil.animateButton;
 import static client.utils.AnimationUtil.animateText;
@@ -139,7 +142,14 @@ public class EventOverviewController {
 
         }
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
-        this.inviteCode.setText(String.valueOf(this.event.getInviteCode()));
+        if (event != null) {
+            this.inviteCode.setText(String.valueOf(this.event.getInviteCode()));
+            this.inviteCode.setOnMouseClicked(event -> copyInviteCode());
+            Tooltip inviteCodeToolTip = new Tooltip(resourceBundle.getString("Click_to_copy_the_invite_code"));
+            Tooltip.install(inviteCode,inviteCodeToolTip);
+        }
+
+
     }
     private void loadLanguage(Locale locale) {
         resourceBundle = ResourceBundle.getBundle("message", locale);
@@ -251,6 +261,15 @@ public class EventOverviewController {
             server.updateEventTitle(event.getId(), newTitle); // Send request to server
             event.setTitle(newTitle); // Update local event object
         });
+    }
+
+    private void copyInviteCode() {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(
+                this.inviteCode.getText()
+        );
+        clipboard.setContent(content);
     }
 
     /**
