@@ -71,6 +71,8 @@ public class EventOverviewController {
     private Button addExpenseButton;
     @FXML
     private Button showExpensesButton;
+    @FXML
+    private Label inviteCode;
 
 
     @FXML
@@ -137,6 +139,7 @@ public class EventOverviewController {
 
         }
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
+        this.inviteCode.setText(String.valueOf(this.event.getInviteCode()));
     }
     private void loadLanguage(Locale locale) {
         resourceBundle = ResourceBundle.getBundle("message", locale);
