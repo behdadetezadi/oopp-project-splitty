@@ -110,6 +110,7 @@ public class EventOverviewController {
 
     /**
      * initializer function does: //TODO
+     * @param locale the locale of user
      */
     public void initialize(Locale locale) {
 
@@ -219,6 +220,7 @@ public class EventOverviewController {
     /**
      * called by startPage and other pages when setting up this page
      * @param event event to be set
+     * @param locale the locale of user
      */
     public void setEvent(Event event, Locale locale) {
         this.event = event;
