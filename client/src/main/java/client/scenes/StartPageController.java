@@ -197,6 +197,7 @@ public class StartPageController {
         resourceBundle = ResourceBundle.getBundle("message", locale);
         activeLocale = locale;
         updateUIElements();
+        mainController.storeLanguagePreference(locale);
     }
 
     private void switchLanguage(String language) {
