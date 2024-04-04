@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
@@ -142,11 +143,13 @@ public class EventOverviewController {
 
         }
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
+
         if (event != null) {
             this.inviteCode.setText(String.valueOf(this.event.getInviteCode()));
             this.inviteCode.setOnMouseClicked(event -> copyInviteCode());
             Tooltip inviteCodeToolTip = new Tooltip(resourceBundle.getString("Click_to_copy_the_invite_code"));
             Tooltip.install(inviteCode,inviteCodeToolTip);
+            this.inviteCode.getStyleClass().add("label-hover");
         }
 
 
@@ -264,12 +267,14 @@ public class EventOverviewController {
     }
 
     private void copyInviteCode() {
+
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
         content.putString(
                 this.inviteCode.getText()
         );
         clipboard.setContent(content);
+        AlertUtils.showInformationAlert("Invite code copied!", "copied the following invitecode: ", this.inviteCode.getText());
     }
 
     /**
