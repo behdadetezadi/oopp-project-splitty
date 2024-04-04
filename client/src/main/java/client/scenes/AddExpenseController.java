@@ -124,7 +124,7 @@ public class AddExpenseController {
 
         if(category == null || category.isEmpty()){
             AlertUtils.showErrorAlert("Invalid description", "Error",
-                    "The category cannot be empty.");
+                    resourceBundle.getString("The_category_cannot_be_empty."));
             return;
         }
 

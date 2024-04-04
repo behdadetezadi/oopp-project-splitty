@@ -3,6 +3,7 @@ package server;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
+import jakarta.transaction.Transactional;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 import server.database.EventRepository;
@@ -205,7 +206,8 @@ public class EventService {
      * @param eventId long
      * @param participantId long
      */
-    public void removeParticipantFromEvent(long eventId, long participantId) {
+    @Transactional
+    public Participant removeParticipantFromEvent(long eventId, long participantId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
         event.setPeople(event.getPeople().stream()
@@ -216,6 +218,7 @@ public class EventService {
                 .orElseThrow(() -> new IllegalArgumentException("Participant not found"));
         participant.getEventIds().removeIf(eId -> eId == eventId);
         participantRepository.save(participant);
+        return participant;
     }
 
 
