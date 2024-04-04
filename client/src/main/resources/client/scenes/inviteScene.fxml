@@ -12,12 +12,12 @@
             </font>
         </Label>
         <Label fx:id="textBeforeCode" layoutX="220.0" layoutY="153.0" prefHeight="16.0" prefWidth="335.0" styleClass="subtitle" text="%Give_people_the_following_invite_Code" />
-        <Label fx:id="inviteCode" layoutX="87.0" layoutY="155.0" prefHeight="16.0" prefWidth="122.0" styleClass="subtitle" text="AC74ED">
+        <Label fx:id="inviteCode" alignment="CENTER" contentDisplay="CENTER" layoutX="87.0" layoutY="155.0" prefHeight="16.0" prefWidth="122.0" styleClass="subtitle" text="AC74ED">
             <font>
                 <Font name="System Bold" size="14.0" />
             </font></Label>
         <Label fx:id="invitePeople" prefHeight="16.0" prefWidth="519.0" styleClass="subtitle" text="%Invite_the_following_people_by_email_(one_address_per_line)" />
-        <TextArea id="emailsField" fx:id="emailsField" prefHeight="142.0" prefWidth="543.0" promptText="%emails_go_here" />
+        <TextArea id="emailsField" fx:id="emailsField" prefHeight="142.0" prefWidth="543.0" promptText="%emails_go_here" style="-fx-background-color: black;" stylesheets="@../../styles.css" />
         <HBox alignment="CENTER" spacing="10.0">
             <Button id="backButton" fx:id="backButton" onAction="#handleBackButtonAction" styleClass="button" text="%back" />
             <Button id="submitButton" fx:id="submitButton" onAction="#handleSubmitButtonAction" styleClass="button" text="%Send_Invites" />

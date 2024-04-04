@@ -274,7 +274,9 @@ public class EventOverviewController {
                 this.inviteCode.getText()
         );
         clipboard.setContent(content);
-        AlertUtils.showInformationAlert("Invite code copied!", "copied the following invitecode: ", this.inviteCode.getText());
+        AlertUtils.showInformationAlert("Invite code copied!",
+                "copied the following invitecode: ",
+                this.inviteCode.getText());
     }
 
     /**
