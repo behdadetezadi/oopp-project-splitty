@@ -52,20 +52,13 @@ public class EventOverviewController {
     private ComboBox<ParticipantOption> participantDropdown;
     @FXML
     private Button showParticipantsButton;
-    @FXML
-    private ListView<String> optionsListView;
+
     @FXML
     private Label titleLabel;
     @FXML
     private Label participantsLabel;
     @FXML
     private Label expensesLabel;
-    @FXML
-    private Label optionsLabel;
-    @FXML
-    private Button filterOne;
-    @FXML
-    private Button filterTwo;
     @FXML
     private Button sendInvitesButton;
     @FXML
@@ -126,10 +119,7 @@ public class EventOverviewController {
             titleLabel.setOnMouseClicked(event -> editTitle());
             Tooltip editTitleTooltip = new Tooltip(resourceBundle.getString("Click_to_edit_the_title"));
             Tooltip.install(titleLabel, editTitleTooltip);
-
             showParticipantsButton.getStyleClass().add("button-hover");
-            filterOne.getStyleClass().add("button-hover");
-            filterTwo.getStyleClass().add("button-hover");
             sendInvitesButton.getStyleClass().add("button-hover");
             addExpenseButton.getStyleClass().add("button-hover");
             showExpensesButton.getStyleClass().add("button-hover");
@@ -172,9 +162,6 @@ public class EventOverviewController {
         participantDropdown.setPromptText(resourceBundle.getString("Select_participant"));
         addExpenseButton.setText(resourceBundle.getString("Add_Expense"));
         showExpensesButton.setText(resourceBundle.getString("Show_Expenses"));
-        optionsLabel.setText(resourceBundle.getString("Options"));
-        filterOne.setText(resourceBundle.getString("From"));
-        filterTwo.setText(resourceBundle.getString("Including"));
         sendInvitesButton.setText(resourceBundle.getString("Send_Invites"));
         showAllExpensesButton.setText(resourceBundle.getString("Show_All_Expenses"));
     }
@@ -284,13 +271,6 @@ public class EventOverviewController {
         participantDropdown.setItems(participantOptions);
     }
 
-
-
-    private void initializeOptionsListView() {
-        // If you have specific options to show, add them here
-        optionsListView.getItems().addAll("Option 1", "Option 2", "Option 3");
-    }
-
     /**
      * animates the labels using AnimationUtil
      */
@@ -298,7 +278,6 @@ public class EventOverviewController {
         animateText(titleLabel, event.getTitle());
         animateText(participantsLabel, resourceBundle.getString("Participants"));
         animateText(expensesLabel, resourceBundle.getString("Expenses"));
-        animateText(optionsLabel, resourceBundle.getString("Options"));
     }
 
     /**
@@ -307,40 +286,6 @@ public class EventOverviewController {
     private void animateButtonsText() {
         //animateButton(sendInvitesButton);
         //animateButton(addExpenseButton);
-        animateButton(filterOne);
-        animateButton(filterTwo);
-    }
-
-
-
-    //TODO needs changing to better fit functionality and backlog
-    /**
-     * apply filters for options list
-     */
-    @FXML
-    private void applyFromFilter() {
-        // Assuming you want to filter based on a selected participant
-        ParticipantOption selectedParticipant = participantDropdown.getSelectionModel().getSelectedItem();
-        if (selectedParticipant != null) {
-            filteredOptions.clear();
-            filteredOptions.add(resourceBundle.getString("Filtered_option_for") + selectedParticipant);
-            optionsListView.setItems(filteredOptions);
-        }
-    }
-
-
-    //TODO needs changing to better fit functionality and backlog
-    /**
-     * apply filters for options list
-     */
-    @FXML
-    private void applyIncludingFilter() {
-        String selectedParticipant = null; // Get selected participant
-        if (selectedParticipant != null) {
-            filteredOptions.clear();
-            filteredOptions.add(resourceBundle.getString("Including")+ " " + selectedParticipant);
-            optionsListView.setItems(filteredOptions);
-        }
     }
 
     /**
@@ -379,8 +324,6 @@ public class EventOverviewController {
 
 
 
-
-
     /**
      * Here is just a simple regular error message which we
      * can add later for error handling
@@ -400,7 +343,5 @@ public class EventOverviewController {
     public void refreshParticipants() {
         loadParticipants();
     }
-
-
 
 }
