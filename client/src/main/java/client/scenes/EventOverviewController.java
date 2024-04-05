@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
@@ -24,6 +25,9 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import org.checkerframework.checker.units.qual.C;
 
 import static client.utils.AnimationUtil.animateButton;
 import static client.utils.AnimationUtil.animateText;
@@ -72,6 +76,8 @@ public class EventOverviewController {
     private Button addExpenseButton;
     @FXML
     private Button showExpensesButton;
+    @FXML
+    private Label inviteCode;
 
 
     @FXML
@@ -105,6 +111,7 @@ public class EventOverviewController {
 
     /**
      * initializer function does: //TODO
+     * @param locale the locale of user
      */
     public void initialize(Locale locale) {
 
@@ -138,6 +145,16 @@ public class EventOverviewController {
 
         }
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
+
+        if (event != null) {
+            this.inviteCode.setText(String.valueOf(this.event.getInviteCode()));
+            this.inviteCode.setOnMouseClicked(event -> copyInviteCode());
+            Tooltip inviteCodeToolTip = new Tooltip(resourceBundle.getString("Click_to_copy_the_invite_code"));
+            Tooltip.install(inviteCode,inviteCodeToolTip);
+            this.inviteCode.getStyleClass().add("label-hover");
+        }
+
+
     }
     private void loadLanguage(Locale locale) {
         resourceBundle = ResourceBundle.getBundle("message", locale);
@@ -206,6 +223,7 @@ public class EventOverviewController {
     /**
      * called by startPage and other pages when setting up this page
      * @param event event to be set
+     * @param locale the locale of user
      */
     public void setEvent(Event event, Locale locale) {
         this.event = event;
@@ -251,6 +269,19 @@ public class EventOverviewController {
             server.updateEventTitle(event.getId(), newTitle); // Send request to server
             event.setTitle(newTitle); // Update local event object
         });
+    }
+
+    private void copyInviteCode() {
+
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(
+                this.inviteCode.getText()
+        );
+        clipboard.setContent(content);
+        AlertUtils.showInformationAlert("Invite code copied!",
+                "copied the following invitecode: ",
+                this.inviteCode.getText());
     }
 
     /**

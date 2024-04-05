@@ -1,14 +1,14 @@
 package client.scenes;
 
 
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -58,6 +58,7 @@ public class InviteController  {
         this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
+
     }
 
     /**
@@ -103,16 +104,23 @@ public class InviteController  {
 
     /**
      * method that sets title and invite code according to passed event
-     * @param event the event
+     * @param newEvent the event
+     * @param locale the locale of the user
      */
-    public void initData(Event event, Locale locale) {
+    public void initData(Event newEvent, Locale locale) {
         this.activeLocale = locale;
         resourceBundle = ResourceBundle.getBundle("message", locale);
         updateUIElements();
-        this.event = event;
+        this.event = newEvent;
         inviteCode.setPrefWidth(Double.MAX_VALUE);
         inviteCode.setText(String.valueOf(event.getInviteCode()));
         title.setText(event.getTitle());
+
+        this.inviteCode.setOnMouseClicked(event -> copyInviteCode());
+        Tooltip inviteCodeToolTip = new Tooltip(resourceBundle.getString("Click_to_copy_the_invite_code"));
+        Tooltip.install(inviteCode,inviteCodeToolTip);
+        this.inviteCode.getStyleClass().add("label-hover");
+
     }
 
     public void updateUIElements() {
@@ -135,5 +143,18 @@ public class InviteController  {
             e.printStackTrace();
 
         }
+    }
+
+    private void copyInviteCode() {
+
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(
+                this.inviteCode.getText()
+        );
+        clipboard.setContent(content);
+        AlertUtils.showInformationAlert("Invite code copied!",
+                "copied the following invitecode: ",
+                this.inviteCode.getText());
     }
 }
