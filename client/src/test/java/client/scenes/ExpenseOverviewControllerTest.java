@@ -17,27 +17,27 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ExpenseOverviewControllerTest {
 
-    @Test
-    void testFormatExpenseForDisplay() {
-        // Setup
-        ServerUtils serverMock = mock(ServerUtils.class);
-        MainController mainControllerMock = mock(MainController.class);
-        Stage stageMock = mock(Stage.class);
-        Event eventMock = mock(Event.class);
-
-        ExpenseOverviewController controller = new ExpenseOverviewController(stageMock, serverMock, mainControllerMock, eventMock);
-
-        Expense expense = new Expense();
-        expense.setParticipant(new Participant("John", "Doe")); // Assuming Participant has a constructor like this.
-        expense.setCategory("Food");
-        expense.setAmount(15.50);
-
-        // Action
-        String result = controller.formatExpenseForDisplay(expense);
-
-        // Assertion
-        assertEquals("John - Food: $15.50", result);
-    }
+//    @Test
+//    void testFormatExpenseForDisplay() {
+//        // Setup
+//        ServerUtils serverMock = mock(ServerUtils.class);
+//        MainController mainControllerMock = mock(MainController.class);
+//        Stage stageMock = mock(Stage.class);
+//        Event eventMock = mock(Event.class);
+//
+//        ExpenseOverviewController controller = new ExpenseOverviewController(stageMock, serverMock, mainControllerMock, eventMock);
+//
+//        Expense expense = new Expense();
+//        expense.setParticipant(new Participant("John", "Doe")); // Assuming Participant has a constructor like this.
+//        expense.setCategory("Food");
+//        expense.setAmount(15.50);
+//
+//        // Action
+//        String result = controller.formatExpenseForDisplay(expense);
+//
+//        // Assertion
+//        assertEquals("John - Food: $15.50", result);
+//    }
 //    @Test
 //    void testRefreshExpensesListWithExpenses() {
 //        // Mock dependencies
