@@ -432,48 +432,21 @@ class EventServiceTest {
     }
 
 
-//    @Test
-//    void testRemoveExpenseFromEventSuccess() {
-//        Event event = new Event();
-//        Expense expense = new Expense();
-//        expense.setId(1L);
-//        expense.setEventId(event.getId());
-//
-//        when(eventRepository.findById(anyLong())).thenReturn(Optional.of(event));
-//        when(expenseRepository.findById(anyLong())).thenReturn(Optional.of(expense));
-//        eventService.removeExpenseFromEvent(1L, 1L);
-//
-//        assertFalse(event.getExpenses().contains(expense));
-//        verify(eventRepository, times(1)).save(event);
-//        verify(expenseRepository, times(1)).save(expense);
-//    }
+    @Test
+    void testRemoveExpenseFromEventSuccess() {
+        Event event = new Event();
+        Expense expense = new Expense();
+        expense.setId(1L);
+        expense.setEventId(event.getId());
 
-//    @Test
-//    void testRemoveExpenseFromEventSuccess() {
-//        Event event = new Event();
-//        event.setId(1L);
-//        Expense expense = new Expense();
-//        expense.setId(1L);
-//        expense.setEventId(event.getId());
-//
-//        when(eventRepository.findById(anyLong())).thenReturn(Optional.of(event));
-//
-//        when(expenseRepository.findById(anyLong())).thenReturn(Optional.of(expense));
-//
-//        eventService.removeExpenseFromEvent(1L, 1L);
-//
-//        // Verify that the expense is removed from the event and the event is saved
-//        assertFalse(event.getExpenses().contains(expense));
-//        verify(eventRepository).save(event);
-//
-//        // Verify that the expense is saved only if its event ID matches the provided event ID
-//        if (expense.getEventId() == event.getId()) {
-//            verify(expenseRepository).save(expense);
-//        } else {
-//            verify(expenseRepository, never()).save(expense);
-//        }
-//    }
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.of(event));
+        when(expenseRepository.findById(anyLong())).thenReturn(Optional.of(expense));
+        eventService.removeExpenseFromEvent(1L, 1L);
 
+        assertFalse(event.getExpenses().contains(expense));
+        verify(eventRepository, times(1)).save(event);
+        verify(expenseRepository, times(1)).save(expense);
+    }
 
     @Test
     public void testUpdateExpenseInEvent() {
