@@ -46,7 +46,7 @@
             </VBox>
 
             <HBox alignment="CENTER">
-                <Button fx:id="showAllExpensesButton" onAction="#showAllExpensesOverview" text="Show All Expenses" />
+                <Button fx:id="showAllExpensesButton" text="%Show_All_Expenses" onAction="#showAllExpensesOverview" />
             </HBox>
 
         </VBox>

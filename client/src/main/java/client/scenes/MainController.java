@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.util.Locale;
+import java.util.prefs.Preferences;
 
 /**
  * This is the main controller which controls the switching between scenes
@@ -43,6 +44,7 @@ public class MainController {
 
     private LoginController loginController;
     private Scene loginScene;
+    private static final String LANGUAGE_PREFERENCE_KEY = "language";
 
     /**
      * initializer method for mainController
@@ -104,9 +106,40 @@ public class MainController {
         this.loginController = loginControllerPair.getKey();
 
         // Show initial scene
-        showLoginPage(Locale.getDefault());
+        showLoginPage(getStoredLanguagePreferenceOrDefault());
         primaryStage.show();
     }
+
+    /**
+     * gets the stored language preference in restart of application
+     * @return a locale
+     */
+    public Locale getStoredLanguagePreferenceOrDefault() {
+        // Retrieve stored language preference from preferences
+        Preferences prefs = Preferences.userNodeForPackage(StartPageController.class);
+        String storedLanguage = prefs.get(LANGUAGE_PREFERENCE_KEY, null);
+
+        // If a preference exists, return the corresponding Locale
+        if (storedLanguage != null) {
+            return Locale.forLanguageTag(storedLanguage);
+        } else {
+            // Default to a predefined language if no preference is found
+            return Locale.getDefault();
+        }
+    }
+
+    /**
+     * stores the chosen language for application restart
+     * @param locale a locale from message resourceBundle
+     */
+    public void storeLanguagePreference(Locale locale) {
+        // Store selected language preference in preferences
+        Preferences prefs = Preferences.userNodeForPackage(StartPageController.class);
+        prefs.put(LANGUAGE_PREFERENCE_KEY, locale.toLanguageTag());
+    }
+
+
+
 
     /**
      * shows the LoginPage

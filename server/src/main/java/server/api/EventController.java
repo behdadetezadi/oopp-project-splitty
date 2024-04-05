@@ -3,6 +3,7 @@ package server.api;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
+import commons.ParticipantDeletionRequest;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -188,11 +189,22 @@ private Map<Object, Consumer<Participant>> listeners = new HashMap<>();
     }
 
     @DeleteMapping("/{eventId}/participants/{participantId}")
-    public ResponseEntity<Void> removeParticipant(@PathVariable long eventId, @PathVariable long participantId) {
-        eventService.removeParticipantFromEvent(eventId, participantId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Participant> removeParticipant(@PathVariable long eventId, @PathVariable long participantId) {
+        Participant participant = eventService.removeParticipantFromEvent(eventId, participantId);
+        if (participant != null) {
+            template.convertAndSend("/topic/participantDeletion", new ParticipantDeletionRequest(eventId, participantId));
+            return ResponseEntity.ok(participant);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
+    @MessageMapping("/participantDeletion")
+    @SendTo("/topic/participantDeletion")
+    public Participant removeParticipantWebSockets(ParticipantDeletionRequest request){
+        Participant participant = eventService.removeParticipantFromEvent(request.getEventId(), request.getParticipantId());
+        return participant;
+    }
 
     @PutMapping("/{eventId}/participants/{participantId}")
     public ResponseEntity<Participant> updateParticipantInEvent(
