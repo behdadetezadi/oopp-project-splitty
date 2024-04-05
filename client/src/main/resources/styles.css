@@ -106,10 +106,21 @@
     -fx-padding: 4px 6px;
 }
 
+
+.list-view {
+    -fx-control-inner-background: black; /* Adjust list view background */
+}
+
+.list-cell {
+    -fx-control-inner-background: black; /* Adjust list cell background */
+}
+
 .list-view .list-cell {
     -fx-background-color: transparent; /* Set background color of cells */
     -fx-border-color: transparent; /* Set border color of cells */
 }
+
+
 
 .table-view {
     -fx-base: black;
@@ -174,3 +185,22 @@
     -fx-font-size: 18px; /* Set the font size for list items */
     -fx-font-weight: bold; /* Make the font bold */
 }
+
+------------------------------------
+
+.text-area {
+    text-area-background: black ;
+}
+
+.text-area .content {
+    -fx-background-color: text-area-background ;
+}
+
+.title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-padding: 20px;
+    -fx-alignment: center;
+}
+
+
