@@ -3,17 +3,19 @@ package server.api;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
+import org.hibernate.service.spi.ServiceException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import server.EventService;
 import server.database.EventRepository;
+import server.database.ExpenseRepository;
 import server.database.ParticipantRepository;
-
 import java.util.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -21,15 +23,15 @@ class EventServiceTest {
 
     @Mock
     private EventRepository eventRepository;
-
+    @Mock
+    private ExpenseRepository expenseRepository;
     @Mock
     private ParticipantRepository participantRepository;
-
     @InjectMocks
     private EventService eventService;
     private Event event;
     private Participant participant;
-
+    private Expense expense;
 
     @BeforeEach
     void setUp() {
@@ -37,18 +39,26 @@ class EventServiceTest {
         event = new Event();
         event.setId(1L);
         event.setPeople(new ArrayList<>());
-
         participant = new Participant();
-        participant.setId(1L);    }
+        participant.setId(1L);
+        expense = new Expense();
+        expense.setId(1L);
+    }
 
     @Test
     void getAllEventsTest() {
         List<Event> events = Arrays.asList(new Event(), new Event());
         when(eventRepository.findAll()).thenReturn(events);
         List<Event> fetchedEvents = eventService.getAllEvents();
-
         assertEquals(events.size(), fetchedEvents.size());
         verify(eventRepository).findAll();
+    }
+
+    @Test
+    void getAllEventsTestException() {
+        when(eventRepository.findAll()).thenThrow(new ServiceException("Service exception"));
+        assertThrows(ServiceException.class, () -> eventService.getAllEvents());
+        verify(eventRepository, times(1)).findAll();
     }
 
     @Test
@@ -56,9 +66,22 @@ class EventServiceTest {
         Event event = new Event();
         when(eventRepository.save(any(Event.class))).thenReturn(event);
         Event createdEvent = eventService.createEvent(event);
-
         assertEquals(event, createdEvent);
         verify(eventRepository).save(event);
+    }
+
+    @Test
+    void createEventTestExceptionNull() {
+        assertThrows(IllegalArgumentException.class, () -> eventService.createEvent(null));
+        verifyNoInteractions(eventRepository);
+    }
+
+    @Test
+    void createEventTestException() {
+        Event event = new Event();
+        doThrow(new RuntimeException("exception")).when(eventRepository).save(event);
+        assertThrows(ServiceException.class, () -> eventService.createEvent(event));
+        verify(eventRepository, times(1)).save(event);
     }
 
     @Test
@@ -70,6 +93,19 @@ class EventServiceTest {
     }
 
     @Test
+    void deleteEventTestNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> eventService.deleteEvent(null));
+        assertEquals("ID must be positive and not null", exception.getMessage());
+    }
+
+    @Test
+    void deleteEventTestException() {
+        doThrow(new RuntimeException("Error deleting the event")).when(eventRepository).deleteById(1L);
+        ServiceException exception = assertThrows(ServiceException.class, () -> eventService.deleteEvent(1L));
+        assertEquals("Error deleting the event", exception.getMessage());
+    }
+
+    @Test
     void findEventByIdTest() {
         Optional<Event> event = Optional.of(new Event());
         when(eventRepository.findById(anyLong())).thenReturn(event);
@@ -77,6 +113,19 @@ class EventServiceTest {
 
         assertEquals(event, foundEvent);
         verify(eventRepository).findById(1L);
+    }
+
+    @Test
+    void findEventByIdTestException() {
+        assertThrows(IllegalArgumentException.class, () -> eventService.findEventById(-1L));
+    }
+
+    @Test
+    void findEventByIdTestServiceException() {
+        when(eventRepository.findById(anyLong())).thenThrow(new RuntimeException("error"));
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> eventService.findEventById(anyLong()));
+        assertEquals("Error finding the participant by id", exception.getMessage());
     }
 
     @Test
@@ -91,7 +140,34 @@ class EventServiceTest {
         verify(eventRepository).save(event);
     }
 
-// TODO this is currently failing
+    @Test
+    void updateEventTitleTestException() {
+        when(eventRepository.findById(1L)).thenReturn(Optional.empty());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> eventService.updateEventTitle(1L, "newTitle"));
+        assertEquals("Event not found with ID: " + 1L, exception.getMessage());
+        verify(eventRepository, times(1)).findById(1L);
+        verify(eventRepository, never()).save(any());
+    }
+
+    @Test
+    void testGetParticipantsByTitle() {
+        when(eventRepository.participantsOfEventByTitle("title")).thenReturn(List.of(new Participant()));
+        List<Participant> actualParticipants = eventService.getParticipantsByTitle("title");
+        assertEquals(List.of(new Participant()), actualParticipants);
+        verify(eventRepository, times(1)).participantsOfEventByTitle("title");
+    }
+
+    @Test
+    void testGetParticipantsByInviteCode() {
+        when(eventRepository.participantsOfEventByInviteCode(1L)).thenReturn(List.of(new Participant()));
+
+        List<Participant> actualParticipants = eventService.getParticipantsByInviteCode(1L);
+        assertEquals(List.of(new Participant()), actualParticipants);
+        verify(eventRepository, times(1)).participantsOfEventByInviteCode(1L);
+    }
+
+// TODO this is currently failing do this after the websockets
 //
 //    @Test
 //    void removeParticipantFromEventTest() {
@@ -106,7 +182,6 @@ class EventServiceTest {
 //        verify(eventRepository).save(event);
 //        assertEquals(0, event.getPeople().size());
 //    }
-
 
     @Test
     void addParticipantToEventSuccessfully() {
@@ -151,6 +226,14 @@ class EventServiceTest {
     }
 
     @Test
+    void removeExpenseFromEventEventNotFound() {
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () ->
+                eventService.removeExpenseFromEvent(1L, 1L));
+    }
+
+    @Test
     void updateParticipantInEventSuccessfully() {
         Participant updatedDetails = new Participant();
         updatedDetails.setFirstName("Updated");
@@ -161,7 +244,7 @@ class EventServiceTest {
         updatedDetails.setIban("updatedIBAN");
         updatedDetails.setLanguageChoice("English");
 
-        event.setPeople(Arrays.asList(participant));
+        event.setPeople(Collections.singletonList(participant));
         when(eventRepository.findById(anyLong())).thenReturn(Optional.of(event));
         when(participantRepository.save(any(Participant.class))).thenReturn(participant);
 
@@ -249,7 +332,7 @@ class EventServiceTest {
         Expense expense = new Expense();
         when(eventRepository.findById(eventId)).thenReturn(Optional.empty());
 
-        assertThrows(NullPointerException.class, () -> eventService.addExpenseToEvent(eventId, expense));
+        assertThrows(IllegalArgumentException.class, () -> eventService.addExpenseToEvent(eventId, expense));
     }
 
     @Test
@@ -275,7 +358,6 @@ class EventServiceTest {
         assertTrue(eventService.findExpensesByEventId(eventId).isEmpty());
     }
 
-
     @Test
     void testGetEventByTitle() {
         List<Event> expectedEvents = Arrays.asList(new Event("Event1"), new Event("Event2"));
@@ -297,13 +379,13 @@ class EventServiceTest {
         assertEquals(expectedParticipants.size(), resultParticipants.size());
         verify(eventRepository).participantsOfEventById(1L);
     }
+
     @Test
     void testGetEventByExpense() {
         Expense expense = new Expense();
         expense.setId(1L);
         Event expectedEvent = new Event("Test Event");
         expectedEvent.getExpenses().add(expense);
-
         when(eventRepository.eventByExpense(expense)).thenReturn(expectedEvent);
 
         Event resultEvent = eventService.getEventByExpense(expense);
@@ -322,6 +404,91 @@ class EventServiceTest {
         verify(eventRepository).expensesOfEventById(eventId);
     }
 
+    @Test
+    public void testFindExpensesByEventId() {
+        Mockito.when(eventRepository.expensesOfEventById(Mockito.anyLong())).thenReturn(List.of(new Expense()));
+        List<Expense> result = eventService.findExpensesByEventId(1L);
+
+        Assertions.assertEquals(List.of(new Expense()), result);
+    }
+
+    @Test
+    public void testAddExpenseToEvent() {
+        Expense expense = new Expense();
+        Mockito.when(expenseRepository.save(Mockito.any(Expense.class))).thenReturn(expense);
+
+        Event event = new Event();
+        long eventId = 1L;
+        Mockito.when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        Expense result = eventService.addExpenseToEvent(eventId, expense);
+        Mockito.verify(expenseRepository).save(expense);
+        Mockito.verify(eventRepository).findById(eventId);
+        Mockito.verify(eventRepository).save(event);
+        Assertions.assertEquals(expense, result);
+        Assertions.assertTrue(event.getExpenses().contains(expense));
+    }
+
+    @Test
+    void testRemoveExpenseFromEventSuccess() {
+        Event event = new Event();
+        Expense expense = new Expense();
+        expense.setId(1L);
+        expense.setEventId(event.getId());
+
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.of(event));
+        when(expenseRepository.findById(anyLong())).thenReturn(Optional.of(expense));
+        eventService.removeExpenseFromEvent(1L, 1L);
+
+        assertFalse(event.getExpenses().contains(expense));
+        verify(eventRepository, times(1)).save(event);
+        verify(expenseRepository, times(1)).save(expense);
+    }
+
+    @Test
+    public void testUpdateExpenseInEvent() {
+        Expense updatedDetails = new Expense();
+        updatedDetails.setParticipant(new Participant());
+        updatedDetails.setCategory("category");
+        updatedDetails.setAmount(1);
+        updatedDetails.setCurrency("EUR");
+        updatedDetails.setDate("date");
+        updatedDetails.setSplittingOption(new ArrayList<>());
+        updatedDetails.setExpenseType("type");
+
+        event.setExpenses(Collections.singletonList(expense));
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.of(event));
+        when(expenseRepository.save(any(Expense.class))).thenReturn(expense);
+
+        Expense updatedExpense = eventService.updateExpenseInEvent(event.getId(), expense.getId(), updatedDetails);
+        assertEquals("category", updatedExpense.getCategory());
+        assertEquals(new Participant(), updatedExpense.getParticipant());
+        assertEquals(1, updatedExpense.getAmount());
+        assertEquals("EUR", updatedExpense.getCurrency());
+        assertEquals("date", updatedExpense.getDate());
+        assertEquals(new ArrayList<>(), updatedExpense.getSplittingOption());
+        assertEquals("type", updatedExpense.getExpenseType());
+        verify(expenseRepository).save(expense);
+    }
+
+    @Test
+    void updateExpenseInEventEventNotFound() {
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () ->
+                eventService.updateExpenseInEvent(1L, 1L, new Expense()));
+    }
+
+    @Test
+    void updateExpenseInEventExpenseNotFound() {
+        Event event = new Event();
+        event.setId(1L);
+        event.setExpenses(List.of(new Expense()));
+
+        when(eventRepository.findById(anyLong())).thenReturn(Optional.of(event));
+        assertThrows(IllegalArgumentException.class, () ->
+                eventService.updateExpenseInEvent(event.getId(), expense.getId(), new Expense()));
+    }
 }
 
 
