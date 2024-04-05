@@ -1,5 +1,4 @@
 package server.api;
-
 import commons.Participant;
 import org.hibernate.service.spi.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,12 +9,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import server.ParticipantService;
-
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -41,6 +40,28 @@ class ParticipantControllerTest {
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         verify(participantService).saveParticipant(participant);
+    }
+
+    @Test
+    void testSaveParticipantIllegalArgumentException() {
+        Participant participant = new Participant();
+        when(participantService.saveParticipant(participant)).thenThrow(new IllegalArgumentException("Invalid argument"));
+
+        ResponseEntity<?> response = participantController.saveParticipant(participant);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid argument", response.getBody());
+    }
+
+    @Test
+    void testSaveParticipantException() {
+        Participant participant = new Participant();
+        when(participantService.saveParticipant(participant)).thenThrow(new RuntimeException("Internal server error"));
+
+        ResponseEntity<?> response = participantController.saveParticipant(participant);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Failed to save the participant: Internal server error", response.getBody());
     }
 
     @Test
@@ -89,6 +110,16 @@ class ParticipantControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(participantService).findAllParticipants();
+    }
+
+    @Test
+    void testFindAllParticipantsException() {
+        when(participantService.findAllParticipants()).thenThrow(new RuntimeException("Internal server error"));
+
+        ResponseEntity<?> response = participantController.findAllParticipants();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Failed to retrieve all participants: Internal server error", response.getBody());
     }
 
     @Test
@@ -149,6 +180,15 @@ class ParticipantControllerTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Failed to find the participant by username: Internal error", response.getBody());
+    }
+
+    @Test
+    void testFindParticipantByUsername_NotFound() {
+        when(participantService.findParticipantByUsername("username")).thenReturn(null);
+
+        ResponseEntity<?> response = participantController.findParticipantByUsername("username");
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
     }
 
     @Test
@@ -294,7 +334,6 @@ class ParticipantControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Failed to find participants owing for the event: Invalid eventId", response.getBody());
     }
-
     @Test
     void testFindParticipantsOwingForEventThrowsServiceException() {
         when(participantService.findParticipantsOwingForEvent(anyLong())).thenThrow(new ServiceException("Internal error"));
@@ -309,7 +348,6 @@ class ParticipantControllerTest {
     void testFindParticipantsPaidForEvent() {
         List<Participant> expectedParticipants = List.of(new Participant());
         when(participantService.findParticipantsPaidForEvent(anyLong())).thenReturn(expectedParticipants);
-
         ResponseEntity<?> response = participantController.findParticipantsPaidForEvent(1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -390,5 +428,14 @@ class ParticipantControllerTest {
         ResponseEntity<?> response = participantController.findParticipantsPaidForEvent(3L);
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode(), "Expected 204 status for no participants found who have paid for the event");
+    }
+
+    @Test
+    void testFindParticipantsOwingForEventEmpty() {
+        when(participantService.findParticipantsOwingForEvent(1L)).thenReturn(Collections.emptyList());
+        ResponseEntity<?> response = participantController.findParticipantsOwingForEvent(1L);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
     }
 }

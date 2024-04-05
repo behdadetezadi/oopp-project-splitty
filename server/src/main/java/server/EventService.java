@@ -275,14 +275,15 @@ public class EventService {
     public void removeExpenseFromEvent(long eventId, long expenseId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
-        event.setExpenses(event.getExpenses().stream()
-                .filter(p -> p.getId() != expenseId)
-                .collect(Collectors.toList()));
+        List<Expense> expenses = event.getExpenses() != null ? event.getExpenses() : new ArrayList<>();
+        expenses = expenses.stream()
+                .filter(expense -> expense.getId() != expenseId)
+                .collect(Collectors.toList());
+        event.setExpenses(expenses);
         eventRepository.save(event);
         Expense expense = expenseRepository.findById(expenseId)
                 .orElseThrow(() -> new IllegalArgumentException("Expense not found"));
-        if(expense.getEventId()==eventId)
-        {
+        if(expense.getEventId()==eventId) {
             expense.setEventId(null);
         }
         expenseRepository.save(expense);

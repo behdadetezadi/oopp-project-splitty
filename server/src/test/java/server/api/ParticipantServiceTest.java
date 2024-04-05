@@ -1,16 +1,18 @@
 package server.api;
 
-import org.hibernate.service.spi.ServiceException;
-import server.ParticipantService;
-import server.database.ParticipantRepository;
 import commons.Participant;
+import org.hibernate.service.spi.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import java.util.*;
-
+import org.springframework.dao.EmptyResultDataAccessException;
+import server.ParticipantService;
+import server.database.ParticipantRepository;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -39,6 +41,17 @@ public class ParticipantServiceTest {
     }
 
     @Test
+    void testSaveParticipantException() {
+        Participant participant = new Participant();
+        when(participantRepository.save(participant)).thenThrow(new RuntimeException("Database error"));
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            participantService.saveParticipant(participant);
+        });
+        assertEquals("Error saving the participant", exception.getMessage());
+        assertEquals("Database error", exception.getCause().getMessage());
+    }
+
+    @Test
     public void testFindParticipantById() {
         Long id = 1L;
         Optional<Participant> expectedParticipant = Optional.of(new Participant());
@@ -48,6 +61,17 @@ public class ParticipantServiceTest {
         assertEquals(expectedParticipant, result);
         verify(participantRepository).findById(id);
     }
+
+    @Test
+    void testFindParticipantByIdException() {
+        when(participantRepository.findById(1L)).thenThrow(new RuntimeException("Database error"));
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            participantService.findParticipantById(1L);
+        });
+        assertEquals("Error finding the participant by id", exception.getMessage());
+        assertEquals("Database error", exception.getCause().getMessage());
+    }
+
 
     @Test
     public void testFindAllParticipants() {
@@ -66,6 +90,17 @@ public class ParticipantServiceTest {
         doNothing().when(participantRepository).deleteById(id);
         participantService.deleteParticipantById(id);
         verify(participantRepository).deleteById(id);
+    }
+
+    @Test
+    void deleteParticipantNotFound() {
+        doThrow(new EmptyResultDataAccessException("Not found", 1)).when(participantRepository).deleteById(1L);
+
+        ServiceException exception = assertThrows(ServiceException.class, () -> {
+            participantService.deleteParticipantById(1L);
+        });
+
+        assertEquals("Error deleting the participant", exception.getMessage());
     }
 
     @Test
@@ -175,11 +210,11 @@ public class ParticipantServiceTest {
         assertEquals("Error retrieving all the participants", exception.getMessage());
     }
 
-        @Test
-        public void testDeleteParticipantByIdWithInvalidId() {
-            Exception exception = assertThrows(IllegalArgumentException.class, () -> participantService.deleteParticipantById(-1L));
-            assertEquals("ID must be positive and not null", exception.getMessage());
-        }
+    @Test
+    public void testDeleteParticipantByIdWithInvalidId() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> participantService.deleteParticipantById(-1L));
+        assertEquals("ID must be positive and not null", exception.getMessage());
+    }
 
     @Test
     public void testFindParticipantByUsernameWithRepositoryException() {
@@ -246,5 +281,53 @@ public class ParticipantServiceTest {
         when(participantRepository.findByLanguageChoice("ABC")).thenThrow(new RuntimeException("Database error"));
         Exception exception = assertThrows(ServiceException.class, () -> participantService.findParticipantsByLanguageChoice("ABC"));
         assertEquals("Error finding the participant by language choice", exception.getMessage());
+    }
+
+    @Test
+    void testUpdateParticipantNotFound() {
+        Participant updatedParticipantInfo = new Participant();
+        when(participantRepository.findById(1L)).thenReturn(Optional.empty());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            participantService.updateParticipant(1L, updatedParticipantInfo);
+        });
+
+        assertEquals("Participant not found", exception.getMessage());
+        verify(participantRepository, never()).save(any());
+    }
+
+    @Test
+    void testUpdateParticipant() {
+        Participant participant = new Participant();
+        participant.setId(1L);
+        participant.setFirstName("John");
+        participant.setLastName("Doe");
+        participant.setUsername("johndoe");
+        participant.setEmail("johndoe@example.com");
+        participant.setIban("IBAN123");
+        participant.setBic("BIC456");
+        participant.setLanguageChoice("en");
+
+        Participant updatedParticipantInfo = new Participant();
+        updatedParticipantInfo.setFirstName("Jane");
+        updatedParticipantInfo.setLastName("Doe");
+        updatedParticipantInfo.setUsername("janedoe");
+        updatedParticipantInfo.setEmail("janedoe@example.com");
+        updatedParticipantInfo.setIban("IBAN789");
+        updatedParticipantInfo.setBic("BIC101");
+        updatedParticipantInfo.setLanguageChoice("fr");
+
+        when(participantRepository.findById(1L)).thenReturn(Optional.of(participant));
+        when(participantRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Participant updatedParticipant = participantService.updateParticipant(1L, updatedParticipantInfo);
+
+        assertEquals("Jane", updatedParticipant.getFirstName());
+        assertEquals("Doe", updatedParticipant.getLastName());
+        assertEquals("janedoe", updatedParticipant.getUsername());
+        assertEquals("janedoe@example.com", updatedParticipant.getEmail());
+        assertEquals("IBAN789", updatedParticipant.getIban());
+        assertEquals("BIC101", updatedParticipant.getBic());
+        assertEquals("fr", updatedParticipant.getLanguageChoice());
+        verify(participantRepository, times(1)).save(any());
     }
 }
