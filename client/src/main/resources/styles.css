@@ -179,3 +179,10 @@
 .text-area .content {
     -fx-background-color: text-area-background ;
 }
+
+.title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-padding: 20px;
+    -fx-alignment: center;
+}
