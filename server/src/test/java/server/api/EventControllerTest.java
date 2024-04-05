@@ -3,6 +3,7 @@ package server.api;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
+import commons.ParticipantDeletionRequest;
 import org.hibernate.service.spi.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,10 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
 import server.EventService;
+
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -82,8 +85,6 @@ public class EventControllerTest {
     void testGetParticipantUpdatesByEventId() throws InterruptedException {
         long eventId = 1L;
         Participant participant = new Participant();
-        DeferredResult<ResponseEntity<Participant>> deferredResult = new DeferredResult<>(5000L, ResponseEntity.status(HttpStatus.NO_CONTENT).build());
-
         var listeners = new HashMap<Object, Consumer<Participant>>();
         try {
             Field listenersField = EventController.class.getDeclaredField("listeners");
@@ -284,10 +285,8 @@ public class EventControllerTest {
     }
 
     @Test
-    public void removeParticipant_Success() {
-        doNothing().when(eventService).removeParticipantFromEvent(anyLong(), anyLong());
-        ResponseEntity<Participant> response = eventController.removeParticipant(1L, 1L);
-
+    public void removeParticipantSuccess() {
+        ResponseEntity<Void> response = eventController.removeParticipant(1L, 1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(eventService).removeParticipantFromEvent(1L, 1L);
     }
@@ -328,6 +327,15 @@ public class EventControllerTest {
         eventControllerMock.updateParticipantInEvent(1L, 1L, new Participant());
 
         verify(eventControllerMock).updateParticipantInEvent(1L, 1L, new Participant());
+    }
+
+    @Test
+    public void testRemoveParticipantWebSockets() {
+        ParticipantDeletionRequest request = new ParticipantDeletionRequest(1L, 2L);
+        Participant expectedParticipant = new Participant();
+        when(eventService.removeParticipantFromEvent(request.getEventId(), request.getParticipantId())).thenReturn(expectedParticipant);
+        Participant result = eventController.removeParticipantWebSockets(request);
+        assertEquals(expectedParticipant, result);
     }
 
     @Test
