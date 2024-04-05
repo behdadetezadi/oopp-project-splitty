@@ -6,6 +6,7 @@ import client.utils.ValidationUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
+import commons.ParticipantDeletionRequest;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -72,6 +73,15 @@ public class TableOfParticipantsController {
     private void registerForParticipantUpdates() {
         if (event != null && server != null) {
             server.registerForMessages("/topic/participants", event.getId(), null, this::handleParticipantUpdates);
+            server.registerForMessages("/topic/participantDeletion", event.getId(), null, p -> {
+                System.out.println("Participant deletion message received for participant ID: " + p.getId());
+                Platform.runLater(() -> {
+                    participants.removeIf(participant -> participant.getId() == p.getId());
+                    setupPagination();
+                });
+            });
+
+
         }
     }
 
@@ -193,6 +203,9 @@ public class TableOfParticipantsController {
                     resourceBundle.getString("Are_you_sure_you_want_to_remove")+ " " + selectedParticipant.getFirstName()
                             + " " + selectedParticipant.getLastName() + "?");
             if (confirmation) {
+                ParticipantDeletionRequest request = new ParticipantDeletionRequest(event.getId(), selectedParticipant.getId());
+
+                server.send("/app/participantDeletion", request);
                 deleteParticipant(selectedParticipant);
             }
         }

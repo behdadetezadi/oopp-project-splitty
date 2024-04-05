@@ -12,7 +12,7 @@
             </font>
         </Label>
         <Label fx:id="textBeforeCode" layoutX="220.0" layoutY="153.0" prefHeight="16.0" prefWidth="335.0" styleClass="subtitle" text="%Give_people_the_following_invite_Code" />
-        <Label fx:id="inviteCode" layoutX="87.0" layoutY="155.0" prefHeight="16.0" prefWidth="122.0" styleClass="subtitle" text="AC74ED">
+        <Label fx:id="inviteCode" alignment="CENTER" contentDisplay="CENTER" layoutX="87.0" layoutY="155.0" prefHeight="16.0" prefWidth="122.0" styleClass="subtitle" text="AC74ED">
             <font>
                 <Font name="System Bold" size="14.0" />
             </font></Label>
