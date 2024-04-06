@@ -145,6 +145,20 @@ public class EventController {
     }
 
     /**
+     * websocket method for updating participant titles
+     * @param payload map
+     */
+
+    @MessageMapping("/eventTitle")
+    @SendTo("/topic/eventTitle")
+    public Event updateEventByTitleWebsockets(Map<String, Object> payload){
+        long eventId = Long.parseLong(payload.get("eventId").toString());
+        String newTitle = payload.get("newTitle").toString();
+        Event event = eventService.updateEventTitle(eventId, newTitle);
+        return event;
+    }
+
+    /**
      * finds participants by the event id
      * @param id as a long number
      * @return an array list of participants if possible (need to modify this later on for try-catch)
