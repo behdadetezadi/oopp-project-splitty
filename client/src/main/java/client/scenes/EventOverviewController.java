@@ -97,13 +97,6 @@ public class EventOverviewController {
         this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
-        server.registerForEventUpdates("/topic/eventTitle", event.getId(), null, event1 -> {
-            Platform.runLater(() -> {
-                event = event1;
-                titleLabel.setText(event.getTitle());
-            });
-
-        });
     }
 
 
@@ -119,6 +112,13 @@ public class EventOverviewController {
      * @param locale the locale of user
      */
     public void initialize(Locale locale) {
+        server.registerForEventUpdates("/topic/eventTitle", event.getId(), null, event1 -> {
+            Platform.runLater(() -> {
+                event = event1;
+                titleLabel.setText(event.getTitle());
+            });
+
+        });
 
         // Load default language
 
