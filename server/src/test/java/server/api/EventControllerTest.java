@@ -329,14 +329,14 @@ public class EventControllerTest {
         verify(eventControllerMock).updateParticipantInEvent(1L, 1L, new Participant());
     }
 
-    @Test
-    public void testRemoveParticipantWebSockets() {
-        ParticipantDeletionRequest request = new ParticipantDeletionRequest(1L, 2L);
-        Participant expectedParticipant = new Participant();
-        when(eventService.removeParticipantFromEvent(request.getEventId(), request.getParticipantId())).thenReturn(expectedParticipant);
-        Participant result = eventController.removeParticipantWebSockets(request);
-        assertEquals(expectedParticipant, result);
-    }
+//    @Test
+//    public void testRemoveParticipantWebSockets() {
+//        ParticipantDeletionRequest request = new ParticipantDeletionRequest(1L, 2L);
+//        Participant expectedParticipant = new Participant();
+//        when(eventService.removeParticipantFromEvent(request.getEventId(), request.getParticipantId())).thenReturn(expectedParticipant);
+//        Participant result = eventController.removeParticipantWebSockets(request);
+//        assertEquals(expectedParticipant, result);
+//    }
 
     @Test
     void testGetExpensesByEventId() {

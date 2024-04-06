@@ -11,16 +11,16 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.Pair;
 
 import java.util.*;
 
 import static client.utils.ValidationUtils.isValidDouble;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
-
-public class ParticipantExpenseViewController
-{
+public class ParticipantExpenseViewController {
     @FXML
     private ListView<String> expensesListView;
     @FXML
@@ -34,13 +34,7 @@ public class ParticipantExpenseViewController
     private long selectedParticipantId;
     private Locale activeLocale;
     private ResourceBundle resourceBundle;
-    /**
-     *
-     * @param primaryStage primary stage
-     * @param server server
-     * @param mainController mainController
-     * @param event Event
-     */
+
     @Inject
     public ParticipantExpenseViewController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
         this.primaryStage = primaryStage;
@@ -54,93 +48,60 @@ public class ParticipantExpenseViewController
         this.resourceBundle = ResourceBundle.getBundle("message", locale);
         updateUIElements();
         this.event = event;
-        this.selectedParticipantId = participantId;}
+        this.selectedParticipantId = participantId;
+    }
 
     public void updateUIElements() {
         backButton.setText(resourceBundle.getString("back"));
-
+        // Update any other UI elements that need to be localized
     }
 
-    /** Format the expense information for display
-     * @param expense the expense need to be displayed
-     */
-    private String formatExpenseForDisplay(Expense expense)
-    {
-        return String.format("%s: %.2f",
-                expense.getCategory(),
-                expense.getAmount());
+    private String formatExpenseForDisplay(Expense expense) {
+        return String.format("%s: %.2f", expense.getCategory(), expense.getAmount());
     }
 
-    /**
-     * Integrates the viewing of expenses for a selected participant.
-     *
-     * @param participantId The ID of the participant whose expenses you want to view.
-     */
     public void initializeExpensesForParticipant(Long participantId) {
-        System.out.println("Initializing expenses for participant ID: " + participantId);
         List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
-        System.out.println("Number of expenses fetched: " + expenses.size());
 
         expensesListView.getItems().clear();
         if (expenses.isEmpty()) {
-            // Display message for no expenses and set sum to $0.00
-            expensesListView.getItems().add("No Expense has been recorded yet");
-            sumOfExpensesLabel.setText("Total: $0.00");
-            // Make the ListView non-interactive in this case
-            expensesListView.setMouseTransparent(true);
-            expensesListView.setFocusTraversable(false);
+            expensesListView.getItems().add(resourceBundle.getString("noExpensesRecorded"));
+            sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"), "0.00"));
         } else {
-            // Reset ListView to be interactive for listing actual expenses
-            expensesListView.setMouseTransparent(false);
-            expensesListView.setFocusTraversable(true);
-
             double sumOfExpenses = 0;
             for (Expense expense : expenses) {
                 String expenseDisplay = formatExpenseForDisplay(expense);
                 expensesListView.getItems().add(expenseDisplay);
                 sumOfExpenses += expense.getAmount();
             }
-            sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
+            sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"), String.format("%.2f", sumOfExpenses)));
         }
 
-        // Set cell factory for ListView regardless of whether expenses exist or not
-        expensesListView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+        expensesListView.setCellFactory(listView -> new ListCell<>() {
             @Override
-            public ListCell<String> call(ListView<String> listView) {
-                return new ListCell<>() {
-                    @Override
-                    protected void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty || item == null) {
-                            setText(null);
-                            setGraphic(null);
-                        } else if (!item.equals("No Expense has been recorded yet")) { // Only add edit/delete for actual expenses
-                            setText(item);
-                            Expense expense = getExpenseFromListView(getIndex(), participantId);
-                            if (expense != null) { // Ensure the item corresponds to a valid expense
-                                Button editButton = new Button("Edit");
-                                Button deleteButton = new Button("Delete");
-                                editButton.setOnAction(event -> handleEditButton(expense));
-                                deleteButton.setOnAction(event -> handleDeleteButton(expense));
-                                HBox buttonsBox = new HBox(editButton, deleteButton);
-                                buttonsBox.setSpacing(10); // Ensure there's some spacing between buttons for better UI
-                                setGraphic(buttonsBox);
-                            }
-                        } else {
-                            // Handle the display of the no expenses message without interactive elements
-                            setText(item);
-                            setGraphic(null);
-                        }
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(item);
+                    Expense expense = getExpenseFromListView(getIndex(), participantId);
+                    if (expense != null && !item.equals(resourceBundle.getString("noExpensesRecorded"))) {
+                        Button editButton = new Button(resourceBundle.getString("edit"));
+                        Button deleteButton = new Button(resourceBundle.getString("delete"));
+                        editButton.setOnAction(event -> handleEditButton(expense));
+                        deleteButton.setOnAction(event -> handleDeleteButton(expense));
+                        HBox buttonsBox = new HBox(editButton, deleteButton);
+                        buttonsBox.setSpacing(10);
+                        setGraphic(buttonsBox);
+                    } else {
+                        setGraphic(null);
                     }
-                };
+                }
             }
         });
-
-        // Call to refresh the ListView might not be necessary depending on your JavaFX version,
-        // but it's here to ensure updates are visually reflected.
-        expensesListView.refresh();
     }
-
 
     private Expense getExpenseFromListView(int index, long participantId) {
         List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
@@ -154,46 +115,40 @@ public class ParticipantExpenseViewController
     @FXML
     private void switchToEventOverviewScene() {
         mainController.showEventOverview(event, activeLocale);
-
     }
 
-    /**
-     * deletes current expense
-     */
     @FXML
     private void handleDeleteButton(Expense expense) {
         Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION,
-                "Are you sure you want to remove this expense? This action cannot be undone"
-                , ButtonType.YES, ButtonType.NO);
+                resourceBundle.getString("confirmDeleteExpense"),
+                ButtonType.YES, ButtonType.NO);
         confirmDialog.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
                 try {
                     ServerUtils.deleteExpense(expense.getId(), event.getId());
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Expense Deleted");
+                    alert.setTitle(resourceBundle.getString("expenseDeletedTitle"));
                     alert.setHeaderText(null);
-                    alert.setContentText("The expense has been successfully deleted.");
+                    alert.setContentText(resourceBundle.getString("expenseDeletedSuccess"));
                     alert.showAndWait();
+                    initializeExpensesForParticipant(selectedParticipantId);
                 } catch (Exception e) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
+                    alert.setTitle(resourceBundle.getString("errorTitle"));
                     alert.setHeaderText(null);
-                    alert.setContentText("Failed to delete expense: " + e.getMessage());
+                    alert.setContentText(resourceBundle.getString("deleteExpenseFail") + e.getMessage());
                     alert.showAndWait();
                 }
-                initializeExpensesForParticipant(selectedParticipantId);
             }
         });
     }
 
-    /**
-     * edits the expense where the button is pressed
-     */
     @FXML
     private void handleEditButton(Expense selectedExpense) {
         if (selectedExpense != null) {
-            editExpense(selectedExpense, "Edit Expense", "Edit the details of the expense.",
-                    this::updateExpense);
+            String title = resourceBundle.getString("editExpense");
+            String header = resourceBundle.getString("editExpenseDetails");
+            editExpense(selectedExpense, title, header, this::updateExpense);
         }
     }
 
@@ -218,9 +173,10 @@ public class ParticipantExpenseViewController
         ServerUtils.updateExpense(expense.getId(), expense, event.getId());
         initializeExpensesForParticipant(selectedParticipantId);
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Expense Saved");
+
+        alert.setTitle(resourceBundle.getString("expenseSaved"));
         alert.setHeaderText(null);
-        alert.setContentText("The expense has been successfully saved.");
+        alert.setContentText(resourceBundle.getString("expenseSavedSuccess"));
         alert.showAndWait();
     }
 
@@ -245,18 +201,18 @@ public class ParticipantExpenseViewController
             String cssPath = Objects.requireNonNull(this.getClass().getResource("/styles.css")).toExternalForm();
             getDialogPane().getStylesheets().add(cssPath);
 
-             Button saveButton = (Button) getDialogPane().lookupButton(saveButtonType);
-                        saveButton.addEventFilter(ActionEvent.ACTION, event -> {
-                            String amount = ((TextField) formFields.get("Amount")).getText();
-                            String category = ((TextField) formFields.get("Category")).getText();
-                            List<String> validationErrors = validator.validate(amount, category);
-                            if (!validationErrors.isEmpty()) {
-                                event.consume();
-                                Alert alert = new Alert(Alert.AlertType.ERROR, String.join("\n", validationErrors), ButtonType.OK);
-                                alert.setHeaderText("Validation Error");
-                                alert.showAndWait();
-                            }
-                        });
+            Button saveButton = (Button) getDialogPane().lookupButton(saveButtonType);
+            saveButton.addEventFilter(ActionEvent.ACTION, event -> {
+                String amount = ((TextField) formFields.get("Amount")).getText();
+                String category = ((TextField) formFields.get("Category")).getText();
+                List<String> validationErrors = validator.validate(amount, category);
+                if (!validationErrors.isEmpty()) {
+                    event.consume();
+                    Alert alert = new Alert(Alert.AlertType.ERROR, String.join("\n", validationErrors), ButtonType.OK);
+                    alert.setHeaderText("Validation Error");
+                    alert.showAndWait();
+                }
+            });
             setResultConverter(dialogButton -> {
                 if (dialogButton == saveButtonType) {
                     return ExpenseForm.extractExpenseFromForm(formFields, expense);
@@ -348,13 +304,11 @@ public class ParticipantExpenseViewController
     private List<String> validateExpenseData(String amount, String category) {
         List<String> errors = new ArrayList<>();
         if (!isValidDouble(amount)) {
-            errors.add("Amount must be of format '1.99' and should only contain numbers and periods");
+            errors.add(resourceBundle.getString("amountFormatError"));
         }
         if (category == null || category.isEmpty()) {
-            errors.add("Category cannot be empty.");
+            errors.add(resourceBundle.getString("categoryEmptyError="));
         }
         return errors;
     }
-
 }
-

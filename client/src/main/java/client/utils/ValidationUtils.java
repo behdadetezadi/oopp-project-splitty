@@ -94,25 +94,25 @@ public class ValidationUtils {
     }
 
     /**
-     * ensures *normal* IBAN format is used in our code
+     * ensures *dutch* IBAN format is used in our code
      * @param text String
      * @return boolean
      */
     public static boolean isValidIBAN(String text) {
         String sanitizedText = text.replaceAll("\\s+", "");
-        String ibanPattern = "[A-Z]{2}\\d{2}[A-Z]{4}\\d{10}";
+        String dutchIbanPattern = "NL\\d{2}[A-Z]{4}\\d{10}";
 
-        return sanitizedText.matches(ibanPattern);
+        return sanitizedText.matches(dutchIbanPattern);
     }
 
 
     /**
-     * ensures *common* BIC format is used in our code/// EDIT : only requires 8 alphanumeric chars for specificity
+     * ensures *common* BIC format is used in our code
      * @param text String
      * @return boolean
      */
     public static boolean isValidBIC(String text) {
-        return text.matches("[A-Z0-9]{8}");
+        return text.matches("[A-Z]{6}[A-Z2-9][A-NP-Z1-9]");
     }
 
     /**
@@ -124,19 +124,14 @@ public class ValidationUtils {
         return language.matches("Dutch|English");
     }
 
-    /**
-     * capitalize the first letter of first/last name
-     * @param word String
-     * @return String
-     */
-    public static String autoCapitalizeWord(String word) {
-        String trimmedWord = word.trim();
 
-        if (trimmedWord.length() > 1) {
-            return Character.toUpperCase(trimmedWord.charAt(0)) + trimmedWord.substring(1).toLowerCase();
-        } else {
-            return trimmedWord.toUpperCase();
-        }
+    /**
+     * Names start with capital letters
+     * @param text String
+     * @return boolean
+     */
+    public static boolean isValidCapitalizedName(String text) {
+        return text.matches("[A-Z][a-zA-Z\\s]*");
     }
 
 }

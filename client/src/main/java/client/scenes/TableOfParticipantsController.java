@@ -267,11 +267,7 @@ public class TableOfParticipantsController {
     private void editParticipant(Participant participant, String title, String header, ParticipantConsumer action) {
         ParticipantDialog dialog = new ParticipantDialog(participant, title, header, this::validateParticipantData);
         Optional<Participant> result = dialog.showAndWait();
-        result.ifPresent(p -> {
-            p.setFirstName(ValidationUtils.autoCapitalizeWord(p.getFirstName()));
-            p.setLastName(ValidationUtils.autoCapitalizeWord(p.getLastName()));
-            action.accept(p);
-        });
+        result.ifPresent(action::accept);
     }
 
     /**
@@ -283,13 +279,13 @@ public class TableOfParticipantsController {
                 .anyMatch(p -> p.getId() == participant.getId());
 
         if (!exists){
-        Participant addedParticipant = ServerUtils.addParticipantToEvent(event.getId(), participant);
-        if (addedParticipant != null) {
-            participants.add(addedParticipant);
-            setupPagination();
-            AlertUtils.showInformationAlert("Success", "Participant Added",
-                    resourceBundle.getString("Participant_was_successfully_added."));
-        }}
+            Participant addedParticipant = ServerUtils.addParticipantToEvent(event.getId(), participant);
+            if (addedParticipant != null) {
+                participants.add(addedParticipant);
+                setupPagination();
+                AlertUtils.showInformationAlert("Success", "Participant Added",
+                        resourceBundle.getString("Participant_was_successfully_added."));
+            }}
     }
 
     /**
@@ -297,8 +293,6 @@ public class TableOfParticipantsController {
      * @param participant The {@link Participant} whose details are to be updated.
      */
     private void updateParticipant(Participant participant) {
-        participant.setFirstName(ValidationUtils.autoCapitalizeWord(participant.getFirstName()));
-        participant.setLastName(ValidationUtils.autoCapitalizeWord(participant.getLastName()));
         long participantId = participant.getId();
         boolean isUpdated = server.updateParticipant(event.getId(), participantId, participant);
         server.send("app/participants",participant);
@@ -377,8 +371,14 @@ public class TableOfParticipantsController {
     private List<String> validateParticipantData(Participant participant) {
         List<String> errors = new ArrayList<>();
 
+        if (!ValidationUtils.isValidCapitalizedName(participant.getFirstName())) {
+            errors.add("First Name must begin with a capital letter. (e.g., Sam)");
+        }
         if (!ValidationUtils.isValidName(participant.getFirstName())) {
             errors.add("First Name must only contain letters.");
+        }
+        if (!ValidationUtils.isValidCapitalizedName(participant.getLastName())) {
+            errors.add("Last Name must begin with a capital letter. (e.g., Shelby)");
         }
         if (!ValidationUtils.isValidName(participant.getLastName())) {
             errors.add("Last Name must only contain letters.");
@@ -390,10 +390,10 @@ public class TableOfParticipantsController {
             errors.add("Email must be in a valid format (e.g., user@example.com).");
         }
         if (!ValidationUtils.isValidIBAN(participant.getIban())) {
-            errors.add("IBAN must be in a valid format (e.g., NL89 BANK 0123 4567 89).");
+            errors.add("IBAN must be in a valid Dutch format (e.g., NL89 BANK 0123 4567 89).");
         }
         if (!ValidationUtils.isValidBIC(participant.getBic())) {
-            errors.add("BIC must be in a valid format: 8 alphanumeric characters (e.g., ABCDEF12).");
+            errors.add("BIC must be in a valid format: 6 Starting Characters, Remaining Alphanumeric Characters (e.g., DEUTDEFF).");
         }
         if (!ValidationUtils.isValidLanguage(participant.getLanguageChoice())) {
             errors.add("Select a language please.");
@@ -575,5 +575,10 @@ public class TableOfParticipantsController {
 
             return participant;
         }
+
+    }
+    public List<Participant>getUpdatedParticipant(Event event)
+    {
+        return participants;
     }
 }

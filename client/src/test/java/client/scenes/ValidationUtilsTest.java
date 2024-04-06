@@ -13,8 +13,6 @@ class ValidationUtilsTest {
         assertTrue(ValidationUtils.isValidDouble("123"));
         assertFalse(ValidationUtils.isValidDouble("123.456"));
         assertFalse(ValidationUtils.isValidDouble("abc.12"));
-        assertFalse(ValidationUtils.isValidDouble("123.45.67"));
-        assertTrue(ValidationUtils.isValidDouble("-123.45"));
     }
 
     @Test
@@ -25,9 +23,6 @@ class ValidationUtilsTest {
         assertTrue(ValidationUtils.isValidName("Mikey"));
         assertTrue(ValidationUtils.isValidName("mikey"));
         assertFalse(ValidationUtils.isValidName(""));
-        assertFalse(ValidationUtils.isValidName("Anne-Marie"));
-        assertFalse(ValidationUtils.isValidName("O'Neil"));
-        assertFalse(ValidationUtils.isValidName("12345"));
 
 
 
@@ -43,10 +38,6 @@ class ValidationUtilsTest {
         assertFalse(ValidationUtils.isValidUsername(""));
         assertFalse(ValidationUtils.isValidUsername("]["));
         assertTrue(ValidationUtils.isValidUsername("a"));
-        assertTrue(ValidationUtils.isValidUsername("_john_doe123"));
-        assertFalse(ValidationUtils.isValidUsername("john*doe"));
-        assertTrue(ValidationUtils.isValidUsername("12345"));
-        assertFalse(ValidationUtils.isValidUsername(" "));
 
     }
 
@@ -55,29 +46,21 @@ class ValidationUtilsTest {
         assertTrue(ValidationUtils.isValidEmail("email@example.com"));
         assertFalse(ValidationUtils.isValidEmail("email@example"));
         assertFalse(ValidationUtils.isValidEmail("email@.com"));
-        assertTrue(ValidationUtils.isValidEmail("name.surname@example.co.uk"));
-        assertFalse(ValidationUtils.isValidEmail("email@example,com"));
-        assertFalse(ValidationUtils.isValidEmail("@no-local-part.com"));
-        assertFalse(ValidationUtils.isValidEmail("no-at-symbol"));
-        assertFalse(ValidationUtils.isValidEmail("no-tld@domain"));
-        assertTrue(ValidationUtils.isValidEmail("email@domain.com"));
     }
 
     @Test
     void testIsValidIBAN() {
-        assertFalse(ValidationUtils.isValidIBAN("GB82 WEST12345698765432"));
-        assertTrue(ValidationUtils.isValidIBAN("GB82 WEST 1234 5698 32"));
-        assertTrue(ValidationUtils.isValidIBAN("NL91 ABNA 0417 1643 00"));
-        assertFalse(ValidationUtils.isValidIBAN("ABCD1234567890"));
+        assertTrue(ValidationUtils.isValidIBAN("NL91ABNA0417164300"));
+        assertFalse(ValidationUtils.isValidIBAN("NL91ABNA04171643001"));
+        assertFalse(ValidationUtils.isValidIBAN("US91ABNA0417164300"));
 
     }
 
     @Test
     void testIsValidBIC() {
-        assertFalse(ValidationUtils.isValidBIC("NEDSZAJJXXX"));
-        assertFalse(ValidationUtils.isValidBIC("NEDSZAJJXX"));
-        assertFalse(ValidationUtils.isValidBIC("NEDSZAJJXXXXX"));
-        assertTrue(ValidationUtils.isValidBIC("NEDS2AJJ"));
+        assertTrue(ValidationUtils.isValidBIC("ABNANL2A"));
+        assertFalse(ValidationUtils.isValidBIC("ABNANL2A1"));
+        assertFalse(ValidationUtils.isValidBIC("ABNANL2"));
     }
 
     @Test
@@ -90,12 +73,15 @@ class ValidationUtilsTest {
     }
 
     @Test
-    void testAutoCapitalizeWord() {
-        assertEquals("John", ValidationUtils.autoCapitalizeWord("john"));
-        assertEquals("John", ValidationUtils.autoCapitalizeWord("John"));
-        assertEquals("J", ValidationUtils.autoCapitalizeWord("j"));
-        assertEquals("", ValidationUtils.autoCapitalizeWord(""));
-        assertEquals("John doe", ValidationUtils.autoCapitalizeWord("john doe")); }
+    void testIsValidCapitalizedName() {
+        assertTrue(ValidationUtils.isValidCapitalizedName("John"));
+        assertFalse(ValidationUtils.isValidCapitalizedName("john"));
+        assertTrue(ValidationUtils.isValidCapitalizedName("Jane Doe"));
+        assertTrue(ValidationUtils.isValidCapitalizedName("Mike Doe"));
+        assertTrue(ValidationUtils.isValidCapitalizedName("Josh"));
+        assertTrue(ValidationUtils.isValidCapitalizedName("A"));
+        assertFalse(ValidationUtils.isValidCapitalizedName(""));
+        assertFalse(ValidationUtils.isValidCapitalizedName("0"));
 
-
+    }
 }

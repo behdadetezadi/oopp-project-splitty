@@ -2,11 +2,13 @@ package client.scenes;
 
 import commons.Event;
 import commons.Expense;
+import commons.Participant;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.prefs.Preferences;
 
@@ -240,5 +242,14 @@ public class MainController {
         primaryStage.setScene(expenseOverviewScene);
         expenseOverviewController.setEvent(event, locale);
     }
+    /**
+     * get the updated participant list of the selected event.
+     * @param event The event to show list for.
+     */
+    public List<Participant> getUpdatedParticipantList(Event event)
+    {
+        return tableOfParticipantsController.getUpdatedParticipant(event);
+    }
+
 
 }
