@@ -97,6 +97,13 @@ public class EventOverviewController {
         this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
+        server.registerForEventUpdates("/topic/eventTitle", event.getId(), null, event1 -> {
+            Platform.runLater(() -> {
+                event = event1;
+                titleLabel.setText(event.getTitle());
+            });
+
+        });
     }
 
 
@@ -152,14 +159,6 @@ public class EventOverviewController {
             this.inviteCode.getStyleClass().add("label-hover");
         }
 
-
-        server.registerForEventUpdates("/topic/eventTitle", event.getId(), null, event1 -> {
-            Platform.runLater(() -> {
-                event = event1;
-                titleLabel.setText(event.getTitle());
-            });
-
-        });
     }
     private void loadLanguage(Locale locale) {
         resourceBundle = ResourceBundle.getBundle("message", locale);
