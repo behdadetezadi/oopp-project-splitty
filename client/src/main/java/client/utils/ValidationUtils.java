@@ -94,25 +94,25 @@ public class ValidationUtils {
     }
 
     /**
-     * ensures *dutch* IBAN format is used in our code
+     * ensures *normal* IBAN format is used in our code
      * @param text String
      * @return boolean
      */
     public static boolean isValidIBAN(String text) {
         String sanitizedText = text.replaceAll("\\s+", "");
-        String dutchIbanPattern = "NL\\d{2}[A-Z]{4}\\d{10}";
+        String ibanPattern = "[A-Z]{2}\\d{2}[A-Z]{4}\\d{10}";
 
-        return sanitizedText.matches(dutchIbanPattern);
+        return sanitizedText.matches(ibanPattern);
     }
 
 
     /**
-     * ensures *common* BIC format is used in our code
+     * ensures *common* BIC format is used in our code/// EDIT : only requires 8 alphanumeric chars for specificity
      * @param text String
      * @return boolean
      */
     public static boolean isValidBIC(String text) {
-        return text.matches("[A-Z]{6}[A-Z2-9][A-NP-Z1-9]");
+        return text.matches("[A-Z0-9]{8}");
     }
 
     /**
@@ -124,15 +124,28 @@ public class ValidationUtils {
         return language.matches("Dutch|English");
     }
 
-
     /**
-     * Names start with capital letters
-     * @param text String
-     * @return boolean
+     * autocapitalizes the name
+     * @param name String
+     * @return a new String
      */
-    public static boolean isValidCapitalizedName(String text) {
-        return text.matches("[A-Z][a-zA-Z\\s]*");
+    public static String autoCapitalizeName(String name) {
+        String[] parts = name.trim().split("\\s+");
+        StringBuilder capitalized = new StringBuilder();
+
+        for (String part : parts) {
+            if (part.length() > 1) {
+                capitalized.append(Character.toUpperCase(part.charAt(0)))
+                        .append(part.substring(1).toLowerCase());
+            } else {
+                capitalized.append(part.toUpperCase());
+            }
+            capitalized.append(" ");
+        }
+
+        return capitalized.toString().trim();
     }
+
 
 }
 

@@ -371,14 +371,12 @@ public class TableOfParticipantsController {
     private List<String> validateParticipantData(Participant participant) {
         List<String> errors = new ArrayList<>();
 
-        if (!ValidationUtils.isValidCapitalizedName(participant.getFirstName())) {
-            errors.add("First Name must begin with a capital letter. (e.g., Sam)");
-        }
+        participant.setFirstName(ValidationUtils.autoCapitalizeName(participant.getFirstName()));
+        participant.setLastName(ValidationUtils.autoCapitalizeName(participant.getLastName()));
+
+
         if (!ValidationUtils.isValidName(participant.getFirstName())) {
             errors.add("First Name must only contain letters.");
-        }
-        if (!ValidationUtils.isValidCapitalizedName(participant.getLastName())) {
-            errors.add("Last Name must begin with a capital letter. (e.g., Shelby)");
         }
         if (!ValidationUtils.isValidName(participant.getLastName())) {
             errors.add("Last Name must only contain letters.");
@@ -390,10 +388,10 @@ public class TableOfParticipantsController {
             errors.add("Email must be in a valid format (e.g., user@example.com).");
         }
         if (!ValidationUtils.isValidIBAN(participant.getIban())) {
-            errors.add("IBAN must be in a valid Dutch format (e.g., NL89 BANK 0123 4567 89).");
+            errors.add("IBAN must be in a valid format (e.g., NL89 BANK 0123 4567 89).");
         }
         if (!ValidationUtils.isValidBIC(participant.getBic())) {
-            errors.add("BIC must be in a valid format: 6 Starting Characters, Remaining Alphanumeric Characters (e.g., DEUTDEFF).");
+            errors.add("BIC must be in a valid format: 8 alphanumeric characters (e.g., ABCDEF12).");
         }
         if (!ValidationUtils.isValidLanguage(participant.getLanguageChoice())) {
             errors.add("Select a language please.");
