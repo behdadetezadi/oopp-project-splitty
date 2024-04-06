@@ -14,9 +14,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 import server.EventService;
-import server.database.EventRepository;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @RestController
@@ -24,23 +26,19 @@ import java.util.function.Consumer;
 public class EventController {
 
     private final EventService eventService;
-    private EventRepository db;
+    private Map<Object, Consumer<Participant>> listeners = new HashMap<>();
 
     @Autowired
     private SimpMessagingTemplate template;
 
-
-
     /**
      * Event Controller
      * @param eventService Event service
-     * @param db database
      */
 
     @Autowired
-    public EventController(EventService eventService, EventRepository db) {
+    public EventController(EventService eventService) {
         this.eventService = eventService;
-        this.db=db;
     }
 
     /**
@@ -124,7 +122,6 @@ public class EventController {
      */
     @PostMapping
     public Event createEvent(@RequestBody Event event) {
-//        db.save(event);
         return eventService.createEvent(event);
     }
 
@@ -148,6 +145,20 @@ public class EventController {
     }
 
     /**
+     * websocket method for updating participant titles
+     * @param payload map
+     */
+
+    @MessageMapping("/eventTitle")
+    @SendTo("/topic/eventTitle")
+    public Event updateEventByTitleWebsockets(Map<String, Object> payload){
+        long eventId = Long.parseLong(payload.get("eventId").toString());
+        String newTitle = payload.get("newTitle").toString();
+        Event event = eventService.updateEventTitle(eventId, newTitle);
+        return event;
+    }
+
+    /**
      * finds participants by the event id
      * @param id as a long number
      * @return an array list of participants if possible (need to modify this later on for try-catch)
@@ -158,22 +169,13 @@ public class EventController {
         return ResponseEntity.ok(participants);
     }
 
-
-private Map<Object, Consumer<Participant>> listeners = new HashMap<>();
     @GetMapping("/{id}/participants/updates")
     public DeferredResult<ResponseEntity<Participant>> getParticipantUpdatesByEventId(@PathVariable Long id) {
         var noContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         var res = new DeferredResult<ResponseEntity<Participant>>(5000L,noContent);
-
         var key = new Object();//since never equal to each other (always diff instances)
-        listeners.put(key, participant -> {
-            res.setResult( ResponseEntity.ok(participant));
-        });
-
-        res.onCompletion(() ->{
-            listeners.remove(key);
-        });
-
+        listeners.put(key, participant -> res.setResult( ResponseEntity.ok(participant)));
+        res.onCompletion(() -> listeners.remove(key));
         return res;
 
     }
@@ -181,7 +183,7 @@ private Map<Object, Consumer<Participant>> listeners = new HashMap<>();
     public ResponseEntity<Participant> addParticipant(@PathVariable long eventId, @RequestBody Participant participant) {
         Participant addedParticipant = eventService.addParticipantToEvent(eventId, participant);
         if (addedParticipant != null) {
-            listeners.forEach((k,l) ->{l.accept(addedParticipant);});
+            listeners.forEach((k,l) -> l.accept(addedParticipant));
             return ResponseEntity.ok(addedParticipant);
         } else {
             return ResponseEntity.notFound().build();
@@ -189,32 +191,23 @@ private Map<Object, Consumer<Participant>> listeners = new HashMap<>();
     }
 
     @DeleteMapping("/{eventId}/participants/{participantId}")
-    public ResponseEntity<Participant> removeParticipant(@PathVariable long eventId, @PathVariable long participantId) {
-        Participant participant = eventService.removeParticipantFromEvent(eventId, participantId);
-        if (participant != null) {
-            template.convertAndSend("/topic/participantDeletion", new ParticipantDeletionRequest(eventId, participantId));
-            return ResponseEntity.ok(participant);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Void> removeParticipant(@PathVariable long eventId, @PathVariable long participantId) {
+        eventService.removeParticipantFromEvent(eventId, participantId);
+        return ResponseEntity.ok().build();
     }
 
     @MessageMapping("/participantDeletion")
     @SendTo("/topic/participantDeletion")
     public Participant removeParticipantWebSockets(ParticipantDeletionRequest request){
-        Participant participant = eventService.removeParticipantFromEvent(request.getEventId(), request.getParticipantId());
-        return participant;
+        return eventService.removeParticipantFromEvent(request.getEventId(), request.getParticipantId());
     }
-
     @PutMapping("/{eventId}/participants/{participantId}")
-    public ResponseEntity<Participant> updateParticipantInEvent(
-            @PathVariable Long eventId,
-            @PathVariable Long participantId,
-            @RequestBody Participant participantDetails) {
+    public ResponseEntity<Participant> updateParticipantInEvent(@PathVariable Long eventId,
+                                                                @PathVariable Long participantId,
+                                                                @RequestBody Participant participantDetails) {
         try {
             Participant updatedParticipant = eventService.updateParticipantInEvent(eventId, participantId, participantDetails);
             template.convertAndSend("/topic/participants", updatedParticipant);
-
             return ResponseEntity.ok(updatedParticipant);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
@@ -299,18 +292,5 @@ private Map<Object, Consumer<Participant>> listeners = new HashMap<>();
             return ResponseEntity.internalServerError().build();
         }
     }
-
-    //TODO
-//    /**
-//     * event updates
-//     * @param eventId long number
-//     * @param event Event
-//     * @return an Event
-//     */
-//    @PutMapping("/{eventId}")
-//    public Event updateEvent(@PathVariable long eventId, @RequestBody Event event) {
-////        db.save(event);
-//        return eventService.updateEvent(eventId, event);
-//    }
 
 }

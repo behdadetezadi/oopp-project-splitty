@@ -74,7 +74,6 @@ public class TableOfParticipantsController {
         if (event != null && server != null) {
             server.registerForMessages("/topic/participants", event.getId(), null, this::handleParticipantUpdates);
             server.registerForMessages("/topic/participantDeletion", event.getId(), null, p -> {
-                System.out.println("Participant deletion message received for participant ID: " + p.getId());
                 Platform.runLater(() -> {
                     participants.removeIf(participant -> participant.getId() == p.getId());
                     setupPagination();

@@ -18,7 +18,6 @@ package client.utils;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
-import commons.Quote;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -272,31 +271,6 @@ public class ServerUtils {
 	}
 
 	/**
-	 * get quotes
-	 * @return a list of quotes
-	 */
-	public List<Quote> getQuotes() {
-		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/quotes") //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
-                .get(new GenericType<List<Quote>>() {});
-	}
-
-	/**
-	 * adds a quote
-	 * @param quote a type Quote
-	 * @return //TODO
-	 */
-	public Quote addQuote(Quote quote) {
-		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/quotes") //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
-				.post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
-	}
-
-	/**
 	 * adds a participant
 	 * @param participant a participant
 	 * @return //TODO
@@ -529,12 +503,25 @@ public class ServerUtils {
 				consumer.accept((Participant) payload);
 			}
 		});
-
-
 	}
 
 	public void send(String dest, Object o){
 		session.send(dest,o);
+	}
+
+	public void registerForEventUpdates(String dest, long eventId, String newTitle, Consumer<Event> consumer){
+		session.subscribe(dest, new StompFrameHandler() {
+			@Override
+			public Type getPayloadType(StompHeaders headers) {
+				return Event.class;
+			}
+
+			@Override
+			public void handleFrame(StompHeaders headers, Object payload) {
+				consumer.accept((Event) payload);
+			}
+		});
+
 	}
 
 }
