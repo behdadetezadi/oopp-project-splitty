@@ -21,7 +21,7 @@ public class Event {
     private long inviteCode;
     @OneToMany(fetch = FetchType.EAGER)
     private List<Participant> people;
-    @OneToMany(cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Expense> expenses;
 
 

@@ -529,12 +529,25 @@ public class ServerUtils {
 				consumer.accept((Participant) payload);
 			}
 		});
-
-
 	}
 
 	public void send(String dest, Object o){
 		session.send(dest,o);
+	}
+
+	public void registerForEventUpdates(String dest, long eventId, String newTitle, Consumer<Event> consumer){
+		session.subscribe(dest, new StompFrameHandler() {
+			@Override
+			public Type getPayloadType(StompHeaders headers) {
+				return Event.class;
+			}
+
+			@Override
+			public void handleFrame(StompHeaders headers, Object payload) {
+				consumer.accept((Event) payload);
+			}
+		});
+
 	}
 
 }
