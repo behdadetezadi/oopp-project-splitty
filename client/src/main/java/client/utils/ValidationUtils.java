@@ -125,27 +125,19 @@ public class ValidationUtils {
     }
 
     /**
-     * autocapitalizes the name
-     * @param name String
-     * @return a new String
+     * capitalize the first letter of first/last name
+     * @param word String
+     * @return String
      */
-    public static String autoCapitalizeName(String name) {
-        String[] parts = name.trim().split("\\s+");
-        StringBuilder capitalized = new StringBuilder();
+    public static String autoCapitalizeWord(String word) {
+        String trimmedWord = word.trim();
 
-        for (String part : parts) {
-            if (part.length() > 1) {
-                capitalized.append(Character.toUpperCase(part.charAt(0)))
-                        .append(part.substring(1).toLowerCase());
-            } else {
-                capitalized.append(part.toUpperCase());
-            }
-            capitalized.append(" ");
+        if (trimmedWord.length() > 1) {
+            return Character.toUpperCase(trimmedWord.charAt(0)) + trimmedWord.substring(1).toLowerCase();
+        } else {
+            return trimmedWord.toUpperCase();
         }
-
-        return capitalized.toString().trim();
     }
-
 
 }
 

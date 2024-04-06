@@ -267,7 +267,11 @@ public class TableOfParticipantsController {
     private void editParticipant(Participant participant, String title, String header, ParticipantConsumer action) {
         ParticipantDialog dialog = new ParticipantDialog(participant, title, header, this::validateParticipantData);
         Optional<Participant> result = dialog.showAndWait();
-        result.ifPresent(action::accept);
+        result.ifPresent(p -> {
+            p.setFirstName(ValidationUtils.autoCapitalizeWord(p.getFirstName()));
+            p.setLastName(ValidationUtils.autoCapitalizeWord(p.getLastName()));
+            action.accept(p);
+        });
     }
 
     /**
@@ -293,6 +297,8 @@ public class TableOfParticipantsController {
      * @param participant The {@link Participant} whose details are to be updated.
      */
     private void updateParticipant(Participant participant) {
+        participant.setFirstName(ValidationUtils.autoCapitalizeWord(participant.getFirstName()));
+        participant.setLastName(ValidationUtils.autoCapitalizeWord(participant.getLastName()));
         long participantId = participant.getId();
         boolean isUpdated = server.updateParticipant(event.getId(), participantId, participant);
         server.send("app/participants",participant);
@@ -370,10 +376,6 @@ public class TableOfParticipantsController {
      */
     private List<String> validateParticipantData(Participant participant) {
         List<String> errors = new ArrayList<>();
-
-        participant.setFirstName(ValidationUtils.autoCapitalizeName(participant.getFirstName()));
-        participant.setLastName(ValidationUtils.autoCapitalizeName(participant.getLastName()));
-
 
         if (!ValidationUtils.isValidName(participant.getFirstName())) {
             errors.add("First Name must only contain letters.");
