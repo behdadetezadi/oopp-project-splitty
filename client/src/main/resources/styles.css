@@ -2,11 +2,10 @@
     -fx-background-color: black;
 }
 
-
-
 .button-hover {
     -fx-background-color: #00fd48;
     -fx-cursor: hand;
+    -fx-font-weight: bold;
 }
 
 .button-hover:hover {
@@ -15,10 +14,10 @@
     -fx-scale-y: 1.05;
 }
 
-
 .label-hover {
     -fx-underline: true;
     -fx-cursor: hand;
+    -fx-font-weight: bold;
 }
 
 .label-hover:hover {
@@ -27,18 +26,18 @@
     -fx-text-fill: lime;
 }
 
-
 .root {
     -fx-background-color: black;
     -fx-font-family: "Courier New", monospace;
+    -fx-font-weight: bold;
 }
 
-
-.black-background-label, .label{
+.black-background-label,
+.label {
     -fx-background-color: black;
     -fx-text-fill: lime;
     -fx-font-size: 14px;
-
+    -fx-font-weight: bold;
 }
 
 .label-button {
@@ -46,32 +45,36 @@
     -fx-border: none;
     -fx-text-fill: lime;
     -fx-font-size: 20px;
+    -fx-font-weight: bold;
 }
 
-
-.text-field, .text-area, .list-view, .list-cell {
+.text-field,
+.text-area,
+.list-view,
+.list-cell {
     -fx-background-color: black;
     -fx-text-fill: lime;
     -fx-font-size: 14px;
     -fx-border-color: lime;
     -fx-border-width: 2px;
-    -fx-border-radius: 5px; /* Add rounded corners */
-    -fx-background-radius: 5px; /* Add rounded corners */
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
 }
 
 .button {
-    -fx-background-radius: 20px; /* Increase radius for buttons */
+    -fx-background-radius: 20px;
+    -fx-font-weight: bold;
 }
 
 .list-view {
-    -fx-control-inner-background: black; /* Adjust list view background */
+    -fx-control-inner-background: black;
 }
 
 .list-cell {
-    -fx-control-inner-background: black; /* Adjust list cell background */
+    -fx-control-inner-background: black;
 }
 
-/* Normal button style */
+
 .button {
     -fx-background-color: lime;
     -fx-text-fill: black;
@@ -82,11 +85,11 @@
     -fx-background-radius: 5px;
 }
 
-/* Hover effect for button */
+
 .button:hover {
-    -fx-background-color: lightgreen; /* Change background color on hover */
-    -fx-text-fill: black; /* Adjust text color on hover */
-    -fx-border-color: lightgreen; /* Adjust border color on hover */
+    -fx-background-color: lightgreen;
+    -fx-text-fill: black;
+    -fx-border-color: lightgreen;
 }
 
 .button-delete {
@@ -103,10 +106,21 @@
     -fx-padding: 4px 6px;
 }
 
-.list-view .list-cell {
-    -fx-background-color: transparent; /* Set background color of cells */
-    -fx-border-color: transparent; /* Set border color of cells */
+
+.list-view {
+    -fx-control-inner-background: black;
 }
+
+.list-cell {
+    -fx-control-inner-background: black;
+}
+
+.list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+
 
 .table-view {
     -fx-base: black;
@@ -162,15 +176,16 @@
 }
 
 #recentEventsLabel {
-    -fx-font-size: 24px; /* Set the font size */
-    -fx-font-weight: bold; /* Make the font bold */
-    -fx-alignment: center; /* Center the text */
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
 }
 
 .list-cell .label {
-    -fx-font-size: 18px; /* Set the font size for list items */
-    -fx-font-weight: bold; /* Make the font bold */
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
 }
+
 
 .text-area {
     text-area-background: black ;
@@ -186,3 +201,5 @@
     -fx-padding: 20px;
     -fx-alignment: center;
 }
+
+
