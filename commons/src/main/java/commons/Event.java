@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
@@ -23,6 +24,8 @@ public class Event {
     private List<Participant> people;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Expense> expenses;
+    private LocalDateTime creationDate;
+    private LocalDateTime lastActivity;
 
 
     /**
@@ -37,6 +40,8 @@ public class Event {
         this.expenses = expenses;
         this.inviteCode = inviteCode;
         this.title = title;
+        this.creationDate = LocalDateTime.now();
+        this.lastActivity = this.creationDate;
     }
 
     /**
@@ -50,6 +55,8 @@ public class Event {
         this.expenses = expenses;
         this.inviteCode = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
         this.title = title;
+        this.creationDate = LocalDateTime.now();
+        this.lastActivity = this.creationDate;
     }
 
     /**
@@ -61,6 +68,8 @@ public class Event {
         this.people = new ArrayList<>();
         this.expenses = new ArrayList<>();
         this.inviteCode = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+        this.creationDate = LocalDateTime.now();
+        this.lastActivity = this.creationDate;
     }
 
     /**
@@ -71,21 +80,23 @@ public class Event {
      * @param title a string stating the title of the Event
      * @param inviteCode the invitation code for sharing the Event (for now type long)
      */
-    public Event (long id, String title, long inviteCode, List<Participant> participants, List<Expense> expenses) {
+    public Event(long id, String title, long inviteCode, List<Participant> participants, List<Expense> expenses) {
         this.id = id;
         this.title =title;
         this.inviteCode = inviteCode;
         this.people = participants;
         this.expenses = expenses;
+        this.creationDate = LocalDateTime.now();
+        this.lastActivity = this.creationDate;
     }
-
-    //TODO check constructor with invite code
 
     /**
      * Empty public constructor (required)
      */
     public Event() {
         this.inviteCode = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+        this.creationDate = LocalDateTime.now();
+        this.lastActivity = this.creationDate;
     }
 
     /**
@@ -98,8 +109,9 @@ public class Event {
         this.people = people;
         this.expenses = new ArrayList<>();
         this.inviteCode = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+        this.creationDate = LocalDateTime.now();
+        this.lastActivity = this.creationDate;
     }
-
 
     /**
      * Getter for the ID
@@ -142,31 +154,28 @@ public class Event {
     }
 
     /**
-     * method that returns the date (when we eventually implement that overwrite this)
-     * @return IMPORTANT!!! METHOD RETURNS STATIC MAGIC NUMBER STRING FOR NOW!!!
+     * Getter for the creation date of the event
+     * @return date and time of when the event was created
      */
-    /*
-    public String getCreationDate() {
-
-        return "28-02-2024";
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
-    */
+
     /**
-     * method that returns the last activity (when we eventually implement that overwrite this)
-     * @return IMPORTANT!!! METHOD RETURNS STATIC MAGIC NUMBER STRING FOR NOW!!!
+     * Getter for the date of the last activity of the event
+     * @return date and time of the last activity of the event
      */
-    /*
-    public String getLastActivity() {
-        return "28-02-2024";
+    public LocalDateTime getLastActivity() {
+        return lastActivity;
     }
 
-*/
     /**
      * setter for the ID (might need to delete later)
      * @param id Respective Events ID
      */
     public void setId(long id) {
         this.id = id;
+        updateLastActivity();
     }
 
     /**
@@ -175,6 +184,7 @@ public class Event {
      */
     public void setTitle(String title) {
         this.title = title;
+        updateLastActivity();
     }
 
     /**
@@ -183,6 +193,7 @@ public class Event {
      */
     public void setInviteCode(long inviteCode) {
         this.inviteCode = inviteCode;
+        updateLastActivity();
     }
 
     /**
@@ -191,6 +202,7 @@ public class Event {
      */
     public void setPeople(List<Participant> people) {
         this.people = people;
+        updateLastActivity();
     }
 
     /**
@@ -199,6 +211,14 @@ public class Event {
      */
     public void setExpenses(List<Expense> expenses) {
         this.expenses = expenses;
+        updateLastActivity();
+    }
+
+    /**
+     * Method for updating the last activity date and time
+     */
+    private void updateLastActivity() {
+        this.lastActivity = LocalDateTime.now();
     }
 
     /**
@@ -213,9 +233,9 @@ public class Event {
         if(people.contains(participant)){
             return false;
         }
+        updateLastActivity();
         return this.people.add(participant);
     }
-
 
     /**
      *
@@ -224,7 +244,30 @@ public class Event {
      * @return true if the Person was removed successfully otherwise returns false
      */
     public boolean removeParticipant(Participant participant){
+        updateLastActivity();
         return this.people.remove(participant);
+    }
+
+    /**
+     * Updates the details of an existing participant in the event.
+     * @param participantDetails The updated details of the participant.
+     * @return true if the participant was found and updated, false otherwise.
+     */
+    public boolean updateParticipant(Participant participantDetails) {
+        for (Participant participant : this.people) {
+            if (participant.getId() == participantDetails.getId()) {
+                participant.setFirstName(participantDetails.getFirstName());
+                participant.setLastName(participantDetails.getLastName());
+                participant.setUsername(participantDetails.getUsername());
+                participant.setEmail(participantDetails.getEmail());
+                participant.setBic(participantDetails.getBic());
+                participant.setIban(participantDetails.getIban());
+                participant.setLanguageChoice(participantDetails.getLanguageChoice());
+                updateLastActivity();
+                return true;
+            }
+        }
+        return false;
     }
 
 
@@ -240,9 +283,9 @@ public class Event {
         if (expenses.contains(expense)){
             return false;
         }
+        updateLastActivity();
         return this.expenses.add(expense);
     }
-
 
     /**
      *
@@ -251,7 +294,30 @@ public class Event {
      * @return true if the expense was removed successfully otherwise returns false
      */
     public boolean removeExpense(Expense expense){
+        updateLastActivity();
         return this.expenses.remove(expense);
+    }
+
+    /**
+     * Updates the details of an existing expense in the event.
+     * @param expenseDetails The updated details of the participant.
+     * @return true if the participant was found and updated, false otherwise.
+     */
+    public boolean updateExpense(Expense expenseDetails) {
+        for (Expense expense : this.expenses) {
+            if (expense.getId() == expenseDetails.getId()) {
+                expense.setParticipant(expenseDetails.getParticipant());
+                expense.setCategory(expenseDetails.getCategory());
+                expense.setAmount(expenseDetails.getAmount());
+                expense.setCurrency(expenseDetails.getCurrency());
+                expense.setDate(expenseDetails.getDate());
+                expense.setSplittingOption(expenseDetails.getSplittingOption());
+                expense.setExpenseType(expenseDetails.getExpenseType());
+                updateLastActivity();
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -263,6 +329,7 @@ public class Event {
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
+
     /**
      * hashcode using hashbuilder
      * @return int representing hash
@@ -271,6 +338,7 @@ public class Event {
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
+
     /**
      * toString using ToStringBuilder
      * @return string
@@ -279,5 +347,4 @@ public class Event {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
-
 }
