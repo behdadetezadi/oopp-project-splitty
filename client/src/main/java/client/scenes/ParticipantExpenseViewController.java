@@ -15,6 +15,7 @@ import javafx.util.Pair;
 
 import java.util.*;
 
+import static client.scenes.TableOfParticipantsController.ParticipantForm.createComboBox;
 import static client.utils.ValidationUtils.isValidDouble;
 import java.util.List;
 import java.util.Locale;
@@ -53,7 +54,6 @@ public class ParticipantExpenseViewController {
 
     public void updateUIElements() {
         backButton.setText(resourceBundle.getString("back"));
-        // Update any other UI elements that need to be localized
     }
 
     private String formatExpenseForDisplay(Expense expense) {
@@ -248,10 +248,28 @@ public class ParticipantExpenseViewController {
 
             TextField categoryField = createTextField(expense.getCategory(), "Category");
             TextField amountField = createTextField(String.valueOf(expense.getAmount()), "Amount");
+            ComboBox<String> tagComboBox = createComboBox(expense.getExpenseType(), "Tag",
+                    "Food", "Entrance fees", "Travel", "Other");
+            tagComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                if ("Other".equals(newValue)) {
+                    TextInputDialog dialog = new TextInputDialog();
+                    dialog.setTitle("New Tag");
+                    dialog.setHeaderText("Enter a new tag:");
+                    dialog.setContentText("Tag:");
+                    Optional<String> result = dialog.showAndWait();
+                    result.ifPresent(tag -> {
+                        if (!tag.isEmpty() && !tagComboBox.getItems().contains(tag)) {
+                            tagComboBox.getItems().add(tag);
+                            tagComboBox.getSelectionModel().select(tag);
+                        }
+                    });
+                }
+            });
 
             Map<String, Control> formFields = new HashMap<>();
             formFields.put("Category", categoryField);
             formFields.put("Amount", amountField);
+            formFields.put("Tag", tagComboBox);
 
             int row = 0;
             for (Map.Entry<String, Control> entry : formFields.entrySet()) {
@@ -284,8 +302,10 @@ public class ParticipantExpenseViewController {
         static Expense extractExpenseFromForm(Map<String, Control> formFields, Expense expense) {
             String category = ((TextField) formFields.get("Category")).getText();
             String amount = ((TextField) formFields.get("Amount")).getText();
+            String tag = ((ComboBox<String>) formFields.get("Tag")).getValue();
             expense.setCategory(category);
             expense.setAmount(Double.parseDouble(amount));
+            expense.setExpenseType(tag);
             return expense;
         }
     }

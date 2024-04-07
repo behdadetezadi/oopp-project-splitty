@@ -127,10 +127,11 @@ public class ServerUtils {
 	 * @param description description of the expense
 	 * @param amountValue the amount the person has paid for the expense
 	 */
-	public static Expense addExpense(long participantId, String description, double amountValue, long eventId) {
+	public static Expense addExpense(long participantId, String description, double amountValue, long eventId, String tag) {
 		try {
 			Participant participant = getParticipant(participantId);
 			Expense expense = new Expense(participant, description, amountValue,eventId);
+			expense.setExpenseType(tag);
 			System.out.println(eventId);
 			return client.target(SERVER)
 					.path("api/events/{eventId}/expenses")

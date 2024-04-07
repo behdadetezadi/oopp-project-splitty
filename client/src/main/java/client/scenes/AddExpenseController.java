@@ -13,6 +13,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.util.Locale;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 
@@ -34,6 +35,9 @@ public class AddExpenseController {
     private TextField amountPaid;
     @FXML
     private Label participantLabel;
+    @FXML
+    private ComboBox<String> comboBox;
+    private String[] tags = {"Food", "Entrance fees", "Travel", "Other"};
     private Event event;
     private long selectedParticipantId;
 
@@ -100,7 +104,27 @@ public class AddExpenseController {
             amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
             addExpenseButton.getStyleClass().add("button-hover");
             cancelButton.getStyleClass().add("button-hover");
-
+            comboBox.getItems().clear();
+            for (String tag : tags) {
+                if (!comboBox.getItems().contains(tag)) {
+                    comboBox.getItems().add(tag);
+                }
+            }
+            comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                if ("Other".equals(newValue)) {
+                    TextInputDialog dialog = new TextInputDialog();
+                    dialog.setTitle("New Tag");
+                    dialog.setHeaderText("Enter a new tag:");
+                    dialog.setContentText("Tag:");
+                    Optional<String> result = dialog.showAndWait();
+                    result.ifPresent(tag -> {
+                        if (!tag.isEmpty() && !comboBox.getItems().contains(tag)) {
+                            comboBox.getItems().add(tag);
+                            comboBox.getSelectionModel().select(tag);
+                        }
+                    });
+                }
+            });
         }
     }
 
@@ -122,7 +146,13 @@ public class AddExpenseController {
     private void handleAddExpenseAction(ActionEvent actionEvent) {
         String category = this.expenseDescription.getText();
         String amount = this.amountPaid.getText();
+        String selectedTag = comboBox.getValue();
         double amountValue;
+
+        if (selectedTag == null || selectedTag.isEmpty()) {
+            AlertUtils.showErrorAlert("Invalid tag", "Error", resourceBundle.getString("Please_select_a_tag."));
+            return;
+        }
 
         if(category == null || category.isEmpty()){
             AlertUtils.showErrorAlert("Invalid description", "Error",
@@ -148,7 +178,7 @@ public class AddExpenseController {
         }
 
         try {
-            Expense newExpense = ServerUtils.addExpense(selectedParticipantId, category, amountValue, event.getId());
+            Expense newExpense = ServerUtils.addExpense(selectedParticipantId, category, amountValue, event.getId(), selectedTag);
             Stage stage = (Stage) addExpenseButton.getScene().getWindow();
             if(newExpense!=null){
                 AlertUtils.showInformationAlert("Expense Added","Information",
@@ -176,8 +206,7 @@ public class AddExpenseController {
             alert.setHeaderText(null);
             alert.setContentText(resourceBundle.getString("Are_you_sure_you_want_to_cancel?"));
             if (alert.showAndWait().get() == ButtonType.OK) {
-                // Switch to the EventOverview scene using MainController
-                mainController.showEventOverview(this.event, activeLocale); // You may need to pass the event object if required
+                mainController.showEventOverview(this.event, activeLocale);
             }
         } else {
             throw new IllegalStateException();
