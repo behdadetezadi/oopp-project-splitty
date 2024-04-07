@@ -76,7 +76,14 @@
             <!-- Participants Section -->
             <Label fx:id="participantsLabel" style="-fx-font-weight: bold;" styleClass="section-label" text="%Participants" />
             <HBox alignment="CENTER" spacing="10">
-                <Button fx:id="showParticipantsButton" onAction="#showParticipants" prefHeight="26.0" prefWidth="206.0" styleClass="label-button" text="%Show_Participants" />
+                <Button fx:id="showParticipantsButton" onAction="#showParticipants" styleClass="label-button" text="%Show_Participants">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="31.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@/images/UserIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
                 <VBox alignment="CENTER" spacing="10">
                     <HBox alignment="CENTER" spacing="10">
                     </HBox>
@@ -85,7 +92,7 @@
             <!-- Expenses Section -->
             <HBox alignment="CENTER" spacing="10" />
             <Label fx:id="expensesLabel" style="-fx-font-weight: bold;" styleClass="section-label" text="%Expenses" />
-            <VBox alignment="CENTER" spacing="20">
+            <VBox alignment="CENTER" spacing="10">
                 <HBox alignment="CENTER">
                     <Button fx:id="showAllExpensesButton" onAction="#showAllExpensesOverview" text="%Show_All_Expenses">
                   <graphic>
