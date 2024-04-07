@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.AlertUtils;
 
+import client.utils.ServerUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -55,17 +56,13 @@ public class AdminController {
 
     @FXML
     public void initialize() {
-        List<Event> dummyEvents = createDummyEvents(15); // TODO only for testing
-        eventData.addAll(dummyEvents); // TODO only for testing
+        fetchAndPopulateEvents();
 
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         creationDateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
         lastActivityColumn.setCellValueFactory(new PropertyValueFactory<>("lastActivity"));
 
         setupActionsColumn();
-        eventsTable.setItems(eventData);
-
-
     }
 
 
@@ -88,7 +85,16 @@ public class AdminController {
         //i.add(test2);
         eventsTable.setItems(i);
         setupActionsColumn();
+    }
 
+    private void fetchAndPopulateEvents() {
+        new Thread(() -> {
+            List<Event> events = ServerUtils.getAllEvents();
+            javafx.application.Platform.runLater(() -> {
+                eventData.addAll(events);
+                eventsTable.setItems(eventData);
+            });
+        }).start();
     }
 
     private void setupActionsColumn() {
@@ -129,13 +135,34 @@ public class AdminController {
     }
 
     /**
-     * TODO Logic to delete the event
+     * Deletes an event
      * @param event button press
      */
     @FXML
     private void deleteEvent(Event event) {
+        boolean userConfirmed = AlertUtils.showConfirmationAlert("Confirm Deletion",
+                "Are you sure you want to delete this event?");
 
+        if (!userConfirmed) {
+            return;
+        }
+
+        new Thread(() -> {
+            boolean success = ServerUtils.deleteEvent(event.getId());
+            javafx.application.Platform.runLater(() -> {
+                if (success) {
+                    eventData.remove(event);
+                    eventsTable.setItems(eventData);
+                    AlertUtils.showInformationAlert("Success", "Event Deleted",
+                            "The event has been successfully deleted.");
+                } else {
+                    AlertUtils.showErrorAlert("Error", "Deletion Failed",
+                            "Failed to delete the event.");
+                }
+            });
+        }).start();
     }
+
 
     /**
      * method that exports given event as json
@@ -152,15 +179,11 @@ public class AdminController {
             AlertUtils.showInformationAlert("event Exported!", "Exported to:",
                     "client/src/main/resources/JSON/\" + event.getTitle() + \".json");
 
-
         } catch (IOException e) {
             System.out.println(e.getMessage());
             AlertUtils.showErrorAlert("Error", "Could not write to file",
                     "Could not find path");
-
-
         }
-
     }
 
     /**
@@ -205,7 +228,6 @@ public class AdminController {
                             int i = 0;
 
                             try {
-
                                 Event e = objectMapper.readValue(finalString, new TypeReference<Event>(){});
                                 eventArr[0] = e;
                                 update(eventArr[0]);
@@ -213,16 +235,12 @@ public class AdminController {
                                 AlertUtils.showInformationAlert("Success", "Event added!",
                                         "You can close the dialogue window.");
 
-
-
-
                             } catch (JsonProcessingException e) {
                                 System.out.println("could not find correct attributes ");
                                 AlertUtils.showErrorAlert("Error", "Conversion failed",
                                         "Could not make an event from the given JSON file.");
                                 System.out.println(e.getMessage());
                             }
-
 
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -234,18 +252,12 @@ public class AdminController {
                     }
                 }
         );
-
-
         dialogVbox.getChildren().add(button);
 
         Scene dialogScene = new Scene(dialogVbox, 300, 200);
         dialogScene.getStylesheets().add("styles.css");
         dialog.setScene(dialogScene);
         dialog.show();
-
-
-
-
     }
 
 
