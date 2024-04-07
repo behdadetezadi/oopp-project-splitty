@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import client.utils.undoable.DeleteExpenseCommand;
 import client.utils.undoable.UndoableCommand;
@@ -22,6 +23,7 @@ import static client.utils.ValidationUtils.isValidDouble;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.function.BiConsumer;
 
 public class ParticipantExpenseViewController {
     @FXML
@@ -40,6 +42,8 @@ public class ParticipantExpenseViewController {
     private Locale activeLocale;
     private ResourceBundle resourceBundle;
     private DeleteExpenseCommand deleteExpenseCommand;
+
+    private BiConsumer<Expense, String> updateUI;
 
     @Inject
     public ParticipantExpenseViewController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
@@ -122,32 +126,45 @@ public class ParticipantExpenseViewController {
     private void switchToEventOverviewScene() {
         mainController.showEventOverview(event, activeLocale);
     }
-
-//    @FXML
-//    private void handleDeleteButton(Expense expense) {
-//        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION,
-//                resourceBundle.getString("confirmDeleteExpense"),
-//                ButtonType.YES, ButtonType.NO);
-//        confirmDialog.showAndWait().ifPresent(response -> {
-//            if (response == ButtonType.YES) {
-//                try {
-//                    ServerUtils.deleteExpense(expense.getId(), event.getId());
-//                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//                    alert.setTitle(resourceBundle.getString("expenseDeletedTitle"));
-//                    alert.setHeaderText(null);
-//                    alert.setContentText(resourceBundle.getString("expenseDeletedSuccess"));
-//                    alert.showAndWait();
-//                    initializeExpensesForParticipant(selectedParticipantId);
-//                } catch (Exception e) {
-//                    Alert alert = new Alert(Alert.AlertType.ERROR);
-//                    alert.setTitle(resourceBundle.getString("errorTitle"));
-//                    alert.setHeaderText(null);
-//                    alert.setContentText(resourceBundle.getString("deleteExpenseFail") + e.getMessage());
-//                    alert.showAndWait();
-//                }
+//@FXML
+//private void handleDeleteButton(Expense expense) {
+//    Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION,
+//            resourceBundle.getString("confirmDeleteExpense"),
+//            ButtonType.YES, ButtonType.NO);
+//    confirmDialog.showAndWait().ifPresent(response -> {
+//        if (response == ButtonType.YES) {
+//            try {
+//                 deleteExpenseCommand = new DeleteExpenseCommand(expense, event.getId(), result ->
+//                 {
+//                     if (result != null) {
+//                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//                        alert.setTitle(resourceBundle.getString("expenseDeletedTitle"));
+//                        alert.setHeaderText(null);
+//                        alert.setContentText(resourceBundle.getString("expenseDeletedSuccess"));
+//                        alert.showAndWait();
+//                        initializeExpensesForParticipant(selectedParticipantId);
+//                        Platform.runLater(() -> {
+//                            undoButton.setDisable(false); // Enable the Undo button after adding an expense
+//                        });
+//                    } else {
+//                        Alert alert = new Alert(Alert.AlertType.ERROR);
+//                        alert.setTitle(resourceBundle.getString("errorTitle"));
+//                        alert.setHeaderText(null);
+//                        alert.setContentText(resourceBundle.getString("deleteExpenseFail"));
+//                        alert.showAndWait();
+//                    }
+//                }, resourceBundle);
+//                deleteExpenseCommand.execute();
+//            } catch (Exception e) {
+//                Alert alert = new Alert(Alert.AlertType.ERROR);
+//                alert.setTitle(resourceBundle.getString("errorTitle"));
+//                alert.setHeaderText(null);
+//                alert.setContentText(resourceBundle.getString("deleteExpenseFail") + e.getMessage());
+//                alert.showAndWait();
 //            }
-//        });
-//    }
+//        }
+//    });
+//}
 @FXML
 private void handleDeleteButton(Expense expense) {
     Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION,
@@ -156,18 +173,10 @@ private void handleDeleteButton(Expense expense) {
     confirmDialog.showAndWait().ifPresent(response -> {
         if (response == ButtonType.YES) {
             try {
-                 deleteExpenseCommand = new DeleteExpenseCommand(expense, event.getId(), result ->
-                 {
-                     if (result != null) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle(resourceBundle.getString("expenseDeletedTitle"));
-                        alert.setHeaderText(null);
-                        alert.setContentText(resourceBundle.getString("expenseDeletedSuccess"));
-                        alert.showAndWait();
-                        initializeExpensesForParticipant(selectedParticipantId);
-                        Platform.runLater(() -> {
-                            undoButton.setDisable(false); // Enable the Undo button after adding an expense
-                        });
+                deleteExpenseCommand = new DeleteExpenseCommand(expense, event.getId(), (result, actionType) -> {
+                    if (result != null) {
+                        // Pass both the result and action type to updateUI
+                        updateUI(result, actionType);
                     } else {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
                         alert.setTitle(resourceBundle.getString("errorTitle"));
@@ -187,6 +196,23 @@ private void handleDeleteButton(Expense expense) {
         }
     });
 }
+
+
+    public void updateUI(Expense expense, String actionType) {
+        Platform.runLater(() -> {
+            if (actionType.equals("deleted")) {
+                // Only show the deletion success message when the action type is "deleted"
+                AlertUtils.showSuccessAlert(resourceBundle.getString("expenseDeletedTitle"), null, resourceBundle.getString("expenseDeletedSuccess"));
+            } else if (actionType.equals("undone")) {
+                // Only show the undo success message when the action type is "undone"
+                AlertUtils.showSuccessAlert(resourceBundle.getString("undoSuccessTitle"), null, resourceBundle.getString("undoExpenseSuccess"));
+            }
+            initializeExpensesForParticipant(selectedParticipantId);
+            undoButton.setDisable(false); // Enable the Undo button after adding an expense
+        });
+    }
+
+
 
     /**
      * Handles the action to undo the last deleted expense.

@@ -7,22 +7,22 @@ import javafx.application.Platform;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class DeleteExpenseCommand implements UndoableCommand {
     private Expense expense;
     private long eventId;
-    private Consumer<Expense> updateUI;
     private ResourceBundle resourceBundle;
     private Expense deletedExpense;
+    private BiConsumer<Expense, String> updateUI;
 
-    public DeleteExpenseCommand(Expense expense, long eventId, Consumer<Expense> updateUI, ResourceBundle resourceBundle) {
+    public DeleteExpenseCommand(Expense expense, long eventId, BiConsumer<Expense, String> updateUI, ResourceBundle resourceBundle) {
         this.expense = expense;
         this.eventId = eventId;
         this.updateUI = updateUI;
         this.resourceBundle = resourceBundle;
     }
-
 
     @Override
     public void execute() {
@@ -31,13 +31,11 @@ public class DeleteExpenseCommand implements UndoableCommand {
                 // Attempt to delete the expense
                 Expense deletedExpense1 = ServerUtils.deleteExpense(expense.getId(), eventId);
                 // Assuming deleteExpense returns null on failure instead of throwing an exception
-                if (deletedExpense1 != null)
-                {
+                if (deletedExpense1 != null) {
                     // If deletion was successful, inform the UI
-                    this.deletedExpense=deletedExpense1;
-                    updateUI.accept(deletedExpense);
-                }
-                else {
+                    this.deletedExpense = deletedExpense1;
+                    updateUI.accept(deletedExpense, "deleted");
+                } else {
                     // If deletion was unsuccessful, inform the UI of failure in a specific way
                     // This assumes updateUI is designed to handle a specific error signal; adjust as necessary
                     System.err.println("Failed to delete expense, server returned null");
@@ -51,9 +49,6 @@ public class DeleteExpenseCommand implements UndoableCommand {
         });
     }
 
-
-
-
     @Override
     public void undo() {
         Platform.runLater(() -> {
@@ -61,11 +56,8 @@ public class DeleteExpenseCommand implements UndoableCommand {
                 Expense addedExpense = ServerUtils.addExpense(expense.getParticipant().getId(), expense.getCategory(), expense.getAmount(), eventId);
                 if (addedExpense != null) {
                     // If adding the expense back was successful, inform the UI
-                    updateUI.accept(addedExpense);
-                Platform.runLater(() -> {
-                    // Show success alert
-                    AlertUtils.showSuccessAlert(resourceBundle.getString("undoSuccessTitle"), null, resourceBundle.getString("undoExpenseSuccess"));
-                });}
+                    updateUI.accept(addedExpense, "undone");
+                }
             } catch (Exception e) {
                 Platform.runLater(() -> AlertUtils.showErrorAlert(resourceBundle.getString("undoFailedTitle"), null, resourceBundle.getString("undoExpenseFailure")));
             }
