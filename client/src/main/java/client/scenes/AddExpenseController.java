@@ -3,9 +3,11 @@ package client.scenes;
 import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import client.utils.ValidationUtils;
+import client.utils.undoable.AddExpenseCommand;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -36,8 +38,12 @@ public class AddExpenseController {
     private TextField amountPaid;
     @FXML
     private Label participantLabel;
+    @FXML
+    private Button undoButton;
     private Event event;
     private long selectedParticipantId;
+    private AddExpenseCommand lastExecutedCommand;
+
 
 
     /**
@@ -118,46 +124,70 @@ public class AddExpenseController {
      */
     @FXML
     private void handleAddExpenseAction(ActionEvent actionEvent) {
-        String category = this.expenseDescription.getText();
-        String amount = this.amountPaid.getText();
+        String category = expenseDescription.getText();
+        String amount = amountPaid.getText();
         double amountValue;
 
-        if(category == null || category.isEmpty()){
-            AlertUtils.showErrorAlert("Invalid description", "Error",
-                    resourceBundle.getString("The_category_cannot_be_empty."));
+        // Validate category
+        if (category == null || category.isEmpty()) {
+            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_description"), resourceBundle.getString("Error"), resourceBundle.getString("The_category_cannot_be_empty."));
             return;
         }
 
-        // Check for a trailing period/comma
+        // Normalize and validate the amount
         String normalizedAmount = amount.replace(',', '.');
         if (normalizedAmount.endsWith(".")) {
-            AlertUtils.showErrorAlert("Invalid amount", "Error",
-                    resourceBundle.getString("Please_enter_a_valid_number_for_the_amount."));
+            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_amount"), resourceBundle.getString("Error"), resourceBundle.getString("Please_enter_a_valid_number_for_the_amount."));
             return;
         }
 
         try {
             amountValue = Double.parseDouble(normalizedAmount);
-        } catch (NumberFormatException e) {
-            // Handle invalid number format
-            AlertUtils.showErrorAlert("Invalid amount", "Error",
-                    resourceBundle.getString("Please_enter_a_valid_number_for_the_amount."));
-            return;
-        }
 
-        try {
-            Expense newExpense = ServerUtils.addExpense(selectedParticipantId, category, amountValue, event.getId());
-            Stage stage = (Stage) addExpenseButton.getScene().getWindow();
-            if(newExpense!=null){
-                AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
-                        "Expense Added", resourceBundle.getString("The_expense_has_been_successfully_added."));
-            }
-            switchToEventOverviewScene();
-        } catch (Exception e) {
-            AlertUtils.showErrorAlert("Unexpected Error", "Error",
-                    resourceBundle.getString("An_unexpected_error_occurred") + e.getMessage());
+            // Initialize the expense separately
+            Expense newExpense = new Expense(ServerUtils.findParticipantById(selectedParticipantId), category, amountValue, event.getId());
+
+            // Initialize and execute the AddExpenseCommand
+            lastExecutedCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> {
+                Platform.runLater(() -> {
+                    if (expense != null) {
+                        // Success path: Show success alert and possibly switch scenes
+                        AlertHelper.showAlert(Alert.AlertType.INFORMATION, (Stage) addExpenseButton.getScene().getWindow(),
+                                resourceBundle.getString("Expense_Added"), resourceBundle.getString("The_expense_has_been_successfully_added."));
+                        Platform.runLater(() -> {
+                            undoButton.setDisable(false); // Enable the Undo button after adding an expense
+                        });
+                    } else {
+                        // Failure path: Show error alert
+                        AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Unexpected_Error"), resourceBundle.getString("An_unexpected_error_occurred"));
+                    }
+                });
+            }, resourceBundle);
+            lastExecutedCommand.execute();
+        } catch (NumberFormatException e) {
+            // Handle parsing error
+            AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Invalid_Amount"), resourceBundle.getString("Please_enter_a_valid_amount"));
+        } catch (RuntimeException e) {
+            AlertUtils.showErrorAlert(resourceBundle.getString("Unexpected_Error"), resourceBundle.getString("error"), resourceBundle.getString("An_unexpected_error_occurred") + e.getMessage());
         }
     }
+    /**
+     * Handles the action to undo the last added expense.
+     * @param event The action event triggered by clicking the Undo button.
+     */
+    @FXML
+    private void handleUndoAction(ActionEvent event) {
+        if (lastExecutedCommand != null) {
+            lastExecutedCommand.undo();
+            lastExecutedCommand = null; // Reset the command as it has been undone
+            undoButton.setDisable(true); // Disable the undo button as there's nothing to undo now
+            // Clear the text fields
+            expenseDescription.clear();
+            amountPaid.clear();
+        }
+    }
+
+
 
 
     /**
