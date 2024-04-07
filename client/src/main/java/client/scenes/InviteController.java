@@ -51,7 +51,7 @@ public class InviteController  {
      * invite Controller injection
      * @param primaryStage primary stage
      * @param server server
-     * @param mainController maincontroller
+     * @param mainController main controller
      */
     @Inject
     public InviteController(Stage primaryStage,ServerUtils server, MainController mainController) {
@@ -71,7 +71,7 @@ public class InviteController  {
         Window owner = submitButton.getScene().getWindow();
 
         if(emailsField.getText().isEmpty()) {
-            AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "Form Error!",
+            AlertUtils.showErrorAlert("Form Error!", "Error",
                     "Please enter email addresses!");
             return null;
         }
@@ -84,7 +84,7 @@ public class InviteController  {
             String temp = scanner.next();
 
             if (!temp.contains("@") || !temp.contains(".")) {
-                AlertHelper.showAlert(Alert.AlertType.ERROR, owner, "non-valid email!",
+                AlertUtils.showErrorAlert("Non-valid email!", "Error",
                         temp + " is not a valid email address!");
                 flag = true;
             } else {
@@ -93,8 +93,8 @@ public class InviteController  {
         }
 
         if (!flag) {
-            AlertHelper.showAlert(Alert.AlertType.INFORMATION, owner, "invites send!",
-                    "MONEY!!!");
+            AlertUtils.showInformationAlert("Invites send!", "Information",
+                    "Invites sent successfully");
         }
         return emailAddresses;
     }
@@ -154,7 +154,7 @@ public class InviteController  {
         );
         clipboard.setContent(content);
         AlertUtils.showInformationAlert("Invite code copied!",
-                "copied the following invitecode: ",
+                "copied the following invite code: ",
                 this.inviteCode.getText());
     }
 }

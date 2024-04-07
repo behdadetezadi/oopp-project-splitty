@@ -23,8 +23,6 @@ public class AddExpenseController {
     private Locale activeLocale;
     private ResourceBundle resourceBundle;
     @FXML
-    private TextField payer;
-    @FXML
     private Label expenseFor;
     @FXML
     private Button cancelButton;
@@ -149,8 +147,8 @@ public class AddExpenseController {
             Expense newExpense = ServerUtils.addExpense(selectedParticipantId, category, amountValue, event.getId());
             Stage stage = (Stage) addExpenseButton.getScene().getWindow();
             if(newExpense!=null){
-                AlertHelper.showAlert(Alert.AlertType.INFORMATION, stage,
-                        "Expense Added", resourceBundle.getString("The_expense_has_been_successfully_added."));
+                AlertUtils.showInformationAlert("Expense Added","Information",
+                        resourceBundle.getString("The_expense_has_been_successfully_added."));
             }
             switchToEventOverviewScene();
         } catch (Exception e) {
