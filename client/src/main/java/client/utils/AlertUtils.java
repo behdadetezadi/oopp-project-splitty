@@ -3,6 +3,7 @@ package client.utils;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 
 import java.util.Optional;
 
@@ -20,8 +21,13 @@ public class AlertUtils {
     private static void showAlert(AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
-        alert.setHeaderText(header); // Now accepts and sets header text
+        alert.setHeaderText(header);
         alert.setContentText(content);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add(
+                AlertUtils.class.getResource("/styles.css").toExternalForm()
+        );
+        dialogPane.getStyleClass().add("myDialog");
         alert.showAndWait();
     }
 
@@ -54,6 +60,11 @@ public class AlertUtils {
     public static boolean showConfirmationAlert(String title, String content) {
         Alert confirmDialog = new Alert(AlertType.CONFIRMATION, content, ButtonType.YES, ButtonType.NO);
         confirmDialog.setTitle(title);
+        DialogPane dialogPane = confirmDialog.getDialogPane();
+        dialogPane.getStylesheets().add(
+                AlertUtils.class.getResource("/styles.css").toExternalForm()
+        );
+        dialogPane.getStyleClass().add("myDialog");
         Optional<ButtonType> response = confirmDialog.showAndWait();
         return response.filter(buttonType -> buttonType == ButtonType.YES).isPresent();
     }
