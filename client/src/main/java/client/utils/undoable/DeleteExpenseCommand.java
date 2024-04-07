@@ -34,8 +34,8 @@ public class DeleteExpenseCommand implements UndoableCommand {
                 if (deletedExpense1 != null)
                 {
                     // If deletion was successful, inform the UI
-                    updateUI.accept(deletedExpense);
                     this.deletedExpense=deletedExpense1;
+                    updateUI.accept(deletedExpense);
                 }
                 else {
                     // If deletion was unsuccessful, inform the UI of failure in a specific way
@@ -58,12 +58,14 @@ public class DeleteExpenseCommand implements UndoableCommand {
     public void undo() {
         Platform.runLater(() -> {
             try {
-                ServerUtils.addExpense(expense.getParticipant().getId(), expense.getCategory(), expense.getAmount(), eventId);
-                updateUI.accept(null);
+                Expense addedExpense = ServerUtils.addExpense(expense.getParticipant().getId(), expense.getCategory(), expense.getAmount(), eventId);
+                if (addedExpense != null) {
+                    // If adding the expense back was successful, inform the UI
+                    updateUI.accept(addedExpense);
                 Platform.runLater(() -> {
                     // Show success alert
                     AlertUtils.showSuccessAlert(resourceBundle.getString("undoSuccessTitle"), null, resourceBundle.getString("undoExpenseSuccess"));
-                });
+                });}
             } catch (Exception e) {
                 Platform.runLater(() -> AlertUtils.showErrorAlert(resourceBundle.getString("undoFailedTitle"), null, resourceBundle.getString("undoExpenseFailure")));
             }
