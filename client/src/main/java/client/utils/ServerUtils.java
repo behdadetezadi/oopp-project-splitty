@@ -177,7 +177,7 @@ public class ServerUtils {
 		}
 	}
 
-	public static Expense findExpenseById(long eventId, long expenseId) {
+	public static Expense findExpenseById(long expenseId,long eventId) {
 		try {
 			// Fetch all expenses associated with the event
 			List<Expense> expenses = getExpensesForEvent(eventId);

@@ -31,7 +31,8 @@ public class DeleteExpenseCommand implements UndoableCommand {
                 // Attempt to delete the expense
                 Expense deletedExpense1 = ServerUtils.deleteExpense(expense.getId(), eventId);
                 // Assuming deleteExpense returns null on failure instead of throwing an exception
-                if (deletedExpense1 != null) {
+                if (deletedExpense1 != null)
+                {
                     // If deletion was successful, inform the UI
                     updateUI.accept(deletedExpense);
                     this.deletedExpense=deletedExpense1;
