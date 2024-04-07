@@ -23,9 +23,6 @@ class ValidationUtilsTest {
         assertTrue(ValidationUtils.isValidName("Mikey"));
         assertTrue(ValidationUtils.isValidName("mikey"));
         assertFalse(ValidationUtils.isValidName(""));
-
-
-
     }
 
     @Test
@@ -82,6 +79,34 @@ class ValidationUtilsTest {
         assertTrue(ValidationUtils.isValidCapitalizedName("A"));
         assertFalse(ValidationUtils.isValidCapitalizedName(""));
         assertFalse(ValidationUtils.isValidCapitalizedName("0"));
+    }
 
+    @Test
+    void testIsValidNumber_ValidCharacters() {
+        assertTrue(ValidationUtils.isValidNumber("0"));
+        assertTrue(ValidationUtils.isValidNumber("9"));
+        assertTrue(ValidationUtils.isValidNumber("."));
+        assertTrue(ValidationUtils.isValidNumber(","));
+    }
+
+    @Test
+    void testIsValidNumber_InvalidCharacters() {
+        assertFalse(ValidationUtils.isValidNumber("a"));
+        assertFalse(ValidationUtils.isValidNumber(" "));
+        assertFalse(ValidationUtils.isValidNumber("$"));
+    }
+
+    @Test
+    void testMultiplePeriodOrComma_WithPeriod() {
+        assertTrue(ValidationUtils.multiplePeriodOrComma(".", "1.2"));
+        assertTrue(ValidationUtils.multiplePeriodOrComma(".", "1,2"));
+        assertFalse(ValidationUtils.multiplePeriodOrComma(".", "12"));
+    }
+
+    @Test
+    void testMultiplePeriodOrComma_WithComma() {
+        assertTrue(ValidationUtils.multiplePeriodOrComma(",", "1,2"));
+        assertTrue(ValidationUtils.multiplePeriodOrComma(",", "1.2"));
+        assertFalse(ValidationUtils.multiplePeriodOrComma(",", "12"));
     }
 }

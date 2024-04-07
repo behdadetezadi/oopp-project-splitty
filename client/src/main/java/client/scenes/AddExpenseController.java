@@ -74,6 +74,10 @@ public class AddExpenseController {
                 + " " + ServerUtils.getParticipant(selectedParticipantId).getLastName());
         initialize();
     }
+
+    /**
+     * updates the ui elements, this is necessary for the language switch
+     */
     public void updateUIElements() {
         expenseFor.setText(resourceBundle.getString("Add_Expense_for"));
         participantLabel.setText(resourceBundle.getString("participant"));
@@ -85,8 +89,8 @@ public class AddExpenseController {
 
 
     /**
-     *
-     *
+     * Initialises the UI components and event handlers if an event is provided.
+     * This method is called automatically by JavaFX after loading the FXML file.
      */
     @FXML
     public void initialize() {
@@ -179,6 +183,10 @@ public class AddExpenseController {
             throw new IllegalStateException();
         }
     }
+
+    /**
+     * switches to the event overview
+     */
     @FXML
     private void switchToEventOverviewScene() {
         mainController.showEventOverview(this.event, activeLocale);
