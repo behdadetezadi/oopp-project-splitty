@@ -303,10 +303,10 @@ public class ServerUtils {
 	 * @return //TODO
 	 */
 	public static Event addEvent(Event event) {
-		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/events") //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/events")
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
 				.post(Entity.entity(event, APPLICATION_JSON), Event.class);
 	}
 

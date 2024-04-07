@@ -1,10 +1,12 @@
 package commons;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -24,7 +26,11 @@ public class Event {
     private List<Participant> people;
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Expense> expenses;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(columnDefinition = "TIMESTAMP(0)")
     private LocalDateTime creationDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(columnDefinition = "TIMESTAMP(0)")
     private LocalDateTime lastActivity;
 
 
@@ -40,8 +46,8 @@ public class Event {
         this.expenses = expenses;
         this.inviteCode = inviteCode;
         this.title = title;
-        this.creationDate = LocalDateTime.now();
-        this.lastActivity = this.creationDate;
+        this.creationDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        this.lastActivity = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     /**
@@ -55,8 +61,8 @@ public class Event {
         this.expenses = expenses;
         this.inviteCode = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
         this.title = title;
-        this.creationDate = LocalDateTime.now();
-        this.lastActivity = this.creationDate;
+        this.creationDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        this.lastActivity = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     /**
@@ -68,8 +74,8 @@ public class Event {
         this.people = new ArrayList<>();
         this.expenses = new ArrayList<>();
         this.inviteCode = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
-        this.creationDate = LocalDateTime.now();
-        this.lastActivity = this.creationDate;
+        this.creationDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        this.lastActivity = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     /**
@@ -86,8 +92,8 @@ public class Event {
         this.inviteCode = inviteCode;
         this.people = participants;
         this.expenses = expenses;
-        this.creationDate = LocalDateTime.now();
-        this.lastActivity = this.creationDate;
+        this.creationDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        this.lastActivity = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     /**
@@ -95,8 +101,8 @@ public class Event {
      */
     public Event() {
         this.inviteCode = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
-        this.creationDate = LocalDateTime.now();
-        this.lastActivity = this.creationDate;
+        this.creationDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        this.lastActivity = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     /**
@@ -109,8 +115,8 @@ public class Event {
         this.people = people;
         this.expenses = new ArrayList<>();
         this.inviteCode = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
-        this.creationDate = LocalDateTime.now();
-        this.lastActivity = this.creationDate;
+        this.creationDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        this.lastActivity = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     /**
@@ -218,7 +224,7 @@ public class Event {
      * Method for updating the last activity date and time
      */
     private void updateLastActivity() {
-        this.lastActivity = LocalDateTime.now();
+        this.lastActivity = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     /**
