@@ -279,13 +279,13 @@ public class TableOfParticipantsController {
                 .anyMatch(p -> p.getId() == participant.getId());
 
         if (!exists){
-        Participant addedParticipant = ServerUtils.addParticipantToEvent(event.getId(), participant);
-        if (addedParticipant != null) {
-            participants.add(addedParticipant);
-            setupPagination();
-            AlertUtils.showInformationAlert("Success", "Participant Added",
-                    resourceBundle.getString("Participant_was_successfully_added."));
-        }}
+            Participant addedParticipant = ServerUtils.addParticipantToEvent(event.getId(), participant);
+            if (addedParticipant != null) {
+                participants.add(addedParticipant);
+                setupPagination();
+                AlertUtils.showInformationAlert("Success", "Participant Added",
+                        resourceBundle.getString("Participant_was_successfully_added."));
+            }}
     }
 
     /**
@@ -575,5 +575,10 @@ public class TableOfParticipantsController {
 
             return participant;
         }
+
+    }
+    public List<Participant>getUpdatedParticipant(Event event)
+    {
+        return participants;
     }
 }

@@ -191,7 +191,14 @@ public class EventController {
     }
 
     @DeleteMapping("/{eventId}/participants/{participantId}")
-    public ResponseEntity<Void> removeParticipant(@PathVariable long eventId, @PathVariable long participantId) {
+    public ResponseEntity<Void> removeParticipant(@PathVariable long eventId, @PathVariable long participantId)
+    {
+
+        List<Expense>expenseList=eventService.filterByParticipantId(eventId,participantId);
+        for(Expense expense:expenseList)
+        {
+            removeExpense(eventId,expense.getId());
+        }
         eventService.removeParticipantFromEvent(eventId, participantId);
         return ResponseEntity.ok().build();
     }

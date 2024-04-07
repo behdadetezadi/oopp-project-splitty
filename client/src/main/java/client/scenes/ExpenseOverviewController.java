@@ -4,6 +4,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
+import commons.Participant;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -49,11 +50,28 @@ public class ExpenseOverviewController {
      *
      * @param expense the expense need to be displayed
      */
-    public String formatExpenseForDisplay(Expense expense) {
-        return String.format("%s - %s: $%.2f",
-                expense.getParticipant().getFirstName(),
-                expense.getCategory(),
-                expense.getAmount());
+    public String formatExpenseForDisplay(Expense expense, int expenseNumber)
+    {
+        int numberOfParticipants = mainController.getUpdatedParticipantList(event).size();
+        double amountOwedPerParticipant = expense.getAmount() / numberOfParticipants;
+
+        // Using ResourceBundle for localized strings
+        String expenseTemplate = resourceBundle.getString("expenseDetail");
+        StringBuilder displayBuilder = new StringBuilder(String.format(expenseTemplate, expenseNumber, expense.getParticipant().getFirstName(), expense.getAmount(), expense.getCategory()));
+
+        String participantOwesTemplate = resourceBundle.getString("participantOwes");
+        for (Participant participant : mainController.getUpdatedParticipantList(event)) {
+            if (!participant.equals(expense.getParticipant())) {
+                displayBuilder.append(String.format(participantOwesTemplate, participant.getFirstName(), amountOwedPerParticipant));
+            }
+            if(numberOfParticipants==1)
+            {
+                String noOneOwesMessage = resourceBundle.getString("expenseFullyCovered");
+                displayBuilder.append(noOneOwesMessage);
+            }
+        }
+
+        return displayBuilder.toString();
     }
 
     @FXML
@@ -69,20 +87,19 @@ public class ExpenseOverviewController {
                 List<Expense> expenses = server.getExpensesForEvent(this.event.getId());
                 expensesListView.getItems().clear(); // Clear existing items
                 double sumOfExpenses = 0;
-                for (Expense expense : expenses)
+                for (int i=0;i<expenses.size();i++)
                 {
-                    if(expense==null)
-                    {
-                        expensesListView.getItems().add("No expenses recorded yet.");
+                    if (expenses.get(i) == null) {
+                        expensesListView.getItems().add(resourceBundle.getString("noExpensesRecorded"));
                     }
                     else
                     {
-                        String expenseDisplay = formatExpenseForDisplay(expense);
+                        String expenseDisplay = formatExpenseForDisplay(expenses.get(i),i+1);
                         expensesListView.getItems().add(expenseDisplay);
-                        sumOfExpenses += expense.getAmount();
+                        sumOfExpenses += expenses.get(i).getAmount();
                     }
                 }
-                sumOfExpensesLabel.setText("Total: $" + String.format("%.2f", sumOfExpenses));
+                sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"), String.format("%.2f", sumOfExpenses)));
             } catch (RuntimeException ex) {
                 // Handle case where no expenses are found
                 expensesListView.getItems().clear();
