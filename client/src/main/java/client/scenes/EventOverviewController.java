@@ -181,8 +181,8 @@ public class EventOverviewController {
             } else {
                 setText(item.getName());
                 ImageView imageView = new ImageView(item.getFlag());
-                imageView.setFitHeight(20);
-                imageView.setFitWidth(30);
+                imageView.setFitHeight(10);
+                imageView.setFitWidth(20);
                 setGraphic(imageView);
             }
         }
