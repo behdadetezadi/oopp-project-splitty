@@ -181,37 +181,26 @@ public class AddExpenseController {
             amountValue = Double.parseDouble(normalizedAmount);
             Expense newExpense = new Expense(ServerUtils.findParticipantById(selectedParticipantId), category,
                     amountValue, event.getId());
-            addedExpenseCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> Platform.runLater(() -> {
-                if (expense != null) {
-                    Platform.runLater(() -> undoButton.setDisable(false));
-                    AlertUtils.showInformationAlert( resourceBundle.getString("Expense_Added"), "Information",
-                            resourceBundle.getString("The_expense_has_been_successfully_added."));
-                } else {
-                    AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Unexpected_Error"),
-                            resourceBundle.getString("An_unexpected_error_occurred"));
-                }
-            }), resourceBundle);
+            addedExpenseCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> {
+                Platform.runLater(() -> {
+                    if (expense != null) {
+                        Platform.runLater(() -> undoButton.setDisable(false));
+                        AlertUtils.showInformationAlert(resourceBundle.getString("Expense_Added"), "Information",
+                                resourceBundle.getString("The_expense_has_been_successfully_added."));
+                        Platform.runLater(() -> {
+                            undoButton.setDisable(false);
+                        });
+                    } else {
+                        AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Unexpected_Error"),
+                                resourceBundle.getString("An_unexpected_error_occurred"));
+                    }
+                });
+            }, resourceBundle);
             undoManager.executeCommand(addedExpenseCommand);
         } catch (NumberFormatException e) {
-            // Handle invalid number format
-            AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Invalid_Amount"),
-                    resourceBundle.getString("Please_enter_a_valid_amount"));
-            return;
-        }
-
-        try {
-            Expense newExpense = ServerUtils.addExpense(selectedParticipantId, category, amountValue,
-                    event.getId(), selectedTag);
-            Stage stage = (Stage) addExpenseButton.getScene().getWindow();
-            if(newExpense!=null){
-                AlertUtils.showInformationAlert("Expense Added","Information",
-                        resourceBundle.getString("The_expense_has_been_successfully_added."));
-            }
-            switchToEventOverviewScene();
+            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_Amount"), resourceBundle.getString("error"), resourceBundle.getString("Please_enter_a_valid_amount"));
         } catch (RuntimeException e) {
-            AlertUtils.showErrorAlert(resourceBundle.getString("Unexpected_Error"), resourceBundle.getString("error"),
-                    resourceBundle.getString("An_unexpected_error_occurred") + e.getMessage());
-
+            AlertUtils.showErrorAlert(resourceBundle.getString("Unexpected_Error"), resourceBundle.getString("error"), resourceBundle.getString("An_unexpected_error_occurred") + e.getMessage());
         }
     }
     /**
