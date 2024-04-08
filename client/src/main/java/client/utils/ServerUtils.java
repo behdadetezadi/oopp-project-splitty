@@ -180,28 +180,22 @@ public class ServerUtils {
 	 * @return A boolean indicating whether the deletion was successful.
 	 */
 	public static boolean deleteEvent(long eventId) {
-		Response response = null;
-		try {
-			response = client.target(SERVER)
-					.path("api/events/{eventId}")
-					.resolveTemplate("eventId", eventId)
-					.request()
-					.delete();
+        try (Response response = client.target(SERVER)
+                .path("api/events/{eventId}")
+                .resolveTemplate("eventId", eventId)
+                .request()
+                .delete()) {
 
-			if (response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
-				return true;
-			} else {
-				System.err.println("Failed to delete event. Status code: " + response.getStatus());
-				return false;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		} finally {
-			if (response != null) {
-				response.close();
-			}
-		}
+            if (response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
+                return true;
+            } else {
+                System.err.println("Failed to delete event. Status code: " + response.getStatus());
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
 	}
 
 	/**

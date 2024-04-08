@@ -24,7 +24,7 @@ public class Event {
     private long inviteCode;
     @OneToMany(fetch = FetchType.EAGER)
     private List<Participant> people;
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Expense> expenses;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(columnDefinition = "TIMESTAMP(0)")
