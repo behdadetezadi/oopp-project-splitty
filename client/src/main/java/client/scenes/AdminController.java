@@ -17,8 +17,6 @@ import javafx.scene.control.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
-import javafx.util.Callback;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 
 import java.io.*;
@@ -81,19 +79,13 @@ public class AdminController {
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
 
         // Date formatting
-        creationDateColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Event, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<Event, String> event) {
-                LocalDateTime creationDateTime = event.getValue().getCreationDate();
-                return new SimpleStringProperty(creationDateTime != null ? formatDateTime(creationDateTime) : "");
-            }
+        creationDateColumn.setCellValueFactory(event -> {
+            LocalDateTime creationDateTime = event.getValue().getCreationDate();
+            return new SimpleStringProperty(creationDateTime != null ? formatDateTime(creationDateTime) : "");
         });
-        lastActivityColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Event, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<Event, String> event) {
-                LocalDateTime lastActivityDateTime = event.getValue().getLastActivity();
-                return new SimpleStringProperty(lastActivityDateTime != null ? formatDateTime(lastActivityDateTime) : "");
-            }
+        lastActivityColumn.setCellValueFactory(event -> {
+            LocalDateTime lastActivityDateTime = event.getValue().getLastActivity();
+            return new SimpleStringProperty(lastActivityDateTime != null ? formatDateTime(lastActivityDateTime) : "");
         });
 
         setupActionsColumn();
