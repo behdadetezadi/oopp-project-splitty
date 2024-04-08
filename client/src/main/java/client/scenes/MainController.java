@@ -143,6 +143,7 @@ public class MainController {
 
     /**
      * shows the LoginPage
+     * @param locale a locale from message resourceBundle
      */
     public void showLoginPage(Locale locale) {
         primaryStage.setTitle("Login");
@@ -159,6 +160,7 @@ public class MainController {
     }
     /**
      * shows the StartPage
+     * @param locale a locale from message resourceBundle
      */
     public void showStartPage(Locale locale) {
         primaryStage.setTitle("Start Page");
@@ -171,6 +173,8 @@ public class MainController {
     /**
      *
      * @param event the event we are working on
+     * @param participantId the id of the participant
+     * @param locale a locale from message resourceBundle
      */
     public void showAddExpense(Event event, long participantId, Locale locale) {
         primaryStage.setTitle("Expenses: Add Expense");
@@ -182,6 +186,7 @@ public class MainController {
     /**
      *
      * @param event the event we are working on
+     * @param locale a locale from message resourceBundle
      */
     public void showTableOfParticipants(Event event, Locale locale) {
         primaryStage.setTitle("Participants");
@@ -192,6 +197,7 @@ public class MainController {
 
     /**
      * @param event the event we are working on
+     * @param locale a locale from message resourceBundle
      */
     public void showContactDetailsPage(Event event, Locale locale){
         primaryStage.setTitle("ContactDetails");
@@ -205,6 +211,7 @@ public class MainController {
     /**
      *
      * @param event event
+     * @param locale a locale from message resourceBundle
      */
     public void showInvitePage(Event event, Locale locale){
         primaryStage.setTitle("InvitePage");
@@ -216,6 +223,7 @@ public class MainController {
     /**
      * Shows the event overview scene.
      * @param event The event to show overview for.
+     * @param locale a locale from message resourceBundle
      */
     public void showEventOverview(Event event, Locale locale) {
         primaryStage.setTitle("Event Overview");
@@ -223,9 +231,12 @@ public class MainController {
         eventOverviewController.setEvent(event, locale);
         eventOverviewController.refreshParticipants();
     }
+
     /**
      * Shows the expense overview of the selected participant.
      * @param event The event to show overview for.
+     * @param participantId id of the participant
+     * @param locale a locale from message resourceBundle
      */
     public void showParticipantExpensesOverview(Event event, Long participantId, Locale locale) {
         primaryStage.setTitle("Participant Expenses Overview");
@@ -234,6 +245,11 @@ public class MainController {
         participantExpenseViewController.initializeExpensesForParticipant(participantId);
     }
 
+    /**
+     * Shows the expense overview
+     * @param event The event to show overview for.
+     * @param locale a locale from message resourceBundle
+     */
     public void showExpenseOverview(Event event, Locale locale)
     {
         primaryStage.setTitle("Expenses Overview");

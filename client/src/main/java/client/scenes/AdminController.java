@@ -5,9 +5,8 @@ import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.inject.Inject;
 import commons.Event;
-import commons.Expense;
-import commons.Participant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -21,7 +20,6 @@ import javafx.scene.layout.HBox;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -46,6 +44,23 @@ public class AdminController {
     private ObservableList<Event> eventData = FXCollections.observableArrayList();
     private Locale activeLocale;
     private ResourceBundle resourceBundle;
+    private ServerUtils server;
+    private MainController mainController;
+    private Stage primaryStage;
+
+    /**
+     * admin Controller injection
+     * @param primaryStage primary stage
+     * @param server server
+     * @param mainController maincontroller
+     */
+    @Inject
+    public AdminController(Stage primaryStage,ServerUtils server, MainController mainController) {
+        this.primaryStage = primaryStage;
+        this.server = server;
+        this.mainController = mainController;
+    }
+
 
     /**
      * Initializer method
@@ -222,5 +237,21 @@ public class AdminController {
         dialogScene.getStylesheets().add(AlertUtils.class.getResource("/styles.css").toExternalForm());
         dialog.setScene(dialogScene);
         dialog.show();
+    }
+
+    /**
+     * Goes back to the loginpage
+     */
+    @FXML
+    public void logout() {
+        try {
+            mainController.showLoginPage(activeLocale);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setEventsTable(TableView<Event> eventsTable) {
+        this.eventsTable = eventsTable;
     }
 }
