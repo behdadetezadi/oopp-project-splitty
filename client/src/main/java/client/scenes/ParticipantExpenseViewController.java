@@ -4,6 +4,7 @@ import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import client.utils.undoable.DeleteExpenseCommand;
 import client.utils.undoable.EditExpenseCommand;
+import client.utils.undoable.UndoManager;
 import client.utils.undoable.UndoableCommand;
 import com.google.inject.Inject;
 import commons.Event;
@@ -44,15 +45,16 @@ public class ParticipantExpenseViewController {
     private ResourceBundle resourceBundle;
     private DeleteExpenseCommand deleteExpenseCommand;
     private EditExpenseCommand editExpenseCommand;
-
+    private UndoManager undoManager;
     private BiConsumer<Expense, String> updateUI;
 
     @Inject
-    public ParticipantExpenseViewController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
+    public ParticipantExpenseViewController(Stage primaryStage, ServerUtils server, MainController mainController, Event event,UndoManager undoManager) {
         this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
         this.event = event;
+        this.undoManager = undoManager;
     }
 
     public void setEvent(Event event, long participantId, Locale locale) {
@@ -146,7 +148,7 @@ private void handleDeleteButton(Expense expense) {
             try {
                 deleteExpenseCommand = new DeleteExpenseCommand(expense, event.getId(), (result, actionType) -> {
                     if (result != null) {
-                        // Pass both the result and action type to updateUI
+
                         updateUI(result, actionType);
                     } else {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -156,7 +158,7 @@ private void handleDeleteButton(Expense expense) {
                         alert.showAndWait();
                     }
                 }, resourceBundle);
-                deleteExpenseCommand.execute();
+                undoManager.executeCommand(deleteExpenseCommand);
             } catch (Exception e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle(resourceBundle.getString("errorTitle"));
@@ -194,18 +196,11 @@ private void handleDeleteButton(Expense expense) {
      */
     @FXML
     private void handleUndoAction(ActionEvent event) {
-        if (deleteExpenseCommand != null)
-        {
-            deleteExpenseCommand.undo();
-            deleteExpenseCommand = null;
-            undoButton.setDisable(true);
-        }
-        else if(editExpenseCommand !=null)
-        {
-            editExpenseCommand.undo();
-            initializeExpensesForParticipant(selectedParticipantId);
-            editExpenseCommand = null;
-            undoButton.setDisable(true);
+        UndoableCommand undoneCommand = undoManager.undoLastCommand();
+        initializeExpensesForParticipant(selectedParticipantId);
+
+        if (undoneCommand == null) {
+          undoButton.setDisable(true);
         }
     }
 
@@ -250,7 +245,7 @@ private void handleDeleteButton(Expense expense) {
                 alert.showAndWait();
             });
         }, resourceBundle);
-        editExpenseCommand.execute();
+        undoManager.executeCommand(editExpenseCommand);
         undoButton.setDisable(false);
     }
     private Expense getOriginalExpense(long expenseId,long eventId)

@@ -4,6 +4,8 @@ import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import client.utils.ValidationUtils;
 import client.utils.undoable.AddExpenseCommand;
+import client.utils.undoable.UndoManager;
+import client.utils.undoable.UndoableCommand;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
@@ -42,8 +44,8 @@ public class AddExpenseController {
     private Button undoButton;
     private Event event;
     private long selectedParticipantId;
-    private AddExpenseCommand lastExecutedCommand;
-
+    private AddExpenseCommand addedExpenseCommand;
+    private UndoManager undoManager;
 
 
     /**
@@ -54,12 +56,14 @@ public class AddExpenseController {
      * @param event Event
      */
     @Inject
-    public AddExpenseController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
+    public AddExpenseController(Stage primaryStage, ServerUtils server, MainController mainController, Event event, UndoManager undoManager) {
         this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
         this.event = event;
+        this.undoManager = undoManager;
     }
+
 
     /**
      * default constructor that JavaFX can use to instantiate the controller.
@@ -128,13 +132,10 @@ public class AddExpenseController {
         String amount = amountPaid.getText();
         double amountValue;
 
-        // Validate category
         if (category == null || category.isEmpty()) {
             AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_description"), resourceBundle.getString("Error"), resourceBundle.getString("The_category_cannot_be_empty."));
             return;
         }
-
-        // Normalize and validate the amount
         String normalizedAmount = amount.replace(',', '.');
         if (normalizedAmount.endsWith(".")) {
             AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_amount"), resourceBundle.getString("Error"), resourceBundle.getString("Please_enter_a_valid_number_for_the_amount."));
@@ -143,27 +144,21 @@ public class AddExpenseController {
 
         try {
             amountValue = Double.parseDouble(normalizedAmount);
-
-            // Initialize the expense separately
             Expense newExpense = new Expense(ServerUtils.findParticipantById(selectedParticipantId), category, amountValue, event.getId());
-
-            // Initialize and execute the AddExpenseCommand
-            lastExecutedCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> {
+            addedExpenseCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> {
                 Platform.runLater(() -> {
                     if (expense != null) {
-                        // Success path: Show success alert and possibly switch scenes
                         AlertHelper.showAlert(Alert.AlertType.INFORMATION, (Stage) addExpenseButton.getScene().getWindow(),
                                 resourceBundle.getString("Expense_Added"), resourceBundle.getString("The_expense_has_been_successfully_added."));
                         Platform.runLater(() -> {
-                            undoButton.setDisable(false); // Enable the Undo button after adding an expense
+                            undoButton.setDisable(false);
                         });
                     } else {
-                        // Failure path: Show error alert
                         AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Unexpected_Error"), resourceBundle.getString("An_unexpected_error_occurred"));
                     }
                 });
             }, resourceBundle);
-            lastExecutedCommand.execute();
+            undoManager.executeCommand(addedExpenseCommand);;
         } catch (NumberFormatException e) {
             // Handle parsing error
             AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Invalid_Amount"), resourceBundle.getString("Please_enter_a_valid_amount"));
@@ -177,14 +172,27 @@ public class AddExpenseController {
      */
     @FXML
     private void handleUndoAction(ActionEvent event) {
-        if (lastExecutedCommand != null) {
-            lastExecutedCommand.undo();
-            lastExecutedCommand = null;
-            undoButton.setDisable(true);
+        UndoableCommand undoneCommand = undoManager.undoLastCommand();
+
+        if (undoManager.getExecutedCommands().isEmpty()) {
             expenseDescription.clear();
             amountPaid.clear();
+            undoButton.setDisable(true);
+            return;
+        }
+        UndoableCommand lastCommand = undoManager.getExecutedCommands().peek();
+        if (lastCommand instanceof AddExpenseCommand) {
+            AddExpenseCommand addExpenseCommand = (AddExpenseCommand) lastCommand;
+            Expense lastExpense = addExpenseCommand.getAddedExpense();
+            if (lastExpense != null) {
+                expenseDescription.setText(lastExpense.getCategory());
+                amountPaid.setText(String.valueOf(lastExpense.getAmount()));
+            }
         }
     }
+
+
+
 
 
 
@@ -203,7 +211,7 @@ public class AddExpenseController {
             alert.setHeaderText(null);
             alert.setContentText(resourceBundle.getString("Are_you_sure_you_want_to_cancel?"));
             if (alert.showAndWait().get() == ButtonType.OK) {
-                // Switch to the EventOverview scene using MainController
+
                 mainController.showEventOverview(this.event, activeLocale);
             }
         } else {

@@ -18,6 +18,11 @@ public class AddExpenseCommand implements UndoableCommand {
     private long eventId;
     private Expense addedExpense;
     private Consumer<Expense> updateUI;
+
+    public Expense getAddedExpense() {
+        return addedExpense;
+    }
+
     private ResourceBundle resourceBundle;
 
     /**
@@ -52,17 +57,14 @@ public class AddExpenseCommand implements UndoableCommand {
                 );
 
                 if (savedExpense != null && savedExpense.getId() != 0) {
-                    // Update the addedExpense object with the savedExpense, which includes the ID
-                    this.addedExpense = savedExpense;
 
-                    // Inform the controller (via updateUI) that the operation was successful, passing the updated expense.
-                    updateUI.accept(savedExpense);
+                    this.addedExpense = savedExpense;
+                    updateUI.accept(addedExpense);
+
                 } else {
-                    // Handle null or invalid expense creation by informing the controller of failure.
                     updateUI.accept(null);
                 }
             } catch (Exception e) {
-                // On exception, also inform the controller.
                 updateUI.accept(null);
             }
         });
