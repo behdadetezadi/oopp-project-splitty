@@ -2,16 +2,14 @@ package client.scenes;
 
 import client.utils.AlertUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import client.utils.ServerUtils;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.inject.Inject;
 import commons.Event;
-import commons.Expense;
-import commons.Participant;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -23,16 +21,16 @@ import javafx.scene.layout.HBox;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.apache.catalina.Server;
 
 public class AdminController {
     @FXML
@@ -48,47 +46,46 @@ public class AdminController {
     private ObservableList<Event> eventData = FXCollections.observableArrayList();
     private Locale activeLocale;
     private ResourceBundle resourceBundle;
+    private ServerUtils server;
+    private MainController mainController;
+    private Stage primaryStage;
+
+    /**
+     * admin Controller injection
+     * @param primaryStage primary stage
+     * @param server server
+     * @param mainController maincontroller
+     */
+    @Inject
+    public AdminController(Stage primaryStage,ServerUtils server, MainController mainController) {
+        this.primaryStage = primaryStage;
+        this.server = server;
+        this.mainController = mainController;
+    }
+
 
     /**
      * Initializer method
      */
-
     @FXML
     public void initialize() {
-        List<Event> dummyEvents = createDummyEvents(15); // TODO only for testing
-        eventData.addAll(dummyEvents); // TODO only for testing
+        fetchAndPopulateEvents();
 
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         creationDateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
         lastActivityColumn.setCellValueFactory(new PropertyValueFactory<>("lastActivity"));
 
         setupActionsColumn();
-        eventsTable.setItems(eventData);
-
-
     }
 
-
-    /**
-     * TODO: Does not work yet
-     * method that updates list with new event
-     * @param e the event to add to the list
-     */
-
-    public void update(Event e) {
-        List<Participant> p = new ArrayList<>();
-        Participant part = new Participant("Albert", "Hein");
-        p.add(part);
-        List<Expense> ex= new ArrayList<>();
-        ex.add(new Expense(part, "being chill", 21,0));
-        Event test = new Event(p, ex,"chilling");
-        Event test2 = new Event("doing nothing");
-        eventsTable.getItems().add(e);
-        ObservableList<Event> i = eventsTable.getItems();
-        //i.add(test2);
-        eventsTable.setItems(i);
-        setupActionsColumn();
-
+    private void fetchAndPopulateEvents() {
+        new Thread(() -> {
+            List<Event> events = ServerUtils.getAllEvents();
+            javafx.application.Platform.runLater(() -> {
+                eventData.addAll(events);
+                eventsTable.setItems(eventData);
+            });
+        }).start();
     }
 
     private void setupActionsColumn() {
@@ -129,13 +126,34 @@ public class AdminController {
     }
 
     /**
-     * TODO Logic to delete the event
+     * Deletes an event
      * @param event button press
      */
     @FXML
     private void deleteEvent(Event event) {
+        boolean userConfirmed = AlertUtils.showConfirmationAlert("Confirm Deletion",
+                "Are you sure you want to delete this event?");
 
+        if (!userConfirmed) {
+            return;
+        }
+
+        new Thread(() -> {
+            boolean success = ServerUtils.deleteEvent(event.getId());
+            javafx.application.Platform.runLater(() -> {
+                if (success) {
+                    eventData.remove(event);
+                    eventsTable.setItems(eventData);
+                    AlertUtils.showInformationAlert("Success", "Event Deleted",
+                            "The event has been successfully deleted.");
+                } else {
+                    AlertUtils.showErrorAlert("Error", "Deletion Failed",
+                            "Failed to delete the event.");
+                }
+            });
+        }).start();
     }
+
 
     /**
      * method that exports given event as json
@@ -143,187 +161,124 @@ public class AdminController {
      */
     @FXML
     public void exportEvent(Event event) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT); // Pretty print
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        String safeFileName = event.getTitle().replaceAll("[^a-zA-Z0-9.-]", "_");
+        File outputFile = new File(System.getProperty("user.home") + File.separator + safeFileName + ".json");
 
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            File outputFile = new File("client/src/main/resources/JSON/" + event.getTitle() + ".json");
-
             objectMapper.writeValue(outputFile, event);
-            AlertUtils.showInformationAlert("event Exported!", "Exported to:",
-                    "client/src/main/resources/JSON/\" + event.getTitle() + \".json");
-
-
+            AlertUtils.showInformationAlert("Event Exported!", "Exported to:", outputFile.getAbsolutePath());
+        } catch (FileNotFoundException e) {
+            AlertUtils.showErrorAlert("Error", "Directory Not Found", "The specified directory does not exist.");
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-            AlertUtils.showErrorAlert("Error", "Could not write to file",
-                    "Could not find path");
-
-
+            AlertUtils.showErrorAlert("Error", "Export Failed", "Failed to export the event. " + e.getMessage());
         }
-
     }
+
 
     /**
      * method that creates a pop-up where filepath to event can be inserted
-     * @param actionEvent button press
      *
      */
     @FXML
-    public void importEvent(ActionEvent actionEvent) {
+    public void importEvent() {
         ObjectMapper objectMapper = new ObjectMapper();
-
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         final Stage dialog = new Stage();
-
         dialog.initModality(Modality.APPLICATION_MODAL);
         VBox dialogVbox = new VBox(20);
+        dialogVbox.setAlignment(Pos.CENTER);
         Label label = new Label("Please enter file path: ");
         dialogVbox.getChildren().add(label);
-        TextArea textArea = new TextArea();
-        dialogVbox.getChildren().add(textArea);
-        Button button = new Button("submit");
+        TextField textField = new TextField();
+        dialogVbox.getChildren().add(textField);
+        Button button = new Button("Submit");
+        button.setDefaultButton(true);
 
-        final Event[] eventArr = new Event[1];
-        button.setOnAction(
-                new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
+        button.setOnAction(e -> {
+            String filepath = textField.getText().trim();
+            File file = new File(filepath);
 
-                    String filepath = textArea.getText();
-                    filepath = filepath.strip();
-                        System.out.println(filepath);
-
-                        try {
-                            BufferedReader br = new BufferedReader(new FileReader(new File(filepath)));
-                            List<String> lines = br.lines().toList();
-                            StringBuilder sb = new StringBuilder();
-                            for (String s : lines) {
-                                sb.append(s);
-                            }
-                            String finalString = sb.toString();
-                            finalString = finalString.replaceAll("\\s+", "");
-                            int i = 0;
-
-                            try {
-
-                                Event e = objectMapper.readValue(finalString, new TypeReference<Event>(){});
-                                eventArr[0] = e;
-                                update(eventArr[0]);
-
-                                AlertUtils.showInformationAlert("Success", "Event added!",
-                                        "You can close the dialogue window.");
-
-
-
-
-                            } catch (JsonProcessingException e) {
-                                System.out.println("could not find correct attributes ");
-                                AlertUtils.showErrorAlert("Error", "Conversion failed",
-                                        "Could not make an event from the given JSON file.");
-                                System.out.println(e.getMessage());
-                            }
-
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            AlertUtils.showErrorAlert("Error", "File not found",
-                                    "Could not find given JSON file");
-
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }
-        );
-
-
-        dialogVbox.getChildren().add(button);
-
-        Scene dialogScene = new Scene(dialogVbox, 300, 200);
-        dialogScene.getStylesheets().add("styles.css");
-        dialog.setScene(dialogScene);
-        dialog.show();
-
-
-
-
-    }
-
-
-    /**
-     * TODO only for testing
-     * @param count nr of events
-     * @return list
-     */
-    @FXML
-    public List<Event> createDummyEvents(int count) {
-        List<Event> events = new ArrayList<>();
-
-        for (int i = 1; i <= count; i++) {
-            events.add(new Event("Event " + i));
-        }
-
-        return events;
-    }
-
-/*  method used for testing
-
-    @Override
-    public void start(Stage stage) {
-        Scene scene = new Scene(new Group());
-        stage.setTitle("Admin Page");
-        stage.setWidth(550);
-        stage.setHeight(550);
-
-        List<Event> dummyEvents = createDummyEvents(15); // TODO only for testing
-        eventsTable = new TableView<>();
-        eventsTable.setEditable(true);
-
-
-
-        titleColumn = new TableColumn<>("Title");
-        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
-
-        creationDateColumn = new TableColumn<>("creation date");
-        creationDateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
-
-        lastActivityColumn = new TableColumn<>("last activity");
-        lastActivityColumn.setCellValueFactory(new PropertyValueFactory<>("lastActivity"));
-
-        eventsTable.setItems(eventData);
-        eventsTable.getColumns().addAll(titleColumn, creationDateColumn, lastActivityColumn);
-
-        final Button addButton = new Button("Add");
-        String filepath = "client/src/main/resources/JSON/Event 14.json";
-        filepath = filepath.strip();
-        ObjectMapper objectMapper = new ObjectMapper();
-        Event[] events = new Event[1];
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(new File(filepath)));
-            List<String> s = br.lines().toList();
+            if (!file.exists()) {
+                AlertUtils.showErrorAlert("Error", "File not found", "The specified file could not be found.");
+                return;
+            }
 
             try {
-                Event ev = objectMapper.readValue(s.get(0), Event.class);
-                events[0]= ev;
-            } catch (Exception e) {
-
+                Event importedEvent = objectMapper.readValue(file, Event.class);
+                Event addedEvent = ServerUtils.addEvent(importedEvent);
+                if (addedEvent != null) {
+                    javafx.application.Platform.runLater(() -> {
+                        eventData.add(addedEvent);
+                        eventsTable.setItems(eventData);
+                        dialog.close();
+                        AlertUtils.showInformationAlert("Success", "Event Imported and Added",
+                                "The event has been successfully imported and added to the server.");
+                    });
+                } else {
+                    AlertUtils.showErrorAlert("Error", "Add Event Failed",
+                            "The event was imported but could not be added to the server.");
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                AlertUtils.showErrorAlert("Error", "Import Failed",
+                        "Failed to import the event from the specified file.");
             }
-        } catch (Exception e) {
-
-        }
-        addButton.setOnAction((ActionEvent e) -> {
-            eventData.add(events[0]);
-            eventData.addAll(dummyEvents);
-
         });
 
-        final VBox vbox = new VBox();
-        vbox.getChildren().addAll(eventsTable, addButton);
-
-        ((Group) scene.getRoot()).getChildren().addAll(vbox);
-
-        stage.setScene(scene);
-        stage.show();
-
+        dialogVbox.getChildren().add(button);
+        Scene dialogScene = new Scene(dialogVbox, 300, 150);
+        dialogScene.getStylesheets().add(AlertUtils.class.getResource("/styles.css").toExternalForm());
+        dialog.setScene(dialogScene);
+        dialog.show();
     }
-*/
+
+    /**
+     * Goes back to the loginpage
+     */
+    @FXML
+    public void logout() {
+        try {
+            mainController.showLoginPage(activeLocale);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Deletes all events from the server
+     */
+    @FXML
+    public void deleteAllEvents() {
+        boolean userConfirmed = AlertUtils.showConfirmationAlert("Confirm Delete All",
+                "Are you sure you want to delete all events from the server? This operation cannot be reverted.");
+
+        if (!userConfirmed) {
+            return;
+        }
+
+        new Thread(() -> {
+            boolean success = ServerUtils.deleteAllEvents();
+            javafx.application.Platform.runLater(() -> {
+                if (success) {
+                    eventData.clear();
+                    eventsTable.setItems(eventData);
+                    AlertUtils.showInformationAlert("Success", "All Events Deleted",
+                            "All events have been successfully deleted.");
+                } else {
+                    AlertUtils.showErrorAlert("Error", "Deletion Failed",
+                            "Failed to delete all events.");
+                }
+            });
+        }).start();
+    }
+
 }

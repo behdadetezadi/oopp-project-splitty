@@ -175,6 +175,56 @@ public class ServerUtils {
 	}
 
 	/**
+	 * Deletes an event by its ID.
+	 * @param eventId The ID of the event to be deleted.
+	 * @return A boolean indicating whether the deletion was successful.
+	 */
+	public static boolean deleteEvent(long eventId) {
+        try (Response response = client.target(SERVER)
+                .path("api/events/{eventId}")
+                .resolveTemplate("eventId", eventId)
+                .request()
+                .delete()) {
+
+            if (response.getStatus() == Response.Status.NO_CONTENT.getStatusCode()) {
+                return true;
+            } else {
+                System.err.println("Failed to delete event. Status code: " + response.getStatus());
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+	}
+
+	/**
+	 * Deletes all events in the server
+	 * @return A boolean indicating whether the deletion was successful.
+	 */
+	public static boolean deleteAllEvents() {
+		Client client = ClientBuilder.newClient();
+
+		try (Response response = client.target(SERVER)
+				.path("api/events/all")
+				.request()
+				.delete()) {
+
+			if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+				return true;
+			} else {
+				System.err.println("Failed to delete all events. Status code: " + response.getStatus());
+				return false;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			client.close();
+		}
+	}
+
+	/**
 	 * deletes an expense from the event
 	 * @param expenseId the expense id
 	 * @param eventId the event id
@@ -254,32 +304,16 @@ public class ServerUtils {
 		}
 	}
 
-
-	/**
-	 * gets quotes
-	 * @throws IOException io exception
-	 * @throws URISyntaxException URI syntax exception
-	 */
-	public void getQuotesTheHardWay() throws IOException, URISyntaxException {
-		var url = new URI("http://localhost:8080/api/quotes").toURL();
-		var is = url.openConnection().getInputStream();
-		var br = new BufferedReader(new InputStreamReader(is));
-		String line;
-		while ((line = br.readLine()) != null) {
-			System.out.println(line);
-		}
-	}
-
 	/**
 	 * adds a participant
 	 * @param participant a participant
 	 * @return //TODO
 	 */
 	public static Participant addParticipant(Participant participant) {
-		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/participants") //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/participants")
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
 				.post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
 	}
 
@@ -289,10 +323,10 @@ public class ServerUtils {
 	 * @return //TODO
 	 */
 	public static Event addEvent(Event event) {
-		return ClientBuilder.newClient(new ClientConfig()) //
-				.target(SERVER).path("api/events") //
-				.request(APPLICATION_JSON) //
-				.accept(APPLICATION_JSON) //
+		return ClientBuilder.newClient(new ClientConfig())
+				.target(SERVER).path("api/events")
+				.request(APPLICATION_JSON)
+				.accept(APPLICATION_JSON)
 				.post(Entity.entity(event, APPLICATION_JSON), Event.class);
 	}
 
@@ -353,6 +387,33 @@ public class ServerUtils {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Collections.emptyList();
+		}
+	}
+
+	/**
+	 * Fetches all events from the server.
+	 * @return A list of all events.
+	 */
+	public static List<Event> getAllEvents() {
+		Response response = null;
+		try {
+			response = client.target(SERVER)
+					.path("api/events")
+					.request(MediaType.APPLICATION_JSON)
+					.get();
+			if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+				return response.readEntity(new GenericType<List<Event>>(){});
+			} else {
+				System.err.println("Failed to retrieve all events. Status code: " + response.getStatus());
+				return Collections.emptyList();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		} finally {
+			if (response != null) {
+				response.close();
+			}
 		}
 	}
 
