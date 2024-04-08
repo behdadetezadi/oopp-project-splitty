@@ -19,6 +19,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -77,18 +79,13 @@ public class StartPageController {
 
 
 
-    /**
-     * initializer method //TODO
-     */
-
 
     /**
      * initialize method of the start page controller
      */
     public void initialize(Locale locale) {
 
-        // Load default language
-        //loadLanguage(Locale.getDefault());
+
 
         List<Language> languages = new ArrayList<>();
         languages.add(new Language("English", new Image(getClass().getClassLoader().getResourceAsStream("images/flags/english.png"))));
@@ -116,14 +113,7 @@ public class StartPageController {
             switchLanguage(selectedLanguage.getName());
         });
 
-
-
-        // Set fixed width for text fields
-        codeInput.setPrefWidth(200);
-        eventNameInput.setPrefWidth(200);
-        // Set fixed width for buttons
-        joinButton.setPrefWidth(150);
-        createEventButton.setPrefWidth(150);
+        adjustComponentSizes();
 
         Image image = new Image(Objects.requireNonNull(getClass().getClassLoader()
                 .getResourceAsStream("images/MatrixGif.gif")));
@@ -163,10 +153,6 @@ public class StartPageController {
         HBox.setHgrow(recentEventsLabel, Priority.ALWAYS);
         animateText(recentEventsLabel, resourceBundle.getString("recent_events"));
 
-        //recentEventsList.setItems(EVENT_TITLES);
-
-
-        // Set the cell factory for the recentEventsList
         recentEventsList.setCellFactory(listView -> new ListCell<Event>() {
             @Override
             protected void updateItem(Event selectedEvent, boolean empty) {
@@ -251,6 +237,33 @@ public class StartPageController {
                 loadLanguage(Locale.ENGLISH);
                 break;
         }
+        adjustComponentSizes();
+    }
+    private void adjustComponentSizes() {
+        // Adjust the width of text fields and buttons based on the new language
+        adjustTextFieldWidth(codeInput, codeInput.getPromptText());
+        adjustTextFieldWidth(eventNameInput, eventNameInput.getPromptText());
+        adjustButtonWidth(joinButton, joinButton.getText());
+        adjustButtonWidth(createEventButton, createEventButton.getText());
+    }
+    private void adjustTextFieldWidth(TextField textField, String text) {
+        // Calculate the required width based on the text in the new language
+        double textWidth = computeTextWidth(text, textField.getFont());
+        double prefWidth = textWidth + 30; // Add some padding
+        textField.setPrefWidth(prefWidth);
+    }
+
+    private void adjustButtonWidth(Button button, String text) {
+        // Calculate the required width based on the text in the new language
+        double textWidth = computeTextWidth(text, button.getFont());
+        double prefWidth = textWidth + 30; // Add some padding
+        button.setPrefWidth(prefWidth);
+    }
+
+    private double computeTextWidth(String text, Font font) {
+        Text textNode = new Text(text);
+        textNode.setFont(font);
+        return textNode.getBoundsInLocal().getWidth();
     }
 
     public void updateUIElements() {

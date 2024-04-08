@@ -41,9 +41,6 @@ public class EventOverviewController {
     private Locale activeLocale;
     private Stage primaryStage;
 
-
-
-
     @FXML
     private ComboBox<Language> languageComboBox;
     @FXML
@@ -73,14 +70,6 @@ public class EventOverviewController {
     private Button showExpensesButton;
     @FXML
     private Label inviteCode;
-
-
-    @FXML
-    private final ObservableList<String> allOptions = FXCollections
-            .observableArrayList("1", "2");
-    @FXML
-    private final ObservableList<String> filteredOptions = FXCollections.observableArrayList();
-
 
 
     /**

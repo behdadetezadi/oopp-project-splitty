@@ -28,10 +28,7 @@
                 <ComboBox fx:id="languageComboBox">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="English"/>
-                            <String fx:value="Deutsch"/>
-                            <String fx:value="Nederlands"/>
-                            <!-- Add more languages as needed -->
+
                         </FXCollections>
                     </items>
                 </ComboBox>
