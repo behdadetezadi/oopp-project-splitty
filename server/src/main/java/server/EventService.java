@@ -348,30 +348,4 @@ public class EventService {
 
         return filteredExpenses;
     }
-
-
-    public List<Expense> filterByParticipantId(Long eventId, long participantId) {
-        if (eventId == null || eventId < 0) {
-            throw new IllegalArgumentException("Event ID must be positive and not null.");
-        }
-        if (participantId < 0) {
-            throw new IllegalArgumentException("Participant ID must be positive.");
-        }
-
-        // Fetch the event to ensure it exists and to access its expenses.
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
-
-        // Filter the expenses by participantId.
-        List<Expense> filteredExpenses = event.getExpenses().stream()
-                .filter(expense -> expense.getParticipant() != null && expense.getParticipant().getId() == participantId)
-                .collect(Collectors.toList());
-
-        if (filteredExpenses.isEmpty()) {
-            throw new NoSuchElementException("No expenses found for participant ID: " + participantId + " in event ID: " + eventId);
-        }
-
-        return filteredExpenses;
-    }
-
 }
