@@ -150,8 +150,9 @@ public class ServerUtils {
 	 * Deletes an expense from the database
 	 * @param expenseId the id of the expense
 	 */
-	public static void deleteExpense(long expenseId, long eventId){
+	public static Expense deleteExpense(long expenseId, long eventId){
 		try{
+			Expense deletedExpense= findSpecificExpenseByEventId(expenseId,eventId);
 			Response response = deleteExpenseFromEvent(expenseId, eventId);
 			if(response.getStatus() == Response.Status.OK.getStatusCode()) {
 				response = client.target(SERVER)
@@ -159,8 +160,10 @@ public class ServerUtils {
 						.resolveTemplate("id", expenseId)
 						.request(APPLICATION_JSON)
 						.delete();
+
 				if(response.getStatus() == Response.Status.OK.getStatusCode()) {
 					System.out.println("Expense deleted successfully");
+					return deletedExpense;
 				} else if (response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
 					throw new RuntimeException("Expense not found with ID: " + expenseId);
 				} else {
@@ -173,6 +176,29 @@ public class ServerUtils {
 			throw new RuntimeException("Failed to delete expense: " + e.getMessage());
 		}
 	}
+	/**
+	 * fetch specific expense through eventId
+	 * @param expenseId the specific expenseId
+	 *@param eventId the targeted eventId
+	 * @return the expense we are looking for
+	 */
+
+	public static Expense findSpecificExpenseByEventId(long expenseId,long eventId) {
+		try {
+			// Fetch all expenses associated with the event
+			List<Expense> expenses = getExpensesForEvent(eventId);
+
+			// Find the expense by its ID
+			return expenses.stream()
+					.filter(expense -> expense.getId() == expenseId)
+					.findFirst()
+					.orElse(null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 
 	/**
 	 * Deletes an event by its ID.
@@ -505,6 +531,34 @@ public class ServerUtils {
 			return false;
 		}
 	}
+	/**
+	 * Retrieves a participant by their ID.
+	 *
+	 * @param participantId The ID of the participant to retrieve.
+	 * @return The participant with the given ID, or null if not found.
+	 */
+	public static Participant findParticipantById(long participantId) {
+		try {
+			Response response = client.target(SERVER)
+					.path("api/participants/" + participantId)
+					.request(MediaType.APPLICATION_JSON)
+					.get();
+
+			if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+				return response.readEntity(Participant.class);
+			} else if (response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
+				System.err.println("Participant not found with ID: " + participantId);
+				return null;
+			} else {
+				System.err.println("Failed to retrieve participant. Status code: " + response.getStatus());
+				return null;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 
 	/**
 	 * Long polling of Participants

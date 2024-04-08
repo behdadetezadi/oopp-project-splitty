@@ -1,18 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="335.0" prefWidth="594.0" stylesheets="@/styles.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddExpenseController">
-    <VBox alignment="CENTER" layoutX="29.0" layoutY="-41.0" prefHeight="453.0" prefWidth="543.0" spacing="10.0">
-
-        <Label fx:id="expenseFor" prefHeight="38.0" prefWidth="151.0" text="%Add_Expense_for" />
-        <Label fx:id="participantLabel" prefHeight="16.0" prefWidth="160.0" text="%participant" />
-        <TextField fx:id="expenseDescription" promptText="%Category" />
-        <TextField fx:id="amountPaid" promptText="%Amount_paid" />
-        <HBox alignment="CENTER" spacing="10.0">
-            <Button fx:id="cancelButton" text="%Cancel" />
-            <Button fx:id="addExpenseButton" text="%Add_expense" />
+<BorderPane prefHeight="335.0" prefWidth="594.0" stylesheets="@/styles.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddExpenseController">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10" BorderPane.alignment="CENTER">
+            <Button text="Back" onAction="#switchToEventOverviewScene" />
         </HBox>
-    </VBox>
-</AnchorPane>
+    </top>
+    <center>
+        <AnchorPane>
+            <VBox alignment="CENTER" layoutX="29.0" layoutY="-41.0" prefHeight="453.0" prefWidth="543.0" spacing="10.0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+                <Label fx:id="expenseFor" prefHeight="38.0" prefWidth="151.0" text="%Add_Expense_for" />
+                <Label fx:id="participantLabel" prefHeight="16.0" prefWidth="160.0" text="%participant" />
+                <TextField fx:id="expenseDescription" promptText="%Category" />
+                <TextField fx:id="amountPaid" promptText="%Amount_paid" />
+                <HBox alignment="CENTER" spacing="10.0">
+                    <Button fx:id="cancelButton" text="%Cancel" />
+                    <Button fx:id="addExpenseButton" text="%Add_expense" />
+                    <Button fx:id="undoButton" text="Undo" onAction="#handleUndoAction" disable="true"/>
+                </HBox>
+            </VBox>
+        </AnchorPane>
+    </center>
+</BorderPane>
