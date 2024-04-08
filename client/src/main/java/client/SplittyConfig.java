@@ -9,17 +9,29 @@ public class SplittyConfig {
     private String splittyWebsocketUrl;
     public SplittyConfig() {
         loadProperties();
+        generateWebsocketUrl();
+
     }
 
     private void loadProperties() {
         Properties properties = new Properties();
         try (FileInputStream fis = new FileInputStream("client/src/main/resources/application.properties")) {
             properties.load(fis);
-            splittyServerUrl = properties.getProperty("splitty.server.url");
-            splittyWebsocketUrl = properties.getProperty("splitty.websocket.url");
+            splittyServerUrl = properties.getProperty("splitty.server.url").trim();
+            splittyWebsocketUrl = properties.getProperty("splitty.websocket.url").trim();
         } catch (IOException e) {
             //TODO
             e.printStackTrace();
+        }
+    }
+
+    private void generateWebsocketUrl() {
+        if (splittyWebsocketUrl == null || splittyWebsocketUrl.isEmpty()) {
+            String wsScheme = splittyServerUrl.startsWith("https") ? "wss://" : "ws://";
+            splittyWebsocketUrl = wsScheme + splittyServerUrl.substring(splittyServerUrl.indexOf("://") + 3);
+            if (!splittyWebsocketUrl.endsWith("/websocket")) {
+                splittyWebsocketUrl += "websocket";
+            }
         }
     }
 
