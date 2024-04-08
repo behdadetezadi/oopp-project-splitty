@@ -21,6 +21,7 @@ import javafx.scene.layout.HBox;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -44,6 +45,7 @@ public class AdminController {
     @FXML
     private TableColumn<Event, Void> actionsColumn;
     private ObservableList<Event> eventData = FXCollections.observableArrayList();
+
     private Locale activeLocale;
     private ResourceBundle resourceBundle;
     private ServerUtils server;
@@ -78,10 +80,15 @@ public class AdminController {
         setupActionsColumn();
     }
 
-    private void fetchAndPopulateEvents() {
+    /**
+     * fetches all events and puts them in the table
+     */
+    public void fetchAndPopulateEvents() {
         new Thread(() -> {
             List<Event> events = ServerUtils.getAllEvents();
             javafx.application.Platform.runLater(() -> {
+                eventData.removeAll();
+                eventsTable.getItems().clear();
                 eventData.addAll(events);
                 eventsTable.setItems(eventData);
             });
