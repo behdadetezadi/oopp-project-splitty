@@ -67,6 +67,7 @@ public class Expense {
         this.eventId=eventId;
     }
 
+
     /**
      * constructor used by the jackson methods
      * @param id the expense id

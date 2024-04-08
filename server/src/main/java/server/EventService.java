@@ -95,6 +95,18 @@ public class EventService {
         }
     }
 
+    /**
+     * Deletes all events from the database.
+     */
+    @Transactional
+    public void deleteAllEvents() {
+        try {
+            eventRepository.deleteAllInBatch();
+        } catch (Exception e) {
+            throw new ServiceException("Error deleting all events", e);
+        }
+    }
+
 
 
     /**
@@ -196,7 +208,7 @@ public class EventService {
         participantRepository.save(participant);
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
-        event.getPeople().add(participant);
+        event.addParticipant(participant);
         eventRepository.save(event);
         return participant;
     }
@@ -221,26 +233,26 @@ public class EventService {
         return participant;
     }
 
-
+    /**
+     * update participant in an event
+     * @param eventId long
+     * @param participantId long
+     * @param participantDetails participant
+     * @return the updated participant
+     */
     public Participant updateParticipantInEvent(Long eventId, Long participantId, Participant participantDetails) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
-        Participant participant = event.getPeople()
-                .stream()
-                .filter(p -> p.getId() == participantId)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Participant with ID: " + participantId
-                        + " not found in event with ID: " + eventId));
-        participant.setFirstName(participantDetails.getFirstName());
-        participant.setLastName(participantDetails.getLastName());
-        participant.setUsername(participantDetails.getUsername());
-        participant.setEmail(participantDetails.getEmail());
-        participant.setBic(participantDetails.getBic());
-        participant.setIban(participantDetails.getIban());
-        participant.setLanguageChoice(participantDetails.getLanguageChoice());
 
+        participantDetails.setId(participantId);
 
-        return participantRepository.save(participant);
+        boolean updated = event.updateParticipant(participantDetails);
+        if (!updated) {
+            throw new IllegalArgumentException("Participant with ID: " + participantId
+                    + " not found in event with ID: " + eventId);
+        }
+
+        return participantRepository.save(participantDetails);
     }
 
     /**
@@ -262,7 +274,7 @@ public class EventService {
         expenseRepository.save(expense);
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
-        event.getExpenses().add(expense);
+        event.addExpense(expense);
         eventRepository.save(event);
         return expense;
     }
@@ -274,18 +286,21 @@ public class EventService {
      */
     public void removeExpenseFromEvent(long eventId, long expenseId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
-        List<Expense> expenses = event.getExpenses() != null ? event.getExpenses() : new ArrayList<>();
-        expenses = expenses.stream()
-                .filter(expense -> expense.getId() != expenseId)
-                .collect(Collectors.toList());
-        event.setExpenses(expenses);
-        eventRepository.save(event);
+                .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
+
         Expense expense = expenseRepository.findById(expenseId)
-                .orElseThrow(() -> new IllegalArgumentException("Expense not found"));
-        if(expense.getEventId()==eventId) {
-            expense.setEventId(null);
+                .orElseThrow(() -> new IllegalArgumentException("Expense not found with ID: " + expenseId));
+
+        if (!event.getExpenses().contains(expense)) {
+            throw new IllegalArgumentException("Expense with ID: " + expenseId + " does not belong to Event with ID: " + eventId);
         }
+
+        boolean removed = event.removeExpense(expense);
+        if (!removed) {
+            throw new IllegalStateException("Failed to remove Expense with ID: " + expenseId + " from Event with ID: " + eventId);
+        }
+
+        eventRepository.save(event);
         expenseRepository.save(expense);
     }
 
@@ -293,27 +308,22 @@ public class EventService {
      * updates an expense in the event
      * @param eventId the event
      * @param expenseId the expense to be updated
-     * @param updatedExpense the updated expense
+     * @param expenseDetails the updated expense
      * @return the updated expense
      */
-    public Expense updateExpenseInEvent(Long eventId, Long expenseId, Expense updatedExpense) {
+    public Expense updateExpenseInEvent(Long eventId, Long expenseId, Expense expenseDetails) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
-        Expense expense = event.getExpenses()
-                .stream()
-                .filter(p -> p.getId() == expenseId)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Expense with ID: " + expenseId
-                        + " not found in event with ID: " + eventId));
-        expense.setParticipant(updatedExpense.getParticipant());
-        expense.setCategory(updatedExpense.getCategory());
-        expense.setAmount(updatedExpense.getAmount());
-        expense.setCurrency(updatedExpense.getCurrency());
-        expense.setDate(updatedExpense.getDate());
-        expense.setSplittingOption(updatedExpense.getSplittingOption());
-        expense.setExpenseType(updatedExpense.getExpenseType());
 
-        return expenseRepository.save(expense);
+        expenseDetails.setId(expenseId);
+
+        boolean isUpdated = event.updateExpense(expenseDetails);
+        if (!isUpdated) {
+            throw new IllegalArgumentException("Expense with ID: " + expenseId
+                    + " not found in event with ID: " + eventId);
+        }
+
+        return expenseRepository.save(expenseDetails);
     }
     public List<Expense> filterByParticipantId(Long eventId, long participantId) {
         if (eventId == null || eventId < 0) {
@@ -338,7 +348,4 @@ public class EventService {
 
         return filteredExpenses;
     }
-
-
-
 }

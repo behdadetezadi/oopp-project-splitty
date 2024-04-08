@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.HBox?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.ParticipantExpenseViewController"
@@ -17,7 +18,10 @@
         <ListView fx:id="expensesListView" BorderPane.alignment="CENTER"/>
     </center>
     <bottom>
-        <Label fx:id="sumOfExpensesLabel" BorderPane.alignment="CENTER" />
+        <HBox alignment="CENTER_RIGHT" spacing="10">
+            <Button fx:id="undoButton" text="Undo" onAction="#handleUndoAction" disable="true"/>
+            <Label fx:id="sumOfExpensesLabel"/>
+        </HBox>
     </bottom>
     <padding>
         <Insets top="20" right="20" bottom="20" left="20" />

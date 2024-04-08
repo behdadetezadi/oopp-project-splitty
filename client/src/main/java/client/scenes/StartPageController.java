@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -303,6 +304,14 @@ public class StartPageController {
             mainController.showEventOverview(createdEvent, activeLocale);
         } else {
             showErrorAlert(resourceBundle.getString("Failed_to_create_event._Please_try_again."));
+        }
+    }
+
+    public void logout() {
+        try {
+            mainController.showLoginPage(activeLocale);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
         }
     }
 }
