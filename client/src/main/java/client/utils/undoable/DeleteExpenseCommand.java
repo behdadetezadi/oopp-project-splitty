@@ -28,21 +28,15 @@ public class DeleteExpenseCommand implements UndoableCommand {
     public void execute() {
         Platform.runLater(() -> {
             try {
-                // Attempt to delete the expense
                 Expense deletedExpense1 = ServerUtils.deleteExpense(expense.getId(), eventId);
-                // Assuming deleteExpense returns null on failure instead of throwing an exception
                 if (deletedExpense1 != null) {
-                    // If deletion was successful, inform the UI
                     this.deletedExpense = deletedExpense1;
                     updateUI.accept(deletedExpense, "deleted");
                 } else {
-                    // If deletion was unsuccessful, inform the UI of failure in a specific way
-                    // This assumes updateUI is designed to handle a specific error signal; adjust as necessary
                     System.err.println("Failed to delete expense, server returned null");
                     Platform.runLater(() -> AlertUtils.showErrorAlert(resourceBundle.getString("Unexpected_Error"), resourceBundle.getString("error"), resourceBundle.getString("Failed_to_delete_expense")));
                 }
             } catch (RuntimeException e) {
-                // Log the exception and show an error alert with more detail
                 e.printStackTrace();
                 Platform.runLater(() -> AlertUtils.showErrorAlert(resourceBundle.getString("Unexpected_Error"), resourceBundle.getString("error"), resourceBundle.getString("An_unexpected_error_occurred") + ": " + e.getMessage()));
             }
@@ -55,7 +49,6 @@ public class DeleteExpenseCommand implements UndoableCommand {
             try {
                 Expense addedExpense = ServerUtils.addExpense(expense.getParticipant().getId(), expense.getCategory(), expense.getAmount(), eventId);
                 if (addedExpense != null) {
-                    // If adding the expense back was successful, inform the UI
                     updateUI.accept(addedExpense, "undone");
                 }
             } catch (Exception e) {

@@ -17,7 +17,7 @@ public class AlertUtils {
      * @param header The header text of the alert; can be {@code null}.
      * @param content The content description of the alert.
      */
-    private static void showAlert(AlertType type, String title, String header, String content) {
+    public static void showAlert(AlertType type, String title, String header, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
         alert.setHeaderText(header); // Now accepts and sets header text

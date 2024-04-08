@@ -179,9 +179,8 @@ public class AddExpenseController {
     private void handleUndoAction(ActionEvent event) {
         if (lastExecutedCommand != null) {
             lastExecutedCommand.undo();
-            lastExecutedCommand = null; // Reset the command as it has been undone
-            undoButton.setDisable(true); // Disable the undo button as there's nothing to undo now
-            // Clear the text fields
+            lastExecutedCommand = null;
+            undoButton.setDisable(true);
             expenseDescription.clear();
             amountPaid.clear();
         }
@@ -205,7 +204,7 @@ public class AddExpenseController {
             alert.setContentText(resourceBundle.getString("Are_you_sure_you_want_to_cancel?"));
             if (alert.showAndWait().get() == ButtonType.OK) {
                 // Switch to the EventOverview scene using MainController
-                mainController.showEventOverview(this.event, activeLocale); // You may need to pass the event object if required
+                mainController.showEventOverview(this.event, activeLocale);
             }
         } else {
             throw new IllegalStateException();

@@ -152,7 +152,7 @@ public class ServerUtils {
 	 */
 	public static Expense deleteExpense(long expenseId, long eventId){
 		try{
-			Expense deletedExpense= findExpenseById(expenseId,eventId);
+			Expense deletedExpense= findSpecificExpenseByEventId(expenseId,eventId);
 			Response response = deleteExpenseFromEvent(expenseId, eventId);
 			if(response.getStatus() == Response.Status.OK.getStatusCode()) {
 				response = client.target(SERVER)
@@ -176,8 +176,14 @@ public class ServerUtils {
 			throw new RuntimeException("Failed to delete expense: " + e.getMessage());
 		}
 	}
+	/**
+	 * fetch specific expense through eventId
+	 * @param expenseId the specific expenseId
+	 *@param eventId the targeted eventId
+	 * @return the expense we are looking for
+	 */
 
-	public static Expense findExpenseById(long expenseId,long eventId) {
+	public static Expense findSpecificExpenseByEventId(long expenseId,long eventId) {
 		try {
 			// Fetch all expenses associated with the event
 			List<Expense> expenses = getExpensesForEvent(eventId);
@@ -192,6 +198,7 @@ public class ServerUtils {
 			return null;
 		}
 	}
+
 
 	/**
 	 * deletes an expense from the event
