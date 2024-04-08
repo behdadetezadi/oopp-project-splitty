@@ -45,7 +45,7 @@
                   <PropertyValueFactory property="lastActivity" />
                </cellValueFactory>
             </TableColumn>
-            <TableColumn text="%Actions" fx:id="actionsColumn" minWidth="125" sortable="false">
+            <TableColumn text="%Actions" fx:id="actionsColumn" minWidth="150" sortable="false">
             </TableColumn>
          </columns>
       </TableView>
