@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.Language;
 import client.utils.ServerUtils;
 import commons.Event;
 import jakarta.inject.Inject;
@@ -21,9 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.util.Locale;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static client.utils.AnimationUtil.*;
 
@@ -52,13 +51,12 @@ public class StartPageController {
 
     @FXML
     private ImageView logo;
-    @FXML
-    private ComboBox<String> languageComboBox;
 
+    @FXML
+    private ComboBox<Language> languageComboBox;
     private ResourceBundle resourceBundle;
 
     private Locale activeLocale;
-
 
     private Stage primaryStage;
     private MainController mainController;
@@ -92,16 +90,33 @@ public class StartPageController {
         // Load default language
         //loadLanguage(Locale.getDefault());
 
+        List<Language> languages = new ArrayList<>();
+        languages.add(new Language("English", new Image(getClass().getClassLoader().getResourceAsStream("images/flags/english.png"))));
+        languages.add(new Language("Deutsch", new Image(getClass().getClassLoader().getResourceAsStream("images/flags/german.png"))));
+        languages.add(new Language("Nederlands", new Image(getClass().getClassLoader().getResourceAsStream("images/flags/dutch.png"))));
+
+
         loadLanguage(locale);
         activeLocale = locale;
 
-        // Populate language combo box
+        for (Language language : languages) {
+            if (language.getName().equals(locale.getDisplayLanguage(activeLocale))) {
+                languageComboBox.setValue(language);
+                break;
+            }
+        }
+
+
+        languageComboBox.setItems(FXCollections.observableArrayList(languages));
+        languageComboBox.setCellFactory(listView -> new LanguageListCell());
+        languageComboBox.setButtonCell(new LanguageListCell());
+
         languageComboBox.setOnAction(event -> {
-            String selectedLanguage = languageComboBox.getValue();
-            switchLanguage(selectedLanguage);
+            Language selectedLanguage = languageComboBox.getValue();
+            switchLanguage(selectedLanguage.getName());
         });
 
-        languageComboBox.setValue(locale.getDisplayLanguage(locale));
+
 
         // Set fixed width for text fields
         codeInput.setPrefWidth(200);
@@ -193,6 +208,25 @@ public class StartPageController {
             }
         });
     }
+
+    private class LanguageListCell extends ListCell<Language> {
+        @Override
+        protected void updateItem(Language item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                setText(item.getName());
+                ImageView imageView = new ImageView(item.getFlag());
+                imageView.setFitHeight(20);
+                imageView.setFitWidth(30);
+                setGraphic(imageView);
+            }
+        }
+    }
+
+
 
     private void loadLanguage(Locale locale) {
         resourceBundle = ResourceBundle.getBundle("message", locale);
