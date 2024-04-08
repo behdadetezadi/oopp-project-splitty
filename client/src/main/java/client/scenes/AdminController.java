@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import commons.Event;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -29,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.apache.catalina.Server;
 
 public class AdminController {
     @FXML
@@ -251,7 +253,32 @@ public class AdminController {
         }
     }
 
-    public void setEventsTable(TableView<Event> eventsTable) {
-        this.eventsTable = eventsTable;
+    /**
+     * Deletes all events from the server
+     */
+    @FXML
+    public void deleteAllEvents() {
+        boolean userConfirmed = AlertUtils.showConfirmationAlert("Confirm Delete All",
+                "Are you sure you want to delete all events from the server? This operation cannot be reverted.");
+
+        if (!userConfirmed) {
+            return;
+        }
+
+        new Thread(() -> {
+            boolean success = ServerUtils.deleteAllEvents();
+            javafx.application.Platform.runLater(() -> {
+                if (success) {
+                    eventData.clear();
+                    eventsTable.setItems(eventData);
+                    AlertUtils.showInformationAlert("Success", "All Events Deleted",
+                            "All events have been successfully deleted.");
+                } else {
+                    AlertUtils.showErrorAlert("Error", "Deletion Failed",
+                            "Failed to delete all events.");
+                }
+            });
+        }).start();
     }
+
 }

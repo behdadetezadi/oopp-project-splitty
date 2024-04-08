@@ -199,6 +199,32 @@ public class ServerUtils {
 	}
 
 	/**
+	 * Deletes all events in the server
+	 * @return A boolean indicating whether the deletion was successful.
+	 */
+	public static boolean deleteAllEvents() {
+		Client client = ClientBuilder.newClient();
+
+		try (Response response = client.target(SERVER)
+				.path("api/events/all")
+				.request()
+				.delete()) {
+
+			if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+				return true;
+			} else {
+				System.err.println("Failed to delete all events. Status code: " + response.getStatus());
+				return false;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			client.close();
+		}
+	}
+
+	/**
 	 * deletes an expense from the event
 	 * @param expenseId the expense id
 	 * @param eventId the event id

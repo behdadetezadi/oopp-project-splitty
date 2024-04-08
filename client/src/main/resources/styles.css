@@ -93,10 +93,14 @@
     -fx-padding: 4px 6px;
 }
 
+.button-delete-all {
+    -fx-text-fill: red !important;
+}
+
 .button-delete:hover {
     -fx-padding: 3px 6px;
     -fx-font-weight: bold;
-    -fx-text-fill: red;
+    -fx-text-fill: red !important;
 }
 
 .button-export {

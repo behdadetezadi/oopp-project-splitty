@@ -107,6 +107,20 @@ public class EventController {
     }
 
     /**
+     * Deletes all events.
+     * @return A response entity indicating the outcome of the operation.
+     */
+    @DeleteMapping("/all")
+    public ResponseEntity<?> deleteAllEvents() {
+        try {
+            eventService.deleteAllEvents();
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to delete all events: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
      * getter for all events
      * @return an array list of events
      */

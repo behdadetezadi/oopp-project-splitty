@@ -95,6 +95,18 @@ public class EventService {
         }
     }
 
+    /**
+     * Deletes all events from the database.
+     */
+    @Transactional
+    public void deleteAllEvents() {
+        try {
+            eventRepository.deleteAllInBatch();
+        } catch (Exception e) {
+            throw new ServiceException("Error deleting all events", e);
+        }
+    }
+
 
 
     /**
