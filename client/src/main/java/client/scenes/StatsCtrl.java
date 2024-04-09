@@ -56,6 +56,7 @@ public class StatsCtrl {
     public void initialize() {
 //        pieChart.setVisible(false);
 //        this.resourceBundle = resourceBundle;
+        fillPieChart(event.getId());
     }
 
     private void fillPieChart(Long eventId) {
@@ -64,26 +65,24 @@ public class StatsCtrl {
         Set<Expense> expenses = new HashSet<>(ServerUtils.getExpensesForEvent(eventId));
         HashMap<String, Double> tagAndExpense = tagExpense(expenses);
         tagAndExpense.forEach((tag, amount) -> {
-            PieChart.Data slice = new PieChart.Data(translateTag(tag), amount);
+            PieChart.Data slice = new PieChart.Data(tag, amount);
             pieChart.getData().add(slice);
 //            colorSlice(slice, "color");
         });
         totalCost = (tagAndExpense.values().stream().mapToDouble(Double::doubleValue).sum());
-        cost.setText(numberFormat.format("$"+totalCost));
+        cost.setText("$"+totalCost);
 
 
         pieChart.getData().forEach(data ->
                 data.nameProperty().bind(
                         Bindings.concat(
-                                data.getName(), ": ", numberFormat.format(
-                                        data.pieValueProperty().getValue()),
-                                " (", numberFormat.format(data.pieValueProperty().getValue() * 100 / totalCost), "%)")));
+                                data.getName(), ": ", data.pieValueProperty().getValue(),
+                                " (", data.pieValueProperty().getValue() * 100 / totalCost, "%)")));
         pieChart.setLabelsVisible(false);
         pieChart.setLegendVisible(false);
         createCustomLegend(tagAndExpense);
-        progressIndicator.setVisible(false);
-        pieChart.setVisible(true);
 
+        pieChart.setVisible(true);
     }
 
     private String translateTag(String tag) {
@@ -102,8 +101,7 @@ public class StatsCtrl {
             if (tag != null) {
                 tagAndExpense.put(tag, tagAndExpense.getOrDefault(tag, 0.0) + expense.getAmount());
             } else {
-                tagAndExpense.put(resourceBundle.getString("other"),
-                        tagAndExpense.getOrDefault(resourceBundle.getString("other"), 0.0) + expense.getAmount());
+                tagAndExpense.put("other", tagAndExpense.getOrDefault("other", 0.0) + expense.getAmount());
             }
         }
         return tagAndExpense;
@@ -158,7 +156,7 @@ public class StatsCtrl {
             Circle colorCircle = new Circle(8);
             colorCircle.setFill(Color.web("gray"));
             Label label = null;
-            label = new Label(translateTag(tag) + ": " +
+            label = new Label(tag + ": " +
                     numberFormat.format(amount) +
                     " (" + numberFormat.format(amount * 100 / totalCost) + "%)");
 

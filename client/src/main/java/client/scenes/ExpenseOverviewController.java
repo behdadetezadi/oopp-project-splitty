@@ -84,7 +84,7 @@ public class ExpenseOverviewController {
 
     @FXML
     private void switchToStatistics() {
-//        mainController.showEventOverview(event, activeLocale);
+        mainController.showStatistics(event, activeLocale);
 
     }
 

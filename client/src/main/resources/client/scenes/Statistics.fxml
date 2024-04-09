@@ -12,11 +12,14 @@
             </HBox>
         </top>
         <bottom>
-            <Label fx:id="sumOfExpensesLabel" style="-fx-font-size: 14px;" />
+            <Label fx:id="cost" style="-fx-font-size: 14px;" />
         </bottom>
       <center>
          <PieChart fx:id="pieChart" title="Pie Chart" BorderPane.alignment="CENTER" />
       </center>
+      <right>
+         <VBox fx:id="chartLegend" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
+      </right>
     </BorderPane>
 
 
