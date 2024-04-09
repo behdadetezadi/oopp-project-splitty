@@ -13,6 +13,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
@@ -138,7 +139,10 @@ public class AddExpenseController {
                 }
             });
         }
+        undoButton.setMnemonicParsing(true);
+        undoButton.setOnAction(this::handleUndoAction);
     }
+
 
     /**
      * This method validates input for the amount
@@ -269,3 +273,4 @@ public class AddExpenseController {
     }
 
 }
+
