@@ -181,6 +181,7 @@ public class AddExpenseController {
             amountValue = Double.parseDouble(normalizedAmount);
             Expense newExpense = new Expense(ServerUtils.findParticipantById(selectedParticipantId), category,
                     amountValue, event.getId());
+            newExpense.setExpenseType(selectedTag);
             addedExpenseCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> {
                 Platform.runLater(() -> {
                     if (expense != null) {
