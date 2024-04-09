@@ -95,6 +95,7 @@ public class EventOverviewController implements LanguageChangeListener {
         addExpenseButton.getStyleClass().add("button-hover");
         showExpensesButton.getStyleClass().add("button-hover");
         backToMain.getStyleClass().add("button-hover");
+        showAllExpensesButton.getStyleClass().add("button-hover");
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
     }
 
