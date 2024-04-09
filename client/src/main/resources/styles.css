@@ -206,4 +206,9 @@
     -fx-alignment: center;
 }
 
-
+.title-label-overview
+{
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-padding: 20px;
+}
