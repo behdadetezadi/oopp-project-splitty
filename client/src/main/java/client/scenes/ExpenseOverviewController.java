@@ -6,17 +6,19 @@ import commons.Event;
 import commons.Expense;
 import commons.Participant;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class ExpenseOverviewController {
     @FXML
-    private ListView<String> expensesListView; // Assuming this ListView is defined in your FXML
+    private ListView<String> expensesListView;
     @FXML
     private Label sumOfExpensesLabel;
     private ServerUtils server;
@@ -77,6 +79,12 @@ public class ExpenseOverviewController {
     @FXML
     private void switchToEventOverviewScene() {
         mainController.showEventOverview(event, activeLocale);
+
+    }
+
+    @FXML
+    private void switchToStatistics() {
+//        mainController.showEventOverview(event, activeLocale);
 
     }
 

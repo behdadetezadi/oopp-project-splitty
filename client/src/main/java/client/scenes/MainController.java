@@ -31,6 +31,9 @@ public class MainController {
     private Scene participantExpenseViewScene;
     private ExpenseOverviewController expenseOverviewController;
     private Scene expenseOverviewScene;
+    private StatsCtrl statsController;
+
+    private Scene statisticsScene;
 
     private TableOfParticipantsController tableOfParticipantsController;
     private Scene tableOfParticipantsScene;
@@ -72,7 +75,9 @@ public class MainController {
                            Pair<ContactDetailsCtrl, Parent> contactDetailsControllerPair,
                            Pair<InviteController, Parent> inviteControllerPair,
                            Pair<LoginController, Parent> loginControllerPair,
-                           Pair<AdminController, Parent> adminControllerPair)
+                           Pair<AdminController, Parent> adminControllerPair,
+                           Pair<StatsCtrl, Parent> statsPair
+                           )
     {
 
         this.primaryStage = primaryStage;
@@ -106,6 +111,9 @@ public class MainController {
 
         this.loginScene = new Scene(loginControllerPair.getValue());
         this.loginController = loginControllerPair.getKey();
+
+        this.statisticsScene = new Scene(statsPair.getValue());
+        this.statsController = statsPair.getKey();
 
         // Show initial scene
         showLoginPage(getStoredLanguagePreferenceOrDefault());
@@ -257,6 +265,18 @@ public class MainController {
         primaryStage.setTitle("Expenses Overview");
         primaryStage.setScene(expenseOverviewScene);
         expenseOverviewController.setEvent(event, locale);
+    }
+
+    /**
+     * Shows the expense overview
+     * @param event The event to show overview for.
+     * @param locale a locale from message resourceBundle
+     */
+    public void showStatistics(Event event, Locale locale)
+    {
+        primaryStage.setTitle("Statistics");
+        primaryStage.setScene(statisticsScene);
+        statsController.setEvent(event, locale);
     }
     /**
      * get the updated participant list of the selected event.

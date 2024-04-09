@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StatsCtrl">
+    <BorderPane prefHeight="335.0" prefWidth="594.0" stylesheets="@/styles.css">
+        <top>
+            <HBox alignment="CENTER_LEFT">
+                <Button onAction="#switchToExpenseOverviewScene" text="Back" />
+            </HBox>
+        </top>
+        <bottom>
+            <Label fx:id="sumOfExpensesLabel" style="-fx-font-size: 14px;" />
+        </bottom>
+      <center>
+         <PieChart fx:id="pieChart" title="Pie Chart" BorderPane.alignment="CENTER" />
+      </center>
+    </BorderPane>
+
+
+</AnchorPane>
