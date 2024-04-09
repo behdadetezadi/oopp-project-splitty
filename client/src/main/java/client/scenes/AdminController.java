@@ -273,7 +273,7 @@ public class AdminController {
     @FXML
     public void logout() {
         try {
-            mainController.showLoginPage(activeLocale);
+            mainController.showLoginPage();
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }

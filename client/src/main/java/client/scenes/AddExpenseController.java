@@ -1,11 +1,6 @@
 package client.scenes;
 
-import client.utils.AlertUtils;
-import client.utils.ServerUtils;
-import client.utils.ValidationUtils;
-import client.utils.undoable.AddExpenseCommand;
-import client.utils.undoable.UndoManager;
-import client.utils.undoable.UndoableCommand;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
@@ -21,7 +16,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 
-public class AddExpenseController {
+public class AddExpenseController implements LanguageChangeListener{
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
@@ -75,22 +70,61 @@ public class AddExpenseController {
     }
 
     /**
+     * initialize method
+     */
+    @FXML
+    public void initialize() {
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
+
+        cancelButton.setOnAction(this::handleCancelAction);
+        addExpenseButton.setOnAction(this::handleAddExpenseAction);
+        amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
+        addExpenseButton.getStyleClass().add("button-hover");
+        cancelButton.getStyleClass().add("button-hover");
+    }
+
+    /**
      * called by mainController
      * @param event event
+     * @param participantId participant id
      */
-    public void setEvent(Event event, long participantId, Locale locale) {
-        this.activeLocale = locale;
-        this.resourceBundle = ResourceBundle.getBundle("message", locale);
-        updateUIElements();
+    public void setEvent(Event event, long participantId) {
         this.event = event;
         this.selectedParticipantId = participantId;
         participantLabel.setText(ServerUtils.getParticipant(selectedParticipantId).getFirstName()
                 + " " + ServerUtils.getParticipant(selectedParticipantId).getLastName());
-        initialize();
     }
 
     /**
-     * updates the ui elements, this is necessary for the language switch
+     * sets the resource bundle
+     * @param resourceBundle The resource bundle to set.
+     */
+    @Override
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
+
+    /**
+     * sets the active locale
+     * @param locale The new locale to set as active.
+     */
+    @Override
+    public void setActiveLocale(Locale locale) {
+        this.activeLocale = locale;
+    }
+
+    /**
+     * gets the main controller
+     * @return main controller
+     */
+    @Override
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    /**
+     * updates the UI elements with the selected language
      */
     public void updateUIElements() {
         expenseFor.setText(resourceBundle.getString("Add_Expense_for"));
@@ -99,45 +133,6 @@ public class AddExpenseController {
         amountPaid.setPromptText(resourceBundle.getString("Amount_paid"));
         cancelButton.setText(resourceBundle.getString("Cancel"));
         addExpenseButton.setText(resourceBundle.getString("Add_expense"));
-    }
-
-
-    /**
-     * Initialises the UI components and event handlers if an event is provided.
-     * This method is called automatically by JavaFX after loading the FXML file.
-     */
-    @FXML
-    public void initialize() {
-        if(event != null) {
-            cancelButton.setOnAction(this::handleCancelAction);
-            addExpenseButton.setOnAction(this::handleAddExpenseAction);
-            amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
-            addExpenseButton.getStyleClass().add("button-hover");
-            cancelButton.getStyleClass().add("button-hover");
-            comboBox.getItems().clear();
-            for (String tag : tags) {
-                if (!comboBox.getItems().contains(tag)) {
-                    comboBox.getItems().add(tag);
-                }
-            }
-            comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                if ("Other".equals(newValue)) {
-                    TextInputDialog dialog = new TextInputDialog();
-                    dialog.setTitle("New Tag");
-                    dialog.setHeaderText("Enter a new tag:");
-                    dialog.setContentText("Tag:");
-                    String cssPath = this.getClass().getResource("/styles.css").toExternalForm();
-                    dialog.getDialogPane().getScene().getStylesheets().add(cssPath);
-                    Optional<String> result = dialog.showAndWait();
-                    result.ifPresent(tag -> {
-                        if (!tag.isEmpty() && !comboBox.getItems().contains(tag)) {
-                            comboBox.getItems().add(tag);
-                            comboBox.getSelectionModel().select(tag);
-                        }
-                    });
-                }
-            });
-        }
     }
 
     /**
@@ -244,7 +239,8 @@ public class AddExpenseController {
             alert.setHeaderText(null);
             alert.setContentText(resourceBundle.getString("Are_you_sure_you_want_to_cancel?"));
             if (alert.showAndWait().get() == ButtonType.OK) {
-                mainController.showEventOverview(this.event, activeLocale);
+                // Switch to the EventOverview scene using MainController
+                mainController.showEventOverview(this.event); // You may need to pass the event object if required
             }
         } else {
             throw new IllegalStateException();
@@ -256,7 +252,7 @@ public class AddExpenseController {
      */
     @FXML
     private void switchToEventOverviewScene() {
-        mainController.showEventOverview(this.event, activeLocale);
+        mainController.showEventOverview(this.event);
 
     }
 

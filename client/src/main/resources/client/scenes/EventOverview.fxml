@@ -60,7 +60,7 @@
             </HBox>
             <Region VBox.vgrow="ALWAYS" />
             <VBox alignment="TOP_CENTER">
-                <Label styleClass="subtle" text="Invite code: " />
+                <Label fx:id="inviteCodeLabel" styleClass="subtle" text="%Invite_Code" />
                 <Label fx:id="inviteCode" style="-fx-font-weight: bold;" styleClass="subtle" />
             </VBox>
         </VBox>

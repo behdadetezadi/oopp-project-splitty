@@ -44,7 +44,7 @@ public class LoginController {
      */
     @FXML
     private void handleUserLogin() {
-        mainController.showStartPage(mainController.getStoredLanguagePreferenceOrDefault());
+        mainController.showStartPage();
     }
 
     /**

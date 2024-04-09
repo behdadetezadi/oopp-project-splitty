@@ -547,7 +547,6 @@ public class ServerUtils {
 	 * @param eventId as a long
 	 * @return an array list of participants
 	 */
-
 	private static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
 
 	public static void registerForUpdates(long eventId, Consumer<Participant> consumer) {

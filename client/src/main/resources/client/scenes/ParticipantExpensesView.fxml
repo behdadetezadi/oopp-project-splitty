@@ -11,8 +11,11 @@
             stylesheets="@/styles.css"
             prefHeight="335.0"
             prefWidth="594.0">
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
     <top>
-        <Button text="Back" fx:id="backButton" onAction="#switchToEventOverviewScene" BorderPane.alignment="TOP_LEFT" />
+        <Button text="%back" fx:id="backButton" onAction="#switchToEventOverviewScene" BorderPane.alignment="TOP_LEFT" />
     </top>
     <center>
         <ListView fx:id="expensesListView" BorderPane.alignment="CENTER"/>

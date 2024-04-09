@@ -1,7 +1,8 @@
 package client.scenes;
 
-
+import client.utils.LanguageChangeListener;
 import client.utils.AlertUtils;
+import client.utils.LanguageUtils;
 import client.utils.ServerUtils;
 import client.utils.ValidationUtils;
 import com.google.inject.Inject;
@@ -17,35 +18,30 @@ import javafx.stage.Window;
 
 import java.util.*;
 
-public class InviteController  {
+public class InviteController implements LanguageChangeListener {
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
     private Locale activeLocale;
     private ResourceBundle resourceBundle;
-
     private Event event;
-
     @FXML
     private Label title;
     @FXML
     private Label inviteCode;
-
     @FXML
     private TextArea emailsField;
-
     @FXML
     private Button submitButton;
-
     @FXML
     private AnchorPane root;
     @FXML
     private Label textBeforeCode;
     @FXML
     private Label invitePeople;
-
     @FXML
     private Button backButton;
+
     /**
      * invite Controller injection
      * @param primaryStage primary stage
@@ -57,7 +53,15 @@ public class InviteController  {
         this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
+    }
 
+    /**
+     * Initialize method
+     */
+    @FXML
+    public void initialize() {
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
     }
 
     /**
@@ -102,12 +106,8 @@ public class InviteController  {
     /**
      * method that sets title and invite code according to passed event
      * @param newEvent the event
-     * @param locale the locale of the user
      */
-    public void initData(Event newEvent, Locale locale) {
-        this.activeLocale = locale;
-        resourceBundle = ResourceBundle.getBundle("message", locale);
-        updateUIElements();
+    public void setEvent(Event newEvent) {
         this.event = newEvent;
         inviteCode.setPrefWidth(Double.MAX_VALUE);
         inviteCode.setText(String.valueOf(event.getInviteCode()));
@@ -117,11 +117,37 @@ public class InviteController  {
         Tooltip inviteCodeToolTip = new Tooltip(resourceBundle.getString("Click_to_copy_the_invite_code"));
         Tooltip.install(inviteCode,inviteCodeToolTip);
         this.inviteCode.getStyleClass().add("label-hover");
-
     }
 
     /**
-     * updates the ui elements, this is necessary for the language switch
+     * sets the resource bundle
+     * @param resourceBundle The resource bundle to set.
+     */
+    @Override
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
+
+    /**
+     * sets the active locale
+     * @param locale The new locale to set as active.
+     */
+    @Override
+    public void setActiveLocale(Locale locale) {
+        this.activeLocale = locale;
+    }
+
+    /**
+     * gets the main controller
+     * @return main controller
+     */
+    @Override
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    /**
+     * updates the UI elements with the selected language
      */
     public void updateUIElements() {
         textBeforeCode.setText(resourceBundle.getString("Give_people_the_following_invite_Code"));
@@ -138,7 +164,7 @@ public class InviteController  {
     @FXML
     public void handleBackButtonAction() {
         try {
-            mainController.showEventOverview(event, activeLocale);
+            mainController.showEventOverview(event);
         } catch (IllegalStateException e) {
             e.printStackTrace();
 
@@ -149,7 +175,6 @@ public class InviteController  {
      * this is the method that makes sure that you can copy the invite code
      */
     private void copyInviteCode() {
-
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
         content.putString(

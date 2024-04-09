@@ -1,8 +1,6 @@
 package client.scenes;
 
-import client.utils.AlertUtils;
-import client.utils.ServerUtils;
-import client.utils.ValidationUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
@@ -19,31 +17,24 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
-public class TableOfParticipantsController {
-
+public class TableOfParticipantsController implements LanguageChangeListener {
     @FXML
     private Pagination pagination;
     @FXML
     private Button addButton;
     @FXML
     private Button backButton;
-
     @FXML
     private Button editButton;
-
     @FXML
     private Button deleteButton;
-
     @FXML
     private Label titleLabel;
-
     private final ObservableList<Participant> participants = FXCollections.observableArrayList();
-
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
@@ -70,59 +61,13 @@ public class TableOfParticipantsController {
         registerForParticipantUpdates();
     }
 
-    private void registerForParticipantUpdates() {
-        if (event != null && server != null) {
-            server.registerForMessages("/topic/participants", event.getId(), null, this::handleParticipantUpdates);
-            server.registerForMessages("/topic/participantDeletion", event.getId(), null, p -> {
-                Platform.runLater(() -> {
-                    participants.removeIf(participant -> participant.getId() == p.getId());
-                    setupPagination();
-                });
-            });
-
-
-        }
-    }
-
-    @FunctionalInterface
-    public interface Validator {
-        List<String> validate(Participant participant);
-    }
-
-    /**
-     * Sets event to make sure we are making changes to the required event
-     * @param event event
-     */
-    public void setEvent(Event event, Locale locale) {
-        this.resourceBundle = ResourceBundle.getBundle("message", locale);
-        this.activeLocale = locale;
-        this.event = event;
-        updateUIElements();
-        initialize(resourceBundle);
-
-    }
-
-
-
-    public void updateUIElements() {
-        titleLabel.setText(resourceBundle.getString("Participant_Overview"));
-        backButton.setText(resourceBundle.getString("Leave"));
-        editButton.setText(resourceBundle.getString("Modify"));
-        addButton.setText(resourceBundle.getString("plus"));
-        deleteButton.setText(resourceBundle.getString("minus"));
-    }
-
-
     /**
      * initializer method
      */
     @FXML
-    public void initialize(ResourceBundle resourceBundle) {
-
-        this.resourceBundle = resourceBundle;
-
-        loadParticipants();
-        setupPagination();
+    public void initialize() {
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
 
         addButton.getStyleClass().add("button-hover");
         deleteButton.getStyleClass().add("button-hover");
@@ -133,8 +78,77 @@ public class TableOfParticipantsController {
         Tooltip removeTooltip = new Tooltip(resourceBundle.getString("Click_to_remove_the_selected_participant"));
         Tooltip.install(addButton, addTooltip);
         Tooltip.install(deleteButton, removeTooltip);
+    }
 
-        server.registerForUpdates(event.getId(),this::handleParticipantUpdates);
+    private void registerForParticipantUpdates() {
+        if (event != null && server != null) {
+            server.registerForMessages("/topic/participants", event.getId(), null, this::handleParticipantUpdates);
+            server.registerForMessages("/topic/participantDeletion", event.getId(), null, p -> {
+                Platform.runLater(() -> {
+                    participants.removeIf(participant -> participant.getId() == p.getId());
+                    setupPagination();
+                });
+            });
+        }
+    }
+
+    @FunctionalInterface
+    public interface Validator {
+        /**
+         * Validates the provided Participant object.
+         * @param participant The Participant to be validated.
+         * @return A list of validation error messages. If the list is empty, the Participant is considered valid.
+         */
+        List<String> validate(Participant participant);
+    }
+
+    /**
+     * Sets event to make sure we are making changes to the required event
+     * @param event event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+        loadParticipants();
+        setupPagination();
+        ServerUtils.registerForUpdates(event.getId(),this::handleParticipantUpdates);
+    }
+
+    /**
+     * sets the resource bundle
+     * @param resourceBundle The resource bundle to set.
+     */
+    @Override
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
+
+    /**
+     * sets the active locale
+     * @param locale The new locale to set as active.
+     */
+    @Override
+    public void setActiveLocale(Locale locale) {
+        this.activeLocale = locale;
+    }
+
+    /**
+     * gets the main controller
+     * @return main controller
+     */
+    @Override
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    /**
+     * Update the text to the selected language
+     */
+    public void updateUIElements() {
+        titleLabel.setText(resourceBundle.getString("Participant_Overview"));
+        backButton.setText(resourceBundle.getString("Leave"));
+        editButton.setText(resourceBundle.getString("Modify"));
+        addButton.setText(resourceBundle.getString("plus"));
+        deleteButton.setText(resourceBundle.getString("minus"));
     }
 
     private void handleParticipantUpdate(Participant participant) {
@@ -157,7 +171,7 @@ public class TableOfParticipantsController {
      */
     @FXML
     private void handleBackButton() {
-        mainController.showEventOverview(event, activeLocale);
+        mainController.showEventOverview(event);
     }
 
     /**
@@ -331,7 +345,7 @@ public class TableOfParticipantsController {
      * @param participant The {@link Participant} to remove.
      */
     private void deleteParticipant(Participant participant) {
-        boolean isDeleted = server.deleteParticipant(participant.getId(), event.getId());
+        boolean isDeleted = ServerUtils.deleteParticipant(participant.getId(), event.getId());
         if (isDeleted) {
             participants.remove(participant);
             setupPagination();

@@ -36,7 +36,6 @@ public class MyModule implements Module {
         binder.bind(EventOverviewController.class).in(Scopes.SINGLETON);
         binder.bind(TableOfParticipantsController.class).in(Scopes.SINGLETON);
         binder.bind(AddExpenseController.class).in(Scopes.SINGLETON);
-        binder.bind(ContactDetailsCtrl.class).in(Scopes.SINGLETON);
         binder.bind(InviteController.class).in(Scopes.SINGLETON);
 
     }
