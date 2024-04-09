@@ -1,13 +1,13 @@
 package client.scenes;
 
+import client.Language;
 import client.utils.LanguageChangeListener;
 import client.utils.AlertUtils;
 import client.utils.LanguageUtils;
 import com.google.inject.Inject;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -22,7 +22,7 @@ public class LoginController implements LanguageChangeListener{
     private MainController mainController;
     private String adminPassword;
     @FXML
-    private ComboBox<String> languageComboBox;
+    private ComboBox<Language> languageComboBox;
     @FXML
     private ImageView logo;
     @FXML
@@ -98,7 +98,25 @@ public class LoginController implements LanguageChangeListener{
      */
     public void setLanguageComboBox() {
         String languageName = LanguageUtils.localeToLanguageName(activeLocale);
-        languageComboBox.setValue(languageName);
+        List<Language> languages = new ArrayList<>();
+        languages.add(new Language("English",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/english.png")))));
+        languages.add(new Language("Deutsch",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/german.png")))));
+        languages.add(new Language("Nederlands",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/dutch.png")))));
+        for (Language language : languages) {
+            if (language.getName().equals(languageName)) {
+                languageComboBox.setValue(language);
+                break;
+            }
+        }
+        languageComboBox.setItems(FXCollections.observableArrayList(languages));
+        languageComboBox.setCellFactory(listView -> new LoginController.LanguageListCell());
+        languageComboBox.setButtonCell(new LoginController.LanguageListCell());
     }
 
     /**
@@ -137,5 +155,22 @@ public class LoginController implements LanguageChangeListener{
      */
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
+    }
+
+    private class LanguageListCell extends ListCell<Language> {
+        @Override
+        protected void updateItem(Language item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                setText(item.getName());
+                ImageView imageView = new ImageView(item.getFlag());
+                imageView.setFitHeight(10);
+                imageView.setFitWidth(20);
+                setGraphic(imageView);
+            }
+        }
     }
 }

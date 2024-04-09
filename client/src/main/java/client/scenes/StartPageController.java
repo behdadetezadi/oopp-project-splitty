@@ -77,12 +77,7 @@ public class StartPageController implements LanguageChangeListener {
         // Populates the language combo box
         LanguageUtils.configureLanguageComboBox(languageComboBox, this);
 
-        // Set fixed width for text fields
-        codeInput.setPrefWidth(200);
-        eventNameInput.setPrefWidth(200);
-        // Set fixed width for buttons
-        joinButton.setPrefWidth(150);
-        createEventButton.setPrefWidth(150);
+        adjustComponentSizes();
 
         Image image = new Image(Objects.requireNonNull(getClass().getClassLoader()
                 .getResourceAsStream("images/MatrixGif.gif")));
@@ -211,6 +206,7 @@ public class StartPageController implements LanguageChangeListener {
         joinButton.setText(resourceBundle.getString("join_meeting"));
         createEventButton.setText(resourceBundle.getString("create_event"));
         recentEventsLabel.setText(resourceBundle.getString("recent_events"));
+        adjustComponentSizes();
     }
 
     /**
@@ -218,7 +214,25 @@ public class StartPageController implements LanguageChangeListener {
      */
     public void setLanguageComboBox() {
         String languageName = LanguageUtils.localeToLanguageName(activeLocale);
-        languageComboBox.setValue(languageName);
+        List<Language> languages = new ArrayList<>();
+        languages.add(new Language("English",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/english.png")))));
+        languages.add(new Language("Deutsch",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/german.png")))));
+        languages.add(new Language("Nederlands",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/dutch.png")))));
+        for (Language language : languages) {
+            if (language.getName().equals(languageName)) {
+                languageComboBox.setValue(language);
+                break;
+            }
+        }
+        languageComboBox.setItems(FXCollections.observableArrayList(languages));
+        languageComboBox.setCellFactory(listView -> new StartPageController.LanguageListCell());
+        languageComboBox.setButtonCell(new StartPageController.LanguageListCell());
     }
 
     /**
@@ -305,5 +319,65 @@ public class StartPageController implements LanguageChangeListener {
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
+    }
+
+    private class LanguageListCell extends ListCell<Language> {
+        @Override
+        protected void updateItem(Language item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                setText(item.getName());
+                ImageView imageView = new ImageView(item.getFlag());
+                imageView.setFitHeight(10);
+                imageView.setFitWidth(20);
+                setGraphic(imageView);
+            }
+        }
+    }
+
+    /**
+     * Adjusts buttons based on language
+     */
+    public void adjustComponentSizes() {
+        // Calculate the maximum preferred width for the text fields
+        double maxTextFieldWidth = Math.max(
+                computePrefWidth(codeInput, codeInput.getPromptText()),
+                computePrefWidth(eventNameInput, eventNameInput.getPromptText())
+        );
+
+        // Calculate the maximum preferred width for the buttons
+        double maxButtonWidth = Math.max(
+                computePrefWidth(joinButton, joinButton.getText()),
+                computePrefWidth(createEventButton, createEventButton.getText())
+        );
+
+        // Set the calculated maximum width to the text fields
+        codeInput.setPrefWidth(maxTextFieldWidth);
+        eventNameInput.setPrefWidth(maxTextFieldWidth);
+
+        // Set the calculated maximum width to the buttons
+        joinButton.setPrefWidth(maxButtonWidth);
+        createEventButton.setPrefWidth(maxButtonWidth);
+    }
+
+    private double computePrefWidth(Control control, String text) {
+        Font font;
+        if (control instanceof TextField) {
+            font = ((TextField) control).getFont();
+        } else if (control instanceof Button) {
+            font = ((Button) control).getFont();
+        } else {
+            font = Font.getDefault();
+        }
+        return computeTextWidth(text, font) + 30;
+    }
+
+    private double computeTextWidth(String text, Font font) {
+        Text textNode = new Text(text);
+        textNode.setFont(font);
+        return textNode.getBoundsInLocal().getWidth();
     }
 }

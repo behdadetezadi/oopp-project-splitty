@@ -14,7 +14,7 @@
     <top>
         <VBox spacing="10">
             <HBox spacing="10">
-                <ComboBox fx:id="languageComboBox" prefHeight="34.0" prefWidth="129.0" promptText="Language">
+                <ComboBox fx:id="languageComboBox">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="English" />

@@ -34,7 +34,7 @@
             </VBox>
             <!-- Empty Region for spacing -->
             <HBox spacing="10">
-                <ComboBox fx:id="languageComboBox" prefHeight="34.0"  promptText="Language">
+                <ComboBox fx:id="languageComboBox">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
 

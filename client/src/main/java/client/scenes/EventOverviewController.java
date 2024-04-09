@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.Language;
 import client.utils.LanguageChangeListener;
 import client.Language;
 import client.utils.AlertUtils;
@@ -145,7 +146,25 @@ public class EventOverviewController implements LanguageChangeListener {
      */
     public void setLanguageComboBox() {
         String languageName = LanguageUtils.localeToLanguageName(activeLocale);
-        languageComboBox.setValue(languageName);
+        List<Language> languages = new ArrayList<>();
+        languages.add(new Language("English",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/english.png")))));
+        languages.add(new Language("Deutsch",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/german.png")))));
+        languages.add(new Language("Nederlands",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/dutch.png")))));
+        for (Language language : languages) {
+            if (language.getName().equals(languageName)) {
+                languageComboBox.setValue(language);
+                break;
+            }
+        }
+        languageComboBox.setItems(FXCollections.observableArrayList(languages));
+        languageComboBox.setCellFactory(listView -> new LanguageListCell());
+        languageComboBox.setButtonCell(new LanguageListCell());
     }
 
     /**
@@ -339,4 +358,20 @@ public class EventOverviewController implements LanguageChangeListener {
         loadParticipants();
     }
 
+    private class LanguageListCell extends ListCell<Language> {
+        @Override
+        protected void updateItem(Language item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                setText(item.getName());
+                ImageView imageView = new ImageView(item.getFlag());
+                imageView.setFitHeight(10);
+                imageView.setFitWidth(20);
+                setGraphic(imageView);
+            }
+        }
+    }
 }

@@ -1,10 +1,12 @@
 package client.utils;
 
+import client.Language;
 import client.scenes.MainController;
+import client.scenes.StartPageController;
 import javafx.scene.control.ComboBox;
+import javafx.scene.image.Image;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class LanguageUtils {
     /**
@@ -24,9 +26,8 @@ public class LanguageUtils {
      * Switches the language based on the selected language string.
      * @param language The language string to switch to.
      * @param listener The listener that will have its language switched.
-     * @param languageComboBox The language box
      */
-    public static void switchLanguage(String language, LanguageChangeListener listener, ComboBox<String> languageComboBox) {
+    public static void switchLanguage(String language, LanguageChangeListener listener) {
         Locale locale = switch (language) {
             case "English" -> Locale.ENGLISH;
             case "Deutsch" -> Locale.GERMAN;
@@ -60,10 +61,10 @@ public class LanguageUtils {
      * @param languageComboBox The ComboBox to configure.
      * @param listener The LanguageChangeListener that will be notified of the switch.
      */
-    public static void configureLanguageComboBox(ComboBox<String> languageComboBox, LanguageChangeListener listener) {
+    public static void configureLanguageComboBox(ComboBox<Language> languageComboBox, LanguageChangeListener listener) {
         languageComboBox.setOnAction(event -> {
-            String selectedLanguage = languageComboBox.getValue();
-            switchLanguage(selectedLanguage, listener, languageComboBox);
+            String selectedLanguage = languageComboBox.getValue().getName();
+            switchLanguage(selectedLanguage, listener);
         });
     }
 }
