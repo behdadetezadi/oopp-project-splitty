@@ -121,7 +121,7 @@ public class ValidationUtils {
      * @return a boolean
      */
     public static boolean isValidLanguage(String language) {
-        return language.matches("Dutch|English");
+        return language.matches("Dutch|English|German");
     }
 
     /**
