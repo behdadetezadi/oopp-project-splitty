@@ -49,7 +49,7 @@ public class StatsCtrl {
         pieChart.getData().clear();
 
         Set<Expense> expenses = new HashSet<>(ServerUtils.getExpensesForEvent(eventId));
-        HashMap<String, Double> tagAndExpense = tagExpense(expenses);
+        HashMap<String, Double> tagAndExpense = tagWithExpense(expenses);
         tagAndExpense.forEach((tag, amount) -> {
             PieChart.Data slice = new PieChart.Data(tag, amount);
             pieChart.getData().add(slice);
@@ -60,14 +60,14 @@ public class StatsCtrl {
         pieChart.getData().forEach(data ->
                 data.nameProperty().bind(
                         Bindings.concat(
-                                data.getName(), ": ", data.pieValueProperty().getValue(),
+                                data.getName(), ": ", numberFormat.format(data.pieValueProperty().getValue()),
                                 " (", numberFormat.format(data.pieValueProperty().getValue() * 100 / totalCost), "%)")));
 
         pieChart.setLabelsVisible(true);
         pieChart.setLegendVisible(true);
     }
 
-    private HashMap<String, Double> tagExpense(Set<Expense> expenses) {
+    private HashMap<String, Double> tagWithExpense(Set<Expense> expenses) {
         HashMap<String, Double> tagAndExpense = new HashMap<>();
         for (Expense expense : expenses) {
             String tag = expense.getExpenseType();
