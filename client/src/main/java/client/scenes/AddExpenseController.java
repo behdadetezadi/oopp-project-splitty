@@ -17,6 +17,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.util.Locale;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 
@@ -26,8 +27,6 @@ public class AddExpenseController {
     private Stage primaryStage;
     private Locale activeLocale;
     private ResourceBundle resourceBundle;
-    @FXML
-    private TextField payer;
     @FXML
     private Label expenseFor;
     @FXML
@@ -40,6 +39,9 @@ public class AddExpenseController {
     private TextField amountPaid;
     @FXML
     private Label participantLabel;
+    @FXML
+    private ComboBox<String> comboBox;
+    private String[] tags = {"Food", "Entrance fees", "Travel", "Other"};
     @FXML
     private Button undoButton;
     private Event event;
@@ -86,6 +88,10 @@ public class AddExpenseController {
                 + " " + ServerUtils.getParticipant(selectedParticipantId).getLastName());
         initialize();
     }
+
+    /**
+     * updates the ui elements, this is necessary for the language switch
+     */
     public void updateUIElements() {
         expenseFor.setText(resourceBundle.getString("Add_Expense_for"));
         participantLabel.setText(resourceBundle.getString("participant"));
@@ -97,8 +103,8 @@ public class AddExpenseController {
 
 
     /**
-     *
-     *
+     * Initialises the UI components and event handlers if an event is provided.
+     * This method is called automatically by JavaFX after loading the FXML file.
      */
     @FXML
     public void initialize() {
@@ -108,7 +114,29 @@ public class AddExpenseController {
             amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
             addExpenseButton.getStyleClass().add("button-hover");
             cancelButton.getStyleClass().add("button-hover");
-
+            comboBox.getItems().clear();
+            for (String tag : tags) {
+                if (!comboBox.getItems().contains(tag)) {
+                    comboBox.getItems().add(tag);
+                }
+            }
+            comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                if ("Other".equals(newValue)) {
+                    TextInputDialog dialog = new TextInputDialog();
+                    dialog.setTitle("New Tag");
+                    dialog.setHeaderText("Enter a new tag:");
+                    dialog.setContentText("Tag:");
+                    String cssPath = this.getClass().getResource("/styles.css").toExternalForm();
+                    dialog.getDialogPane().getScene().getStylesheets().add(cssPath);
+                    Optional<String> result = dialog.showAndWait();
+                    result.ifPresent(tag -> {
+                        if (!tag.isEmpty() && !comboBox.getItems().contains(tag)) {
+                            comboBox.getItems().add(tag);
+                            comboBox.getSelectionModel().select(tag);
+                        }
+                    });
+                }
+            });
         }
     }
 
@@ -128,40 +156,52 @@ public class AddExpenseController {
      */
     @FXML
     private void handleAddExpenseAction(ActionEvent actionEvent) {
-        String category = expenseDescription.getText();
-        String amount = amountPaid.getText();
+        String category = this.expenseDescription.getText();
+        String amount = this.amountPaid.getText();
+        String selectedTag = comboBox.getValue();
         double amountValue;
 
+        if (selectedTag == null || selectedTag.isEmpty()) {
+            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_tag"), resourceBundle.getString("Error"),
+                    resourceBundle.getString("Please_select_a_tag."));
+            return;
+        }
+
         if (category == null || category.isEmpty()) {
-            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_description"), resourceBundle.getString("Error"), resourceBundle.getString("The_category_cannot_be_empty."));
+            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_description"),
+                    resourceBundle.getString("Error"), resourceBundle.getString("The_category_cannot_be_empty."));
             return;
         }
         String normalizedAmount = amount.replace(',', '.');
         if (normalizedAmount.endsWith(".")) {
-            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_amount"), resourceBundle.getString("Error"), resourceBundle.getString("Please_enter_a_valid_number_for_the_amount."));
+            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_amount"), resourceBundle.getString("Error"),
+                    resourceBundle.getString("Please_enter_a_valid_number_for_the_amount."));
             return;
         }
 
         try {
             amountValue = Double.parseDouble(normalizedAmount);
-            Expense newExpense = new Expense(ServerUtils.findParticipantById(selectedParticipantId), category, amountValue, event.getId());
+            Expense newExpense = new Expense(ServerUtils.findParticipantById(selectedParticipantId), category,
+                    amountValue, event.getId());
+            newExpense.setExpenseType(selectedTag);
             addedExpenseCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> {
                 Platform.runLater(() -> {
                     if (expense != null) {
-                        AlertHelper.showAlert(Alert.AlertType.INFORMATION, (Stage) addExpenseButton.getScene().getWindow(),
-                                resourceBundle.getString("Expense_Added"), resourceBundle.getString("The_expense_has_been_successfully_added."));
+                        Platform.runLater(() -> undoButton.setDisable(false));
+                        AlertUtils.showInformationAlert(resourceBundle.getString("Expense_Added"), "Information",
+                                resourceBundle.getString("The_expense_has_been_successfully_added."));
                         Platform.runLater(() -> {
                             undoButton.setDisable(false);
                         });
                     } else {
-                        AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Unexpected_Error"), resourceBundle.getString("An_unexpected_error_occurred"));
+                        AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Unexpected_Error"),
+                                resourceBundle.getString("An_unexpected_error_occurred"));
                     }
                 });
             }, resourceBundle);
-            undoManager.executeCommand(addedExpenseCommand);;
+            undoManager.executeCommand(addedExpenseCommand);
         } catch (NumberFormatException e) {
-            // Handle parsing error
-            AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Invalid_Amount"), resourceBundle.getString("Please_enter_a_valid_amount"));
+            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_Amount"), resourceBundle.getString("error"), resourceBundle.getString("Please_enter_a_valid_amount"));
         } catch (RuntimeException e) {
             AlertUtils.showErrorAlert(resourceBundle.getString("Unexpected_Error"), resourceBundle.getString("error"), resourceBundle.getString("An_unexpected_error_occurred") + e.getMessage());
         }
@@ -181,8 +221,7 @@ public class AddExpenseController {
             return;
         }
         UndoableCommand lastCommand = undoManager.getExecutedCommands().peek();
-        if (lastCommand instanceof AddExpenseCommand) {
-            AddExpenseCommand addExpenseCommand = (AddExpenseCommand) lastCommand;
+        if (lastCommand instanceof AddExpenseCommand addExpenseCommand) {
             Expense lastExpense = addExpenseCommand.getAddedExpense();
             if (lastExpense != null) {
                 expenseDescription.setText(lastExpense.getCategory());
@@ -190,12 +229,6 @@ public class AddExpenseController {
             }
         }
     }
-
-
-
-
-
-
 
     /**
      * Cancel button handler
@@ -211,13 +244,16 @@ public class AddExpenseController {
             alert.setHeaderText(null);
             alert.setContentText(resourceBundle.getString("Are_you_sure_you_want_to_cancel?"));
             if (alert.showAndWait().get() == ButtonType.OK) {
-
                 mainController.showEventOverview(this.event, activeLocale);
             }
         } else {
             throw new IllegalStateException();
         }
     }
+
+    /**
+     * switches to the event overview
+     */
     @FXML
     private void switchToEventOverviewScene() {
         mainController.showEventOverview(this.event, activeLocale);

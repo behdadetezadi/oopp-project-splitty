@@ -43,14 +43,13 @@ public class ValidationUtils {
         String character = event.getCharacter();
 
         // Allow digits, period, and comma (for EU people)
-        if (!character.matches("[0-9.,]")) {
+        if (!isValidNumber(character)) {
             event.consume();
             return;
         }
 
         // Only allow one period/comma in the text
-        if ((character.equals(".") || character.equals(",")) &&
-                (currentText.contains(".") || currentText.contains(","))) {
+        if (multiplePeriodOrComma(character, currentText)) {
             event.consume();
             return;
         }
@@ -64,6 +63,26 @@ public class ValidationUtils {
         if (!isValidDouble(expectedText)) {
             event.consume();
         }
+    }
+
+    /**
+     * checks if the input is a number, comma or period
+     * @param character the input
+     * @return boolean whether it is valid
+     */
+    public static boolean isValidNumber(String character){
+        return character.matches("[0-9.,]");
+    }
+
+    /**
+     * Only allow one period/comma in the text
+     * @param character the character
+     * @param currentText the text input
+     * @return boolean whether it contains multiple periods or commas
+     */
+    public static boolean multiplePeriodOrComma(String character, String currentText){
+        return (character.equals(".") || character.equals(",")) &&
+                (currentText.contains(".") || currentText.contains(","));
     }
 
     /**

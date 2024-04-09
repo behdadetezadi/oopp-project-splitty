@@ -53,7 +53,8 @@ public class AddExpenseCommand implements UndoableCommand {
                         addedExpense.getParticipant().getId(),
                         addedExpense.getCategory(),
                         addedExpense.getAmount(),
-                        eventId
+                        eventId,
+                        addedExpense.getExpenseType()
                 );
 
                 if (savedExpense != null && savedExpense.getId() != 0) {

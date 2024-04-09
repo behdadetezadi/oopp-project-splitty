@@ -506,7 +506,7 @@ public class TableOfParticipantsController {
             TextField bicField = createTextField(participant.getBic(), "BIC");
 
             ComboBox<String> languageComboBox = createComboBox(participant.getLanguageChoice(),
-                    "Language", "English", "Dutch");
+                    "Language", "English", "Dutch", "German");
 
 
             // Store the fields in a map for easy access later

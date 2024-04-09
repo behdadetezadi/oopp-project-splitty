@@ -47,7 +47,7 @@ public class DeleteExpenseCommand implements UndoableCommand {
     public void undo() {
         Platform.runLater(() -> {
             try {
-                Expense addedExpense = ServerUtils.addExpense(expense.getParticipant().getId(), expense.getCategory(), expense.getAmount(), eventId);
+                Expense addedExpense = ServerUtils.addExpense(expense.getParticipant().getId(), expense.getCategory(), expense.getAmount(), eventId, expense.getExpenseType());
                 if (addedExpense != null) {
                     updateUI.accept(addedExpense, "undone");
                 }
