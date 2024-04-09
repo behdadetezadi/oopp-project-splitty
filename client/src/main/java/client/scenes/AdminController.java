@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.inject.Inject;
 import commons.Event;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -17,10 +17,13 @@ import javafx.scene.control.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.scene.control.TableColumn;
 
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -30,7 +33,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.apache.catalina.Server;
 
 public class AdminController {
     @FXML
@@ -38,12 +40,15 @@ public class AdminController {
     @FXML
     private TableColumn<Event, String> titleColumn;
     @FXML
-    private TableColumn<Event, LocalDate> creationDateColumn;
+    private TableColumn<Event, String> creationDateColumn;
     @FXML
-    private TableColumn<Event, LocalDateTime> lastActivityColumn;
+    private TableColumn<Event, String> lastActivityColumn;
     @FXML
     private TableColumn<Event, Void> actionsColumn;
     private ObservableList<Event> eventData = FXCollections.observableArrayList();
+    private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yy");
+
     private Locale activeLocale;
     private ResourceBundle resourceBundle;
     private ServerUtils server;
@@ -72,16 +77,37 @@ public class AdminController {
         fetchAndPopulateEvents();
 
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
-        creationDateColumn.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
-        lastActivityColumn.setCellValueFactory(new PropertyValueFactory<>("lastActivity"));
+
+        // Date formatting
+        creationDateColumn.setCellValueFactory(event -> {
+            LocalDateTime creationDateTime = event.getValue().getCreationDate();
+            return new SimpleStringProperty(creationDateTime != null ? formatDateTime(creationDateTime) : "");
+        });
+        lastActivityColumn.setCellValueFactory(event -> {
+            LocalDateTime lastActivityDateTime = event.getValue().getLastActivity();
+            return new SimpleStringProperty(lastActivityDateTime != null ? formatDateTime(lastActivityDateTime) : "");
+        });
 
         setupActionsColumn();
     }
 
-    private void fetchAndPopulateEvents() {
+    private String formatDateTime(LocalDateTime dateTime) {
+        LocalDate date = dateTime.toLocalDate();
+        LocalTime time = dateTime.toLocalTime();
+
+        return date.equals(LocalDate.now()) ? "Today at " + time.format(timeFormatter) :
+                date.format(dateFormatter) + " " + time.format(timeFormatter);
+    }
+
+    /**
+     * fetches all events and puts them in the table
+     */
+    public void fetchAndPopulateEvents() {
         new Thread(() -> {
             List<Event> events = ServerUtils.getAllEvents();
             javafx.application.Platform.runLater(() -> {
+                eventData.removeAll();
+                eventsTable.getItems().clear();
                 eventData.addAll(events);
                 eventsTable.setItems(eventData);
             });

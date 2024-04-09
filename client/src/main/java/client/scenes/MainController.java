@@ -158,6 +158,7 @@ public class MainController {
     public void showAdminPage() {
         primaryStage.setTitle("Admin Page");
         primaryStage.setScene(adminScene);
+        adminController.fetchAndPopulateEvents();
     }
     /**
      * shows the StartPage
