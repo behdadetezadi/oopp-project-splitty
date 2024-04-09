@@ -15,11 +15,8 @@
             <Label fx:id="cost" style="-fx-font-size: 14px;" />
         </bottom>
       <center>
-         <PieChart fx:id="pieChart" title="Pie Chart" BorderPane.alignment="CENTER" />
+         <PieChart fx:id="pieChart" prefWidth="594.0" title="Pie Chart" BorderPane.alignment="CENTER" />
       </center>
-      <right>
-         <VBox fx:id="chartLegend" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
-      </right>
     </BorderPane>
 
 
