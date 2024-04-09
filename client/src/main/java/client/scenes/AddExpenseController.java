@@ -1,6 +1,10 @@
 package client.scenes;
 
-import client.utils.*;
+import client.utils.AlertUtils;
+import client.utils.LanguageUtils;
+import client.utils.LanguageChangeListener;
+import client.utils.ServerUtils;
+import client.utils.ValidationUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
@@ -61,13 +65,6 @@ public class AddExpenseController implements LanguageChangeListener{
         this.undoManager = undoManager;
     }
 
-
-    /**
-     * default constructor that JavaFX can use to instantiate the controller.
-     */
-    public AddExpenseController() {
-        // Default constructor
-    }
 
     /**
      * initialize method
