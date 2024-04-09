@@ -139,7 +139,7 @@ public class MainController {
     public void showLoginPage() {
         primaryStage.setTitle("Login");
         primaryStage.setScene(loginScene);
-        LanguageUtils.loadLanguage(locale, startPageController);
+//        LanguageUtils.loadLanguage(locale, LoginController); TODO
     }
 
     /**
@@ -148,8 +148,8 @@ public class MainController {
     public void showAdminPage() {
         primaryStage.setTitle("Admin Page");
         primaryStage.setScene(adminScene);
+//        LanguageUtils.loadLanguage(locale, AdminController); TODO
         adminController.fetchAndPopulateEvents();
-        LanguageUtils.loadLanguage(locale, startPageController);
     }
     /**
      * shows the StartPage
