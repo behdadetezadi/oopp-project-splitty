@@ -1,10 +1,6 @@
 package client.scenes;
 
-import client.utils.LanguageChangeListener;
-import client.utils.AlertUtils;
-import client.utils.LanguageUtils;
-import client.utils.ServerUtils;
-import client.utils.ValidationUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
@@ -150,11 +146,11 @@ public class InviteController implements LanguageChangeListener {
      * updates the UI elements with the selected language
      */
     public void updateUIElements() {
-        textBeforeCode.setText(resourceBundle.getString("Give_people_the_following_invite_Code"));
-        invitePeople.setText(resourceBundle.getString("Invite_the_following_people_by_email_(one_address_per_line)"));
+        AnimationUtil.animateText(textBeforeCode, resourceBundle.getString("Give_people_the_following_invite_Code"));
+        AnimationUtil.animateText(invitePeople, resourceBundle.getString("Invite_the_following_people_by_email_(one_address_per_line)"));
         emailsField.setPromptText(resourceBundle.getString("emails_go_here"));
-        backButton.setText(resourceBundle.getString("back"));
-        submitButton.setText(resourceBundle.getString("Send_Invites"));
+        AnimationUtil.animateText(backButton, resourceBundle.getString("back"));
+        AnimationUtil.animateText(submitButton, resourceBundle.getString("Send_Invites"));
     }
 
     /**

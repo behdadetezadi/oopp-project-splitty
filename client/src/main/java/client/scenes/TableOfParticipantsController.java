@@ -144,11 +144,11 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * Update the text to the selected language
      */
     public void updateUIElements() {
-        titleLabel.setText(resourceBundle.getString("Participant_Overview"));
-        backButton.setText(resourceBundle.getString("Leave"));
-        editButton.setText(resourceBundle.getString("Modify"));
-        addButton.setText(resourceBundle.getString("plus"));
-        deleteButton.setText(resourceBundle.getString("minus"));
+        AnimationUtil.animateText(titleLabel, resourceBundle.getString("Participant_Overview"));
+        AnimationUtil.animateText(backButton, resourceBundle.getString("Leave"));
+        AnimationUtil.animateText(editButton, resourceBundle.getString("Modify"));
+        AnimationUtil.animateText(addButton, resourceBundle.getString("plus"));
+        AnimationUtil.animateText(deleteButton, resourceBundle.getString("minus"));
     }
 
     private void handleParticipantUpdate(Participant participant) {

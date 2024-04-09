@@ -177,39 +177,39 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
      * Shows appropriate alerts based on the result of the deletion.
      * @param expense The expense to be deleted.
      */
-@FXML
-private void handleDeleteButton(Expense expense) {
-    Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION,
-            resourceBundle.getString("confirmDeleteExpense"),
-            ButtonType.YES, ButtonType.NO);
-    confirmDialog.showAndWait().ifPresent(response -> {
-        if (response == ButtonType.YES) {
-            try {
-                deleteExpenseCommand = new DeleteExpenseCommand(expense, event.getId(), (result, actionType) -> {
-                    if (result != null) {
+    @FXML
+    private void handleDeleteButton(Expense expense) {
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION,
+                resourceBundle.getString("confirmDeleteExpense"),
+                ButtonType.YES, ButtonType.NO);
+        confirmDialog.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                try {
+                    deleteExpenseCommand = new DeleteExpenseCommand(expense, event.getId(), (result, actionType) -> {
+                        if (result != null) {
 
-                        updateUI(result, actionType);
-                    } else {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle(resourceBundle.getString("errorTitle"));
-                        alert.setHeaderText(null);
-                        alert.setContentText(resourceBundle.getString("deleteExpenseFail"));
-                        alert.showAndWait();
-                    }
-                }, resourceBundle);
-                undoManager.executeCommand(deleteExpenseCommand);
-            } catch (Exception e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(resourceBundle.getString("errorTitle"));
-                alert.setHeaderText(null);
-                alert.setContentText(resourceBundle.getString("deleteExpenseFail") + e.getMessage());
-                alert.showAndWait();
+                            updateUI(result, actionType);
+                        } else {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle(resourceBundle.getString("errorTitle"));
+                            alert.setHeaderText(null);
+                            alert.setContentText(resourceBundle.getString("deleteExpenseFail"));
+                            alert.showAndWait();
+                        }
+                    }, resourceBundle);
+                    undoManager.executeCommand(deleteExpenseCommand);
+                } catch (Exception e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(resourceBundle.getString("errorTitle"));
+                    alert.setHeaderText(null);
+                    alert.setContentText(resourceBundle.getString("deleteExpenseFail") + e.getMessage());
+                    alert.showAndWait();
+                }
             }
-        }
-    });
-}
+        });
+    }
 
-    /**
+     /**
      * Updates the UI based on the action performed (delete or undo) on an expense.
      * Shows appropriate success messages for deletion or undo operations.
      * @param expense The expense that was deleted or undone.

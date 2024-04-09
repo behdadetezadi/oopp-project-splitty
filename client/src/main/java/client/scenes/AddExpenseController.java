@@ -1,10 +1,6 @@
 package client.scenes;
 
-import client.utils.AlertUtils;
-import client.utils.LanguageUtils;
-import client.utils.LanguageChangeListener;
-import client.utils.ServerUtils;
-import client.utils.ValidationUtils;
+import client.utils.*;
 import client.utils.undoable.AddExpenseCommand;
 import client.utils.undoable.UndoManager;
 import client.utils.undoable.UndoableCommand;
@@ -127,12 +123,12 @@ public class AddExpenseController implements LanguageChangeListener{
      * updates the UI elements with the selected language
      */
     public void updateUIElements() {
-        expenseFor.setText(resourceBundle.getString("Add_Expense_for"));
-        participantLabel.setText(resourceBundle.getString("participant"));
-        expenseDescription.setPromptText(resourceBundle.getString("Expense"));
-        amountPaid.setPromptText(resourceBundle.getString("Amount_paid"));
-        cancelButton.setText(resourceBundle.getString("Cancel"));
-        addExpenseButton.setText(resourceBundle.getString("Add_expense"));
+        AnimationUtil.animateText(expenseFor, resourceBundle.getString("Add_Expense_for"));
+        AnimationUtil.animateText(participantLabel, resourceBundle.getString("participant"));
+        AnimationUtil.animateText(expenseDescription, resourceBundle.getString("Expense"));
+        AnimationUtil.animateText(amountPaid, resourceBundle.getString("Amount_paid"));
+        AnimationUtil.animateText(cancelButton, resourceBundle.getString("Cancel"));
+        AnimationUtil.animateText(addExpenseButton, resourceBundle.getString("Add_expense"));
     }
 
     /**

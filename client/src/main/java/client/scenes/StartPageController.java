@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.Language;
+import client.utils.AnimationUtil;
 import client.utils.LanguageChangeListener;
 import client.utils.LanguageUtils;
 import client.utils.ServerUtils;
@@ -188,11 +189,11 @@ public class StartPageController implements LanguageChangeListener {
      * updates the UI elements with the selected language
      */
     public void updateUIElements() {
-        codeInput.setPromptText(resourceBundle.getString("enter_code"));
-        eventNameInput.setPromptText(resourceBundle.getString("enter_event_name"));
-        joinButton.setText(resourceBundle.getString("join_meeting"));
-        createEventButton.setText(resourceBundle.getString("create_event"));
-        recentEventsLabel.setText(resourceBundle.getString("recent_events"));
+        AnimationUtil.animateText(codeInput, resourceBundle.getString("enter_code"));
+        AnimationUtil.animateText(eventNameInput, resourceBundle.getString("enter_event_name"));
+        AnimationUtil.animateText(joinButton, resourceBundle.getString("join_meeting"));
+        AnimationUtil.animateText(createEventButton, resourceBundle.getString("create_event"));
+        AnimationUtil.animateText(recentEventsLabel, resourceBundle.getString("recent_events"));
         adjustComponentSizes();
     }
 
@@ -231,8 +232,8 @@ public class StartPageController implements LanguageChangeListener {
     }
 
     private void animateTextFields() {
-        animateTextField(codeInput);
-        animateTextField(eventNameInput);
+        animateTextField(codeInput, codeInput.getText());
+        animateTextField(eventNameInput, eventNameInput.getText());
     }
 
     private void animateButtonsText() {
@@ -331,14 +332,14 @@ public class StartPageController implements LanguageChangeListener {
     public void adjustComponentSizes() {
         // Calculate the maximum preferred width for the text fields
         double maxTextFieldWidth = Math.max(
-                computePrefWidth(codeInput, codeInput.getPromptText()),
-                computePrefWidth(eventNameInput, eventNameInput.getPromptText())
+                computePrefWidth(codeInput, resourceBundle.getString("enter_code")),
+                computePrefWidth(eventNameInput, resourceBundle.getString("enter_event_name"))
         );
 
         // Calculate the maximum preferred width for the buttons
         double maxButtonWidth = Math.max(
-                computePrefWidth(joinButton, joinButton.getText()),
-                computePrefWidth(createEventButton, createEventButton.getText())
+                computePrefWidth(joinButton, resourceBundle.getString("join_meeting")),
+                computePrefWidth(createEventButton, resourceBundle.getString("create_event"))
         );
 
         // Set the calculated maximum width to the text fields

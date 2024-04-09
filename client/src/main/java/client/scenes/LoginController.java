@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.Language;
+import client.utils.AnimationUtil;
 import client.utils.LanguageChangeListener;
 import client.utils.AlertUtils;
 import client.utils.LanguageUtils;
@@ -89,8 +90,8 @@ public class LoginController implements LanguageChangeListener{
      * updates the UI elements with the selected language
      */
     public void updateUIElements() {
-        userLoginButton.setText(resourceBundle.getString("User_Login"));
-        adminLoginButton.setText(resourceBundle.getString("Admin_Login"));
+        AnimationUtil.animateText(userLoginButton, resourceBundle.getString("User_Login"));
+        AnimationUtil.animateText(adminLoginButton, resourceBundle.getString("Admin_Login"));
     }
 
     /**
