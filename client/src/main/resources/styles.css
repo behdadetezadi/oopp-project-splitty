@@ -204,6 +204,10 @@
     -fx-alignment: center;
 }
 
+.alertDialog {
+    -fx-min-width: 400px;
+    -fx-min-height: 200px;
+}
 .title-label-overview
 {
     -fx-font-size: 24px;

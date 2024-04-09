@@ -78,13 +78,6 @@ public class EventOverviewController implements LanguageChangeListener {
     }
 
     /**
-     * default constructor for the program to work (don't know why)
-     */
-    public EventOverviewController() {
-        // Default constructor
-    }
-
-    /**
      * initialize method
      */
     @FXML
@@ -94,29 +87,14 @@ public class EventOverviewController implements LanguageChangeListener {
         // Populates the language combo box
         LanguageUtils.configureLanguageComboBox(languageComboBox, this);
 
-        if (event != null) {
-            titleLabel.setText(event.getTitle());
-            titleLabel.setOnMouseClicked(event -> editTitle());
-            Tooltip editTitleTooltip = new Tooltip(resourceBundle.getString("Click_to_edit_the_title"));
-            Tooltip.install(titleLabel, editTitleTooltip);
-            showParticipantsButton.getStyleClass().add("button-hover");
-            sendInvitesButton.getStyleClass().add("button-hover");
-            addExpenseButton.getStyleClass().add("button-hover");
-            showExpensesButton.getStyleClass().add("button-hover");
-            backToMain.getStyleClass().add("button-hover");
-
-
-        }
+        Tooltip editTitleTooltip = new Tooltip(resourceBundle.getString("Click_to_edit_the_title"));
+        Tooltip.install(titleLabel, editTitleTooltip);
+        showParticipantsButton.getStyleClass().add("button-hover");
+        sendInvitesButton.getStyleClass().add("button-hover");
+        addExpenseButton.getStyleClass().add("button-hover");
+        showExpensesButton.getStyleClass().add("button-hover");
+        backToMain.getStyleClass().add("button-hover");
         showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
-
-        if (event != null) {
-            this.inviteCode.setText(String.valueOf(this.event.getInviteCode()));
-            this.inviteCode.setOnMouseClicked(event -> copyInviteCode());
-            Tooltip inviteCodeToolTip = new Tooltip(resourceBundle.getString("Click_to_copy_the_invite_code"));
-            Tooltip.install(inviteCode,inviteCodeToolTip);
-            this.inviteCode.getStyleClass().add("label-hover");
-        }
-
     }
 
     /**
@@ -163,6 +141,14 @@ public class EventOverviewController implements LanguageChangeListener {
     }
 
     /**
+     * Set the language combo box
+     */
+    public void setLanguageComboBox() {
+        String languageName = LanguageUtils.localeToLanguageName(activeLocale);
+        languageComboBox.setValue(languageName);
+    }
+
+    /**
      * show expenses of selected participant
      * @param event the targeted event
      */
@@ -173,7 +159,7 @@ public class EventOverviewController implements LanguageChangeListener {
             Long selectedParticipantId = selectedParticipantOption.getId();
             mainController.showParticipantExpensesOverview(this.event, selectedParticipantId);
         } else {
-            showErrorAlert(resourceBundle.getString("Please_select_a_participant_to_show_expenses"));
+            AlertUtils.showErrorAlert("Select participant", "Error", resourceBundle.getString("Please_select_a_participant_to_show_expenses"));
         }
     }
     /**
@@ -198,6 +184,15 @@ public class EventOverviewController implements LanguageChangeListener {
                 titleLabel.setText(this.event.getTitle());
             });
         });
+
+        titleLabel.setText(event.getTitle());
+        titleLabel.setOnMouseClicked(click -> editTitle());
+
+        this.inviteCode.setText(String.valueOf(this.event.getInviteCode()));
+        this.inviteCode.setOnMouseClicked(click -> copyInviteCode());
+        Tooltip inviteCodeToolTip = new Tooltip(resourceBundle.getString("Click_to_copy_the_invite_code"));
+        Tooltip.install(inviteCode,inviteCodeToolTip);
+        this.inviteCode.getStyleClass().add("label-hover");
 
         titleLabel.getStyleClass().add("label-hover");
         loadParticipants();
@@ -232,6 +227,9 @@ public class EventOverviewController implements LanguageChangeListener {
         dialog.setTitle(resourceBundle.getString("Edit_Title"));
         dialog.setHeaderText(null);
         dialog.setContentText(resourceBundle.getString("New_Title"));
+
+        String cssPath = Objects.requireNonNull(this.getClass().getResource("/styles.css")).toExternalForm();
+        dialog.getDialogPane().getStylesheets().add(cssPath);
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(newTitle -> {
@@ -271,7 +269,7 @@ public class EventOverviewController implements LanguageChangeListener {
 
         } catch (IllegalStateException e) {
             e.printStackTrace();
-            showErrorAlert(resourceBundle.getString("Failed_to_load_the_participant_scene"));
+            AlertUtils.showErrorAlert("Failed to Load", "Error", resourceBundle.getString("Failed_to_load_the_participant_scene"));
         }
     }
 
@@ -309,7 +307,7 @@ public class EventOverviewController implements LanguageChangeListener {
             mainController.showInvitePage(this.event);
         } catch (IllegalStateException e) {
             e.printStackTrace();
-            showErrorAlert(resourceBundle.getString("Failed_to_load_the_invite_scene"));
+            AlertUtils.showErrorAlert("Failed to Load", "Error", resourceBundle.getString("Failed_to_load_the_invite_scene"));
         }
     }
 
@@ -326,26 +324,12 @@ public class EventOverviewController implements LanguageChangeListener {
                 Long selectedParticipantId = selectedParticipantOption.getId();
                 mainController.showAddExpense(this.event, selectedParticipantId);
             } else {
-                showErrorAlert(resourceBundle.getString("Please_select_for_which_participant_you_want_to_add_an_expense."));
+                AlertUtils.showErrorAlert("Select participant", "Error",
+                        resourceBundle.getString("Please_select_for_which_participant_you_want_to_add_an_expense."));
             }
         } else {
             throw new IllegalStateException();
         }
-    }
-
-
-
-    /**
-     * Here is just a simple regular error message which we
-     * can add later for error handling
-     * @param errorMessage String
-     */
-    private void showErrorAlert(String errorMessage) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText("There was an error.");
-        alert.setContentText(errorMessage);
-        alert.showAndWait();
     }
 
     /**

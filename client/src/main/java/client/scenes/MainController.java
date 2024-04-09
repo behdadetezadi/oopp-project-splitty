@@ -139,7 +139,8 @@ public class MainController {
     public void showLoginPage() {
         primaryStage.setTitle("Login");
         primaryStage.setScene(loginScene);
-//        LanguageUtils.loadLanguage(locale, LoginController); TODO
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), loginController);
+        loginController.setLanguageComboBox();
     }
 
     /**
@@ -160,8 +161,22 @@ public class MainController {
         primaryStage.setScene(startScene);
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), startPageController);
+        startPageController.setLanguageComboBox();
     }
 
+    /**
+     * Shows the event overview scene.
+     * @param event The event to show overview for.
+     */
+    public void showEventOverview(Event event) {
+        primaryStage.setTitle("Event Overview");
+        primaryStage.setScene(eventOverviewScene);
+        eventOverviewController.setEvent(event);
+        eventOverviewController.refreshParticipants();
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), eventOverviewController);
+        eventOverviewController.setLanguageComboBox();
+    }
 
     /**
      *
@@ -199,19 +214,6 @@ public class MainController {
         inviteController.setEvent(event);
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), inviteController);
-    }
-
-    /**
-     * Shows the event overview scene.
-     * @param event The event to show overview for.
-     */
-    public void showEventOverview(Event event) {
-        primaryStage.setTitle("Event Overview");
-        primaryStage.setScene(eventOverviewScene);
-        eventOverviewController.setEvent(event);
-        eventOverviewController.refreshParticipants();
-        // Loads the active locale, sets the resource bundle, and updates the UI
-        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), eventOverviewController);
     }
 
     /**

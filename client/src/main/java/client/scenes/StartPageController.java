@@ -215,6 +215,14 @@ public class StartPageController implements LanguageChangeListener {
     }
 
     /**
+     * Set the language combo box
+     */
+    public void setLanguageComboBox() {
+        String languageName = LanguageUtils.localeToLanguageName(activeLocale);
+        languageComboBox.setValue(languageName);
+    }
+
+    /**
      * clears the textfield when you go to this page
      */
     public void clearTextFields() {

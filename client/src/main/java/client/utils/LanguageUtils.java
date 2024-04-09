@@ -1,5 +1,6 @@
 package client.utils;
 
+import client.scenes.MainController;
 import javafx.scene.control.ComboBox;
 
 import java.util.Locale;
@@ -26,22 +27,31 @@ public class LanguageUtils {
      * @param languageComboBox The language box
      */
     public static void switchLanguage(String language, LanguageChangeListener listener, ComboBox<String> languageComboBox) {
-        Locale locale;
-        switch (language) {
-            case "English":
-                locale = Locale.ENGLISH;
-                break;
-            case "Deutsch":
-                locale = Locale.GERMAN;
-                break;
-            case "Nederlands":
-                locale = new Locale("nl");
-                break;
-            default:
-                locale = Locale.ENGLISH;
-                break;
-        }
+        Locale locale = switch (language) {
+            case "English" -> Locale.ENGLISH;
+            case "Deutsch" -> Locale.GERMAN;
+            case "Nederlands" -> new Locale("nl");
+            default -> Locale.ENGLISH;
+        };
         loadLanguage(locale, listener);
+    }
+
+    /**
+     * Converts a Locale to a displayable language name for the ComboBox.
+     * Adjust the mapping to match your ComboBox items.
+     * @param locale The locale to convert.
+     * @return A String representing the displayable language name.
+     */
+    public static String localeToLanguageName(Locale locale) {
+        if (Locale.ENGLISH.equals(locale)) {
+            return "English";
+        } else if (Locale.GERMAN.equals(locale)) {
+            return "Deutsch";
+        } else if ("nl".equals(locale.getLanguage())) {
+            return "Nederlands";
+        } else {
+            return "English";
+        }
     }
 
     /**
