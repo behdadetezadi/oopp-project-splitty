@@ -149,6 +149,7 @@ public class MainController {
     public void showAdminPage() {
         primaryStage.setTitle("Admin Page");
         primaryStage.setScene(adminScene);
+        adminController.fetchAndPopulateEvents();
 //        LanguageUtils.loadLanguage(locale, AdminController); TODO
         adminController.fetchAndPopulateEvents();
     }

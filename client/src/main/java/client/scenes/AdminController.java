@@ -10,6 +10,7 @@ import commons.Event;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -48,7 +49,6 @@ public class AdminController {
     private ObservableList<Event> eventData = FXCollections.observableArrayList();
     private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yy");
-
     private Locale activeLocale;
     private ResourceBundle resourceBundle;
     private ServerUtils server;
