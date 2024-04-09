@@ -15,6 +15,7 @@
  */
 package client.utils;
 
+import client.SplittyConfig;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
@@ -52,30 +53,13 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 
 public class ServerUtils {
-	private static final String SERVER = "http://localhost:8080/";
 	private static final Client client = ClientBuilder.newClient(new ClientConfig());
+	private static final SplittyConfig splittyConfig = new SplittyConfig(); // Inject SplittyConfig
+	private static final String SERVER = splittyConfig.getSplittyServerUrl();
+
 
 
 	public static Event getEventByInviteCode(String inviteCode) {
-		// Placeholder method for retrieving event details from the server
-		// You need to implement the actual server communication logic here
-		// For now, let's just return a mock event
-
-
-		/*
-		if (inviteCode.equals("valid_invite_code")) {
-			return new Event("Sample Event", "Description", "2024-03-20");
-		} else {
-			return null;
-		}
-		*/
-
-        List<Participant> participants = new ArrayList<>();
-        participants.add(new Participant("Johnny","Depp"));
-        participants.add(new Participant("Brad","Pitt"));
-
-		//return new Event("test event", participants);
-
 
 		Client client = ClientBuilder.newClient();
 		try {
@@ -303,9 +287,6 @@ public class ServerUtils {
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
-//		 catch (Exception e) {
-//			throw new RuntimeException("Error fetching expenses for participant: " + e.getMessage());
-//		}
 	}
 	/**
 	 * Fetches a list of expenses for a specific event.
@@ -590,7 +571,8 @@ public class ServerUtils {
 		EXEC.shutdownNow();
 	}
 
-	private StompSession session = connect("ws://localhost:8080/websocket");
+	private static final String WEBSOCKETSERVER = splittyConfig.getSplittyWebsocketUrl();
+	private StompSession session = connect(WEBSOCKETSERVER);
 	private StompSession connect (String url){
 		var client = new StandardWebSocketClient();
 		var stomp = new WebSocketStompClient(client);
