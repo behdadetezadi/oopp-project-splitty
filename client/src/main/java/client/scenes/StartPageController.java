@@ -174,19 +174,6 @@ public class StartPageController implements LanguageChangeListener {
     public void setActiveLocale(Locale locale) {
         this.activeLocale = locale;
     }
-    private void adjustComponentSizes() {
-        // Adjust the width of text fields and buttons based on the new language
-        adjustTextFieldWidth(codeInput, codeInput.getPromptText());
-        adjustTextFieldWidth(eventNameInput, eventNameInput.getPromptText());
-        adjustButtonWidth(joinButton, joinButton.getText());
-        adjustButtonWidth(createEventButton, createEventButton.getText());
-    }
-    private void adjustTextFieldWidth(TextField textField, String text) {
-        // Calculate the required width based on the text in the new language
-        double textWidth = computeTextWidth(text, textField.getFont());
-        double prefWidth = textWidth + 30; // Add some padding
-        textField.setPrefWidth(prefWidth);
-    }
 
     /**
      * gets the main controller
