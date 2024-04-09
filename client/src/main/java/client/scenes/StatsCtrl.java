@@ -63,6 +63,8 @@ public class StatsCtrl {
                                 data.getName(), ": ", data.pieValueProperty().getValue(),
                                 " (", numberFormat.format(data.pieValueProperty().getValue() * 100 / totalCost), "%)")));
 
+        pieChart.setLabelsVisible(true);
+        pieChart.setLegendVisible(true);
     }
 
     private HashMap<String, Double> tagExpense(Set<Expense> expenses) {
