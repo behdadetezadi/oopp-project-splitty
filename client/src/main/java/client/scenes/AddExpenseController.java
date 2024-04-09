@@ -99,7 +99,17 @@ public class AddExpenseController {
         amountPaid.setPromptText(resourceBundle.getString("Amount_paid"));
         cancelButton.setText(resourceBundle.getString("Cancel"));
         addExpenseButton.setText(resourceBundle.getString("Add_expense"));
+
+        // Update ComboBox with localized tags
+        comboBox.getItems().clear(); // Clear existing items
+        comboBox.getItems().addAll(
+                resourceBundle.getString("tagFood"),
+                resourceBundle.getString("tagEntranceFees"),
+                resourceBundle.getString("tagTravel"),
+                resourceBundle.getString("tagOther")
+        );
     }
+
 
 
     /**
@@ -114,12 +124,12 @@ public class AddExpenseController {
             amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
             addExpenseButton.getStyleClass().add("button-hover");
             cancelButton.getStyleClass().add("button-hover");
-            comboBox.getItems().clear();
-            for (String tag : tags) {
-                if (!comboBox.getItems().contains(tag)) {
-                    comboBox.getItems().add(tag);
-                }
-            }
+//            comboBox.getItems().clear();
+//            for (String tag : tags) {
+//                if (!comboBox.getItems().contains(tag)) {
+//                    comboBox.getItems().add(tag);
+//                }
+//            }
             comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
                 if ("Other".equals(newValue)) {
                     TextInputDialog dialog = new TextInputDialog();

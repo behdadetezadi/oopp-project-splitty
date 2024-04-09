@@ -12,9 +12,7 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 import javax.swing.*;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class ExpenseOverviewController {
     @FXML
@@ -61,6 +59,8 @@ public class ExpenseOverviewController {
         String expenseTemplate = resourceBundle.getString("expenseDetail");
         StringBuilder displayBuilder = new StringBuilder(String.format(expenseTemplate, expenseNumber, expense.getParticipant().getFirstName(), expense.getAmount(), expense.getCategory()));
 
+        displayBuilder.append(String.format(resourceBundle.getString("tagTitle"),this.tagLanguageSwitch(expense.getExpenseType())));
+        displayBuilder.append(resourceBundle.getString("DebtDetail"));
         String participantOwesTemplate = resourceBundle.getString("participantOwes");
         for (Participant participant : mainController.getUpdatedParticipantList(event)) {
             if (!participant.equals(expense.getParticipant())) {
@@ -75,6 +75,37 @@ public class ExpenseOverviewController {
 
         return displayBuilder.toString();
     }
+
+public String findTagKeyByLocalizedValue(String localizedValue) {
+    Map<String, String> reverseLookup = new HashMap<>();
+    reverseLookup.put(resourceBundle.getString("tagFood"), "Food");
+    reverseLookup.put(resourceBundle.getString("tagEntranceFees"), "Entrance fees");
+    reverseLookup.put(resourceBundle.getString("tagTravel"), "Travel");
+    reverseLookup.put(resourceBundle.getString("tagOther"), "Other");
+
+    String englishKey = reverseLookup.get(localizedValue);
+    if (englishKey != null) {
+        return englishKey;
+    }
+    throw new RuntimeException("Something wrong with tag selection: " + localizedValue);
+}
+
+    public String tagLanguageSwitch(String expenseType) {
+        String key = findTagKeyByLocalizedValue(expenseType); // This method finds the English key for the localized tag
+        switch (key) {
+            case "Food":
+                return resourceBundle.getString("tagFood");
+            case "Entrance fees":
+                return resourceBundle.getString("tagEntranceFees");
+            case "Travel":
+                return resourceBundle.getString("tagTravel");
+            case "Other":
+                return resourceBundle.getString("tagOther");
+            default:
+                throw new RuntimeException("There's something wrong with tag selection: " + expenseType);
+        }
+    }
+
 
     @FXML
     private void switchToEventOverviewScene() {
@@ -117,21 +148,6 @@ public class ExpenseOverviewController {
         }
     }
 
-    public ListView<String> getExpensesListView() {
-        return expensesListView;
-    }
-
-    public Label getSumOfExpensesLabel() {
-        return sumOfExpensesLabel;
-    }
-
-    public void setExpensesListView(ListView<String> expensesListView) {
-        this.expensesListView = expensesListView;
-    }
-
-    public void setSumOfExpensesLabel(Label sumOfExpensesLabel) {
-        this.sumOfExpensesLabel = sumOfExpensesLabel;
-    }
 }
 
 
