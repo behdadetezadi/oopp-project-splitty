@@ -126,6 +126,8 @@ public class AddExpenseController {
                     dialog.setTitle("New Tag");
                     dialog.setHeaderText("Enter a new tag:");
                     dialog.setContentText("Tag:");
+                    String cssPath = this.getClass().getResource("/styles.css").toExternalForm();
+                    dialog.getDialogPane().getScene().getStylesheets().add(cssPath);
                     Optional<String> result = dialog.showAndWait();
                     result.ifPresent(tag -> {
                         if (!tag.isEmpty() && !comboBox.getItems().contains(tag)) {
