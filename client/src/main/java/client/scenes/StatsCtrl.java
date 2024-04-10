@@ -32,6 +32,13 @@ public class StatsCtrl {
     private Stage primaryStage;
     private ServerUtils server;
 
+    /**
+     * constructor
+     * @param primaryStage stage
+     * @param server server
+     * @param mainController controller
+     * @param event event
+     */
     @Inject
     public StatsCtrl(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
         this.primaryStage = primaryStage;
@@ -40,11 +47,19 @@ public class StatsCtrl {
         this.event = event;
     }
 
+    /**
+     * Initialises the UI components and event handlers if an event is provided.
+     * This method is called automatically by JavaFX after loading the FXML file.
+     */
     public void initialize() {
         fillPieChart(event.getId());
         addEventHandlersToSlices();
     }
 
+    /**
+     * this method fills up the pie chart
+     * @param eventId event id
+     */
     private void fillPieChart(Long eventId) {
         pieChart.getData().clear();
 
@@ -67,6 +82,11 @@ public class StatsCtrl {
         pieChart.setLegendVisible(true);
     }
 
+    /**
+     * this method sorts all the expenses per tag in a hashmap and also stores the total amount spent for each tag
+     * @param expenses the expenses
+     * @return a hashmap
+     */
     private HashMap<String, Double> tagWithExpense(Set<Expense> expenses) {
         HashMap<String, Double> tagAndExpense = new HashMap<>();
         for (Expense expense : expenses) {
@@ -91,6 +111,10 @@ public class StatsCtrl {
         initialize();
     }
 
+    /**
+     * makes the pie chart clickable
+     * @param event mouse event
+     */
     private void handleSliceClick(MouseEvent event) {
         Node node = (Node) event.getSource();
         PieChart.Data data = (PieChart.Data) node.getUserData();
@@ -114,6 +138,10 @@ public class StatsCtrl {
             slice.getNode().setUserData(slice);
         });
     }
+
+    /**
+     * switch to expenseOverview
+     */
     @FXML
     private void switchToExpenseOverviewScene() {
         mainController.showExpenseOverview(event, activeLocale);

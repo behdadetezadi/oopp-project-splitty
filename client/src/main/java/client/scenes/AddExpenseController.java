@@ -51,7 +51,7 @@ public class AddExpenseController {
 
 
     /**
-     *
+     * constructor
      * @param primaryStage primary stage
      * @param server server
      * @param mainController mainController
@@ -124,14 +124,8 @@ public class AddExpenseController {
             amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
             addExpenseButton.getStyleClass().add("button-hover");
             cancelButton.getStyleClass().add("button-hover");
-//            comboBox.getItems().clear();
-//            for (String tag : tags) {
-//                if (!comboBox.getItems().contains(tag)) {
-//                    comboBox.getItems().add(tag);
-//                }
-//            }
             comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                if ("Other".equals(newValue)) {
+                if (resourceBundle.getString("tagOther").equals(newValue)) {
                     TextInputDialog dialog = new TextInputDialog();
                     dialog.setTitle("New Tag");
                     dialog.setHeaderText("Enter a new tag:");
