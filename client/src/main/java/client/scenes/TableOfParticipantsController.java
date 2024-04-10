@@ -541,8 +541,6 @@ public class TableOfParticipantsController implements LanguageChangeListener {
 
             int row = 0;
             for (String fieldName : formFields.keySet()) {
-                Label label = new Label(fieldName + ":");
-                grid.add(label, 0, row);
                 grid.add(formFields.get(fieldName), 1, row++);
             }
             return new Pair<>(grid, formFields);
