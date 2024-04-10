@@ -32,6 +32,8 @@ import static client.utils.AnimationUtil.*;
 
 public class StartPageController implements LanguageChangeListener {
     @FXML
+    private Button logoutButton;
+    @FXML
     private BorderPane root;
     @FXML
     private TextField codeInput;
@@ -189,6 +191,7 @@ public class StartPageController implements LanguageChangeListener {
      * updates the UI elements with the selected language
      */
     public void updateUIElements() {
+        AnimationUtil.animateText(logoutButton, resourceBundle.getString("Logout"));
         AnimationUtil.animateText(codeInput, resourceBundle.getString("enter_code"));
         AnimationUtil.animateText(eventNameInput, resourceBundle.getString("enter_event_name"));
         AnimationUtil.animateText(joinButton, resourceBundle.getString("join_meeting"));
