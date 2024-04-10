@@ -149,6 +149,16 @@ public class TableOfParticipantsController implements LanguageChangeListener {
         AnimationUtil.animateText(editButton, resourceBundle.getString("Modify"));
         AnimationUtil.animateText(addButton, resourceBundle.getString("plus"));
         AnimationUtil.animateText(deleteButton, resourceBundle.getString("minus"));
+        refreshParticipantDetailsDisplay();
+    }
+
+    private void refreshParticipantDetailsDisplay() {
+        for (int pageIndex = 0; pageIndex < pagination.getPageCount(); pageIndex++) {
+            Node page = createPage(pageIndex);
+            pagination.setPageFactory(index -> page);
+        }
+        pagination.setCurrentPageIndex(Math.max(0, pagination.getCurrentPageIndex() - 1));
+        pagination.setCurrentPageIndex(pagination.getCurrentPageIndex() + 1);
     }
 
     private void handleParticipantUpdate(Participant participant) {
@@ -233,7 +243,7 @@ public class TableOfParticipantsController implements LanguageChangeListener {
         VBox box = new VBox(5);
         if (pageIndex < participants.size()) {
             Participant participant = participants.get(pageIndex);
-            String content = formatParticipantDetails(participant);
+            String content = formatParticipantDetails(participant, resourceBundle);
             Label label = new Label(content);
             label.getStyleClass().add("participant-label");
             box.getChildren().add(label);
@@ -279,7 +289,8 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * @param action The action to perform with the edited participant.
      */
     private void editParticipant(Participant participant, String title, String header, ParticipantConsumer action) {
-        ParticipantDialog dialog = new ParticipantDialog(participant, title, header, this::validateParticipantData);
+        ParticipantDialog dialog = new ParticipantDialog(participant, title,
+                header, this::validateParticipantData, resourceBundle);
         Optional<Participant> result = dialog.showAndWait();
         result.ifPresent(p -> {
             p.setFirstName(ValidationUtils.autoCapitalizeWord(p.getFirstName()));
@@ -421,23 +432,24 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * @param participant The {@link Participant} whose details are to be formatted.
      * @return A formatted string containing the participant's details.
      */
-    private String formatParticipantDetails(Participant participant) {
+    private String formatParticipantDetails(Participant participant, ResourceBundle resourceBundle) {
         return String.format("""
-                        First Name: %s
-                        Last Name: %s
-                        Username: %s
-                        Email: %s
-                        IBAN: %s
-                        BIC: %s
-                        Language Preference: %s""",
-                participant.getFirstName(),
-                participant.getLastName(),
-                participant.getUsername(),
-                participant.getEmail(),
-                participant.getIban(),
-                participant.getBic(),
-                participant.getLanguageChoice());
+                    %s: %s
+                    %s: %s
+                    %s: %s
+                    %s: %s
+                    %s: %s
+                    %s: %s
+                    %s: %s""",
+                resourceBundle.getString("First_Name"), participant.getFirstName(),
+                resourceBundle.getString("Last_Name"), participant.getLastName(),
+                resourceBundle.getString("User_Name"), participant.getUsername(),
+                resourceBundle.getString("Email"), participant.getEmail(),
+                resourceBundle.getString("IBAN"), participant.getIban(),
+                resourceBundle.getString("BIC"), participant.getBic(),
+                resourceBundle.getString("Language"), participant.getLanguageChoice());
     }
+
 
     /**
      * A functional interface for consuming a {@link Participant} instance.
@@ -451,7 +463,8 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * A dialog for creating or editing a participant's details.
      */
     static class ParticipantDialog extends Dialog<Participant> {
-        ParticipantDialog(Participant participant, String title, String header,Validator validator) {
+        ParticipantDialog(Participant participant, String title, String header,
+                          Validator validator, ResourceBundle resourceBundle) {
             setTitle(title);
             setHeaderText(header);
 
@@ -461,7 +474,8 @@ public class TableOfParticipantsController implements LanguageChangeListener {
             getDialogPane().setMinHeight(350);
             getDialogPane().setMinWidth(600);
 
-            Pair<GridPane, Map<String, Control>> formPair = ParticipantForm.createParticipantForm(participant);
+            Pair<GridPane, Map<String, Control>> formPair = ParticipantForm.createParticipantForm(participant,
+                    resourceBundle);
             GridPane grid = formPair.getKey();
             Map<String, Control> formFields = formPair.getValue();
 
@@ -472,8 +486,7 @@ public class TableOfParticipantsController implements LanguageChangeListener {
 
             Button saveButton = (Button) getDialogPane().lookupButton(saveButtonType);
             saveButton.addEventFilter(ActionEvent.ACTION, event -> {
-                Participant tempParticipant = ParticipantForm.
-                        extractParticipantFromForm(formFields, new Participant());
+                Participant tempParticipant = ParticipantForm.extractParticipantFromForm(formFields, new Participant());
                 List<String> validationErrors = validator.validate(tempParticipant);
                 if (!validationErrors.isEmpty()) {
                     event.consume();
@@ -493,48 +506,43 @@ public class TableOfParticipantsController implements LanguageChangeListener {
     }
 
 
+
     /**
      * Utility class for handling participant form creation and data extraction.
      */
     static class ParticipantForm {
-        /**
-         * Creates a form for entering or editing a participant's details.
-         * @param participant The {@link Participant} whose details are to be used as initial form values.
-         * @return A {@link Pair} containing the form as a {@link GridPane} and a map of form fields.
-         */
-        static Pair<GridPane, Map<String, Control>> createParticipantForm(Participant participant) {
+        private static final String FIRST_NAME = "FirstName";
+        private static final String LAST_NAME = "LastName";
+        private static final String USERNAME = "Username";
+        private static final String EMAIL = "Email";
+        private static final String IBAN = "IBAN";
+        private static final String BIC = "BIC";
+        private static final String LANGUAGE = "Language";
+        static Pair<GridPane, Map<String, Control>> createParticipantForm(Participant participant,
+                                                                          ResourceBundle resourceBundle) {
             GridPane grid = new GridPane();
             grid.setAlignment(Pos.CENTER);
             grid.setHgap(10);
             grid.setVgap(10);
 
-            TextField firstNameField = createTextField(participant.getFirstName(), "First Name");
-
-            TextField lastNameField = createTextField(participant.getLastName(), "Last Name");
-
-            TextField usernameField = createTextField(participant.getUsername(), "Username");
-
-            TextField emailField = createTextField(participant.getEmail(), "Email");
-
-            TextField ibanField = createTextField(participant.getIban(), "IBAN");
-
-            TextField bicField = createTextField(participant.getBic(), "BIC");
-
+            TextField firstNameField = createTextField(participant.getFirstName(), resourceBundle.getString("First_Name"));
+            TextField lastNameField = createTextField(participant.getLastName(), resourceBundle.getString("Last_Name"));
+            TextField usernameField = createTextField(participant.getUsername(), resourceBundle.getString("User_Name"));
+            TextField emailField = createTextField(participant.getEmail(), resourceBundle.getString("Email"));
+            TextField ibanField = createTextField(participant.getIban(), resourceBundle.getString("IBAN"));
+            TextField bicField = createTextField(participant.getBic(), resourceBundle.getString("BIC"));
             ComboBox<String> languageComboBox = createComboBox(participant.getLanguageChoice(),
-                    "Language", "English", "Dutch", "German");
+                    resourceBundle.getString("Language"), "English", "Dutch", "German");
 
-
-            // Store the fields in a map for easy access later
             Map<String, Control> formFields = new LinkedHashMap<>();
-            formFields.put("First Name", firstNameField);
-            formFields.put("Last Name", lastNameField);
-            formFields.put("Username", usernameField);
-            formFields.put("Email", emailField);
-            formFields.put("IBAN", ibanField);
-            formFields.put("BIC", bicField);
-            formFields.put("Language", languageComboBox);
+            formFields.put(FIRST_NAME, firstNameField);
+            formFields.put(LAST_NAME, lastNameField);
+            formFields.put(USERNAME, usernameField);
+            formFields.put(EMAIL, emailField);
+            formFields.put(IBAN, ibanField);
+            formFields.put(BIC, bicField);
+            formFields.put(LANGUAGE, languageComboBox);
 
-            // Adding the fields to the grid
             int row = 0;
             for (String fieldName : formFields.keySet()) {
                 Label label = new Label(fieldName + ":");
@@ -580,13 +588,13 @@ public class TableOfParticipantsController implements LanguageChangeListener {
          * @return A new {@link Participant} instance with details extracted from the form fields.
          */
         static Participant extractParticipantFromForm(Map<String, Control> formFields, Participant participant) {
-            participant.setUsername(((TextField) formFields.get("Username")).getText());
-            participant.setFirstName(((TextField) formFields.get("First Name")).getText());
-            participant.setLastName(((TextField) formFields.get("Last Name")).getText());
-            participant.setEmail(((TextField) formFields.get("Email")).getText());
-            participant.setIban(((TextField) formFields.get("IBAN")).getText());
-            participant.setBic(((TextField) formFields.get("BIC")).getText());
-            participant.setLanguageChoice(((ComboBox<String>) formFields.get("Language")).getValue());
+            participant.setUsername(((TextField) formFields.get(USERNAME)).getText());
+            participant.setFirstName(((TextField) formFields.get(FIRST_NAME)).getText());
+            participant.setLastName(((TextField) formFields.get(LAST_NAME)).getText());
+            participant.setEmail(((TextField) formFields.get(EMAIL)).getText());
+            participant.setIban(((TextField) formFields.get(IBAN)).getText());
+            participant.setBic(((TextField) formFields.get(BIC)).getText());
+            participant.setLanguageChoice(((ComboBox<String>) formFields.get(LANGUAGE)).getValue());
 
             return participant;
         }
