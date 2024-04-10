@@ -18,6 +18,7 @@
             <Region HBox.hgrow="ALWAYS"/>
             <Button text="%Import_Event" onAction="#importEvent" />
             <Region HBox.hgrow="ALWAYS"/>
+            <Button text="%Export_All" onAction="#exportAllEvents" styleClass="button-export-all"/>
             <Button text="%Delete_All" onAction="#deleteAllEvents" styleClass="button-delete-all"/>
          </HBox>
       </VBox>

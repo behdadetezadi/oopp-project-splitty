@@ -3,6 +3,7 @@ package client.scenes;
 import client.utils.AlertUtils;
 
 import client.utils.ServerUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.inject.Inject;
@@ -25,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -183,7 +185,7 @@ public class AdminController {
 
     /**
      * method that exports given event as json
-     * @param event button press
+     * @param event event tied to the button
      */
     @FXML
     public void exportEvent(Event event) {
@@ -206,6 +208,26 @@ public class AdminController {
         }
     }
 
+    /**
+     * method that exports given event as json
+     */
+    @FXML
+    public void exportAllEvents() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        File outputFile = new File(System.getProperty("user.home") + File.separator + "AllEvents.json");
+
+        try {
+            objectMapper.writeValue(outputFile, eventData);
+            AlertUtils.showInformationAlert("All Events Exported!", "Exported to:", outputFile.getAbsolutePath());
+        } catch (IOException e) {
+            AlertUtils.showErrorAlert("Error", "Export Failed", "Failed to export all events. " + e.getMessage());
+        }
+    }
 
     /**
      * method that creates a pop-up where filepath to event can be inserted
@@ -239,24 +261,24 @@ public class AdminController {
             }
 
             try {
-                Event importedEvent = objectMapper.readValue(file, Event.class);
-                Event addedEvent = ServerUtils.addEvent(importedEvent);
-                if (addedEvent != null) {
-                    javafx.application.Platform.runLater(() -> {
-                        eventData.add(addedEvent);
-                        eventsTable.setItems(eventData);
-                        dialog.close();
-                        AlertUtils.showInformationAlert("Success", "Event Imported and Added",
-                                "The event has been successfully imported and added to the server.");
-                    });
-                } else {
-                    AlertUtils.showErrorAlert("Error", "Add Event Failed",
-                            "The event was imported but could not be added to the server.");
-                }
+                List<Event> importedEvents = objectMapper.readValue(file, new TypeReference<>() {});
+                importedEvents.forEach(this::addImportedEvent);
+                dialog.close();
+                AlertUtils.showInformationAlert("Success", "Events Imported and Added",
+                        "The events have been successfully imported and added to the server.");
             } catch (IOException ex) {
-                ex.printStackTrace();
-                AlertUtils.showErrorAlert("Error", "Import Failed",
-                        "Failed to import the event from the specified file.");
+                // If reading as a list fails, try reading as a single event
+                try {
+                    Event importedEvent = objectMapper.readValue(file, Event.class);
+                    addImportedEvent(importedEvent);
+                    dialog.close();
+                    AlertUtils.showInformationAlert("Success", "Event Imported and Added",
+                            "The event has been successfully imported and added to the server.");
+                } catch (IOException nestedEx) {
+                    nestedEx.printStackTrace();
+                    AlertUtils.showErrorAlert("Error", "Import Failed",
+                            "Failed to import the event(s) from the specified file.");
+                }
             }
         });
 
@@ -265,6 +287,19 @@ public class AdminController {
         dialogScene.getStylesheets().add(AlertUtils.class.getResource("/styles.css").toExternalForm());
         dialog.setScene(dialogScene);
         dialog.show();
+    }
+
+    private void addImportedEvent(Event importedEvent) {
+        Event addedEvent = ServerUtils.addEvent(importedEvent);
+        if (addedEvent != null) {
+            javafx.application.Platform.runLater(() -> {
+                eventData.add(addedEvent);
+                eventsTable.setItems(eventData);
+            });
+        } else {
+            AlertUtils.showErrorAlert("Error", "Add Event Failed",
+                    "The event was imported but could not be added to the server.");
+        }
     }
 
     /**
