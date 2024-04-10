@@ -153,12 +153,8 @@ public class TableOfParticipantsController implements LanguageChangeListener {
     }
 
     private void refreshParticipantDetailsDisplay() {
-        for (int pageIndex = 0; pageIndex < pagination.getPageCount(); pageIndex++) {
-            Node page = createPage(pageIndex);
-            pagination.setPageFactory(index -> page);
-        }
-        pagination.setCurrentPageIndex(Math.max(0, pagination.getCurrentPageIndex() - 1));
-        pagination.setCurrentPageIndex(pagination.getCurrentPageIndex() + 1);
+        pagination.setCurrentPageIndex(0);
+        pagination.setPageFactory(this::createPage);
     }
 
     private void handleParticipantUpdate(Participant participant) {
@@ -511,8 +507,8 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * Utility class for handling participant form creation and data extraction.
      */
     static class ParticipantForm {
-        private static final String FIRST_NAME = "FirstName";
-        private static final String LAST_NAME = "LastName";
+        private static final String FIRST_NAME = "First Name";
+        private static final String LAST_NAME = "Last Name";
         private static final String USERNAME = "Username";
         private static final String EMAIL = "Email";
         private static final String IBAN = "IBAN";
