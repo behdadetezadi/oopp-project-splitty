@@ -149,8 +149,8 @@ public class MainController {
     public void showAdminPage() {
         primaryStage.setTitle("Admin Page");
         primaryStage.setScene(adminScene);
-        adminController.fetchAndPopulateEvents();
-//        LanguageUtils.loadLanguage(locale, AdminController); TODO
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), adminController);
         adminController.fetchAndPopulateEvents();
     }
     /**

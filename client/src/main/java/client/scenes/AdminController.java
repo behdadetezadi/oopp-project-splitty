@@ -1,14 +1,14 @@
 package client.scenes;
 
-import client.utils.AlertUtils;
+import client.utils.*;
 
-import client.utils.ServerUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.inject.Inject;
 import commons.Event;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.beans.property.SimpleStringProperty;
@@ -37,7 +37,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class AdminController {
+public class AdminController implements LanguageChangeListener {
+    @FXML
+    private Button logoutButton;
+    @FXML
+    private Button importButton;
+    @FXML
+    private Button exportAllButton;
+    @FXML
+    private Button deleteAllButton;
     @FXML
     private TableView<Event> eventsTable;
     @FXML
@@ -51,6 +59,8 @@ public class AdminController {
     private ObservableList<Event> eventData = FXCollections.observableArrayList();
     private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yy");
+    private StringProperty deleteButtonText = new SimpleStringProperty();
+    private StringProperty exportButtonText = new SimpleStringProperty();
     private Locale activeLocale;
     private ResourceBundle resourceBundle;
     private ServerUtils server;
@@ -76,6 +86,9 @@ public class AdminController {
      */
     @FXML
     public void initialize() {
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
+
         fetchAndPopulateEvents();
 
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -91,6 +104,48 @@ public class AdminController {
         });
 
         setupActionsColumn();
+    }
+
+    /**
+     * sets the resource bundle
+     * @param resourceBundle The resource bundle to set.
+     */
+    @Override
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
+
+    /**
+     * sets the active locale
+     * @param locale The new locale to set as active.
+     */
+    @Override
+    public void setActiveLocale(Locale locale) {
+        this.activeLocale = locale;
+    }
+
+    /**
+     * gets the main controller
+     * @return main controller
+     */
+    @Override
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    /**
+     * updates the UI elements with the selected language
+     */
+    public void updateUIElements() {
+        AnimationUtil.animateText(logoutButton, resourceBundle.getString("Logout"));
+        AnimationUtil.animateText(importButton, resourceBundle.getString("Import"));
+        AnimationUtil.animateText(exportAllButton, resourceBundle.getString("Export_All"));
+        AnimationUtil.animateText(deleteAllButton, resourceBundle.getString("Delete_All"));
+        titleColumn.setText(resourceBundle.getString("Title"));
+        creationDateColumn.setText(resourceBundle.getString("Creation_Date"));
+        lastActivityColumn.setText(resourceBundle.getString("Last_Activity"));
+        deleteButtonText.set(resourceBundle.getString("delete"));
+        exportButtonText.set(resourceBundle.getString("Export"));
     }
 
     private String formatDateTime(LocalDateTime dateTime) {
@@ -118,24 +173,26 @@ public class AdminController {
 
     private void setupActionsColumn() {
         actionsColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button deleteButton = new Button("Delete");
-            private final Button exportButton = new Button("Export");
+            private final Button deleteButton = new Button();
+            private final Button exportButton = new Button();
             private final HBox container = new HBox(10, deleteButton, exportButton);
 
             {
+                deleteButton.textProperty().bind(deleteButtonText);
+                exportButton.textProperty().bind(exportButtonText);
+
                 deleteButton.getStyleClass().add("button-delete");
                 exportButton.getStyleClass().add("button-export");
 
                 container.setAlignment(Pos.CENTER);
-
                 container.setPadding(new Insets(5, 0, 5, 0));
 
                 deleteButton.setOnAction(event -> {
-                    commons.Event eventData = getTableView().getItems().get(getIndex());
+                    Event eventData = getTableView().getItems().get(getIndex());
                     deleteEvent(eventData);
                 });
                 exportButton.setOnAction(event -> {
-                    commons.Event eventData = getTableView().getItems().get(getIndex());
+                    Event eventData = getTableView().getItems().get(getIndex());
                     exportEvent(eventData);
                 });
             }
@@ -152,6 +209,7 @@ public class AdminController {
             }
         });
     }
+
 
     /**
      * Deletes an event
