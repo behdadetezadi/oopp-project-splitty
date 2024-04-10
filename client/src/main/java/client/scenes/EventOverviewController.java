@@ -262,7 +262,6 @@ public class EventOverviewController implements LanguageChangeListener {
 
             server.send("/app/eventTitle", payload);
             event.setTitle(newTitle); // Update local event object
-            initialize();
         });
     }
 

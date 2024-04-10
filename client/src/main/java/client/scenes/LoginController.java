@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.ServerUtils;
 import client.Language;
 import client.utils.AnimationUtil;
 import client.utils.LanguageChangeListener;
@@ -14,6 +15,11 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.scene.control.ComboBox;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.*;
 
 public class LoginController implements LanguageChangeListener{
@@ -52,7 +58,7 @@ public class LoginController implements LanguageChangeListener{
         LanguageUtils.configureLanguageComboBox(languageComboBox, this);
 
         adminPassword = UUID.randomUUID().toString().substring(0, 8);
-        System.out.println("Admin password: " + adminPassword);
+        ServerUtils.sendAdminPasswordToServer(adminPassword);
 
         Image image = new Image(Objects.requireNonNull(getClass().getClassLoader()
                 .getResourceAsStream("images/MatrixGif.gif")));
