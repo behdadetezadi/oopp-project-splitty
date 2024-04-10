@@ -1,15 +1,17 @@
 package client.scenes;
 
-import client.utils.AlertUtils;
+import client.utils.*;
 
-import client.utils.ServerUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.inject.Inject;
 import commons.Event;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -24,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -34,7 +37,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class AdminController {
+public class AdminController implements LanguageChangeListener {
+    @FXML
+    private Button logoutButton;
+    @FXML
+    private Button importButton;
+    @FXML
+    private Button exportAllButton;
+    @FXML
+    private Button deleteAllButton;
     @FXML
     private TableView<Event> eventsTable;
     @FXML
@@ -48,7 +59,8 @@ public class AdminController {
     private ObservableList<Event> eventData = FXCollections.observableArrayList();
     private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yy");
-
+    private StringProperty deleteButtonText = new SimpleStringProperty();
+    private StringProperty exportButtonText = new SimpleStringProperty();
     private Locale activeLocale;
     private ResourceBundle resourceBundle;
     private ServerUtils server;
@@ -74,6 +86,9 @@ public class AdminController {
      */
     @FXML
     public void initialize() {
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
+
         fetchAndPopulateEvents();
 
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -89,6 +104,48 @@ public class AdminController {
         });
 
         setupActionsColumn();
+    }
+
+    /**
+     * sets the resource bundle
+     * @param resourceBundle The resource bundle to set.
+     */
+    @Override
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
+
+    /**
+     * sets the active locale
+     * @param locale The new locale to set as active.
+     */
+    @Override
+    public void setActiveLocale(Locale locale) {
+        this.activeLocale = locale;
+    }
+
+    /**
+     * gets the main controller
+     * @return main controller
+     */
+    @Override
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    /**
+     * updates the UI elements with the selected language
+     */
+    public void updateUIElements() {
+        AnimationUtil.animateText(logoutButton, resourceBundle.getString("Logout"));
+        AnimationUtil.animateText(importButton, resourceBundle.getString("Import"));
+        AnimationUtil.animateText(exportAllButton, resourceBundle.getString("Export_All"));
+        AnimationUtil.animateText(deleteAllButton, resourceBundle.getString("Delete_All"));
+        titleColumn.setText(resourceBundle.getString("Title"));
+        creationDateColumn.setText(resourceBundle.getString("Creation_Date"));
+        lastActivityColumn.setText(resourceBundle.getString("Last_Activity"));
+        deleteButtonText.set(resourceBundle.getString("delete"));
+        exportButtonText.set(resourceBundle.getString("Export"));
     }
 
     private String formatDateTime(LocalDateTime dateTime) {
@@ -116,24 +173,26 @@ public class AdminController {
 
     private void setupActionsColumn() {
         actionsColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button deleteButton = new Button("Delete");
-            private final Button exportButton = new Button("Export");
+            private final Button deleteButton = new Button();
+            private final Button exportButton = new Button();
             private final HBox container = new HBox(10, deleteButton, exportButton);
 
             {
+                deleteButton.textProperty().bind(deleteButtonText);
+                exportButton.textProperty().bind(exportButtonText);
+
                 deleteButton.getStyleClass().add("button-delete");
                 exportButton.getStyleClass().add("button-export");
 
                 container.setAlignment(Pos.CENTER);
-
                 container.setPadding(new Insets(5, 0, 5, 0));
 
                 deleteButton.setOnAction(event -> {
-                    commons.Event eventData = getTableView().getItems().get(getIndex());
+                    Event eventData = getTableView().getItems().get(getIndex());
                     deleteEvent(eventData);
                 });
                 exportButton.setOnAction(event -> {
-                    commons.Event eventData = getTableView().getItems().get(getIndex());
+                    Event eventData = getTableView().getItems().get(getIndex());
                     exportEvent(eventData);
                 });
             }
@@ -150,6 +209,7 @@ public class AdminController {
             }
         });
     }
+
 
     /**
      * Deletes an event
@@ -183,7 +243,7 @@ public class AdminController {
 
     /**
      * method that exports given event as json
-     * @param event button press
+     * @param event event tied to the button
      */
     @FXML
     public void exportEvent(Event event) {
@@ -206,6 +266,26 @@ public class AdminController {
         }
     }
 
+    /**
+     * method that exports given event as json
+     */
+    @FXML
+    public void exportAllEvents() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        File outputFile = new File(System.getProperty("user.home") + File.separator + "AllEvents.json");
+
+        try {
+            objectMapper.writeValue(outputFile, eventData);
+            AlertUtils.showInformationAlert("All Events Exported!", "Exported to:", outputFile.getAbsolutePath());
+        } catch (IOException e) {
+            AlertUtils.showErrorAlert("Error", "Export Failed", "Failed to export all events. " + e.getMessage());
+        }
+    }
 
     /**
      * method that creates a pop-up where filepath to event can be inserted
@@ -239,24 +319,24 @@ public class AdminController {
             }
 
             try {
-                Event importedEvent = objectMapper.readValue(file, Event.class);
-                Event addedEvent = ServerUtils.addEvent(importedEvent);
-                if (addedEvent != null) {
-                    javafx.application.Platform.runLater(() -> {
-                        eventData.add(addedEvent);
-                        eventsTable.setItems(eventData);
-                        dialog.close();
-                        AlertUtils.showInformationAlert("Success", "Event Imported and Added",
-                                "The event has been successfully imported and added to the server.");
-                    });
-                } else {
-                    AlertUtils.showErrorAlert("Error", "Add Event Failed",
-                            "The event was imported but could not be added to the server.");
-                }
+                List<Event> importedEvents = objectMapper.readValue(file, new TypeReference<>() {});
+                importedEvents.forEach(this::addImportedEvent);
+                dialog.close();
+                AlertUtils.showInformationAlert("Success", "Events Imported and Added",
+                        "The events have been successfully imported and added to the server.");
             } catch (IOException ex) {
-                ex.printStackTrace();
-                AlertUtils.showErrorAlert("Error", "Import Failed",
-                        "Failed to import the event from the specified file.");
+                // If reading as a list fails, try reading as a single event
+                try {
+                    Event importedEvent = objectMapper.readValue(file, Event.class);
+                    addImportedEvent(importedEvent);
+                    dialog.close();
+                    AlertUtils.showInformationAlert("Success", "Event Imported and Added",
+                            "The event has been successfully imported and added to the server.");
+                } catch (IOException nestedEx) {
+                    nestedEx.printStackTrace();
+                    AlertUtils.showErrorAlert("Error", "Import Failed",
+                            "Failed to import the event(s) from the specified file.");
+                }
             }
         });
 
@@ -267,13 +347,26 @@ public class AdminController {
         dialog.show();
     }
 
+    private void addImportedEvent(Event importedEvent) {
+        Event addedEvent = ServerUtils.addEvent(importedEvent);
+        if (addedEvent != null) {
+            javafx.application.Platform.runLater(() -> {
+                eventData.add(addedEvent);
+                eventsTable.setItems(eventData);
+            });
+        } else {
+            AlertUtils.showErrorAlert("Error", "Add Event Failed",
+                    "The event was imported but could not be added to the server.");
+        }
+    }
+
     /**
      * Goes back to the loginpage
      */
     @FXML
     public void logout() {
         try {
-            mainController.showLoginPage(activeLocale);
+            mainController.showLoginPage();
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }

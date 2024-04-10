@@ -52,7 +52,6 @@ public class Main extends Application {
         var participantExpenseViewPage = FXML.load(ParticipantExpenseViewController.class, "client", "scenes", "ParticipantExpensesView.fxml");
         var expenseOverviewPage = FXML.load(ExpenseOverviewController.class,"client", "scenes","ExpenseOverview.fxml");
         var participantsPage = FXML.load(TableOfParticipantsController.class,"client", "scenes", "TableOfParticipants.fxml");
-        var contactDetailsPage = FXML.load(ContactDetailsCtrl.class, "client", "scenes", "contactDetails.fxml");
         var invitePage = FXML.load(InviteController.class, "client", "scenes", "inviteScene.fxml");
         var adminPage = FXML.load(AdminController.class, "client", "scenes", "AdminOverview.fxml");
         var loginPage = FXML.load(LoginController.class, "client", "scenes", "LoginPage.fxml");
@@ -61,7 +60,7 @@ public class Main extends Application {
         loginPage.getKey().setMainController(mainController);
 
         mainController.initialize(primaryStage, startPage, overviewPage, expensePage, participantExpenseViewPage,
-                expenseOverviewPage, participantsPage, contactDetailsPage, invitePage, loginPage, adminPage);
+                expenseOverviewPage, participantsPage, invitePage, loginPage, adminPage);
 
         primaryStage.setOnCloseRequest(e -> {
             participantsPage.getKey().stop();

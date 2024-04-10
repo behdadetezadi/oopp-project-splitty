@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.utils.LanguageChangeListener;
+import client.utils.LanguageUtils;
 import client.utils.AlertUtils;
 import client.utils.ServerUtils;
 import client.utils.undoable.DeleteExpenseCommand;
@@ -28,7 +30,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.function.BiConsumer;
 
-public class ParticipantExpenseViewController {
+public class ParticipantExpenseViewController implements LanguageChangeListener {
     @FXML
     private ListView<String> expensesListView;
     @FXML
@@ -58,14 +60,50 @@ public class ParticipantExpenseViewController {
         this.undoManager = undoManager;
     }
 
-    public void setEvent(Event event, long participantId, Locale locale) {
-        this.activeLocale = locale;
-        this.resourceBundle = ResourceBundle.getBundle("message", locale);
-        updateUIElements();
+    /**
+     * Initialize method
+     */
+    @FXML
+    public void initialize() {
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
+    }
+
+    public void setEvent(Event event, long participantId) {
         this.event = event;
         this.selectedParticipantId = participantId;
     }
 
+    /**
+     * sets the resource bundle
+     * @param resourceBundle The resource bundle to set.
+     */
+    @Override
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
+
+    /**
+     * sets the active locale
+     * @param locale The new locale to set as active.
+     */
+    @Override
+    public void setActiveLocale(Locale locale) {
+        this.activeLocale = locale;
+    }
+
+    /**
+     * gets the main controller
+     * @return main controller
+     */
+    @Override
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    /**
+     * updates the UI elements with the selected language
+     */
     public void updateUIElements() {
         backButton.setText(resourceBundle.getString("back"));
     }
@@ -79,6 +117,7 @@ public class ParticipantExpenseViewController {
 
         expensesListView.getItems().clear();
         if (expenses.isEmpty()) {
+            System.out.println("Setting no expense text to: " + resourceBundle.getString("noExpensesRecorded"));
             expensesListView.getItems().add(resourceBundle.getString("noExpensesRecorded"));
             sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"), "0.00"));
         } else {
@@ -128,7 +167,7 @@ public class ParticipantExpenseViewController {
 
     @FXML
     private void switchToEventOverviewScene() {
-        mainController.showEventOverview(event, activeLocale);
+        mainController.showEventOverview(event);
     }
 
     /**
@@ -138,39 +177,39 @@ public class ParticipantExpenseViewController {
      * Shows appropriate alerts based on the result of the deletion.
      * @param expense The expense to be deleted.
      */
-@FXML
-private void handleDeleteButton(Expense expense) {
-    Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION,
-            resourceBundle.getString("confirmDeleteExpense"),
-            ButtonType.YES, ButtonType.NO);
-    confirmDialog.showAndWait().ifPresent(response -> {
-        if (response == ButtonType.YES) {
-            try {
-                deleteExpenseCommand = new DeleteExpenseCommand(expense, event.getId(), (result, actionType) -> {
-                    if (result != null) {
+    @FXML
+    private void handleDeleteButton(Expense expense) {
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION,
+                resourceBundle.getString("confirmDeleteExpense"),
+                ButtonType.YES, ButtonType.NO);
+        confirmDialog.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                try {
+                    deleteExpenseCommand = new DeleteExpenseCommand(expense, event.getId(), (result, actionType) -> {
+                        if (result != null) {
 
-                        updateUI(result, actionType);
-                    } else {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle(resourceBundle.getString("errorTitle"));
-                        alert.setHeaderText(null);
-                        alert.setContentText(resourceBundle.getString("deleteExpenseFail"));
-                        alert.showAndWait();
-                    }
-                }, resourceBundle);
-                undoManager.executeCommand(deleteExpenseCommand);
-            } catch (Exception e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(resourceBundle.getString("errorTitle"));
-                alert.setHeaderText(null);
-                alert.setContentText(resourceBundle.getString("deleteExpenseFail") + e.getMessage());
-                alert.showAndWait();
+                            updateUI(result, actionType);
+                        } else {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle(resourceBundle.getString("errorTitle"));
+                            alert.setHeaderText(null);
+                            alert.setContentText(resourceBundle.getString("deleteExpenseFail"));
+                            alert.showAndWait();
+                        }
+                    }, resourceBundle);
+                    undoManager.executeCommand(deleteExpenseCommand);
+                } catch (Exception e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle(resourceBundle.getString("errorTitle"));
+                    alert.setHeaderText(null);
+                    alert.setContentText(resourceBundle.getString("deleteExpenseFail") + e.getMessage());
+                    alert.showAndWait();
+                }
             }
-        }
-    });
-}
+        });
+    }
 
-    /**
+     /**
      * Updates the UI based on the action performed (delete or undo) on an expense.
      * Shows appropriate success messages for deletion or undo operations.
      * @param expense The expense that was deleted or undone.

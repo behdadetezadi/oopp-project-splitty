@@ -1,13 +1,15 @@
 package client.scenes;
 
 import client.Language;
+import client.utils.AnimationUtil;
+import client.utils.LanguageChangeListener;
+import client.utils.LanguageUtils;
 import client.utils.ServerUtils;
 import commons.Event;
 import jakarta.inject.Inject;
 import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,41 +30,33 @@ import java.util.*;
 
 import static client.utils.AnimationUtil.*;
 
-public class StartPageController {
-
+public class StartPageController implements LanguageChangeListener {
+    @FXML
+    private Button logoutButton;
     @FXML
     private BorderPane root;
-
     @FXML
     private TextField codeInput;
-
     @FXML
     private TextField eventNameInput;
-
     @FXML
     private Label recentEventsLabel;
-
     @FXML
     private ListView<Event> recentEventsList;
-
     @FXML
     private Button joinButton;
-
     @FXML
     private Button createEventButton;
-
     @FXML
     private ImageView logo;
 
     @FXML
     private ComboBox<Language> languageComboBox;
     private ResourceBundle resourceBundle;
-
     private Locale activeLocale;
 
     private Stage primaryStage;
     private MainController mainController;
-
     private ObservableList<Event> events = FXCollections.observableArrayList();
 
     /**
@@ -76,42 +70,15 @@ public class StartPageController {
         this.mainController = mainController;
     }
 
-
-
-
-
     /**
-     * initialize method of the start page controller
+     * initialize method
      */
-    public void initialize(Locale locale) {
-
-
-
-        List<Language> languages = new ArrayList<>();
-        languages.add(new Language("English", new Image(getClass().getClassLoader().getResourceAsStream("images/flags/english.png"))));
-        languages.add(new Language("Deutsch", new Image(getClass().getClassLoader().getResourceAsStream("images/flags/german.png"))));
-        languages.add(new Language("Nederlands", new Image(getClass().getClassLoader().getResourceAsStream("images/flags/dutch.png"))));
-
-
-        loadLanguage(locale);
-        activeLocale = locale;
-
-        for (Language language : languages) {
-            if (language.getName().equals(locale.getDisplayLanguage(activeLocale))) {
-                languageComboBox.setValue(language);
-                break;
-            }
-        }
-
-
-        languageComboBox.setItems(FXCollections.observableArrayList(languages));
-        languageComboBox.setCellFactory(listView -> new LanguageListCell());
-        languageComboBox.setButtonCell(new LanguageListCell());
-
-        languageComboBox.setOnAction(event -> {
-            Language selectedLanguage = languageComboBox.getValue();
-            switchLanguage(selectedLanguage.getName());
-        });
+    @FXML
+    public void initialize() {
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
+        // Populates the language combo box
+        LanguageUtils.configureLanguageComboBox(languageComboBox, this);
 
         adjustComponentSizes();
 
@@ -140,8 +107,6 @@ public class StartPageController {
             double height = newVal.doubleValue();
             recentEventsList.setPrefHeight(height * 0.6);
         });
-
-
 
         // Add margin to the createEventButton
         VBox.setMargin(createEventButton, new Insets(10, 0, 0, 0));
@@ -186,7 +151,7 @@ public class StartPageController {
                         if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                             if (mouseEvent.getClickCount() == 1) {
                                 // Call method to switch to event overview scene
-                                mainController.showEventOverview(selectedEvent, activeLocale);
+                                mainController.showEventOverview(selectedEvent);
                             }
                         }
                     });
@@ -195,86 +160,71 @@ public class StartPageController {
         });
     }
 
-    private class LanguageListCell extends ListCell<Language> {
-        @Override
-        protected void updateItem(Language item, boolean empty) {
-            super.updateItem(item, empty);
-            if (empty || item == null) {
-                setText(null);
-                setGraphic(null);
-            } else {
-                setText(item.getName());
-                ImageView imageView = new ImageView(item.getFlag());
-                imageView.setFitHeight(10);
-                imageView.setFitWidth(20);
-                setGraphic(imageView);
-            }
-        }
+    /**
+     * sets the resource bundle
+     * @param resourceBundle The resource bundle to set.
+     */
+    @Override
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
     }
 
-
-
-    private void loadLanguage(Locale locale) {
-        resourceBundle = ResourceBundle.getBundle("message", locale);
-        activeLocale = locale;
-        updateUIElements();
-        mainController.storeLanguagePreference(locale);
+    /**
+     * sets the active locale
+     * @param locale The new locale to set as active.
+     */
+    @Override
+    public void setActiveLocale(Locale locale) {
+        this.activeLocale = locale;
     }
 
-    private void switchLanguage(String language) {
-        switch (language) {
-            case "English":
-                loadLanguage(Locale.ENGLISH);
-                break;
-            case "Deutsch":
-                loadLanguage(Locale.GERMAN);
-                break;
-            case "Nederlands":
-                loadLanguage(new Locale("nl"));
-                break;
-            default:
-                // Default to English
-                loadLanguage(Locale.ENGLISH);
-                break;
-        }
+    /**
+     * gets the main controller
+     * @return main controller
+     */
+    @Override
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    /**
+     * updates the UI elements with the selected language
+     */
+    public void updateUIElements() {
+        AnimationUtil.animateText(logoutButton, resourceBundle.getString("Logout"));
+        AnimationUtil.animateText(codeInput, resourceBundle.getString("enter_code"));
+        AnimationUtil.animateText(eventNameInput, resourceBundle.getString("enter_event_name"));
+        AnimationUtil.animateText(joinButton, resourceBundle.getString("join_meeting"));
+        AnimationUtil.animateText(createEventButton, resourceBundle.getString("create_event"));
+        AnimationUtil.animateText(recentEventsLabel, resourceBundle.getString("recent_events"));
         adjustComponentSizes();
     }
-    private void adjustComponentSizes() {
-        // Adjust the width of text fields and buttons based on the new language
-        adjustTextFieldWidth(codeInput, codeInput.getPromptText());
-        adjustTextFieldWidth(eventNameInput, eventNameInput.getPromptText());
-        adjustButtonWidth(joinButton, joinButton.getText());
-        adjustButtonWidth(createEventButton, createEventButton.getText());
-    }
-    private void adjustTextFieldWidth(TextField textField, String text) {
-        // Calculate the required width based on the text in the new language
-        double textWidth = computeTextWidth(text, textField.getFont());
-        double prefWidth = textWidth + 30; // Add some padding
-        textField.setPrefWidth(prefWidth);
-    }
 
-    private void adjustButtonWidth(Button button, String text) {
-        // Calculate the required width based on the text in the new language
-        double textWidth = computeTextWidth(text, button.getFont());
-        double prefWidth = textWidth + 30; // Add some padding
-        button.setPrefWidth(prefWidth);
+    /**
+     * Set the language combo box
+     */
+    public void setLanguageComboBox() {
+        String languageName = LanguageUtils.localeToLanguageName(activeLocale);
+        List<Language> languages = new ArrayList<>();
+        languages.add(new Language("English",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/english.png")))));
+        languages.add(new Language("Deutsch",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/german.png")))));
+        languages.add(new Language("Nederlands",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/dutch.png")))));
+        for (Language language : languages) {
+            if (language.getName().equals(languageName)) {
+                languageComboBox.setValue(language);
+                break;
+            }
+        }
+        languageComboBox.setItems(FXCollections.observableArrayList(languages));
+        languageComboBox.setCellFactory(listView -> new StartPageController.LanguageListCell());
+        languageComboBox.setButtonCell(new StartPageController.LanguageListCell());
     }
-
-    private double computeTextWidth(String text, Font font) {
-        Text textNode = new Text(text);
-        textNode.setFont(font);
-        return textNode.getBoundsInLocal().getWidth();
-    }
-
-    public void updateUIElements() {
-        codeInput.setPromptText(resourceBundle.getString("enter_code"));
-        eventNameInput.setPromptText(resourceBundle.getString("enter_event_name"));
-        joinButton.setText(resourceBundle.getString("join_meeting"));
-        createEventButton.setText(resourceBundle.getString("create_event"));
-        recentEventsLabel.setText(resourceBundle.getString("recent_events"));
-    }
-
-
 
     /**
      * clears the textfield when you go to this page
@@ -284,13 +234,10 @@ public class StartPageController {
         eventNameInput.clear();
     }
 
-
-
     private void animateTextFields() {
-        animateTextField(codeInput);
-        animateTextField(eventNameInput);
+        animateTextField(codeInput, codeInput.getText());
+        animateTextField(eventNameInput, eventNameInput.getText());
     }
-
 
     private void animateButtonsText() {
         animateButton(joinButton);
@@ -310,7 +257,7 @@ public class StartPageController {
             if (event != null) {
                 events.add(event); // Add the created event to the list
                 recentEventsList.setItems(events);
-                mainController.showEventOverview(event, activeLocale); // Switch to event overview page
+                mainController.showEventOverview(event); // Switch to event overview page
             } else {
                 showErrorAlert(resourceBundle.getString("Invalid_invite_code._Please_try_again."));
             }
@@ -348,17 +295,80 @@ public class StartPageController {
         if (createdEvent != null) {
             events.add(createdEvent); // Add the created event to the list
             recentEventsList.setItems(events);
-            mainController.showEventOverview(createdEvent, activeLocale);
+            mainController.showEventOverview(createdEvent);
         } else {
             showErrorAlert(resourceBundle.getString("Failed_to_create_event._Please_try_again."));
         }
     }
 
+    /**
+     * goes back to the login page
+     */
     public void logout() {
         try {
-            mainController.showLoginPage(activeLocale);
+            mainController.showLoginPage();
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
+    }
+
+    private class LanguageListCell extends ListCell<Language> {
+        @Override
+        protected void updateItem(Language item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                setText(item.getName());
+                ImageView imageView = new ImageView(item.getFlag());
+                imageView.setFitHeight(10);
+                imageView.setFitWidth(20);
+                setGraphic(imageView);
+            }
+        }
+    }
+
+    /**
+     * Adjusts buttons based on language
+     */
+    public void adjustComponentSizes() {
+        // Calculate the maximum preferred width for the text fields
+        double maxTextFieldWidth = Math.max(
+                computePrefWidth(codeInput, resourceBundle.getString("enter_code")),
+                computePrefWidth(eventNameInput, resourceBundle.getString("enter_event_name"))
+        );
+
+        // Calculate the maximum preferred width for the buttons
+        double maxButtonWidth = Math.max(
+                computePrefWidth(joinButton, resourceBundle.getString("join_meeting")),
+                computePrefWidth(createEventButton, resourceBundle.getString("create_event"))
+        );
+
+        // Set the calculated maximum width to the text fields
+        codeInput.setPrefWidth(maxTextFieldWidth);
+        eventNameInput.setPrefWidth(maxTextFieldWidth);
+
+        // Set the calculated maximum width to the buttons
+        joinButton.setPrefWidth(maxButtonWidth);
+        createEventButton.setPrefWidth(maxButtonWidth);
+    }
+
+    private double computePrefWidth(Control control, String text) {
+        Font font;
+        if (control instanceof TextField) {
+            font = ((TextField) control).getFont();
+        } else if (control instanceof Button) {
+            font = ((Button) control).getFont();
+        } else {
+            font = Font.getDefault();
+        }
+        return computeTextWidth(text, font) + 30;
+    }
+
+    private double computeTextWidth(String text, Font font) {
+        Text textNode = new Text(text);
+        textNode.setFont(font);
+        return textNode.getBoundsInLocal().getWidth();
     }
 }

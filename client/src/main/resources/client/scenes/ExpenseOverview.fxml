@@ -2,14 +2,18 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.geometry.Insets?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="client.scenes.ExpenseOverviewController"
             stylesheets="@/styles.css"
             prefHeight="335.0"
             prefWidth="594.0">
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
     <top>
         <HBox alignment="CENTER_LEFT">
-            <Button text="Back" onAction="#switchToEventOverviewScene"/>
+            <Button text="%back" fx:id="backButton" onAction="#switchToEventOverviewScene"/>
         </HBox>
     </top>
     <center>
