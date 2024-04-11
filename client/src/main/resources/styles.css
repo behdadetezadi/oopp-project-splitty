@@ -97,15 +97,15 @@
 }
 
 .button-delete-all {
-    -fx-text-fill: #7D1414 !important;
+    -fx-text-fill: black !important;
 }
 
 .button-delete-all:hover {
-    -fx-text-fill: #ff0000 !important;
+    -fx-text-fill: black !important;
 }
 
 .button-delete:hover {
-    -fx-text-fill: red !important;
+    -fx-text-fill: black !important;
 }
 
 .button-export {
