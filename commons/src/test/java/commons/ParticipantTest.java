@@ -412,4 +412,49 @@ class ParticipantTest {
         participant.setId(expectedId);
         assertEquals(expectedId, participant.getId());
     }
+    @Test
+    void testToString() {
+        Map<Event, Double> owedAmount = new HashMap<>();
+        Map<Event, Double> payedAmount = new HashMap<>();
+        Set<Long> eventIds = new HashSet<>();
+
+        Event event1 = new Event("Event 1");
+        Event event2 = new Event("Event 2");
+        event1.setId(1);
+        event2.setId(2);
+
+        owedAmount.put(event1, 100.0);
+        payedAmount.put(event2, 50.0);
+        eventIds.add(event1.getId());
+        eventIds.add(event2.getId());
+
+        Participant participant = new Participant("username", "John", "Doe", "john@example.com",
+                "IBAN123", "BIC456", owedAmount, payedAmount, eventIds, "EN");
+
+        String expected = "Participant Info:\n" +
+                "Username: username\n" +
+                "Name: John Doe\n" +
+                "Email: john@example.com\n" +
+                "Bank Info:\n" +
+                "IBAN: IBAN123\n" +
+                "BIC: BIC456\n" +
+                "Language Choice: EN\n" +
+                "Events Owed Amount:\n" +
+                "Owes for Event 1: 100.0\n" +
+                "Events Paid Amount:\n" +
+                "Paid for Event 2: 50.0\n" +
+                "Event IDs: [1, 2]\n";
+
+        String actual = participant.toString();
+
+        assertTrue(actual.contains("Participant Info:"));
+        assertTrue(actual.contains("Username: username"));
+        assertTrue(actual.contains("Name: John Doe"));
+        assertTrue(actual.contains("Email: john@example.com"));
+        assertTrue(actual.contains("IBAN: IBAN123"));
+        assertTrue(actual.contains("BIC: BIC456"));
+        assertTrue(actual.contains("Language Choice: EN"));
+        assertTrue(actual.contains("Owes for Event 1: 100.0") ||
+                actual.contains("Paid for Event 2: 50.0"));
+        assertTrue(actual.contains("Event IDs:"));}
 }
