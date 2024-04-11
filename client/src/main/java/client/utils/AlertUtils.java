@@ -27,7 +27,7 @@ public class AlertUtils {
         dialogPane.getStylesheets().add(
                 AlertUtils.class.getResource("/styles.css").toExternalForm()
         );
-        dialogPane.getStyleClass().add("myDialog");
+        dialogPane.getStyleClass().add("alertDialog");
         alert.showAndWait();
     }
     /**

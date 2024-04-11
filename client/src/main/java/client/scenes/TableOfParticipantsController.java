@@ -1,8 +1,6 @@
 package client.scenes;
 
-import client.utils.AlertUtils;
-import client.utils.ServerUtils;
-import client.utils.ValidationUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
@@ -19,31 +17,24 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
-public class TableOfParticipantsController {
-
+public class TableOfParticipantsController implements LanguageChangeListener {
     @FXML
     private Pagination pagination;
     @FXML
     private Button addButton;
     @FXML
     private Button backButton;
-
     @FXML
     private Button editButton;
-
     @FXML
     private Button deleteButton;
-
     @FXML
     private Label titleLabel;
-
     private final ObservableList<Participant> participants = FXCollections.observableArrayList();
-
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
@@ -70,59 +61,13 @@ public class TableOfParticipantsController {
         registerForParticipantUpdates();
     }
 
-    private void registerForParticipantUpdates() {
-        if (event != null && server != null) {
-            server.registerForMessages("/topic/participants", event.getId(), null, this::handleParticipantUpdates);
-            server.registerForMessages("/topic/participantDeletion", event.getId(), null, p -> {
-                Platform.runLater(() -> {
-                    participants.removeIf(participant -> participant.getId() == p.getId());
-                    setupPagination();
-                });
-            });
-
-
-        }
-    }
-
-    @FunctionalInterface
-    public interface Validator {
-        List<String> validate(Participant participant);
-    }
-
-    /**
-     * Sets event to make sure we are making changes to the required event
-     * @param event event
-     */
-    public void setEvent(Event event, Locale locale) {
-        this.resourceBundle = ResourceBundle.getBundle("message", locale);
-        this.activeLocale = locale;
-        this.event = event;
-        updateUIElements();
-        initialize(resourceBundle);
-
-    }
-
-
-
-    public void updateUIElements() {
-        titleLabel.setText(resourceBundle.getString("Participant_Overview"));
-        backButton.setText(resourceBundle.getString("Leave"));
-        editButton.setText(resourceBundle.getString("Modify"));
-        addButton.setText(resourceBundle.getString("plus"));
-        deleteButton.setText(resourceBundle.getString("minus"));
-    }
-
-
     /**
      * initializer method
      */
     @FXML
-    public void initialize(ResourceBundle resourceBundle) {
-
-        this.resourceBundle = resourceBundle;
-
-        loadParticipants();
-        setupPagination();
+    public void initialize() {
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
 
         addButton.getStyleClass().add("button-hover");
         deleteButton.getStyleClass().add("button-hover");
@@ -133,8 +78,83 @@ public class TableOfParticipantsController {
         Tooltip removeTooltip = new Tooltip(resourceBundle.getString("Click_to_remove_the_selected_participant"));
         Tooltip.install(addButton, addTooltip);
         Tooltip.install(deleteButton, removeTooltip);
+    }
 
-        server.registerForUpdates(event.getId(),this::handleParticipantUpdates);
+    private void registerForParticipantUpdates() {
+        if (event != null && server != null) {
+            server.registerForMessages("/topic/participants", event.getId(), null, this::handleParticipantUpdates);
+            server.registerForMessages("/topic/participantDeletion", event.getId(), null, p -> {
+                Platform.runLater(() -> {
+                    participants.removeIf(participant -> participant.getId() == p.getId());
+                    setupPagination();
+                });
+            });
+        }
+    }
+
+    @FunctionalInterface
+    public interface Validator {
+        /**
+         * Validates the provided Participant object.
+         * @param participant The Participant to be validated.
+         * @return A list of validation error messages. If the list is empty, the Participant is considered valid.
+         */
+        List<String> validate(Participant participant);
+    }
+
+    /**
+     * Sets event to make sure we are making changes to the required event
+     * @param event event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+        loadParticipants();
+        setupPagination();
+        ServerUtils.registerForUpdates(event.getId(),this::handleParticipantUpdates);
+    }
+
+    /**
+     * sets the resource bundle
+     * @param resourceBundle The resource bundle to set.
+     */
+    @Override
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
+
+    /**
+     * sets the active locale
+     * @param locale The new locale to set as active.
+     */
+    @Override
+    public void setActiveLocale(Locale locale) {
+        this.activeLocale = locale;
+    }
+
+    /**
+     * gets the main controller
+     * @return main controller
+     */
+    @Override
+    public MainController getMainController() {
+        return mainController;
+    }
+
+    /**
+     * Update the text to the selected language
+     */
+    public void updateUIElements() {
+        AnimationUtil.animateText(titleLabel, resourceBundle.getString("Participant_Overview"));
+        AnimationUtil.animateText(backButton, resourceBundle.getString("Leave"));
+        AnimationUtil.animateText(editButton, resourceBundle.getString("Modify"));
+        AnimationUtil.animateText(addButton, resourceBundle.getString("plus"));
+        AnimationUtil.animateText(deleteButton, resourceBundle.getString("minus"));
+        refreshParticipantDetailsDisplay();
+    }
+
+    private void refreshParticipantDetailsDisplay() {
+        pagination.setCurrentPageIndex(0);
+        pagination.setPageFactory(this::createPage);
     }
 
     private void handleParticipantUpdate(Participant participant) {
@@ -157,7 +177,7 @@ public class TableOfParticipantsController {
      */
     @FXML
     private void handleBackButton() {
-        mainController.showEventOverview(event, activeLocale);
+        mainController.showEventOverview(event);
     }
 
     /**
@@ -219,7 +239,7 @@ public class TableOfParticipantsController {
         VBox box = new VBox(5);
         if (pageIndex < participants.size()) {
             Participant participant = participants.get(pageIndex);
-            String content = formatParticipantDetails(participant);
+            String content = formatParticipantDetails(participant, resourceBundle);
             Label label = new Label(content);
             label.getStyleClass().add("participant-label");
             box.getChildren().add(label);
@@ -265,9 +285,15 @@ public class TableOfParticipantsController {
      * @param action The action to perform with the edited participant.
      */
     private void editParticipant(Participant participant, String title, String header, ParticipantConsumer action) {
-        ParticipantDialog dialog = new ParticipantDialog(participant, title, header, this::validateParticipantData);
+        ParticipantDialog dialog = new ParticipantDialog(participant, title,
+                header, this::validateParticipantData, resourceBundle);
         Optional<Participant> result = dialog.showAndWait();
-        result.ifPresent(action::accept);
+        result.ifPresent(p -> {
+            p.setFirstName(ValidationUtils.autoCapitalizeWord(p.getFirstName()));
+            p.setLastName(ValidationUtils.autoCapitalizeWord(p.getLastName()));
+            action.accept(p);
+        });
+
     }
 
     /**
@@ -293,6 +319,8 @@ public class TableOfParticipantsController {
      * @param participant The {@link Participant} whose details are to be updated.
      */
     private void updateParticipant(Participant participant) {
+        participant.setFirstName(ValidationUtils.autoCapitalizeWord(participant.getFirstName()));
+        participant.setLastName(ValidationUtils.autoCapitalizeWord(participant.getLastName()));
         long participantId = participant.getId();
         boolean isUpdated = server.updateParticipant(event.getId(), participantId, participant);
         server.send("app/participants",participant);
@@ -324,7 +352,7 @@ public class TableOfParticipantsController {
      * @param participant The {@link Participant} to remove.
      */
     private void deleteParticipant(Participant participant) {
-        boolean isDeleted = server.deleteParticipant(participant.getId(), event.getId());
+        boolean isDeleted = ServerUtils.deleteParticipant(participant.getId(), event.getId());
         if (isDeleted) {
             participants.remove(participant);
             setupPagination();
@@ -371,14 +399,8 @@ public class TableOfParticipantsController {
     private List<String> validateParticipantData(Participant participant) {
         List<String> errors = new ArrayList<>();
 
-        if (!ValidationUtils.isValidCapitalizedName(participant.getFirstName())) {
-            errors.add("First Name must begin with a capital letter. (e.g., Sam)");
-        }
         if (!ValidationUtils.isValidName(participant.getFirstName())) {
             errors.add("First Name must only contain letters.");
-        }
-        if (!ValidationUtils.isValidCapitalizedName(participant.getLastName())) {
-            errors.add("Last Name must begin with a capital letter. (e.g., Shelby)");
         }
         if (!ValidationUtils.isValidName(participant.getLastName())) {
             errors.add("Last Name must only contain letters.");
@@ -390,10 +412,10 @@ public class TableOfParticipantsController {
             errors.add("Email must be in a valid format (e.g., user@example.com).");
         }
         if (!ValidationUtils.isValidIBAN(participant.getIban())) {
-            errors.add("IBAN must be in a valid Dutch format (e.g., NL89 BANK 0123 4567 89).");
+            errors.add("IBAN must be in a valid format (e.g., NL89 BANK 0123 4567 89).");
         }
         if (!ValidationUtils.isValidBIC(participant.getBic())) {
-            errors.add("BIC must be in a valid format: 6 Starting Characters, Remaining Alphanumeric Characters (e.g., DEUTDEFF).");
+            errors.add("BIC must be in a valid format: 8 alphanumeric characters (e.g., ABCDEF12).");
         }
         if (!ValidationUtils.isValidLanguage(participant.getLanguageChoice())) {
             errors.add("Select a language please.");
@@ -406,23 +428,24 @@ public class TableOfParticipantsController {
      * @param participant The {@link Participant} whose details are to be formatted.
      * @return A formatted string containing the participant's details.
      */
-    private String formatParticipantDetails(Participant participant) {
+    private String formatParticipantDetails(Participant participant, ResourceBundle resourceBundle) {
         return String.format("""
-                        First Name: %s
-                        Last Name: %s
-                        Username: %s
-                        Email: %s
-                        IBAN: %s
-                        BIC: %s
-                        Language Preference: %s""",
-                participant.getFirstName(),
-                participant.getLastName(),
-                participant.getUsername(),
-                participant.getEmail(),
-                participant.getIban(),
-                participant.getBic(),
-                participant.getLanguageChoice());
+                    %s: %s
+                    %s: %s
+                    %s: %s
+                    %s: %s
+                    %s: %s
+                    %s: %s
+                    %s: %s""",
+                resourceBundle.getString("First_Name"), participant.getFirstName(),
+                resourceBundle.getString("Last_Name"), participant.getLastName(),
+                resourceBundle.getString("User_Name"), participant.getUsername(),
+                resourceBundle.getString("Email"), participant.getEmail(),
+                resourceBundle.getString("IBAN"), participant.getIban(),
+                resourceBundle.getString("BIC"), participant.getBic(),
+                resourceBundle.getString("Language"), participant.getLanguageChoice());
     }
+
 
     /**
      * A functional interface for consuming a {@link Participant} instance.
@@ -436,7 +459,8 @@ public class TableOfParticipantsController {
      * A dialog for creating or editing a participant's details.
      */
     static class ParticipantDialog extends Dialog<Participant> {
-        ParticipantDialog(Participant participant, String title, String header,Validator validator) {
+        ParticipantDialog(Participant participant, String title, String header,
+                          Validator validator, ResourceBundle resourceBundle) {
             setTitle(title);
             setHeaderText(header);
 
@@ -446,7 +470,8 @@ public class TableOfParticipantsController {
             getDialogPane().setMinHeight(350);
             getDialogPane().setMinWidth(600);
 
-            Pair<GridPane, Map<String, Control>> formPair = ParticipantForm.createParticipantForm(participant);
+            Pair<GridPane, Map<String, Control>> formPair = ParticipantForm.createParticipantForm(participant,
+                    resourceBundle);
             GridPane grid = formPair.getKey();
             Map<String, Control> formFields = formPair.getValue();
 
@@ -457,8 +482,7 @@ public class TableOfParticipantsController {
 
             Button saveButton = (Button) getDialogPane().lookupButton(saveButtonType);
             saveButton.addEventFilter(ActionEvent.ACTION, event -> {
-                Participant tempParticipant = ParticipantForm.
-                        extractParticipantFromForm(formFields, new Participant());
+                Participant tempParticipant = ParticipantForm.extractParticipantFromForm(formFields, new Participant());
                 List<String> validationErrors = validator.validate(tempParticipant);
                 if (!validationErrors.isEmpty()) {
                     event.consume();
@@ -478,52 +502,45 @@ public class TableOfParticipantsController {
     }
 
 
+
     /**
      * Utility class for handling participant form creation and data extraction.
      */
     static class ParticipantForm {
-        /**
-         * Creates a form for entering or editing a participant's details.
-         * @param participant The {@link Participant} whose details are to be used as initial form values.
-         * @return A {@link Pair} containing the form as a {@link GridPane} and a map of form fields.
-         */
-        static Pair<GridPane, Map<String, Control>> createParticipantForm(Participant participant) {
+        private static final String FIRST_NAME = "First Name";
+        private static final String LAST_NAME = "Last Name";
+        private static final String USERNAME = "Username";
+        private static final String EMAIL = "Email";
+        private static final String IBAN = "IBAN";
+        private static final String BIC = "BIC";
+        private static final String LANGUAGE = "Language";
+        static Pair<GridPane, Map<String, Control>> createParticipantForm(Participant participant,
+                                                                          ResourceBundle resourceBundle) {
             GridPane grid = new GridPane();
             grid.setAlignment(Pos.CENTER);
             grid.setHgap(10);
             grid.setVgap(10);
 
-            TextField firstNameField = createTextField(participant.getFirstName(), "First Name");
-
-            TextField lastNameField = createTextField(participant.getLastName(), "Last Name");
-
-            TextField usernameField = createTextField(participant.getUsername(), "Username");
-
-            TextField emailField = createTextField(participant.getEmail(), "Email");
-
-            TextField ibanField = createTextField(participant.getIban(), "IBAN");
-
-            TextField bicField = createTextField(participant.getBic(), "BIC");
-
+            TextField firstNameField = createTextField(participant.getFirstName(), resourceBundle.getString("First_Name"));
+            TextField lastNameField = createTextField(participant.getLastName(), resourceBundle.getString("Last_Name"));
+            TextField usernameField = createTextField(participant.getUsername(), resourceBundle.getString("User_Name"));
+            TextField emailField = createTextField(participant.getEmail(), resourceBundle.getString("Email"));
+            TextField ibanField = createTextField(participant.getIban(), resourceBundle.getString("IBAN"));
+            TextField bicField = createTextField(participant.getBic(), resourceBundle.getString("BIC"));
             ComboBox<String> languageComboBox = createComboBox(participant.getLanguageChoice(),
-                    "Language", "English", "Dutch", "German");
+                    resourceBundle.getString("Language"), "English", "Dutch", "German");
 
-
-            // Store the fields in a map for easy access later
             Map<String, Control> formFields = new LinkedHashMap<>();
-            formFields.put("First Name", firstNameField);
-            formFields.put("Last Name", lastNameField);
-            formFields.put("Username", usernameField);
-            formFields.put("Email", emailField);
-            formFields.put("IBAN", ibanField);
-            formFields.put("BIC", bicField);
-            formFields.put("Language", languageComboBox);
+            formFields.put(FIRST_NAME, firstNameField);
+            formFields.put(LAST_NAME, lastNameField);
+            formFields.put(USERNAME, usernameField);
+            formFields.put(EMAIL, emailField);
+            formFields.put(IBAN, ibanField);
+            formFields.put(BIC, bicField);
+            formFields.put(LANGUAGE, languageComboBox);
 
-            // Adding the fields to the grid
             int row = 0;
             for (String fieldName : formFields.keySet()) {
-                Label label = new Label(fieldName + ":");
-                grid.add(label, 0, row);
                 grid.add(formFields.get(fieldName), 1, row++);
             }
             return new Pair<>(grid, formFields);
@@ -565,13 +582,13 @@ public class TableOfParticipantsController {
          * @return A new {@link Participant} instance with details extracted from the form fields.
          */
         static Participant extractParticipantFromForm(Map<String, Control> formFields, Participant participant) {
-            participant.setUsername(((TextField) formFields.get("Username")).getText());
-            participant.setFirstName(((TextField) formFields.get("First Name")).getText());
-            participant.setLastName(((TextField) formFields.get("Last Name")).getText());
-            participant.setEmail(((TextField) formFields.get("Email")).getText());
-            participant.setIban(((TextField) formFields.get("IBAN")).getText());
-            participant.setBic(((TextField) formFields.get("BIC")).getText());
-            participant.setLanguageChoice(((ComboBox<String>) formFields.get("Language")).getValue());
+            participant.setUsername(((TextField) formFields.get(USERNAME)).getText());
+            participant.setFirstName(((TextField) formFields.get(FIRST_NAME)).getText());
+            participant.setLastName(((TextField) formFields.get(LAST_NAME)).getText());
+            participant.setEmail(((TextField) formFields.get(EMAIL)).getText());
+            participant.setIban(((TextField) formFields.get(IBAN)).getText());
+            participant.setBic(((TextField) formFields.get(BIC)).getText());
+            participant.setLanguageChoice(((ComboBox<String>) formFields.get(LANGUAGE)).getValue());
 
             return participant;
         }

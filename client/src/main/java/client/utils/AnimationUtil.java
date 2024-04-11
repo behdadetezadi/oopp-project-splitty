@@ -23,9 +23,9 @@ public class AnimationUtil {
      * gets the text of a TextField and calls animateText
      * for a TextField to animate the text inside it
      * @param textField a TextField in our scene
+     * @param text text
      */
-    public static void animateTextField(TextField textField) {
-        String text = textField.getPromptText();
+    public static void animateTextField(TextField textField, String text) {
         animateText(textField, text);
     }
 

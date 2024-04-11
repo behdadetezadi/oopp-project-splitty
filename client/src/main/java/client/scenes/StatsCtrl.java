@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.utils.LanguageChangeListener;
+import client.utils.LanguageUtils;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
@@ -16,7 +18,7 @@ import javafx.stage.Stage;
 import java.text.DecimalFormat;
 import java.util.*;
 
-public class StatsCtrl {
+public class StatsCtrl implements LanguageChangeListener {
 
     @FXML
     private PieChart pieChart;
@@ -51,7 +53,10 @@ public class StatsCtrl {
      * Initialises the UI components and event handlers if an event is provided.
      * This method is called automatically by JavaFX after loading the FXML file.
      */
-    public void initialize() {
+    public void initialize(Event event) {
+        this.event = event;
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
         fillPieChart(event.getId());
         addEventHandlersToSlices();
     }
@@ -100,16 +105,16 @@ public class StatsCtrl {
         return tagAndExpense;
     }
 
-    /**
-     * called by mainController
-     * @param event event
-     */
-    public void setEvent(Event event, Locale locale) {
-        this.activeLocale = locale;
-        this.resourceBundle = ResourceBundle.getBundle("message", locale);
-        this.event = event;
-        initialize();
-    }
+//    /**
+//     * called by mainController
+//     * @param event event
+//     */
+//    public void setEvent(Event event, Locale locale) {
+//        this.activeLocale = locale;
+//        this.resourceBundle = ResourceBundle.getBundle("message", locale);
+//        this.event = event;
+//        initialize();
+//    }
 
     /**
      * makes the pie chart clickable
@@ -144,6 +149,44 @@ public class StatsCtrl {
      */
     @FXML
     private void switchToExpenseOverviewScene() {
-        mainController.showExpenseOverview(event, activeLocale);
+        mainController.showExpenseOverview(event);
+    }
+
+    /**
+     * Sets the resource bundle for the current locale.
+     *
+     * @param resourceBundle The resource bundle to set.
+     */
+    @Override
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
+    }
+
+    /**
+     * Updates the active locale for the controller.
+     *
+     * @param locale The new locale to set as active.
+     */
+    @Override
+    public void setActiveLocale(Locale locale) {
+        this.activeLocale = locale;
+    }
+
+    /**
+     * Updates the UI elements to reflect changes in the language.
+     */
+    @Override
+    public void updateUIElements() {
+        // TODO backButton.setText(resourceBundle.getString("back"));
+    }
+
+    /**
+     * Retrieves the main controller associated with this listener.
+     *
+     * @return The main controller.
+     */
+    @Override
+    public MainController getMainController() {
+        return mainController;
     }
 }

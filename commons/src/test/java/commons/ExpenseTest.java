@@ -168,7 +168,7 @@ class ExpenseTest {
         assertEquals(12345, participant.getId());
     }
 
-//    @Test
+    //    @Test
 //    void testSetEventIds() {
 //        Set<Integer> eventIds = new HashSet<>();
 //        eventIds.add(1);
@@ -181,4 +181,92 @@ class ExpenseTest {
 //        assertTrue(a.getEventIds().contains(2));
 //        assertTrue(a.getEventIds().contains(3));
 //    }
+    @Test
+    void testDefaultConstructor() {
+        Expense expense = new Expense();
+        assertNull(expense.getParticipant());
+        assertNull(expense.getCategory());
+        assertEquals(0.0, expense.getAmount(), 0.001);
+        assertNull(expense.getCurrency());
+        assertNull(expense.getDate());
+        assertNull(expense.getSplittingOption());
+        assertNull(expense.getExpenseType());
+        assertNull(expense.getEventId());
+    }
+
+    @Test
+    void testEqualityWithDifferentEventId() {
+        Expense expense1 = new Expense(participant, "Lunch", 20,
+                "USD", "02-02-2024", new ArrayList<>(), "Food", 1L);
+        Expense expense2 = new Expense(participant, "Lunch", 20,
+                "USD", "02-02-2024", new ArrayList<>(), "Food", 2L);
+        assertNotEquals(expense1, expense2);
+    }
+
+    @Test
+    void testEqualityWithNullFields() {
+        Expense expense1 = new Expense();
+        Expense expense2 = new Expense();
+        assertEquals(expense1, expense2);
+    }
+
+    @Test
+    void testHashCodeConsistency() {
+        Expense expense1 = new Expense(participant, "Coffee", 5, "EUR",
+                "03-03-2024", new ArrayList<>(), "Beverage", 10L);
+        Expense expense2 = new Expense(participant, "Coffee", 5, "EUR",
+                "03-03-2024", new ArrayList<>(), "Beverage", 10L);
+        assertTrue(expense1.equals(expense2) && expense2.equals(expense1));
+        assertEquals(expense1.hashCode(), expense2.hashCode());
+    }
+
+    @Test
+    void testSetAndGetEventId() {
+        Expense expense = new Expense();
+        Long eventId = 9999L;
+        expense.setEventId(eventId);
+        assertEquals(eventId, expense.getEventId());
+    }
+
+    @Test
+    void testEqualityWithDifferentAmounts() {
+        Expense expense1 = new Expense(participant, "Lunch", 15.0, "USD",
+                "02-02-2024", new ArrayList<>(), "Food", 1L);
+        Expense expense2 = new Expense(participant, "Lunch", 20.0, "USD",
+                "02-02-2024", new ArrayList<>(), "Food", 1L);
+        assertNotEquals(expense1, expense2);
+    }
+
+    @Test
+    void testHashCodeVariance() {
+        Expense expense1 = new Expense(participant, "Lunch", 20.0, "USD",
+                "02-02-2024", new ArrayList<>(), "Food", 1L);
+        Expense expense2 = new Expense(participant2, "Dinner", 25.0, "EUR",
+                "03-03-2024", new ArrayList<>(), "Entertainment", 2L);
+        assertNotEquals(expense1.hashCode(), expense2.hashCode());
+    }
+
+    @Test
+    void testConstructionWithNullValues() {
+        assertDoesNotThrow(() -> new Expense(null, null, 0.0,
+                null, null, null, null, null));
+    }
+
+    @Test
+    void testEqualityWithSelfAndNull() {
+        Expense expense = new Expense(participant, "Coffee", 3.0, "EUR",
+                "05-05-2024", new ArrayList<>(), "Beverage", 4L);
+        assertEquals(expense, expense);
+        assertNotEquals(expense, null);
+    }
+
+    @Test
+    void testEmptySplittingOptionBehavior() {
+        Expense expense = new Expense(participant, "Tea", 2.5, "EUR",
+                "06-06-2024", Collections.emptyList(), "Beverage", 5L);
+        assertTrue(expense.getSplittingOption().isEmpty());
+    }
+
+
+
 }

@@ -30,6 +30,7 @@ import org.glassfish.jersey.client.ClientConfig;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.*;
 import java.util.ArrayList;
@@ -541,13 +542,34 @@ public class ServerUtils {
 		}
 	}
 
+	/**
+	 * send admin password to server output
+	 * @param adminPassword randomly generated password
+	 */
+	public static void sendAdminPasswordToServer(String adminPassword) {
+		try {
+			Entity<String> passwordEntity = Entity.entity(adminPassword, MediaType.TEXT_PLAIN);
+
+			Response response = client.target(SERVER)
+					.path("api/admin/setAdminPassword")
+					.request(MediaType.TEXT_PLAIN)
+					.post(passwordEntity);
+
+			if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+				System.err.println("Failed to send admin password. Status code: " + response.getStatus());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
 
 	/**
 	 * Long polling of Participants
 	 * @param eventId as a long
 	 * @return an array list of participants
 	 */
-
 	private static final ExecutorService EXEC = Executors.newSingleThreadExecutor();
 
 	public static void registerForUpdates(long eventId, Consumer<Participant> consumer) {
@@ -565,7 +587,6 @@ public class ServerUtils {
 				consumer.accept(q);
 			}
 		});
-
 	}
 
 	public void stop(){

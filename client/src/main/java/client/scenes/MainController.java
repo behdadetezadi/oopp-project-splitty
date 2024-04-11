@@ -1,7 +1,7 @@
 package client.scenes;
 
+import client.utils.LanguageUtils;
 import commons.Event;
-import commons.Expense;
 import commons.Participant;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -38,9 +38,6 @@ public class MainController {
     private TableOfParticipantsController tableOfParticipantsController;
     private Scene tableOfParticipantsScene;
 
-    private ContactDetailsCtrl contactDetailsController;
-    private Scene contactDetailsScene;
-
     private InviteController inviteController;
     private Scene inviteScene;
 
@@ -50,6 +47,7 @@ public class MainController {
     private LoginController loginController;
     private Scene loginScene;
     private static final String LANGUAGE_PREFERENCE_KEY = "language";
+    private Locale locale = getStoredLanguagePreferenceOrDefault();
 
     /**
      * initializer method for mainController
@@ -60,7 +58,6 @@ public class MainController {
      * @param participantExpenseViewControllerPair participantExpenseViewController Pair
      * @param expenseOverviewControllerPair expenseOverviewScene Pair
      * @param tableOfParticipantsControllerPair table of participants page pair
-     * @param contactDetailsControllerPair contactDetails page pair
      * @param inviteControllerPair invitePage pair
      * @param loginControllerPair adminController pair
      * @param adminControllerPair adminController pair
@@ -72,7 +69,6 @@ public class MainController {
                            Pair<ParticipantExpenseViewController, Parent> participantExpenseViewControllerPair,
                            Pair<ExpenseOverviewController,Parent>expenseOverviewControllerPair,
                            Pair<TableOfParticipantsController, Parent> tableOfParticipantsControllerPair,
-                           Pair<ContactDetailsCtrl, Parent> contactDetailsControllerPair,
                            Pair<InviteController, Parent> inviteControllerPair,
                            Pair<LoginController, Parent> loginControllerPair,
                            Pair<AdminController, Parent> adminControllerPair,
@@ -100,9 +96,6 @@ public class MainController {
         this.tableOfParticipantsScene = new Scene(tableOfParticipantsControllerPair.getValue());
         this.tableOfParticipantsController = tableOfParticipantsControllerPair.getKey();
 
-        this.contactDetailsScene = new Scene(contactDetailsControllerPair.getValue());
-        this.contactDetailsController = contactDetailsControllerPair.getKey();
-
         this.inviteScene = new Scene(inviteControllerPair.getValue());
         this.inviteController =  inviteControllerPair.getKey();
 
@@ -116,7 +109,7 @@ public class MainController {
         this.statsController = statsPair.getKey();
 
         // Show initial scene
-        showLoginPage(getStoredLanguagePreferenceOrDefault());
+        showLoginPage();
         primaryStage.show();
     }
 
@@ -148,16 +141,14 @@ public class MainController {
         prefs.put(LANGUAGE_PREFERENCE_KEY, locale.toLanguageTag());
     }
 
-
-
-
     /**
      * shows the LoginPage
-     * @param locale a locale from message resourceBundle
      */
-    public void showLoginPage(Locale locale) {
+    public void showLoginPage() {
         primaryStage.setTitle("Login");
         primaryStage.setScene(loginScene);
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), loginController);
+        loginController.setLanguageComboBox();
     }
 
     /**
@@ -166,126 +157,118 @@ public class MainController {
     public void showAdminPage() {
         primaryStage.setTitle("Admin Page");
         primaryStage.setScene(adminScene);
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), adminController);
         adminController.fetchAndPopulateEvents();
     }
     /**
      * shows the StartPage
-     * @param locale a locale from message resourceBundle
      */
-    public void showStartPage(Locale locale) {
+    public void showStartPage() {
         primaryStage.setTitle("Start Page");
         startPageController.clearTextFields();
         primaryStage.setScene(startScene);
-        startPageController.initialize(locale);
-    }
-
-
-    /**
-     *
-     * @param event the event we are working on
-     * @param participantId the id of the participant
-     * @param locale a locale from message resourceBundle
-     */
-    public void showAddExpense(Event event, long participantId, Locale locale) {
-        primaryStage.setTitle("Expenses: Add Expense");
-        expenseCtrl.clearTextFields();
-        primaryStage.setScene(expenseScene);
-        expenseCtrl.setEvent(event, participantId, locale);
-    }
-
-    /**
-     *
-     * @param event the event we are working on
-     * @param locale a locale from message resourceBundle
-     */
-    public void showTableOfParticipants(Event event, Locale locale) {
-        primaryStage.setTitle("Participants");
-        primaryStage.setScene(tableOfParticipantsScene);
-        tableOfParticipantsController.setEvent(event, locale);
-    }
-
-
-    /**
-     * @param event the event we are working on
-     * @param locale a locale from message resourceBundle
-     */
-    public void showContactDetailsPage(Event event, Locale locale){
-        primaryStage.setTitle("ContactDetails");
-        primaryStage.setScene(contactDetailsScene);
-        contactDetailsController.setEvent(event, locale);
-    }
-
-
-    //TODO it is not using initialize not sure if its ok
-
-    /**
-     *
-     * @param event event
-     * @param locale a locale from message resourceBundle
-     */
-    public void showInvitePage(Event event, Locale locale){
-        primaryStage.setTitle("InvitePage");
-        primaryStage.setScene(inviteScene);
-        inviteController.initData(event, locale);
-        //inviteController.initialize();
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), startPageController);
+        startPageController.setLanguageComboBox();
     }
 
     /**
      * Shows the event overview scene.
      * @param event The event to show overview for.
-     * @param locale a locale from message resourceBundle
      */
-    public void showEventOverview(Event event, Locale locale) {
+    public void showEventOverview(Event event) {
         primaryStage.setTitle("Event Overview");
         primaryStage.setScene(eventOverviewScene);
-        eventOverviewController.setEvent(event, locale);
+        eventOverviewController.setEvent(event);
         eventOverviewController.refreshParticipants();
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), eventOverviewController);
+        eventOverviewController.setLanguageComboBox();
+    }
+
+    /**
+     *
+     * @param event the event we are working on
+     * @param participantId the id of the participant
+     */
+    public void showAddExpense(Event event, long participantId) {
+        primaryStage.setTitle("Expenses: Add Expense");
+        expenseCtrl.clearTextFields();
+        primaryStage.setScene(expenseScene);
+        expenseCtrl.setEvent(event, participantId);
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), expenseCtrl);
+    }
+
+    /**
+     *
+     * @param event the event we are working on
+     */
+    public void showTableOfParticipants(Event event) {
+        primaryStage.setTitle("Participants");
+        primaryStage.setScene(tableOfParticipantsScene);
+        tableOfParticipantsController.setEvent(event);
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), tableOfParticipantsController);
+    }
+
+    /**
+     * shows invite page
+     * @param event event
+     */
+    public void showInvitePage(Event event){
+        primaryStage.setTitle("InvitePage");
+        primaryStage.setScene(inviteScene);
+        inviteController.setEvent(event);
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), inviteController);
     }
 
     /**
      * Shows the expense overview of the selected participant.
      * @param event The event to show overview for.
      * @param participantId id of the participant
-     * @param locale a locale from message resourceBundle
      */
-    public void showParticipantExpensesOverview(Event event, Long participantId, Locale locale) {
+    public void showParticipantExpensesOverview(Event event, Long participantId) {
         primaryStage.setTitle("Participant Expenses Overview");
         primaryStage.setScene(participantExpenseViewScene);
-        participantExpenseViewController.setEvent(event,participantId, locale);
+        participantExpenseViewController.setEvent(event,participantId);
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), participantExpenseViewController);
         participantExpenseViewController.initializeExpensesForParticipant(participantId);
     }
 
     /**
      * Shows the expense overview
      * @param event The event to show overview for.
-     * @param locale a locale from message resourceBundle
      */
-    public void showExpenseOverview(Event event, Locale locale)
-    {
+    public void showExpenseOverview(Event event) {
         primaryStage.setTitle("Expenses Overview");
         primaryStage.setScene(expenseOverviewScene);
-        expenseOverviewController.setEvent(event, locale);
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), expenseOverviewController);
+        expenseOverviewController.initializeExpensesForEvent(event);
     }
 
     /**
      * Shows the expense overview
      * @param event The event to show overview for.
-     * @param locale a locale from message resourceBundle
      */
-    public void showStatistics(Event event, Locale locale)
+    public void showStatistics(Event event)
     {
         primaryStage.setTitle("Statistics");
         primaryStage.setScene(statisticsScene);
-        statsController.setEvent(event, locale);
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), statsController);
+        statsController.initialize(event);
     }
     /**
      * get the updated participant list of the selected event.
      * @param event The event to show list for.
+     * @return updated participant list
      */
-    public List<Participant> getUpdatedParticipantList(Event event)
-    {
+    public List<Participant> getUpdatedParticipantList(Event event) {
         return tableOfParticipantsController.getUpdatedParticipant(event);
     }
-
-
 }

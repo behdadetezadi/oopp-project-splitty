@@ -284,25 +284,30 @@ public class EventService {
      * @param eventId long
      * @param expenseId long
      */
+
     public void removeExpenseFromEvent(long eventId, long expenseId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + eventId));
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+        if (event.getExpenses() == null) {
+            event.setExpenses(new ArrayList<>());
+        }
+        else
+        {
+            event.setExpenses(event.getExpenses().stream()
+                    .filter(p -> p.getId() != expenseId)
+                    .collect(Collectors.toList()));
+        }
+        eventRepository.save(event);
 
         Expense expense = expenseRepository.findById(expenseId)
-                .orElseThrow(() -> new IllegalArgumentException("Expense not found with ID: " + expenseId));
-
-        if (!event.getExpenses().contains(expense)) {
-            throw new IllegalArgumentException("Expense with ID: " + expenseId + " does not belong to Event with ID: " + eventId);
+                .orElseThrow(() -> new IllegalArgumentException("Expense not found"));
+        if (expense.getEventId() == eventId) {
+            expense.setEventId(null);
         }
-
-        boolean removed = event.removeExpense(expense);
-        if (!removed) {
-            throw new IllegalStateException("Failed to remove Expense with ID: " + expenseId + " from Event with ID: " + eventId);
-        }
-
-        eventRepository.save(event);
         expenseRepository.save(expense);
     }
+
 
     /**
      * updates an expense in the event

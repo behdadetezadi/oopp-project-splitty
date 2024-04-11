@@ -33,7 +33,7 @@
                     </items>
                 </ComboBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="%Logout" onAction="#logout"/>
+                <Button fx:id="logoutButton" text="%Logout" onAction="#logout"/>
             </HBox>
             <!-- Logo -->
             <ImageView fx:id="logo" fitHeight="200" fitWidth="400" />
