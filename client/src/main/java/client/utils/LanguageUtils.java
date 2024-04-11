@@ -7,7 +7,14 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 
+import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
+
+import static client.utils.AlertUtils.showErrorAlert;
 
 public class LanguageUtils {
     /**
@@ -36,7 +43,6 @@ public class LanguageUtils {
         };
         loadLanguage(locale, listener);
     }
-
     /**
      * Changes the language to the next one in the list, rolling over to the first after the last.
      * @param currentLocale The current locale
@@ -115,5 +121,31 @@ public class LanguageUtils {
             }
         }
         languageComboBox.setItems(FXCollections.observableArrayList(languages));
+    }
+
+    private static void generateTemplateFile(Locale locale) {
+        ResourceBundle bundle = ResourceBundle.getBundle("message", locale);
+        Set<String> keys = bundle.keySet();
+        String languageKey = "yourLanguageKey";
+        String filePath = "client/src/main/resources/message_" + languageKey + ".properties";
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+            writer.println("# Instructions: Fill in the translations for each key below and send your file to the developer via email.\n" +
+                    "After inspection your language will be added to the application\n"+
+                    "#please make sure to change the term yourLanguageKey to the respective locale code.\n"
+                    + "#in language. key fill in the languages display name according to its own locale");
+            writer.println();
+
+            for (String key : keys) {
+                writer.println(key + "=");
+            }
+        } catch (IOException e) {
+            //
+        }
+        try {
+            File file = new File(filePath);
+            Desktop.getDesktop().open(file);
+        } catch (IOException e) {
+            //
+        }
     }
 }

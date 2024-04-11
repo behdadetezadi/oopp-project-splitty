@@ -211,6 +211,7 @@ public class StartPageController implements LanguageChangeListener {
         AnimationUtil.animateText(recentEventsLabel, resourceBundle.getString("recent_events"));
         recentEventsList.getSelectionModel().clearSelection();
         adjustComponentSizes();
+
     }
 
     /**
