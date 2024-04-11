@@ -2,6 +2,8 @@ package commons;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -219,6 +221,54 @@ class EventTest {
         List<Participant> splitOption = new ArrayList<>();
         Expense a = new Expense(participant, "lunch", 15, "USD", "01-02-2024", splitOption, "food", (long)123);
         assertFalse(event.removeExpense(a));
+    }
+
+    @Test
+    void testUpdateParticipantNotFound() {
+        Participant original = new Participant("John", "Doe");
+        event.addParticipant(original);
+        Participant update = new Participant("Jane", "Doe");
+        update.setId(999);
+
+        assertFalse(event.updateParticipant(update), "Participant not found, should not update.");
+    }
+
+    @Test
+    void testUpdateParticipantSuccess() {
+        Participant original = new Participant("John", "Doe");
+        original.setId(1);
+        event.addParticipant(original);
+        Participant updatedDetails = new Participant("Johnson", "Doer");
+        updatedDetails.setId(1);
+
+        assertTrue(event.updateParticipant(updatedDetails), "Participant found should update.");
+        assertEquals("Johnson", event.getPeople().get(0).getFirstName(), "First name should be updated.");
+    }
+
+    @Test
+    void testCreationAndLastActivityDates() {
+        LocalDateTime beforeCreation = LocalDateTime.now().minusSeconds(1);
+        Event newEvent = new Event("Party");
+        LocalDateTime afterCreation = LocalDateTime.now().plusSeconds(1);
+
+        assertTrue(newEvent.getCreationDate().isAfter(beforeCreation)
+                && newEvent.getCreationDate().isBefore(afterCreation),
+                "Creation date should be set to current time");
+        assertTrue(newEvent.getLastActivity().isAfter(beforeCreation)
+                && newEvent.getLastActivity().isBefore(afterCreation),
+                "Last activity date should be set to current time");
+    }
+
+    @Test
+    void testLastActivityUpdated() {
+        LocalDateTime initialLastActivity = event.getLastActivity();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        event.setTitle("Updated Event Title");
+        assertTrue(event.getLastActivity().isAfter(initialLastActivity));
     }
 }
 

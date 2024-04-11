@@ -408,7 +408,7 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * @param participant a Participant
      * @return an array list of strings
      */
-    private List<String> validateParticipantData(Participant participant) {
+    public List<String> validateParticipantData(Participant participant) {
         List<String> errors = new ArrayList<>();
 
         if (participant.getFirstName() == null || participant.getFirstName().isEmpty() ||
@@ -443,7 +443,7 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * @param participant The {@link Participant} whose details are to be formatted.
      * @return A formatted string containing the participant's details.
      */
-    private String formatParticipantDetails(Participant participant, ResourceBundle resourceBundle) {
+    public String formatParticipantDetails(Participant participant, ResourceBundle resourceBundle) {
         String getUsername = Optional.ofNullable(participant.getUsername()).filter(s -> !s.isEmpty()).orElse("Username not provided");
         String getEmail = Optional.ofNullable(participant.getEmail()).filter(s -> !s.isEmpty()).orElse("Email not provided");
         String getIban = Optional.ofNullable(participant.getIban()).filter(s -> !s.isEmpty()).orElse("IBAN not provided");
