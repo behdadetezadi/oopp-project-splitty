@@ -23,6 +23,8 @@ public class ExpenseOverviewController implements LanguageChangeListener {
     private ListView<String> expensesListView;
     @FXML
     private Label sumOfExpensesLabel;
+    @FXML
+    private Button statisticsButton;
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
@@ -79,6 +81,7 @@ public class ExpenseOverviewController implements LanguageChangeListener {
      */
     public void updateUIElements() {
         backButton.setText(resourceBundle.getString("back"));
+        statisticsButton.setText(resourceBundle.getString("Show_Statistics"));
     }
 
     /**
@@ -111,20 +114,30 @@ public class ExpenseOverviewController implements LanguageChangeListener {
         return displayBuilder.toString();
     }
 
-public String findTagKeyByLocalizedValue(String localizedValue) {
-    Map<String, String> reverseLookup = new HashMap<>();
-    reverseLookup.put(resourceBundle.getString("tagFood"), "Food");
-    reverseLookup.put(resourceBundle.getString("tagEntranceFees"), "Entrance fees");
-    reverseLookup.put(resourceBundle.getString("tagTravel"), "Travel");
-    reverseLookup.put(resourceBundle.getString("tagOther"), "Other");
+    /**
+     * finds key by the localised value
+     * @param localizedValue the localised value
+     * @return a string
+     */
+    public String findTagKeyByLocalizedValue(String localizedValue) {
+        Map<String, String> reverseLookup = new HashMap<>();
+        reverseLookup.put(resourceBundle.getString("tagFood"), "Food");
+        reverseLookup.put(resourceBundle.getString("tagEntranceFees"), "Entrance fees");
+        reverseLookup.put(resourceBundle.getString("tagTravel"), "Travel");
+        reverseLookup.put(resourceBundle.getString("tagOther"), "Other");
 
-    String englishKey = reverseLookup.get(localizedValue);
-    if (englishKey != null) {
-        return englishKey;
+        String englishKey = reverseLookup.get(localizedValue);
+        if (englishKey != null) {
+            return englishKey;
+        }
+        throw new RuntimeException("Something wrong with tag selection: " + localizedValue);
     }
-    throw new RuntimeException("Something wrong with tag selection: " + localizedValue);
-}
 
+    /**
+     * makes sure the language switch works with the tags
+     * @param expenseType the tag
+     * @return the string in the right language
+     */
     public String tagLanguageSwitch(String expenseType) {
         String key = findTagKeyByLocalizedValue(expenseType); // This method finds the English key for the localized tag
         switch (key) {
@@ -141,17 +154,26 @@ public String findTagKeyByLocalizedValue(String localizedValue) {
         }
     }
 
-
+    /**
+     * method to switch to the event overview page
+     */
     @FXML
     private void switchToEventOverviewScene() {
         mainController.showEventOverview(event);
     }
 
+    /**
+     * method to switch to the stats page
+     */
     @FXML
     private void switchToStatistics() {
         mainController.showStatistics(event);
     }
 
+    /**
+     * initialises the expenses for an event
+     * @param event the event
+     */
     public void initializeExpensesForEvent(Event event) {
         this.event = event;
         try {

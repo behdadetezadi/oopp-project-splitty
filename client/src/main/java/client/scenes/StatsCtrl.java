@@ -10,6 +10,7 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
@@ -33,6 +34,8 @@ public class StatsCtrl implements LanguageChangeListener {
     private Double totalCost;
     private Stage primaryStage;
     private ServerUtils server;
+    @FXML
+    private Button backButton;
 
     /**
      * constructor
@@ -75,7 +78,7 @@ public class StatsCtrl implements LanguageChangeListener {
             pieChart.getData().add(slice);
         });
         totalCost = (tagAndExpense.values().stream().mapToDouble(Double::doubleValue).sum());
-        cost.setText("Total cost: $"+numberFormat.format(totalCost));
+        cost.setText(resourceBundle.getString("totalCost")+numberFormat.format(totalCost));
 
         pieChart.getData().forEach(data ->
                 data.nameProperty().bind(
@@ -105,16 +108,6 @@ public class StatsCtrl implements LanguageChangeListener {
         return tagAndExpense;
     }
 
-//    /**
-//     * called by mainController
-//     * @param event event
-//     */
-//    public void setEvent(Event event, Locale locale) {
-//        this.activeLocale = locale;
-//        this.resourceBundle = ResourceBundle.getBundle("message", locale);
-//        this.event = event;
-//        initialize();
-//    }
 
     /**
      * makes the pie chart clickable
@@ -177,7 +170,8 @@ public class StatsCtrl implements LanguageChangeListener {
      */
     @Override
     public void updateUIElements() {
-        // TODO backButton.setText(resourceBundle.getString("back"));
+        backButton.setText(resourceBundle.getString("back"));
+        pieChart.setTitle(resourceBundle.getString("Pie_Chart"));
     }
 
     /**
