@@ -444,6 +444,11 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * @return A formatted string containing the participant's details.
      */
     private String formatParticipantDetails(Participant participant, ResourceBundle resourceBundle) {
+        String getUsername = Optional.ofNullable(participant.getUsername()).filter(s -> !s.isEmpty()).orElse("Username not provided");
+        String getEmail = Optional.ofNullable(participant.getEmail()).filter(s -> !s.isEmpty()).orElse("Email not provided");
+        String getIban = Optional.ofNullable(participant.getIban()).filter(s -> !s.isEmpty()).orElse("IBAN not provided");
+        String getBic = Optional.ofNullable(participant.getBic()).filter(s -> !s.isEmpty()).orElse("BIC not provided");
+        String getLanguageChoice = Optional.ofNullable(participant.getLanguageChoice()).filter(s -> !s.isEmpty()).orElse("Language preference not provided");
         return String.format("""
                     %s: %s
                     %s: %s
@@ -454,11 +459,11 @@ public class TableOfParticipantsController implements LanguageChangeListener {
                     %s: %s""",
                 resourceBundle.getString("First_Name"), participant.getFirstName(),
                 resourceBundle.getString("Last_Name"), participant.getLastName(),
-                resourceBundle.getString("User_Name"), participant.getUsername(),
-                resourceBundle.getString("Email"), participant.getEmail(),
-                resourceBundle.getString("IBAN"), participant.getIban(),
-                resourceBundle.getString("BIC"), participant.getBic(),
-                resourceBundle.getString("Language"), participant.getLanguageChoice());
+                resourceBundle.getString("User_Name"), getUsername,
+                resourceBundle.getString("Email"), getEmail,
+                resourceBundle.getString("IBAN"), getIban,
+                resourceBundle.getString("BIC"), getBic,
+                resourceBundle.getString("Language"), getLanguageChoice);
     }
 
 
