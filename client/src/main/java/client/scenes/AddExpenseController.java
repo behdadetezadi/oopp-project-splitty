@@ -67,42 +67,12 @@ public class AddExpenseController implements LanguageChangeListener{
 
     /**
      * initialize method
-     * // TODO language change
      */
     @FXML
     public void initialize(Event event) {
         this.event = event;
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
-
-        cancelButton.setOnAction(this::handleCancelAction);
-        addExpenseButton.setOnAction(this::handleAddExpenseAction);
-        amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
-        addExpenseButton.getStyleClass().add("button-hover");
-        cancelButton.getStyleClass().add("button-hover");
-
-//        for (String tag : tags) {
-//            if (!comboBox.getItems().contains(tag)) {
-//                comboBox.getItems().add(tag);
-//            }
-//        }
-        comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (resourceBundle.getString("tagOther").equals(newValue)) {
-                TextInputDialog dialog = new TextInputDialog();
-                dialog.setTitle("New Tag");
-                dialog.setHeaderText("Enter a new tag:");
-                dialog.setContentText("Tag:");
-                String cssPath = this.getClass().getResource("/styles.css").toExternalForm();
-                dialog.getDialogPane().getScene().getStylesheets().add(cssPath);
-                Optional<String> result = dialog.showAndWait();
-                result.ifPresent(tag -> {
-                    if (!tag.isEmpty() && !comboBox.getItems().contains(tag)) {
-                        comboBox.getItems().add(tag);
-                        comboBox.getSelectionModel().select(tag);
-                    }
-                });
-            }
-        });
     }
 
     /**
@@ -149,11 +119,20 @@ public class AddExpenseController implements LanguageChangeListener{
      */
     public void updateUIElements() {
         AnimationUtil.animateText(expenseFor, resourceBundle.getString("Add_Expense_for"));
-        AnimationUtil.animateText(participantLabel, resourceBundle.getString("participant"));
+        AnimationUtil.animateText(participantLabel,ServerUtils.getParticipant(selectedParticipantId).getFirstName()
+                 + " " + ServerUtils.getParticipant(selectedParticipantId).getLastName());
         AnimationUtil.animateText(expenseDescription, resourceBundle.getString("Expense"));
         AnimationUtil.animateText(amountPaid, resourceBundle.getString("Amount_paid"));
         AnimationUtil.animateText(cancelButton, resourceBundle.getString("Cancel"));
         AnimationUtil.animateText(addExpenseButton, resourceBundle.getString("Add_expense"));
+
+        addExpenseButton.setText(resourceBundle.getString("Add_expense"));
+        cancelButton.setText(resourceBundle.getString("Cancel"));
+        cancelButton.setOnAction(this::handleCancelAction);
+        addExpenseButton.setOnAction(this::handleAddExpenseAction);
+        amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
+        addExpenseButton.getStyleClass().add("button-hover");
+        cancelButton.getStyleClass().add("button-hover");
 
         // Update ComboBox with localized tags
         comboBox.getItems().clear();
@@ -163,6 +142,24 @@ public class AddExpenseController implements LanguageChangeListener{
                 resourceBundle.getString("tagTravel"),
                 resourceBundle.getString("tagOther")
         );
+
+        comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && newValue.equals(resourceBundle.getString("tagOther"))) {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle(resourceBundle.getString("New_Tag"));
+                dialog.setHeaderText(resourceBundle.getString("Enter_new_tag"));
+                dialog.setContentText(resourceBundle.getString("Tag") + ":");
+                String cssPath = this.getClass().getResource("/styles.css").toExternalForm();
+                dialog.getDialogPane().getScene().getStylesheets().add(cssPath);
+                Optional<String> result = dialog.showAndWait();
+                result.ifPresent(tag -> {
+                    if (!tag.isEmpty() && !comboBox.getItems().contains(tag)) {
+                        comboBox.getItems().add(tag);
+                        comboBox.getSelectionModel().select(tag);
+                    }
+                });
+            }
+        });
     }
 
     /**
