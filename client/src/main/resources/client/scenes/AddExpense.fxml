@@ -4,34 +4,30 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="335.0" prefWidth="594.0" stylesheets="@/styles.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddExpenseController">
+<?import javafx.geometry.Insets?>
+<BorderPane prefHeight="400" prefWidth="600" stylesheets="@/styles.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddExpenseController">
     <padding>
-        <Insets bottom="20" left="20" right="20" top="20" />
+        <Insets top="20" right="20" bottom="20" left="20" />
     </padding>
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="10" BorderPane.alignment="CENTER">
-            <Button onAction="#switchToEventOverviewScene" text="Back" />
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Button text="Back" onAction="#switchToEventOverviewScene" />
         </HBox>
     </top>
     <center>
-        <AnchorPane>
-            <VBox alignment="CENTER" layoutX="29.0" layoutY="-41.0" prefHeight="453.0" prefWidth="543.0" spacing="10.0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
-                <HBox alignment="CENTER" spacing="10">
-                    <Label fx:id="expenseFor" prefHeight="38.0" prefWidth="151.0" text="%Add_Expense_for" />
-                </HBox>
-                <HBox alignment="CENTER" spacing="10">
-
-                <Label fx:id="participantLabel" prefHeight="16.0" prefWidth="160.0" text="participant" />
-                </HBox>
+        <VBox alignment="CENTER" spacing="10">
+            <Label fx:id="expenseFor" text="%Add_Expense_for" />
+            <Label fx:id="participantLabel" text="%participant" />
             <TextField fx:id="expenseDescription" promptText="%Category" />
-                <TextField fx:id="amountPaid" promptText="%Amount_paid" />
-                <ComboBox fx:id="comboBox" minWidth="75.0" prefHeight="30.0" promptText="%Tag" />
-                <HBox alignment="CENTER" spacing="10.0">
-                    <Button fx:id="cancelButton" onAction="#handleCancelAction" text="%Cancel" />
-                    <Button fx:id="addExpenseButton" onAction="#handleAddExpenseAction" text="%Add_expense" />
-                    <Button fx:id="undoButton" disable="true" onAction="#handleUndoAction" text="%undo" />
-                </HBox>
-            </VBox>
-        </AnchorPane>
+            <TextField fx:id="amountPaid" promptText="%Amount_paid" />
+            <ComboBox fx:id="comboBox" minWidth="75.0" promptText="%Tag" />
+        </VBox>
     </center>
+    <bottom>
+        <HBox alignment="CENTER" spacing="20">
+            <Button fx:id="cancelButton" text="%Cancel" />
+            <Button fx:id="addExpenseButton" text="%Add_expense" />
+            <Button fx:id="undoButton" text="%undo" onAction="#handleUndoAction" disable="true"/>
+        </HBox>
+    </bottom>
 </BorderPane>
