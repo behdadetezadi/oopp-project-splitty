@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 
+
 public class AddExpenseController implements LanguageChangeListener{
     private ServerUtils server;
     private MainController mainController;
@@ -101,7 +102,10 @@ public class AddExpenseController implements LanguageChangeListener{
                 });
             }
         });
+        undoButton.setMnemonicParsing(true);
+        undoButton.setOnAction(this::handleUndoAction);
     }
+
 
     /**
      * called by mainController
