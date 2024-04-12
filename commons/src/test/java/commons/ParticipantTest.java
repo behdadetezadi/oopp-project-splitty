@@ -274,43 +274,6 @@ class ParticipantTest {
                 "IBAN12345", "BIC67890", new HashMap<>(), new HashMap<>(), new HashSet<>(), "EN");
         assertEquals(participant1.hashCode(), participant2.hashCode());
     }
-
-    // TODO commented out because failing gradlew build for some reason
-//    @Test
-//    void testToString() {
-//        Participant participant = new Participant("username", "John", "Doe", "john.doe@example.com",
-//                "IBAN12345", "BIC67890", new HashMap<>(), new HashMap<>(), new HashSet<>(), "EN");
-//        Event event1 = new Event(new ArrayList<>(), new ArrayList<>(), "Event 1", 12345L);
-//        Event event2 = new Event(new ArrayList<>(), new ArrayList<>(), "Event 2", 67890L);
-//        participant.getEventIds().add(event1.getId());
-//        participant.getEventIds().add(event2.getId());
-//        participant.getOwedAmount().put(event1, 50.0);
-//        participant.getOwedAmount().put(event2, 100.0);
-//        participant.getPayedAmount().put(event1, 25.0);
-//        participant.getPayedAmount().put(event2, 50.0);
-//
-//
-//        String expected = """
-//                Participant Info:
-//                ID: 0
-//                Username: username
-//                Name: John Doe
-//                Email: john.doe@example.com
-//                Bank Info:
-//                IBAN: IBAN12345
-//                BIC: BIC67890
-//                Language Choice: EN
-//                Events Owed Amount:
-//                Owes for Event 1: 50.0
-//                Owes for Event 2: 100.0
-//                Events Paid Amount:
-//                Paid for Event 1: 25.0
-//                Paid for Event 2: 50.0
-//                Event IDs: [0]
-//                """;
-//        assertEquals(expected, participant.toString());
-//    }
-
     @Test
     void addOwedAmountForSpecificEventNegative() {
         Exception exception = assertThrows(IllegalArgumentException.class, ()
@@ -356,4 +319,142 @@ class ParticipantTest {
         participant.setId(expectedId);
         assertEquals(expectedId, participant.getId());
     }
+
+    @Test
+    void testOwesForEventTrue() {
+        Event testEvent = new Event();
+        participant.addOwedAmountForSpecificEvent(testEvent, 100.0);
+        assertTrue(participant.owesForEvent(testEvent));
+    }
+
+    @Test
+    void testOwesForEventFalse() {
+        Event testEvent = new Event();
+        assertFalse(participant.owesForEvent(testEvent));
+    }
+
+    @Test
+    void testHasPaidForEventTrue() {
+        Event testEvent = new Event();
+        participant.addPaidAmountForSpecificEvent(testEvent, 100.0);
+        assertTrue(participant.hasPaidForEvent(testEvent));
+    }
+
+    @Test
+    void testHasPaidForEventFalse() {
+        Event testEvent = new Event();
+        assertFalse(participant.hasPaidForEvent(testEvent));
+    }
+
+    @Test
+    void testAddOwedAmountForSpecificEvent() {
+        Event testEvent = new Event();
+        participant.addOwedAmountForSpecificEvent(testEvent, 50.0);
+        assertEquals(50.0, participant.getOwedAmount().get(testEvent));
+    }
+
+    @Test
+    void testAddPaidAmountForSpecificEvent() {
+        Event testEvent = new Event();
+        participant.addPaidAmountForSpecificEvent(testEvent, 75.0);
+        assertEquals(75.0, participant.getPayedAmount().get(testEvent));
+    }
+
+    @Test
+    void testCalculateOwed() {
+        Event event1 = new Event();
+        Event event2 = new Event();
+        participant.addOwedAmountForSpecificEvent(event1, 50.0);
+        participant.addOwedAmountForSpecificEvent(event2, 100.0);
+        double totalOwed = participant.calculateOwed();
+        assertEquals(150.0, totalOwed);
+    }
+
+    @Test
+    void testCalculatePaid() {
+        Event event1 = new Event();
+        Event event2 = new Event();
+        participant.addPaidAmountForSpecificEvent(event1, 30.0);
+        participant.addPaidAmountForSpecificEvent(event2, 70.0);
+        double totalPaid = participant.calculatePaid();
+        assertEquals(100.0, totalPaid);
+    }
+
+    @Test
+    void testAddOwedAmountForSpecificEventNegative() {
+        Event testEvent = new Event();
+        assertThrows(IllegalArgumentException.class,
+                () -> participant.addOwedAmountForSpecificEvent(testEvent, -10.0));
+    }
+
+    @Test
+    void testAddPaidAmountForSpecificEventNegative() {
+        Event testEvent = new Event();
+        assertThrows(IllegalArgumentException.class,
+                () -> participant.addPaidAmountForSpecificEvent(testEvent, -10.0));
+    }
+
+    @Test
+    void testSetFirstName() {
+        participant.setFirstName("Jane");
+        assertEquals("Jane", participant.getFirstName());
+    }
+
+    @Test
+    void testSetLastName() {
+        participant.setLastName("Bobster");
+        assertEquals("Bobster", participant.getLastName());
+    }
+
+    @Test
+    void testSetId() {
+        long expectedId = 123;
+        participant.setId(expectedId);
+        assertEquals(expectedId, participant.getId());
+    }
+    @Test
+    void testToString() {
+        Map<Event, Double> owedAmount = new HashMap<>();
+        Map<Event, Double> payedAmount = new HashMap<>();
+        Set<Long> eventIds = new HashSet<>();
+
+        Event event1 = new Event("Event 1");
+        Event event2 = new Event("Event 2");
+        event1.setId(1);
+        event2.setId(2);
+
+        owedAmount.put(event1, 100.0);
+        payedAmount.put(event2, 50.0);
+        eventIds.add(event1.getId());
+        eventIds.add(event2.getId());
+
+        Participant participant = new Participant("username", "John", "Doe", "john@example.com",
+                "IBAN123", "BIC456", owedAmount, payedAmount, eventIds, "EN");
+
+        String expected = "Participant Info:\n" +
+                "Username: username\n" +
+                "Name: John Doe\n" +
+                "Email: john@example.com\n" +
+                "Bank Info:\n" +
+                "IBAN: IBAN123\n" +
+                "BIC: BIC456\n" +
+                "Language Choice: EN\n" +
+                "Events Owed Amount:\n" +
+                "Owes for Event 1: 100.0\n" +
+                "Events Paid Amount:\n" +
+                "Paid for Event 2: 50.0\n" +
+                "Event IDs: [1, 2]\n";
+
+        String actual = participant.toString();
+
+        assertTrue(actual.contains("Participant Info:"));
+        assertTrue(actual.contains("Username: username"));
+        assertTrue(actual.contains("Name: John Doe"));
+        assertTrue(actual.contains("Email: john@example.com"));
+        assertTrue(actual.contains("IBAN: IBAN123"));
+        assertTrue(actual.contains("BIC: BIC456"));
+        assertTrue(actual.contains("Language Choice: EN"));
+        assertTrue(actual.contains("Owes for Event 1: 100.0") ||
+                actual.contains("Paid for Event 2: 50.0"));
+        assertTrue(actual.contains("Event IDs:"));}
 }

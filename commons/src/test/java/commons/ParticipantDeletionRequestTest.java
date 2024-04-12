@@ -1,43 +1,61 @@
 package commons;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ParticipantDeletionRequestTest {
 
-    @Test
-    public void testConstructorWithParameters() {
-        long eventId = 1;
-        long participantId = 2;
-        ParticipantDeletionRequest request = new ParticipantDeletionRequest(eventId, participantId);
 
-        assertEquals(eventId, request.getEventId());
-        assertEquals(participantId, request.getParticipantId());
+    private ParticipantDeletionRequest request;
+
+    @BeforeEach
+    void setUp() {
+        request = new ParticipantDeletionRequest();
     }
 
     @Test
-    public void testDefaultConstructor() {
-        ParticipantDeletionRequest request = new ParticipantDeletionRequest();
-
+    void testDefaultConstructor() {
+        assertNotNull(request);
         assertEquals(0, request.getEventId());
-        assertEquals( 0, request.getParticipantId());
+        assertEquals(0, request.getParticipantId());
     }
 
     @Test
-    public void testSetEventId() {
-        long eventId = 3;
-        ParticipantDeletionRequest request = new ParticipantDeletionRequest();
-        request.setEventId(eventId);
-
-        assertEquals(eventId, request.getEventId());
+    void testParametrizedConstructor() {
+        ParticipantDeletionRequest paramRequest = new ParticipantDeletionRequest(1L, 2L);
+        assertNotNull(paramRequest);
+        assertEquals(1L, paramRequest.getEventId());
+        assertEquals(2L, paramRequest.getParticipantId());
     }
 
     @Test
-    public void testSetParticipantId() {
-        long participantId = 4;
-        ParticipantDeletionRequest request = new ParticipantDeletionRequest();
-        request.setParticipantId(participantId);
-
-        assertEquals(participantId, request.getParticipantId());
+    void testSetEventId() {
+        long expectedEventId = 10L;
+        request.setEventId(expectedEventId);
+        assertEquals(expectedEventId, request.getEventId());
     }
+
+    @Test
+    void testSetParticipantId() {
+        long expectedParticipantId = 20L;
+        request.setParticipantId(expectedParticipantId);
+        assertEquals(expectedParticipantId, request.getParticipantId());
+    }
+
+    @Test
+    void testGetEventId() {
+        long expectedEventId = 30L;
+        request.setEventId(expectedEventId);
+        assertEquals(expectedEventId, request.getEventId());
+    }
+
+    @Test
+    void testGetParticipantId() {
+        long expectedParticipantId = 40L;
+        request.setParticipantId(expectedParticipantId);
+        assertEquals(expectedParticipantId, request.getParticipantId());
+    }
+
 }
