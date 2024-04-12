@@ -36,6 +36,10 @@ public class LanguageUtils {
      * @param listener The listener that will have its language switched.
      */
     public static void switchLanguage(String language, LanguageChangeListener listener) {
+        if(language.equals("Download Template")){
+            generateTemplateFile(Locale.ENGLISH);
+            return;
+        }
         Locale locale = switch (language) {
             case "Deutsch" -> Locale.GERMAN;
             case "Nederlands" -> new Locale("nl");
@@ -139,13 +143,13 @@ public class LanguageUtils {
                 writer.println(key + "=");
             }
         } catch (IOException e) {
-            //
+             showErrorAlert("File Error", "IO Error", "Error making and writing the file");
         }
         try {
             File file = new File(filePath);
             Desktop.getDesktop().open(file);
         } catch (IOException e) {
-            //
+            showErrorAlert("File Error", "IO Error", "Error reading the file");
         }
     }
 }
