@@ -40,7 +40,7 @@
 
             <HBox alignment="CENTER" spacing="10">
                 <TextField fx:id="codeInput" promptText="%enter_code" />
-                <Button fx:id="joinButton" onAction="#joinMeeting" text="%join_meeting" />
+                <Button fx:id="joinButton" onAction="#joinEvent" text="%join_event" />
             </HBox>
             <HBox alignment="CENTER" spacing="10">
                 <TextField fx:id="eventNameInput" promptText="%enter_event_name" />
