@@ -10,14 +10,23 @@
     </padding>
     <top>
         <HBox alignment="CENTER_LEFT">
-            <Button fx:id="backButton" onAction="#switchToEventOverviewScene" text="%back" />
-            <Button fx:id="statisticsButton" mnemonicParsing="false" onAction="#switchToStatistics" text="%Show_Statistics" />
+            <Button fx:id="backButton" onAction="#switchToEventOverviewScene" text="%back">
+            <HBox.margin>
+               <Insets bottom="10.0" />
+            </HBox.margin></Button>
+            <Button fx:id="statisticsButton" mnemonicParsing="false" onAction="#switchToStatistics" text="%Show_Statistics">
+            <HBox.margin>
+               <Insets bottom="10.0" />
+            </HBox.margin></Button>
         </HBox>
     </top>
     <center>
         <ListView fx:id="expensesListView" prefHeight="200" prefWidth="300" VBox.vgrow="ALWAYS" />
     </center>
     <bottom>
-        <Label fx:id="sumOfExpensesLabel" style="-fx-font-size: 14px;" />
+        <Label fx:id="sumOfExpensesLabel" style="-fx-font-size: 14px;">
+         <BorderPane.margin>
+            <Insets top="10.0" />
+         </BorderPane.margin></Label>
     </bottom>
 </BorderPane>
