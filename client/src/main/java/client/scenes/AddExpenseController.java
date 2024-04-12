@@ -134,14 +134,13 @@ public class AddExpenseController implements LanguageChangeListener{
         addExpenseButton.getStyleClass().add("button-hover");
         cancelButton.getStyleClass().add("button-hover");
 
-        // Update ComboBox with localized tags
         comboBox.getItems().clear();
-        tagToEnglishMap.clear();
-        for (String tag : tags) {
-            String localizedTag = resourceBundle.getString("tag" + tag);
-            comboBox.getItems().add(localizedTag);
-            tagToEnglishMap.put(localizedTag, tag);
-        }
+        comboBox.getItems().addAll(
+                resourceBundle.getString("tagFood"),
+                resourceBundle.getString("tagEntranceFees"),
+                resourceBundle.getString("tagTravel"),
+                resourceBundle.getString("tagOther")
+        );
 
         comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue.equals(resourceBundle.getString("tagOther"))) {
@@ -180,12 +179,10 @@ public class AddExpenseController implements LanguageChangeListener{
     private void handleAddExpenseAction(ActionEvent actionEvent) {
         String category = this.expenseDescription.getText();
         String amount = this.amountPaid.getText();
-        String selectedLocalizedTag = comboBox.getValue();
+        String selectedTag = comboBox.getValue();
         double amountValue;
-        String selectedEnglishTag = tagToEnglishMap.getOrDefault(selectedLocalizedTag, "Other");
 
-
-        if (selectedLocalizedTag == null || selectedLocalizedTag.isEmpty()) {
+        if (selectedTag == null || selectedTag.isEmpty()) {
             AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_tag"), resourceBundle.getString("Error"),
                     resourceBundle.getString("Please_select_a_tag."));
             return;
@@ -207,7 +204,7 @@ public class AddExpenseController implements LanguageChangeListener{
             amountValue = Double.parseDouble(normalizedAmount);
             Expense newExpense = new Expense(ServerUtils.findParticipantById(selectedParticipantId), category,
                     amountValue, event.getId());
-            newExpense.setExpenseType(selectedEnglishTag);
+            newExpense.setExpenseType(selectedTag);
             addedExpenseCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> {
                 Platform.runLater(() -> {
                     if (expense != null) {

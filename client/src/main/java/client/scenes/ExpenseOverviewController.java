@@ -136,10 +136,8 @@ public class ExpenseOverviewController implements LanguageChangeListener {
                 return resourceBundle.getString("tagEntranceFees");
             case "Travel":
                 return resourceBundle.getString("tagTravel");
-            case "Other":
-                return resourceBundle.getString("tagOther");
             default:
-                throw new RuntimeException("There's something wrong with tag selection: " + expenseType);
+                return expenseType;
         }
     }
 

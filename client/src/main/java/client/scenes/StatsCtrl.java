@@ -98,7 +98,7 @@ public class StatsCtrl implements LanguageChangeListener {
     private HashMap<String, Double> tagWithExpense(Set<Expense> expenses) {
         HashMap<String, Double> tagAndExpense = new HashMap<>();
         for (Expense expense : expenses) {
-            String tag = resourceBundle.getString("tag"+expense.getExpenseType());
+            String tag = expense.getExpenseType();
             if (tag != null) {
                 tagAndExpense.put(tag, tagAndExpense.getOrDefault(tag, 0.0) + expense.getAmount());
             } else {
