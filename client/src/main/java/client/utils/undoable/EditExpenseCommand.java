@@ -27,16 +27,16 @@ public class EditExpenseCommand implements UndoableCommand {
         this.resourceBundle = resourceBundle;
     }
 
-@Override
-public void execute() {
-    try {
-        ServerUtils.updateExpense(originalExpense.getId(),editedExpense,eventId);
-        onCompleteCallback.accept(true);
-    } catch (Exception e) {
-        e.printStackTrace();
-        onCompleteCallback.accept(false);
+    @Override
+    public void execute() {
+        try {
+            ServerUtils.updateExpense(originalExpense.getId(),editedExpense,eventId);
+            onCompleteCallback.accept(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            onCompleteCallback.accept(false);
+        }
     }
-}
 
 
     @Override
@@ -44,14 +44,13 @@ public void execute() {
         try {
             ServerUtils.updateExpense(originalExpense.getId(),originalExpense,eventId);
             Platform.runLater(() -> {
-                String successMessageKey ="undoSuccessTitle";
-                String successMessage = resourceBundle.getString(successMessageKey);
-                AlertUtils.showAlert(Alert.AlertType.INFORMATION, successMessage, null, successMessage);
-            });
+                AlertUtils.showSuccessAlert(resourceBundle.getString("undoSuccessTitle"),
+                        null, resourceBundle.getString("undoSuccessTitle"));});
         } catch (Exception e) {
             // Handle exception
             e.printStackTrace();
-            Platform.runLater(() -> AlertUtils.showErrorAlert(resourceBundle.getString("undoFailedTitle"), null, resourceBundle.getString("undoExpenseFailure")));
+            Platform.runLater(() -> AlertUtils.showErrorAlert(resourceBundle.getString("undoFailedTitle"),
+                    null, resourceBundle.getString("undoExpenseFailure")));
         }
     }
 }

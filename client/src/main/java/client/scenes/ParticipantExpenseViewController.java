@@ -284,7 +284,7 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
         initializeExpensesForParticipant(selectedParticipantId);
 
         if (undoneCommand == null) {
-          undoButton.setDisable(true);
+            undoButton.setDisable(true);
         }
     }
 
