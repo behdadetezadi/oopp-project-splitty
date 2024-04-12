@@ -126,37 +126,46 @@ public class StartPageController implements LanguageChangeListener {
                 if (empty || selectedEvent == null) {
                     setText(null);
                     setGraphic(null);
-                } else {
-                    // Create the cell content as before
-                    Label eventNameLabel = new Label(selectedEvent.getTitle());
-                    // Create button and handle actions
-                    Button removeButton = new Button();
-                    removeButton.setStyle("-fx-background-color: transparent;");
-                    ImageView removeImage = new ImageView("images/closeIcon.png");
-                    removeImage.setFitWidth(16);
-                    removeImage.setFitHeight(16);
-                    removeButton.setGraphic(removeImage);
-                    removeButton.setOnAction(removeEvent -> {
-                        events.remove(selectedEvent); // Remove event from the list
-                    });
-                    HBox buttonBox = new HBox(removeButton);
-                    buttonBox.setAlignment(Pos.CENTER_RIGHT);
-                    VBox cellBox = new VBox(buttonBox, eventNameLabel);
-                    cellBox.setSpacing(10);
-                    cellBox.setAlignment(Pos.CENTER_LEFT);
-                    setGraphic(cellBox);
-                    setText(null);
-
-                    // Add event listener to the cell
-                    setOnMouseClicked(mouseEvent -> {
-                        if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                            if (mouseEvent.getClickCount() == 1) {
-                                // Call method to switch to event overview scene
-                                mainController.showEventOverview(selectedEvent);
-                            }
-                        }
-                    });
+                    return;
                 }
+                // Create the event name label
+                Label eventNameLabel = new Label(selectedEvent.getTitle());
+                eventNameLabel.setStyle("-fx-alignment: center-left;");
+
+                // Create the remove button with an icon
+                Button removeButton = new Button();
+                removeButton.setStyle("-fx-background-color: transparent;");
+                ImageView removeImage = new ImageView("images/closeIcon.png");
+                removeImage.setFitWidth(16);
+                removeImage.setFitHeight(16);
+                removeButton.setGraphic(removeImage);
+
+                // Remove the event from the list when remove button is pressed
+                removeButton.setOnAction(removeEvent -> {
+                    events.remove(selectedEvent);
+                });
+
+                // HBox with label and the button
+                HBox cellBox = new HBox(eventNameLabel, removeButton);
+                cellBox.setSpacing(10);
+                cellBox.setAlignment(Pos.CENTER_LEFT);
+
+                // Put the button to the right
+                HBox.setHgrow(eventNameLabel, Priority.ALWAYS);
+                eventNameLabel.setMaxWidth(Double.MAX_VALUE);
+
+                setGraphic(cellBox);
+                setText(null);
+
+                // Add event listener to the cell
+                setOnMouseClicked(mouseEvent -> {
+                    if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                        if (mouseEvent.getClickCount() == 1) {
+                            // Call method to switch to event overview scene
+                            mainController.showEventOverview(selectedEvent);
+                        }
+                    }
+                });
             }
         });
     }
