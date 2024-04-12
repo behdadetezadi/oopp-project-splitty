@@ -6,3 +6,7 @@ First download (and unzip) an OpenJFX SDK from https://openjfx.io that matches y
 
 Tip: Make sure you adapt the path to the lib(!) directory (not just the directory that you unzipped).
 Tip: Double check that the path is correct. You will receive abstract error messages otherwise.
+
+
+Keyboard shortcut instruction:
+For undo action:press alt+u(windows), press option+u(macbook)

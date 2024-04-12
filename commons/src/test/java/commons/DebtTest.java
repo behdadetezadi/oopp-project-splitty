@@ -113,4 +113,78 @@ class DebtTest {
                 "  Description: Expense";
         assertEquals(expected, debt.toString());
     }
+
+
+    @Test
+    void testSetAmountOfMoneyPositive() {
+        Debt debt = new Debt();
+        debt.setAmountOfMoney(100.0);
+        assertEquals(100.0, debt.getAmountOfMoney(),
+                "The amount of money should be set to 100.0.");
+    }
+
+    @Test
+    void testSetDebtor() {
+        Debt debt = new Debt();
+        debt.setDebtor(participant1);
+        assertEquals(participant1, debt.getDebtor(),
+                "The debtor should be set.");
+    }
+
+    @Test
+    void testSetLender() {
+        Debt debt = new Debt();
+        debt.setLender(participant2);
+        assertEquals(participant2, debt.getLender(),
+                "The lender should be set.");
+    }
+
+    @Test
+    void testSetDebtCollective() {
+        Debt debt = new Debt();
+        debt.setDebtCollective(true);
+        assertTrue(debt.isDebtCollective(),
+                "The debt should be collective.");
+    }
+
+    @Test
+    void testSetDescription() {
+        Debt debt = new Debt();
+        String description = "Lunch";
+        debt.setDescription(description);
+        assertEquals(description, debt.getDescription(),
+                "The description needs to be set.");
+    }
+
+    @Test
+    void testEmptyConstructorAndSetters() {
+        Debt debt = new Debt();
+        debt.setDebtor(participant1);
+        debt.setLender(participant2);
+        debt.setAmountOfMoney(100.0);
+        debt.setDebtCollective(true);
+        debt.setDescription("Coffee");
+
+        assertEquals(participant1, debt.getDebtor());
+        assertEquals(participant2, debt.getLender());
+        assertEquals(100.0, debt.getAmountOfMoney());
+        assertTrue(debt.isDebtCollective());
+        assertEquals("Coffee", debt.getDescription());
+    }
+
+    @Test
+    void testToStringNoDescription() {
+        Debt debt = new Debt(participant1, participant2, 20.0, false, "");
+        String expectedToStringStart = "Debt Details:";
+        assertTrue(debt.toString().startsWith(expectedToStringStart));
+        assertTrue(debt.toString().contains("No description provided"));
+    }
+
+    @Test
+    void testSetAmountOfMoneyEdgeCase() {
+        Debt debt = new Debt();
+        assertThrows(IllegalArgumentException.class, () ->
+                debt.setAmountOfMoney(-1),
+                "Setting a negative amount of money should throw IllegalArgumentException().");
+    }
 }

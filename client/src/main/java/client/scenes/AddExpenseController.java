@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import java.util.*;
 
 
+
 public class AddExpenseController implements LanguageChangeListener{
     private ServerUtils server;
     private MainController mainController;
@@ -72,6 +73,7 @@ public class AddExpenseController implements LanguageChangeListener{
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
     }
+
 
     /**
      * called by mainController

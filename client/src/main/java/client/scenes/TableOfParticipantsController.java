@@ -244,6 +244,11 @@ public class TableOfParticipantsController implements LanguageChangeListener {
             label.getStyleClass().add("participant-label");
             box.getChildren().add(label);
         }
+        else {
+            Label noDetailsLabel = new Label(resourceBundle.getString("noParticipants"));
+            noDetailsLabel.getStyleClass().add("no-participant-details");
+            box.getChildren().add(noDetailsLabel);
+        }
         return box;
     }
 
@@ -380,13 +385,20 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * @return Participant
      */
     private Participant collectDataFromForm(Map<String, Control> formFields) {
-        String firstName = ((TextField) formFields.get("First Name")).getText();
-        String lastName = ((TextField) formFields.get("Last Name")).getText();
-        String username = ((TextField) formFields.get("Username")).getText();
-        String email = ((TextField) formFields.get("Email")).getText();
-        String iban = ((TextField) formFields.get("IBAN")).getText();
-        String bic = ((TextField) formFields.get("BIC")).getText();
+        String firstName = ((TextField) formFields.get("First Name")).getText().trim();
+        String lastName = ((TextField) formFields.get("Last Name")).getText().trim();
+        String username = ((TextField) formFields.get("Username")).getText().trim();
+        String email = ((TextField) formFields.get("Email")).getText().trim();
+        String iban = ((TextField) formFields.get("IBAN")).getText().trim();
+        String bic = ((TextField) formFields.get("BIC")).getText().trim();
         String languageChoice = ((ComboBox<String>) formFields.get("Language")).getValue();
+
+        // if something other than first and last name is not entered, we make it null
+        username = username.isEmpty() ? null : username;
+        email = email.isEmpty() ? null : email;
+        iban = iban.isEmpty() ? null : iban;
+        bic = bic.isEmpty() ? null : bic;
+        languageChoice = (languageChoice == null || languageChoice.isEmpty()) ? null : languageChoice;
 
         return new Participant(firstName, lastName, username, email, iban, bic, languageChoice);
     }
@@ -396,29 +408,32 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * @param participant a Participant
      * @return an array list of strings
      */
-    private List<String> validateParticipantData(Participant participant) {
+    public List<String> validateParticipantData(Participant participant) {
         List<String> errors = new ArrayList<>();
 
-        if (!ValidationUtils.isValidName(participant.getFirstName())) {
-            errors.add("First Name must only contain letters.");
+        if (participant.getFirstName() == null || participant.getFirstName().isEmpty() ||
+                !ValidationUtils.isValidName(participant.getFirstName())) {
+            errors.add("First Name must only contain letters and cannot be left out.");
         }
-        if (!ValidationUtils.isValidName(participant.getLastName())) {
-            errors.add("Last Name must only contain letters.");
+        if (participant.getLastName() == null || participant.getLastName().isEmpty() ||
+                !ValidationUtils.isValidName(participant.getLastName())) {
+            errors.add("Last Name must only contain letters and cannot be left out.");
         }
-        if (!ValidationUtils.isValidUsername(participant.getUsername())) {
+        if (participant.getUsername() != null && !participant.getUsername().isEmpty() &&
+                !ValidationUtils.isValidUsername(participant.getUsername())) {
             errors.add("Username must contain only letters, digits, and underscores.");
         }
-        if (!ValidationUtils.isValidEmail(participant.getEmail())) {
+        if (participant.getEmail() != null && !participant.getEmail().isEmpty() &&
+                !ValidationUtils.isValidEmail(participant.getEmail())) {
             errors.add("Email must be in a valid format (e.g., user@example.com).");
         }
-        if (!ValidationUtils.isValidIBAN(participant.getIban())) {
+        if (participant.getIban() != null && !participant.getIban().isEmpty() &&
+                !ValidationUtils.isValidIBAN(participant.getIban())) {
             errors.add("IBAN must be in a valid format (e.g., NL89 BANK 0123 4567 89).");
         }
-        if (!ValidationUtils.isValidBIC(participant.getBic())) {
+        if ( participant.getBic() != null && !participant.getBic().isEmpty() &&
+                !ValidationUtils.isValidBIC(participant.getBic())) {
             errors.add("BIC must be in a valid format: 8 alphanumeric characters (e.g., ABCDEF12).");
-        }
-        if (!ValidationUtils.isValidLanguage(participant.getLanguageChoice())) {
-            errors.add("Select a language please.");
         }
         return errors;
     }
@@ -428,7 +443,12 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * @param participant The {@link Participant} whose details are to be formatted.
      * @return A formatted string containing the participant's details.
      */
-    private String formatParticipantDetails(Participant participant, ResourceBundle resourceBundle) {
+    public String formatParticipantDetails(Participant participant, ResourceBundle resourceBundle) {
+        String getUsername = Optional.ofNullable(participant.getUsername()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("userNotProvided"));
+        String getEmail = Optional.ofNullable(participant.getEmail()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("emailNotProvided"));
+        String getIban = Optional.ofNullable(participant.getIban()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("ibanNotProvided"));
+        String getBic = Optional.ofNullable(participant.getBic()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("bicNotProvided"));
+        String getLanguageChoice = Optional.ofNullable(participant.getLanguageChoice()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("languageNotProvided"));
         return String.format("""
                     %s: %s
                     %s: %s
@@ -439,11 +459,11 @@ public class TableOfParticipantsController implements LanguageChangeListener {
                     %s: %s""",
                 resourceBundle.getString("First_Name"), participant.getFirstName(),
                 resourceBundle.getString("Last_Name"), participant.getLastName(),
-                resourceBundle.getString("User_Name"), participant.getUsername(),
-                resourceBundle.getString("Email"), participant.getEmail(),
-                resourceBundle.getString("IBAN"), participant.getIban(),
-                resourceBundle.getString("BIC"), participant.getBic(),
-                resourceBundle.getString("Language"), participant.getLanguageChoice());
+                resourceBundle.getString("User_Name"), getUsername,
+                resourceBundle.getString("Email"), getEmail,
+                resourceBundle.getString("IBAN"), getIban,
+                resourceBundle.getString("BIC"), getBic,
+                resourceBundle.getString("Language"), getLanguageChoice);
     }
 
 
@@ -509,11 +529,11 @@ public class TableOfParticipantsController implements LanguageChangeListener {
     static class ParticipantForm {
         private static final String FIRST_NAME = "First Name";
         private static final String LAST_NAME = "Last Name";
-        private static final String USERNAME = "Username";
-        private static final String EMAIL = "Email";
-        private static final String IBAN = "IBAN";
-        private static final String BIC = "BIC";
-        private static final String LANGUAGE = "Language";
+        private static final String USERNAME = "Username (Optional)";
+        private static final String EMAIL = "Email (Optional)";
+        private static final String IBAN = "IBAN (Optional)";
+        private static final String BIC = "BIC (Optional)" ;
+        private static final String LANGUAGE = "Language (Optional)";
         static Pair<GridPane, Map<String, Control>> createParticipantForm(Participant participant,
                                                                           ResourceBundle resourceBundle) {
             GridPane grid = new GridPane();

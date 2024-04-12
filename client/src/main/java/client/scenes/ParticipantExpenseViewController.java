@@ -67,6 +67,8 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
     public void initialize() {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
+        undoButton.setMnemonicParsing(true);
+        undoButton.setOnAction(this::handleUndoAction);
     }
 
     public void setEvent(Event event, long participantId) {

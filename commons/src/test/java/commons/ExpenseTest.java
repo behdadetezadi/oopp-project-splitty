@@ -1,5 +1,6 @@
 package commons;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -58,11 +59,7 @@ class ExpenseTest {
         assertEquals("Personal", expense.getExpenseType());
         assertEquals(eventIds, expense.getEventId());
     }
-//    @Test
-//    public void equalsTest(){
-//        spiltOption.add(participant);
-//        assertEquals(a, b);
-//    }
+
 
     @Test
     public void notEqualsTest(){
@@ -75,10 +72,6 @@ class ExpenseTest {
         assertNotSame(a, b);
     }
 
-//    @Test
-//    public void hashcodeTest(){
-//        assertEquals(a.hashCode(), b.hashCode());
-//    }
 
     @Test
     public void getPersonTest(){
@@ -168,19 +161,6 @@ class ExpenseTest {
         assertEquals(12345, participant.getId());
     }
 
-    //    @Test
-//    void testSetEventIds() {
-//        Set<Integer> eventIds = new HashSet<>();
-//        eventIds.add(1);
-//        eventIds.add(2);
-//        eventIds.add(3);
-//        a.setEventIds(eventIds);
-//
-//        assertEquals(eventIds, a.getEventIds());
-//        assertTrue(a.getEventIds().contains(1));
-//        assertTrue(a.getEventIds().contains(2));
-//        assertTrue(a.getEventIds().contains(3));
-//    }
     @Test
     void testDefaultConstructor() {
         Expense expense = new Expense();
@@ -267,6 +247,25 @@ class ExpenseTest {
         assertTrue(expense.getSplittingOption().isEmpty());
     }
 
+    @Test
+    void testConstructorWithId() {
+        long expectedId = 5L;
+        Participant expectedParticipant = new Participant("TestName", "TestSurname");
+        String expectedCategory = "TestCategory";
+        double expectedAmount = 100.0;
+        String expectedCurrency = "USD";
+        String expectedDate = "2022-10-10";
+        List<Participant> expectedSplitOption = new ArrayList<>();
+        String expectedExpenseType = "TestType";
+        long expectedEventId = 10L;
+
+        Expense expenseWithId = new Expense(expectedId, expectedParticipant, expectedCategory, expectedAmount,
+                expectedCurrency, expectedDate, expectedSplitOption,
+                expectedExpenseType, expectedEventId);
+
+        assertEquals(expectedId, expenseWithId.getId());
+        assertEquals(expectedEventId, expenseWithId.getEventId());
+    }
 
 
 }
