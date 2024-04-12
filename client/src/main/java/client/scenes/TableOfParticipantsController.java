@@ -244,6 +244,11 @@ public class TableOfParticipantsController implements LanguageChangeListener {
             label.getStyleClass().add("participant-label");
             box.getChildren().add(label);
         }
+        else {
+            Label noDetailsLabel = new Label(resourceBundle.getString("noParticipants"));
+            noDetailsLabel.getStyleClass().add("no-participant-details");
+            box.getChildren().add(noDetailsLabel);
+        }
         return box;
     }
 
