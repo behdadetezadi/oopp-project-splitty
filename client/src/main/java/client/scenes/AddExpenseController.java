@@ -80,8 +80,6 @@ public class AddExpenseController implements LanguageChangeListener{
     public void setEvent(Event event, long participantId) {
         this.event = event;
         this.selectedParticipantId = participantId;
-        participantLabel.setText(ServerUtils.getParticipant(selectedParticipantId).getFirstName()
-                + " " + ServerUtils.getParticipant(selectedParticipantId).getLastName());
     }
 
     /**
@@ -116,46 +114,18 @@ public class AddExpenseController implements LanguageChangeListener{
      */
     public void updateUIElements() {
         AnimationUtil.animateText(expenseFor, resourceBundle.getString("Add_Expense_for"));
-        AnimationUtil.animateText(participantLabel,ServerUtils.getParticipant(selectedParticipantId).getFirstName()
-                 + " " + ServerUtils.getParticipant(selectedParticipantId).getLastName());
         AnimationUtil.animateText(expenseDescription, resourceBundle.getString("Expense"));
         AnimationUtil.animateText(amountPaid, resourceBundle.getString("Amount_paid"));
         AnimationUtil.animateText(cancelButton, resourceBundle.getString("Cancel"));
         AnimationUtil.animateText(addExpenseButton, resourceBundle.getString("Add_expense"));
-
-        addExpenseButton.setText(resourceBundle.getString("Add_expense"));
-        cancelButton.setText(resourceBundle.getString("Cancel"));
-        cancelButton.setOnAction(this::handleCancelAction);
-        addExpenseButton.setOnAction(this::handleAddExpenseAction);
+        // animate participant name, if participant exists
+        if(selectedParticipantId != 0) {
+            AnimationUtil.animateText(participantLabel, ServerUtils.getParticipant(selectedParticipantId).getFirstName()
+                    + " " + ServerUtils.getParticipant(selectedParticipantId).getLastName());
+        }
         amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
         addExpenseButton.getStyleClass().add("button-hover");
         cancelButton.getStyleClass().add("button-hover");
-
-        comboBox.getItems().clear();
-        comboBox.getItems().addAll(
-                resourceBundle.getString("tagFood"),
-                resourceBundle.getString("tagEntranceFees"),
-                resourceBundle.getString("tagTravel"),
-                resourceBundle.getString("tagOther")
-        );
-
-        comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && newValue.equals(resourceBundle.getString("tagOther"))) {
-                TextInputDialog dialog = new TextInputDialog();
-                dialog.setTitle(resourceBundle.getString("New_Tag"));
-                dialog.setHeaderText(resourceBundle.getString("Enter_new_tag"));
-                dialog.setContentText(resourceBundle.getString("Tag") + ":");
-                String cssPath = Objects.requireNonNull(this.getClass().getResource("/styles.css")).toExternalForm();
-                dialog.getDialogPane().getScene().getStylesheets().add(cssPath);
-                Optional<String> result = dialog.showAndWait();
-                result.ifPresent(tag -> {
-                    if (!tag.isEmpty() && !comboBox.getItems().contains(tag)) {
-                        comboBox.getItems().add(tag);
-                        comboBox.getSelectionModel().select(tag);
-                    }
-                });
-            }
-        });
     }
 
     /**
