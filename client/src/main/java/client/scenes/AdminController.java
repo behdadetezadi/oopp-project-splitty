@@ -11,7 +11,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -26,7 +25,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -36,6 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.application.Platform;
 
 public class AdminController implements LanguageChangeListener {
     @FXML
@@ -162,7 +161,7 @@ public class AdminController implements LanguageChangeListener {
     public void fetchAndPopulateEvents() {
         new Thread(() -> {
             List<Event> events = ServerUtils.getAllEvents();
-            javafx.application.Platform.runLater(() -> {
+            Platform.runLater(() -> {
                 eventData.removeAll();
                 eventsTable.getItems().clear();
                 eventData.addAll(events);
@@ -226,7 +225,7 @@ public class AdminController implements LanguageChangeListener {
 
         new Thread(() -> {
             boolean success = ServerUtils.deleteEvent(event.getId());
-            javafx.application.Platform.runLater(() -> {
+            Platform.runLater(() -> {
                 if (success) {
                     eventData.remove(event);
                     eventsTable.setItems(eventData);
@@ -350,7 +349,7 @@ public class AdminController implements LanguageChangeListener {
     private void addImportedEvent(Event importedEvent) {
         Event addedEvent = ServerUtils.addEvent(importedEvent);
         if (addedEvent != null) {
-            javafx.application.Platform.runLater(() -> {
+            Platform.runLater(() -> {
                 eventData.add(addedEvent);
                 eventsTable.setItems(eventData);
             });
@@ -386,7 +385,7 @@ public class AdminController implements LanguageChangeListener {
 
         new Thread(() -> {
             boolean success = ServerUtils.deleteAllEvents();
-            javafx.application.Platform.runLater(() -> {
+            Platform.runLater(() -> {
                 if (success) {
                     eventData.clear();
                     eventsTable.setItems(eventData);

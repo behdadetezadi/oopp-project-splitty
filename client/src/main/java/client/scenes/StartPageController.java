@@ -25,6 +25,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.application.Platform;
 
 import java.util.*;
 
@@ -118,44 +119,53 @@ public class StartPageController implements LanguageChangeListener {
         HBox.setHgrow(recentEventsLabel, Priority.ALWAYS);
         animateText(recentEventsLabel, resourceBundle.getString("recent_events"));
 
-        recentEventsList.setCellFactory(listView -> new ListCell<Event>() {
+        recentEventsList.setCellFactory(listView -> new ListCell<>() {
             @Override
             protected void updateItem(Event selectedEvent, boolean empty) {
                 super.updateItem(selectedEvent, empty);
                 if (empty || selectedEvent == null) {
                     setText(null);
                     setGraphic(null);
-                } else {
-                    // Create the cell content as before
-                    Label eventNameLabel = new Label(selectedEvent.getTitle());
-                    // Create button and handle actions
-                    Button removeButton = new Button();
-                    removeButton.setStyle("-fx-background-color: transparent;");
-                    ImageView removeImage = new ImageView("images/closeIcon.png");
-                    removeImage.setFitWidth(16);
-                    removeImage.setFitHeight(16);
-                    removeButton.setGraphic(removeImage);
-                    removeButton.setOnAction(removeEvent -> {
-                        events.remove(selectedEvent); // Remove event from the list
-                    });
-                    HBox buttonBox = new HBox(removeButton);
-                    buttonBox.setAlignment(Pos.CENTER_RIGHT);
-                    VBox cellBox = new VBox(buttonBox, eventNameLabel);
-                    cellBox.setSpacing(10);
-                    cellBox.setAlignment(Pos.CENTER_LEFT);
-                    setGraphic(cellBox);
-                    setText(null);
-
-                    // Add event listener to the cell
-                    setOnMouseClicked(mouseEvent -> {
-                        if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                            if (mouseEvent.getClickCount() == 1) {
-                                // Call method to switch to event overview scene
-                                mainController.showEventOverview(selectedEvent);
-                            }
-                        }
-                    });
+                    return;
                 }
+                // Create the event name label
+                Label eventNameLabel = new Label(selectedEvent.getTitle());
+                eventNameLabel.setStyle("-fx-alignment: center-left;");
+
+                // Create the remove button with an icon
+                Button removeButton = new Button();
+                removeButton.setStyle("-fx-background-color: transparent;");
+                ImageView removeImage = new ImageView("images/closeIcon.png");
+                removeImage.setFitWidth(16);
+                removeImage.setFitHeight(16);
+                removeButton.setGraphic(removeImage);
+
+                // Remove the event from the list when remove button is pressed
+                removeButton.setOnAction(removeEvent -> {
+                    events.remove(selectedEvent);
+                });
+
+                // HBox with label and the button
+                HBox cellBox = new HBox(eventNameLabel, removeButton);
+                cellBox.setSpacing(10);
+                cellBox.setAlignment(Pos.CENTER_LEFT);
+
+                // Put the button to the right
+                HBox.setHgrow(eventNameLabel, Priority.ALWAYS);
+                eventNameLabel.setMaxWidth(Double.MAX_VALUE);
+
+                setGraphic(cellBox);
+                setText(null);
+
+                // Add event listener to the cell
+                setOnMouseClicked(mouseEvent -> {
+                    if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+                        if (mouseEvent.getClickCount() == 1) {
+                            // Call method to switch to event overview scene
+                            mainController.showEventOverview(selectedEvent);
+                        }
+                    }
+                });
             }
         });
     }
@@ -194,7 +204,7 @@ public class StartPageController implements LanguageChangeListener {
         AnimationUtil.animateText(logoutButton, resourceBundle.getString("Logout"));
         AnimationUtil.animateText(codeInput, resourceBundle.getString("enter_code"));
         AnimationUtil.animateText(eventNameInput, resourceBundle.getString("enter_event_name"));
-        AnimationUtil.animateText(joinButton, resourceBundle.getString("join_meeting"));
+        AnimationUtil.animateText(joinButton, resourceBundle.getString("join_event"));
         AnimationUtil.animateText(createEventButton, resourceBundle.getString("create_event"));
         AnimationUtil.animateText(recentEventsLabel, resourceBundle.getString("recent_events"));
         adjustComponentSizes();
@@ -245,19 +255,17 @@ public class StartPageController implements LanguageChangeListener {
     }
 
     /**
-     * join Meeting //TODO
+     * join Meeting
      */
-    public void joinMeeting() {
+    public void joinEvent() {
         String inviteCode = codeInput.getText();
         try {
-            long codeAsLong = Long.parseLong(inviteCode);
-
             Event event = ServerUtils.getEventByInviteCode(inviteCode);
 
             if (event != null) {
-                events.add(event); // Add the created event to the list
+                events.add(event);
                 recentEventsList.setItems(events);
-                mainController.showEventOverview(event); // Switch to event overview page
+                mainController.showEventOverview(event);
             } else {
                 showErrorAlert(resourceBundle.getString("Invalid_invite_code._Please_try_again."));
             }
@@ -279,7 +287,7 @@ public class StartPageController implements LanguageChangeListener {
     }
 
     /**
-     * create an Event //TODO
+     * create an Event
      */
     public void createEvent() {
         String eventName = eventNameInput.getText();
@@ -299,6 +307,18 @@ public class StartPageController implements LanguageChangeListener {
         } else {
             showErrorAlert(resourceBundle.getString("Failed_to_create_event._Please_try_again."));
         }
+    }
+
+    /**
+     * refreshes the events list to make sure deleted events are not included
+     */
+    public void refreshEventsList() {
+        new Thread(() -> {
+            List<Event> serverEvents = ServerUtils.getAllEvents();
+            Platform.runLater(() -> {
+                events.removeIf(event -> !serverEvents.contains(event));
+            });
+        }).start();
     }
 
     /**
@@ -341,7 +361,7 @@ public class StartPageController implements LanguageChangeListener {
 
         // Calculate the maximum preferred width for the buttons
         double maxButtonWidth = Math.max(
-                computePrefWidth(joinButton, resourceBundle.getString("join_meeting")),
+                computePrefWidth(joinButton, resourceBundle.getString("join_event")),
                 computePrefWidth(createEventButton, resourceBundle.getString("create_event"))
         );
 

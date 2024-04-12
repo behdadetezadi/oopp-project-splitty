@@ -163,6 +163,7 @@ public class MainController {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), startPageController);
         startPageController.setLanguageComboBox();
+        startPageController.refreshEventsList();
     }
 
     /**
