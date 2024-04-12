@@ -26,6 +26,8 @@ public class AddExpenseController implements LanguageChangeListener{
     @FXML
     private Label expenseFor;
     @FXML
+    private Button backButton;
+    @FXML
     private Button cancelButton;
     @FXML
     private Button addExpenseButton;
@@ -42,7 +44,8 @@ public class AddExpenseController implements LanguageChangeListener{
     private Event event;
     private long selectedParticipantId;
     private AddExpenseCommand addedExpenseCommand;
-    private final UndoManager undoManager;
+    private UndoManager undoManager;
+    private Map<String, String> tagKeysToLocalized = new HashMap<>();
 
     /**
      * constructor
@@ -50,6 +53,7 @@ public class AddExpenseController implements LanguageChangeListener{
      * @param server server
      * @param mainController mainController
      * @param event Event
+     * @param undoManager undo manager
      */
     @Inject
     public AddExpenseController(Stage primaryStage, ServerUtils server, MainController mainController, Event event, UndoManager undoManager) {
@@ -69,8 +73,17 @@ public class AddExpenseController implements LanguageChangeListener{
         this.event = event;
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
-    }
 
+        cancelButton.setOnAction(this::handleCancelAction);
+        addExpenseButton.setOnAction(this::handleAddExpenseAction);
+        amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
+        addExpenseButton.getStyleClass().add("button-hover");
+        cancelButton.getStyleClass().add("button-hover");
+
+        DialogUtils.otherTagInputDialog(comboBox, resourceBundle);
+        undoButton.setMnemonicParsing(true);
+        undoButton.setOnAction(this::handleUndoAction);
+    }
 
     /**
      * called by mainController
@@ -118,6 +131,11 @@ public class AddExpenseController implements LanguageChangeListener{
         AnimationUtil.animateText(amountPaid, resourceBundle.getString("Amount_paid"));
         AnimationUtil.animateText(cancelButton, resourceBundle.getString("Cancel"));
         AnimationUtil.animateText(addExpenseButton, resourceBundle.getString("Add_expense"));
+        AnimationUtil.animateText(undoButton, resourceBundle.getString("Undo"));
+        AnimationUtil.animateText(backButton, resourceBundle.getString("back"));
+
+        TagUtils.initializeTagLanguageMapping(resourceBundle, tagKeysToLocalized);
+        TagUtils.initializeTagsComboBox(resourceBundle, comboBox, tagKeysToLocalized);
         // animate participant name, if participant exists
         if(selectedParticipantId != 0) {
             AnimationUtil.animateText(participantLabel, ServerUtils.getParticipant(selectedParticipantId).getFirstName()
@@ -146,24 +164,23 @@ public class AddExpenseController implements LanguageChangeListener{
     private void handleAddExpenseAction(ActionEvent actionEvent) {
         String category = this.expenseDescription.getText();
         String amount = this.amountPaid.getText();
-        String selectedTag = comboBox.getValue();
+        String tagLocalized = comboBox.getValue();
         double amountValue;
-
-        if (selectedTag == null || selectedTag.isEmpty()) {
-            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_tag"), resourceBundle.getString("Error"),
-                    resourceBundle.getString("Please_select_a_tag."));
-            return;
-        }
 
         if (category == null || category.isEmpty()) {
             AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_description"),
-                    resourceBundle.getString("Error"), resourceBundle.getString("The_category_cannot_be_empty."));
+                    resourceBundle.getString("error"), resourceBundle.getString("The_category_cannot_be_empty."));
             return;
         }
         String normalizedAmount = amount.replace(',', '.');
         if (normalizedAmount.endsWith(".")) {
-            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_amount"), resourceBundle.getString("Error"),
+            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_amount"), resourceBundle.getString("error"),
                     resourceBundle.getString("Please_enter_a_valid_number_for_the_amount."));
+            return;
+        }
+        if (tagLocalized == null || tagLocalized.isEmpty()) {
+            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_tag"), resourceBundle.getString("error"),
+                    resourceBundle.getString("Please_select_a_tag."));
             return;
         }
 
@@ -171,7 +188,15 @@ public class AddExpenseController implements LanguageChangeListener{
             amountValue = Double.parseDouble(normalizedAmount);
             Expense newExpense = new Expense(ServerUtils.findParticipantById(selectedParticipantId), category,
                     amountValue, event.getId());
-            newExpense.setExpenseType(selectedTag);
+
+            String tagKey = tagKeysToLocalized.entrySet().stream()
+                    .filter(entry -> entry.getValue().equals(tagLocalized))
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse(tagLocalized);
+
+            newExpense.setExpenseType(tagKey);
+
             addedExpenseCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> {
                 Platform.runLater(() -> {
                     if (expense != null) {

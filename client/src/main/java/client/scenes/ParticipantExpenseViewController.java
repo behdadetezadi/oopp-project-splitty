@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.utils.LanguageChangeListener;
-import client.utils.LanguageUtils;
-import client.utils.AlertUtils;
-import client.utils.ServerUtils;
+import client.utils.*;
 import client.utils.undoable.DeleteExpenseCommand;
 import client.utils.undoable.EditExpenseCommand;
 import client.utils.undoable.UndoManager;
@@ -23,7 +20,6 @@ import javafx.util.Pair;
 
 import java.util.*;
 
-import static client.scenes.TableOfParticipantsController.ParticipantForm.createComboBox;
 import static client.utils.ValidationUtils.isValidDouble;
 import java.util.List;
 import java.util.Locale;
@@ -50,6 +46,7 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
     private EditExpenseCommand editExpenseCommand;
     private UndoManager undoManager;
     private BiConsumer<Expense, String> updateUI;
+    private Map<String, String> tagKeysToLocalized = new HashMap<>();
 
     @Inject
     public ParticipantExpenseViewController(Stage primaryStage, ServerUtils server, MainController mainController, Event event,UndoManager undoManager) {
@@ -161,7 +158,9 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
      * updates the UI elements with the selected language
      */
     public void updateUIElements() {
-        backButton.setText(resourceBundle.getString("back"));
+        TagUtils.initializeTagLanguageMapping(resourceBundle, tagKeysToLocalized);
+        AnimationUtil.animateText(backButton, resourceBundle.getString("back"));
+        AnimationUtil.animateText(undoButton, resourceBundle.getString("Undo"));
     }
 
     private String formatExpenseForDisplay(Expense expense) {
@@ -173,7 +172,6 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
 
         expensesListView.getItems().clear();
         if (expenses.isEmpty()) {
-            System.out.println("Setting no expense text to: " + resourceBundle.getString("noExpensesRecorded"));
             expensesListView.getItems().add(resourceBundle.getString("noExpensesRecorded"));
             sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"), "0.00"));
         } else {
@@ -321,7 +319,8 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
      * @param action The action to perform with the edited participant.
      */
     private void editExpense(Expense selectedExpense, String title, String header, ExpenseConsumer action) {
-        ExpenseDialog dialog = new ExpenseDialog(selectedExpense, title, header, this::validateExpenseData);
+        ExpenseDialog dialog = new ExpenseDialog(selectedExpense, title, header,
+                this::validateExpenseData, resourceBundle, tagKeysToLocalized);
         Optional<Expense> result = dialog.showAndWait();
         result.ifPresent(action::accept);
     }
@@ -349,16 +348,21 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
      * A dialog for creating or editing an expense's details.
      */
     static class ExpenseDialog extends Dialog<Expense> {
-        ExpenseDialog(Expense expense, String title, String header, Validator validator) {
+        ExpenseDialog(Expense expense, String title, String header, Validator validator,
+                      ResourceBundle resourceBundle, Map<String, String> tagKeysToLocalized) {
             setTitle(title);
             setHeaderText(header);
 
-            ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-            getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+            ButtonType saveButtonType = new ButtonType(resourceBundle.getString("Save"),
+                    ButtonBar.ButtonData.OK_DONE);
+            ButtonType cancelButtonType = new ButtonType(resourceBundle.getString("Cancel"),
+                    ButtonBar.ButtonData.CANCEL_CLOSE);
+            getDialogPane().getButtonTypes().addAll(saveButtonType, cancelButtonType);
             getDialogPane().setMinHeight(350);
             getDialogPane().setMinWidth(600);
 
-            Pair<GridPane, Map<String, Control>> formPair = ExpenseForm.createExpenseForm(expense);
+            Pair<GridPane, Map<String, Control>> formPair = ExpenseForm.createExpenseForm(expense, resourceBundle,
+                    tagKeysToLocalized);
             GridPane grid = formPair.getKey();
             Map<String, Control> formFields = formPair.getValue();
             getDialogPane().setContent(grid);
@@ -380,7 +384,7 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
             });
             setResultConverter(dialogButton -> {
                 if (dialogButton == saveButtonType) {
-                    return ExpenseForm.extractExpenseFromForm(formFields, expense);
+                    return ExpenseForm.extractExpenseFromForm(formFields, expense, tagKeysToLocalized);
                 }
                 return null;
             });
@@ -405,7 +409,7 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
          * @param expense The {@link Expense} whose details are to be used as initial form values.
          * @return A {@link Pair} containing the form as a {@link GridPane} and a map of form fields.
          */
-        static Pair<GridPane, Map<String, Control>> createExpenseForm(Expense expense) {
+        static Pair<GridPane, Map<String, Control>> createExpenseForm(Expense expense, ResourceBundle resourceBundle, Map<String, String> tagKeysToLocalized) {
             GridPane grid = new GridPane();
             grid.setAlignment(Pos.CENTER);
             grid.setHgap(10);
@@ -413,34 +417,35 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
 
             TextField categoryField = createTextField(expense.getCategory(), "Category");
             TextField amountField = createTextField(String.valueOf(expense.getAmount()), "Amount");
-            ComboBox<String> tagComboBox = createComboBox(expense.getExpenseType(), "Tag",
-                    "Food", "Entrance fees", "Travel", "Other");
-            tagComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                if ("Other".equals(newValue)) {
-                    TextInputDialog dialog = new TextInputDialog();
-                    dialog.setTitle("New Tag");
-                    dialog.setHeaderText("Enter a new tag:");
-                    dialog.setContentText("Tag:");
-                    Optional<String> result = dialog.showAndWait();
-                    result.ifPresent(tag -> {
-                        if (!tag.isEmpty() && !tagComboBox.getItems().contains(tag)) {
-                            tagComboBox.getItems().add(tag);
-                            tagComboBox.getSelectionModel().select(tag);
-                        }
-                    });
-                }
-            });
+
+            // set the tags in the combobox in this order
+            ComboBox<String> tagComboBox = new ComboBox<>();
+            TagUtils.initializeTagsComboBox(resourceBundle, tagComboBox, tagKeysToLocalized);
+
+            // check if current tag is custom
+            String currentTag = expense.getExpenseType();
+            String localizedCurrentTag = tagKeysToLocalized.get(currentTag);
+            if (localizedCurrentTag == null) {
+                tagComboBox.getItems().add(tagComboBox.getItems().size() - 1, currentTag); // puts custom tag before 'Other'
+                tagComboBox.setValue(currentTag);
+            } else {
+                tagComboBox.setValue(localizedCurrentTag);
+            }
+
+            // handle custom tag creation
+            DialogUtils.otherTagInputDialog(tagComboBox, resourceBundle);
 
             Map<String, Control> formFields = new HashMap<>();
+
             formFields.put("Category", categoryField);
             formFields.put("Amount", amountField);
             formFields.put("Tag", tagComboBox);
 
             int row = 0;
-            for (Map.Entry<String, Control> entry : formFields.entrySet()) {
-                Label label = new Label(entry.getKey() + ": ");
+            for (String fieldKey : Arrays.asList("Category", "Amount", "Tag")) {
+                Label label = new Label(resourceBundle.getString(fieldKey) + ": ");
                 grid.add(label, 0, row);
-                grid.add(entry.getValue(), 1, row++);
+                grid.add(formFields.get(fieldKey), 1, row++);
             }
             return new Pair<>(grid, formFields);
         }
@@ -464,13 +469,20 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
          * @param expense The original participant.
          * @return A new {@link Expense} instance with details extracted from the form fields.
          */
-        static Expense extractExpenseFromForm(Map<String, Control> formFields, Expense expense) {
+        static Expense extractExpenseFromForm(Map<String, Control> formFields, Expense expense, Map<String, String> tagKeysToLocalized) {
             String category = ((TextField) formFields.get("Category")).getText();
             String amount = ((TextField) formFields.get("Amount")).getText();
             String tag = ((ComboBox<String>) formFields.get("Tag")).getValue();
+            String tagKey = tagKeysToLocalized.entrySet().stream()
+                    .filter(entry -> entry.getValue().equals(tag))
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse(tag);
+
             expense.setCategory(category);
             expense.setAmount(Double.parseDouble(amount));
-            expense.setExpenseType(tag);
+            expense.setExpenseType(tagKey);
+
             return expense;
         }
     }
