@@ -48,6 +48,13 @@ public class ExpenseOverviewController implements LanguageChangeListener {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
     }
+    /**
+     * Set the event and initialize expenses
+     * @param event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+    }
 
     /**
      * sets the resource bundle
@@ -56,6 +63,7 @@ public class ExpenseOverviewController implements LanguageChangeListener {
     @Override
     public void setResourceBundle(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;
+
     }
 
     /**
@@ -113,25 +121,7 @@ public class ExpenseOverviewController implements LanguageChangeListener {
 
         return displayBuilder.toString();
     }
-
-    /**
-     * finds key by the localised value
-     * @param localizedValue the localised value
-     * @return a string
-     */
-    public String findTagKeyByLocalizedValue(String localizedValue) {
-        Map<String, String> reverseLookup = new HashMap<>();
-        reverseLookup.put(resourceBundle.getString("tagFood"), "Food");
-        reverseLookup.put(resourceBundle.getString("tagEntranceFees"), "Entrance fees");
-        reverseLookup.put(resourceBundle.getString("tagTravel"), "Travel");
-        reverseLookup.put(resourceBundle.getString("tagOther"), "Other");
-
-        String englishKey = reverseLookup.get(localizedValue);
-        if (englishKey != null) {
-            return englishKey;
-        }
-        throw new RuntimeException("Something wrong with tag selection: " + localizedValue);
-    }
+//    }
 
     /**
      * makes sure the language switch works with the tags
@@ -139,11 +129,10 @@ public class ExpenseOverviewController implements LanguageChangeListener {
      * @return the string in the right language
      */
     public String tagLanguageSwitch(String expenseType) {
-        String key = findTagKeyByLocalizedValue(expenseType); // This method finds the English key for the localized tag
-        switch (key) {
+        switch (expenseType) {
             case "Food":
                 return resourceBundle.getString("tagFood");
-            case "Entrance fees":
+            case "EntranceFees":
                 return resourceBundle.getString("tagEntranceFees");
             case "Travel":
                 return resourceBundle.getString("tagTravel");
@@ -175,9 +164,8 @@ public class ExpenseOverviewController implements LanguageChangeListener {
      * @param event the event
      */
     public void initializeExpensesForEvent(Event event) {
-        this.event = event;
         try {
-            List<Expense> expenses = server.getExpensesForEvent(this.event.getId());
+            List<Expense> expenses = server.getExpensesForEvent(event.getId());
             expensesListView.getItems().clear(); // Clear existing items
             double sumOfExpenses = 0;
             for (int i=0;i<expenses.size();i++) {
@@ -194,8 +182,8 @@ public class ExpenseOverviewController implements LanguageChangeListener {
         } catch (RuntimeException ex) {
             // Handle case where no expenses are found
             expensesListView.getItems().clear();
-            expensesListView.getItems().add("No expenses recorded yet.");
-            sumOfExpensesLabel.setText("Total: $0.00");
+            expensesListView.getItems().add(String.format(resourceBundle.getString("NoExpense")));
+            sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total")));
         }
     }
 

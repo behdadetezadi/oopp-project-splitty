@@ -14,9 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-import java.util.Locale;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 public class AddExpenseController implements LanguageChangeListener{
@@ -39,7 +37,7 @@ public class AddExpenseController implements LanguageChangeListener{
     private Label participantLabel;
     @FXML
     private ComboBox<String> comboBox;
-    private String[] tags = {"Food", "Entrance fees", "Travel", "Other"};
+    private String[] tags = {"Food", "EntranceFees", "Travel", "Other"};
     @FXML
     private Button undoButton;
     private Event event;
@@ -47,7 +45,7 @@ public class AddExpenseController implements LanguageChangeListener{
     private AddExpenseCommand addedExpenseCommand;
     private UndoManager undoManager;
 
-
+    private Map<String, String> tagToEnglishMap = new HashMap<>();
     /**
      * constructor
      * @param primaryStage primary stage
@@ -136,12 +134,12 @@ public class AddExpenseController implements LanguageChangeListener{
 
         // Update ComboBox with localized tags
         comboBox.getItems().clear();
-        comboBox.getItems().addAll(
-                resourceBundle.getString("tagFood"),
-                resourceBundle.getString("tagEntranceFees"),
-                resourceBundle.getString("tagTravel"),
-                resourceBundle.getString("tagOther")
-        );
+        tagToEnglishMap.clear();
+        for (String tag : tags) {
+            String localizedTag = resourceBundle.getString("tag" + tag);
+            comboBox.getItems().add(localizedTag);
+            tagToEnglishMap.put(localizedTag, tag);
+        }
 
         comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue.equals(resourceBundle.getString("tagOther"))) {
@@ -180,10 +178,12 @@ public class AddExpenseController implements LanguageChangeListener{
     private void handleAddExpenseAction(ActionEvent actionEvent) {
         String category = this.expenseDescription.getText();
         String amount = this.amountPaid.getText();
-        String selectedTag = comboBox.getValue();
+        String selectedLocalizedTag = comboBox.getValue();
         double amountValue;
+        String selectedEnglishTag = tagToEnglishMap.getOrDefault(selectedLocalizedTag, "Other");
 
-        if (selectedTag == null || selectedTag.isEmpty()) {
+
+        if (selectedLocalizedTag == null || selectedLocalizedTag.isEmpty()) {
             AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_tag"), resourceBundle.getString("Error"),
                     resourceBundle.getString("Please_select_a_tag."));
             return;
@@ -205,7 +205,7 @@ public class AddExpenseController implements LanguageChangeListener{
             amountValue = Double.parseDouble(normalizedAmount);
             Expense newExpense = new Expense(ServerUtils.findParticipantById(selectedParticipantId), category,
                     amountValue, event.getId());
-            newExpense.setExpenseType(selectedTag);
+            newExpense.setExpenseType(selectedEnglishTag);
             addedExpenseCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> {
                 Platform.runLater(() -> {
                     if (expense != null) {

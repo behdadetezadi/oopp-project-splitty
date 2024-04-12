@@ -247,6 +247,7 @@ public class MainController {
         primaryStage.setTitle("Expenses Overview");
         primaryStage.setScene(expenseOverviewScene);
         // Loads the active locale, sets the resource bundle, and updates the UI
+        expenseOverviewController.setEvent(event);
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), expenseOverviewController);
         expenseOverviewController.initializeExpensesForEvent(event);
     }
