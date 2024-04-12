@@ -170,6 +170,19 @@ class EventTest {
         assertTrue(event.addExpense(a));
         assertTrue(event.getExpenses().contains(a));
     }
+    @Test
+    void updateExpense() {
+        Participant participant = new Participant("John", "Foo");
+        List<Participant> splitOption = new ArrayList<>();
+        Expense a = new Expense(participant, "dinner", 12, "Euros", "01-01-2024", splitOption, "food", (long)123);
+        event.addExpense(a);
+        a = new Expense(participant, "dinner", 12, "Pounds", "01-01-2024", splitOption, "food", (long)123);
+        event.updateExpense(a);
+        assertEquals(event.getExpenses().get(0),new Expense(participant, "dinner", 12, "Pounds", "01-01-2024", splitOption, "food", (long)123));
+        assertNotEquals(event.getExpenses().get(0),new Expense(participant, "dinner", 12, "Euros", "01-01-2024", splitOption, "food", (long)123));
+
+    }
+
 
     @Test
     void testRemoveExpense() {
