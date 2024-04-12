@@ -444,11 +444,11 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * @return A formatted string containing the participant's details.
      */
     public String formatParticipantDetails(Participant participant, ResourceBundle resourceBundle) {
-        String getUsername = Optional.ofNullable(participant.getUsername()).filter(s -> !s.isEmpty()).orElse("Username not provided");
-        String getEmail = Optional.ofNullable(participant.getEmail()).filter(s -> !s.isEmpty()).orElse("Email not provided");
-        String getIban = Optional.ofNullable(participant.getIban()).filter(s -> !s.isEmpty()).orElse("IBAN not provided");
-        String getBic = Optional.ofNullable(participant.getBic()).filter(s -> !s.isEmpty()).orElse("BIC not provided");
-        String getLanguageChoice = Optional.ofNullable(participant.getLanguageChoice()).filter(s -> !s.isEmpty()).orElse("Language preference not provided");
+        String getUsername = Optional.ofNullable(participant.getUsername()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("userNotProvided"));
+        String getEmail = Optional.ofNullable(participant.getEmail()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("emailNotProvided"));
+        String getIban = Optional.ofNullable(participant.getIban()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("ibanNotProvided"));
+        String getBic = Optional.ofNullable(participant.getBic()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("bicNotProvided"));
+        String getLanguageChoice = Optional.ofNullable(participant.getLanguageChoice()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("languageNotProvided"));
         return String.format("""
                     %s: %s
                     %s: %s
