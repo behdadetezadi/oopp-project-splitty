@@ -3,8 +3,13 @@ package client.scenes;
 import client.utils.LanguageUtils;
 import commons.Event;
 import commons.Participant;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -186,6 +191,23 @@ public class MainController {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), eventOverviewController);
         eventOverviewController.setLanguageComboBox();
+
+
+        eventOverviewScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.Z,
+                    KeyCombination.CONTROL_DOWN);
+            final KeyCombination addExpenseCombination = new KeyCodeCombination(KeyCode.A,
+                    KeyCombination.CONTROL_DOWN);
+            public void handle(KeyEvent ke) {
+                if (goBackCombination.match(ke)) {
+                    eventOverviewController.goBackToStartPage(null);
+                    ke.consume(); // <-- stops passing the event to next node
+                }
+                if (addExpenseCombination.match(ke)) {
+                    eventOverviewController.addExpense();
+                }
+            }
+        });
     }
 
     /**
