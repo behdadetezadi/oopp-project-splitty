@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="335.0" prefWidth="594.0" stylesheets="@/styles.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.2-ea" fx:controller="client.scenes.ExpenseOverviewController">
+<BorderPane prefHeight="335.0" prefWidth="594.0" stylesheets="@/styles.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ExpenseOverviewController">
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
@@ -16,7 +16,7 @@
             </HBox.margin></Button>
             <Button fx:id="statisticsButton" mnemonicParsing="false" onAction="#switchToStatistics" text="%Show_Statistics">
             <HBox.margin>
-               <Insets bottom="10.0" />
+               <Insets bottom="10.0" left="10.0" />
             </HBox.margin></Button>
         </HBox>
     </top>

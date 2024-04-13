@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StatsCtrl">
-    <BorderPane prefHeight="393.0" prefWidth="594.0" stylesheets="@/styles.css">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@/styles.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StatsCtrl">
+    <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <padding>
+            <Insets bottom="20" left="20" right="20" top="20" />
+        </padding>
         <top>
-            <HBox alignment="CENTER_LEFT">
+            <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                 <Button fx:id="backButton" onAction="#switchToExpenseOverviewScene" text="Back" />
             </HBox>
         </top>
+        <center>
+            <PieChart fx:id="pieChart" title="#Pie_Chart" BorderPane.alignment="CENTER" />
+        </center>
         <bottom>
-            <Label fx:id="cost" prefHeight="44.0" prefWidth="594.0" style="-fx-font-size: 14px;" />
+            <Label fx:id="cost" style="-fx-font-size: 14px;">
+            <BorderPane.margin>
+               <Insets top="10.0" />
+            </BorderPane.margin></Label>
         </bottom>
-      <center>
-         <PieChart fx:id="pieChart" prefHeight="250.0" prefWidth="250.0" title="#Pie_Chart" BorderPane.alignment="CENTER" />
-      </center>
     </BorderPane>
-
-
 </AnchorPane>

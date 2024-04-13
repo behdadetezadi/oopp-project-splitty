@@ -374,6 +374,7 @@ public class MainController {
 
 
     }
+
     /**
      * get the updated participant list of the selected event.
      * @param event The event to show list for.

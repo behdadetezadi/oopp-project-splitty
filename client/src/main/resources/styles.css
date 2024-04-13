@@ -218,3 +218,19 @@
     -fx-font-weight: bold;
     -fx-padding: 20px;
 }
+
+.chart-legend {
+    -fx-background-color: black;
+    -fx-text-fill: white;
+    -fx-border-color: lime;
+    -fx-border-width: 2;
+    -fx-padding: 5;
+}
+
+.chart-legend-item {
+    -fx-text-fill: white !important;
+}
+
+.chart-legend-item .label {
+    -fx-text-fill: white !important;
+}

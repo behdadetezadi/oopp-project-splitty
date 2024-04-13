@@ -1,11 +1,10 @@
 package client.scenes;
 
-import client.utils.LanguageChangeListener;
-import client.utils.LanguageUtils;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -14,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.text.DecimalFormat;
@@ -36,6 +36,7 @@ public class StatsCtrl implements LanguageChangeListener {
     private ServerUtils server;
     @FXML
     private Button backButton;
+    private Map<String, String> tagKeysToLocalized = new HashMap<>();
 
     /**
      * constructor
@@ -73,8 +74,10 @@ public class StatsCtrl implements LanguageChangeListener {
      * initializes the pie chart and its functions
      */
     public void initializePieChart() {
-        fillPieChart(event.getId());
-        addEventHandlersToSlices();
+        Platform.runLater(() -> {
+            fillPieChart(event.getId());
+            addEventHandlersToSlices();
+        });
     }
 
     /**
@@ -91,7 +94,7 @@ public class StatsCtrl implements LanguageChangeListener {
             pieChart.getData().add(slice);
         });
         totalCost = (tagAndExpense.values().stream().mapToDouble(Double::doubleValue).sum());
-        cost.setText(resourceBundle.getString("totalCost")+numberFormat.format(totalCost));
+        AnimationUtil.animateText(cost, resourceBundle.getString("totalCost")+numberFormat.format(totalCost));
 
         pieChart.getData().forEach(data ->
                 data.nameProperty().bind(
@@ -113,9 +116,11 @@ public class StatsCtrl implements LanguageChangeListener {
         for (Expense expense : expenses) {
             String tag = expense.getExpenseType();
             if (tag != null) {
-                tagAndExpense.put(tag, tagAndExpense.getOrDefault(tag, 0.0) + expense.getAmount());
+                String localizedTag = tagKeysToLocalized.getOrDefault(tag, tag);
+                tagAndExpense.put(localizedTag, tagAndExpense.getOrDefault(localizedTag, 0.0) + expense.getAmount());
             } else {
-                tagAndExpense.put("other", tagAndExpense.getOrDefault("other", 0.0) + expense.getAmount());
+                String otherTagLocalized = tagKeysToLocalized.get(TagUtils.TAG_OTHER);
+                tagAndExpense.put(otherTagLocalized, tagAndExpense.getOrDefault(otherTagLocalized, 0.0) + expense.getAmount());
             }
         }
         return tagAndExpense;
@@ -183,8 +188,9 @@ public class StatsCtrl implements LanguageChangeListener {
      */
     @Override
     public void updateUIElements() {
-        backButton.setText(resourceBundle.getString("back"));
+        AnimationUtil.animateText(backButton, resourceBundle.getString("back"));
         pieChart.setTitle(resourceBundle.getString("Pie_Chart"));
+        TagUtils.initializeTagLanguageMapping(resourceBundle, tagKeysToLocalized);
     }
 
     /**
