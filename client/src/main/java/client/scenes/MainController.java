@@ -328,12 +328,18 @@ public class MainController {
 
         participantExpenseViewScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
                     final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+                    final KeyCombination undoCombination = new KeyCodeCombination(KeyCode.Z,
+                            KeyCombination.CONTROL_DOWN);
                     public void handle(KeyEvent ke) {
 
                         if (goBackCombination.match(ke)) {
                             participantExpenseViewController.switchToEventOverviewScene();
                         }
+                        if (undoCombination.match(ke)) {
+                            participantExpenseViewController.handleUndoAction();
+                        }
                     }
+
                 }
         );
     }

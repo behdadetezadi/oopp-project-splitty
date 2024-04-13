@@ -128,7 +128,8 @@ public class AddExpenseController implements LanguageChangeListener{
 
         addExpenseButton.setText(resourceBundle.getString("Add_expense"));
         cancelButton.setText(resourceBundle.getString("Cancel"));
-
+        cancelButton.setOnAction(this::handleCancelAction);
+        addExpenseButton.setOnAction(this::handleAddExpenseAction);
         amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
         addExpenseButton.getStyleClass().add("button-hover");
         cancelButton.getStyleClass().add("button-hover");

@@ -246,6 +246,20 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
     }
 
 
+    /**
+     * overloaded handleUndoAction method to be used by keyboard shortcuts
+     */
+    @FXML
+    public void handleUndoAction() {
+        UndoableCommand undoneCommand = undoManager.undoLastCommand();
+        initializeExpensesForParticipant(selectedParticipantId);
+
+        if (undoneCommand == null) {
+            undoButton.setDisable(true);
+        }
+    }
+
+
 
     @FXML
     private void handleEditButton(Expense selectedExpense) {
