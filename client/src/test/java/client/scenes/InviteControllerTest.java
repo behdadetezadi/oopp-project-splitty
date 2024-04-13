@@ -12,9 +12,10 @@ public class InviteControllerTest {
     @Test
     void testEmails() {
 
-        String emailsAsString = "albert@hein.nl\n" +
-                "pieter@post.nl\n" +
-                "pope@gfrancis.nl";
+        String emailsAsString = """
+                albert@hein.nl
+                pieter@post.nl
+                pope@gfrancis.nl""";
 
         ArrayList<String> emails = new ArrayList<>();
         emails.add("albert@hein.nl");

@@ -3,7 +3,6 @@ package client.scenes;
 import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
-import commons.Participant;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
@@ -29,8 +28,7 @@ public class InviteController implements LanguageChangeListener {
     private TextArea emailsField;
     @FXML
     private Button submitButton;
-    @FXML
-    private AnchorPane root;
+
     @FXML
     private Label textBeforeCode;
     @FXML
@@ -67,8 +65,6 @@ public class InviteController implements LanguageChangeListener {
      */
     @FXML
     public ArrayList<String> handleSubmitButtonAction() {
-        Window owner = submitButton.getScene().getWindow();
-
         if(emailsField.getText().isEmpty()) {
             AlertUtils.showErrorAlert("Form Error!", "Error",
                     "Please enter email addresses!");
