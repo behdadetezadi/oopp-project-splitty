@@ -131,25 +131,39 @@ public class LanguageUtils {
         ResourceBundle bundle = ResourceBundle.getBundle("message", locale);
         Set<String> keys = bundle.keySet();
         String languageKey = "yourLanguageKey";
-        String filePath = "client/src/main/resources/message_" + languageKey + ".properties";
-        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
-            writer.println("# Instructions: Fill in the translations for each key below and send your file to the developer via email.\n" +
-                    "After inspection your language will be added to the application\n"+
-                    "#please make sure to change the term yourLanguageKey to the respective locale code.\n"
-                    + "#in language. key fill in the languages display name according to its own locale");
-            writer.println();
+        String folderName = "splitty_files"; // Name of the folder
+        String filePath = System.getProperty("user.home") + File.separator + folderName + File.separator + "message_" + languageKey + ".properties";
 
-            for (String key : keys) {
-                writer.println(key + "=");
-            }
-        } catch (IOException e) {
-             showErrorAlert("File Error", "IO Error", "Error making and writing the file");
-        }
         try {
-            File file = new File(filePath);
-            Desktop.getDesktop().open(file);
-        } catch (IOException e) {
-            showErrorAlert("File Error", "IO Error", "Error reading the file");
+
+            File folder = new File(System.getProperty("user.home") + File.separator + folderName);
+            if (!folder.exists()) {
+                folder.mkdirs(); // Create the folder and any necessary parent folders
+            }
+
+            try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+                writer.println("# Instructions: Fill in the translations for each key below and send your file to the developer via email.\n" +
+                        "#After inspection your language will be added to the application\n"+
+                        "#please make sure to change the term yourLanguageKey to the respective locale code.\n"
+                        + "#in language. key fill in the languages display name according to its own locale");
+                writer.println();
+
+                for (String key : keys) {
+                    writer.println(key + "=");
+                }
+            } catch (IOException e) {
+                showErrorAlert("File Error", "IO Error", "Error making and writing the file");
+            }
+
+            try {
+                File file = new File(filePath);
+                Desktop.getDesktop().open(file);
+            } catch (IOException e) {
+                showErrorAlert("File Error", "IO Error", "Error reading the file");
+            }
+        } catch (Exception e) {
+            showErrorAlert("File Error", "IO Error", "Error making and writing the file");
         }
     }
+
 }

@@ -1,5 +1,7 @@
 package client;
 
+import client.utils.AlertUtils;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -15,13 +17,12 @@ public class SplittyConfig {
 
     private void loadProperties() {
         Properties properties = new Properties();
-        try (FileInputStream fis = new FileInputStream("client/src/main/resources/application.properties")) {
+        try (FileInputStream fis = new FileInputStream("application.properties")) {
             properties.load(fis);
             splittyServerUrl = properties.getProperty("splitty.server.url").trim();
             splittyWebsocketUrl = properties.getProperty("splitty.websocket.url").trim();
         } catch (IOException e) {
-            //TODO
-            e.printStackTrace();
+            AlertUtils.showErrorAlert("Server Error", "File not Fonund", "Cannot Find application.properties please check the file in the root of the project");
         }
     }
 
