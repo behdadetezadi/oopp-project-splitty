@@ -168,7 +168,7 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
     }
 
     @FXML
-    private void switchToEventOverviewScene() {
+    public void switchToEventOverviewScene() {
         mainController.showEventOverview(event);
     }
 

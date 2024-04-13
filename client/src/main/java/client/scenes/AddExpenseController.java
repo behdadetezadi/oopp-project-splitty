@@ -277,7 +277,7 @@ public class AddExpenseController implements LanguageChangeListener{
      * switches to the event overview
      */
     @FXML
-    private void switchToEventOverviewScene() {
+    public void switchToEventOverviewScene() {
         mainController.showEventOverview(this.event);
 
     }

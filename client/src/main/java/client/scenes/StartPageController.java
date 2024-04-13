@@ -312,6 +312,7 @@ public class StartPageController implements LanguageChangeListener {
     /**
      * refreshes the events list to make sure deleted events are not included
      */
+
     public void refreshEventsList() {
         new Thread(() -> {
             List<Event> serverEvents = ServerUtils.getAllEvents();

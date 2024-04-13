@@ -225,6 +225,11 @@ public class EventOverviewController implements LanguageChangeListener {
         mainController.showStartPage();
     }
 
+    @FXML
+    void goBackToStartPage() {
+        mainController.showStartPage();
+    }
+
 
     /**
      * loads participants / Trying something and commented out initialize participants methods
