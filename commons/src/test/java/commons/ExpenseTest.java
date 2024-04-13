@@ -1,6 +1,5 @@
 package commons;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -266,6 +265,33 @@ class ExpenseTest {
         assertEquals(expectedId, expenseWithId.getId());
         assertEquals(expectedEventId, expenseWithId.getEventId());
     }
+
+    @Test
+    void setIdTest() {
+        Expense e = new Expense();
+        e.setId(12);
+        assertEquals(12, e.getId());
+    }
+
+    @Test
+    void toStringTest() {
+        Expense e = new Expense();
+
+        String expected = """ 
+                [
+                  amount=0.0
+                  category=<null>
+                  currency=<null>
+                  date=<null>
+                  eventId=<null>
+                  expenseType=<null>
+                  id=0
+                  participant=<null>
+                  splittingOption=<null>
+                ]""";
+        assertEquals(expected.replace("\n", "\r\n"), e.toString().substring(24));
+    }
+
 
 
 }
