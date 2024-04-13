@@ -13,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.List;
 
 import static client.utils.AlertUtils.showErrorAlert;
 
@@ -166,4 +167,32 @@ public class LanguageUtils {
         }
     }
 
+    /**
+     * Populate a ComboBox for language selection with the languages and flags
+     * @param activeLocale The locale to load the language resources for.
+     * @param languageComboBox The ComboBox to populate.
+     */
+    public static void populateLanguageComboBox(Locale activeLocale, ComboBox<Language> languageComboBox) {
+        String languageName = LanguageUtils.localeToLanguageName(activeLocale);
+        List<Language> languages = new ArrayList<>();
+        languages.add(new Language("English",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/english.png")))));
+        languages.add(new Language("Deutsch",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/german.png")))));
+        languages.add(new Language("Nederlands",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/dutch.png")))));
+        languages.add(new Language("Download Template",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/download.png")))));
+        for (Language language : languages) {
+            if (language.getName().equals(languageName)) {
+                languageComboBox.setValue(language);
+                break;
+            }
+        }
+        languageComboBox.setItems(FXCollections.observableArrayList(languages));
+    }
 }
