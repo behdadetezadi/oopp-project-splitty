@@ -43,12 +43,15 @@ public class ExpenseOverviewController implements LanguageChangeListener {
     }
 
     private void addExpenseToUI(Expense expense) {
-        Platform.runLater(() -> {
-            String expenseDisplay = formatExpenseForDisplay(expense, expensesListView.getItems().size() + 1);
-            expensesListView.getItems().add(expenseDisplay);
-            updateSumOfExpenses(expense.getAmount());
-        });
+        if (expense.getEventId() == this.event.getId()) {
+            Platform.runLater(() -> {
+                String expenseDisplay = formatExpenseForDisplay(expense, expensesListView.getItems().size() + 1);
+                expensesListView.getItems().add(expenseDisplay);
+                updateSumOfExpenses(expense.getAmount());
+            });
+        }
     }
+
 
     private void updateSumOfExpenses(double amount) {
         if (sumOfExpensesLabel.getText() != null && !sumOfExpensesLabel.getText().isEmpty()) {
