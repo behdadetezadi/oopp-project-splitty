@@ -167,6 +167,12 @@ public class ExpenseServiceTest {
     }
 
     @Test
+    void filterByInvolvingThrows() {
+        long participantId = -1;
+        assertThrows(IllegalArgumentException.class, () -> expenseService.filterByInvolving(participantId));
+    }
+
+    @Test
     void updateExpenseFound() {
         long expenseId = 1L;
         Expense expenseToUpdate = new Expense();

@@ -132,6 +132,13 @@ public class StartPageController implements LanguageChangeListener {
                 Label eventNameLabel = new Label(selectedEvent.getTitle());
                 eventNameLabel.setStyle("-fx-alignment: center-left;");
 
+                // Style change for selected event
+                if (isSelected() || isFocused()) {
+                    setStyle("-fx-background-color: lime;");
+                } else {
+                    setStyle("-fx-background-color: transparent;"); // Reset to default styles
+                }
+
                 // Create the remove button with an icon
                 Button removeButton = new Button();
                 removeButton.setStyle("-fx-background-color: transparent;");
@@ -207,6 +214,7 @@ public class StartPageController implements LanguageChangeListener {
         AnimationUtil.animateText(joinButton, resourceBundle.getString("join_event"));
         AnimationUtil.animateText(createEventButton, resourceBundle.getString("create_event"));
         AnimationUtil.animateText(recentEventsLabel, resourceBundle.getString("recent_events"));
+        recentEventsList.getSelectionModel().clearSelection();
         adjustComponentSizes();
     }
 
@@ -214,26 +222,16 @@ public class StartPageController implements LanguageChangeListener {
      * Set the language combo box
      */
     public void setLanguageComboBox() {
-        String languageName = LanguageUtils.localeToLanguageName(activeLocale);
-        List<Language> languages = new ArrayList<>();
-        languages.add(new Language("English",
-                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
-                        .getResourceAsStream("images/flags/english.png")))));
-        languages.add(new Language("Deutsch",
-                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
-                        .getResourceAsStream("images/flags/german.png")))));
-        languages.add(new Language("Nederlands",
-                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
-                        .getResourceAsStream("images/flags/dutch.png")))));
-        for (Language language : languages) {
-            if (language.getName().equals(languageName)) {
-                languageComboBox.setValue(language);
-                break;
-            }
-        }
-        languageComboBox.setItems(FXCollections.observableArrayList(languages));
+        LanguageUtils.populateLanguageComboBox(activeLocale, languageComboBox);
         languageComboBox.setCellFactory(listView -> new StartPageController.LanguageListCell());
         languageComboBox.setButtonCell(new StartPageController.LanguageListCell());
+    }
+
+    /**
+     * Switches the language to the next
+     */
+    void switchToNextLanguage() {
+        LanguageUtils.switchToNextLanguage(activeLocale, this, languageComboBox);
     }
 
     /**
@@ -257,9 +255,11 @@ public class StartPageController implements LanguageChangeListener {
     /**
      * join Meeting
      */
-    public void joinEvent() {
+    @FXML
+    void joinEvent() {
         String inviteCode = codeInput.getText();
         try {
+            Long.parseLong(inviteCode);
             Event event = ServerUtils.getEventByInviteCode(inviteCode);
 
             if (event != null) {
@@ -289,7 +289,8 @@ public class StartPageController implements LanguageChangeListener {
     /**
      * create an Event
      */
-    public void createEvent() {
+    @FXML
+    void createEvent() {
         String eventName = eventNameInput.getText();
         if (eventName.isEmpty()) {
             showErrorAlert(resourceBundle.getString("Event_name_cannot_be_empty."));
@@ -323,9 +324,36 @@ public class StartPageController implements LanguageChangeListener {
     }
 
     /**
+     * Cycles through recent events to make a selection
+     */
+    void cycleThroughEvents() {
+        if (!events.isEmpty()) {
+            int currentIndex = recentEventsList.getSelectionModel().getSelectedIndex();
+            int nextIndex = (currentIndex + 1) % events.size();
+            recentEventsList.getSelectionModel().select(nextIndex);
+            recentEventsList.scrollTo(nextIndex);
+
+            if (!recentEventsList.isFocused()) {
+                recentEventsList.requestFocus();
+            }
+        }
+    }
+
+    /**
+     * Invoked when a key combination is pressed to join the selected event.
+     */
+    void joinSelectedEvent() {
+        Event selectedEvent = recentEventsList.getSelectionModel().getSelectedItem();
+        if (selectedEvent != null) {
+            mainController.showEventOverview(selectedEvent);
+        }
+    }
+
+    /**
      * goes back to the login page
      */
-    public void logout() {
+    @FXML
+    void logout() {
         try {
             mainController.showLoginPage();
         } catch (IllegalStateException e) {

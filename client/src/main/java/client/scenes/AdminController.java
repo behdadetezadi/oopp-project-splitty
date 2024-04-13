@@ -360,17 +360,12 @@ public class AdminController implements LanguageChangeListener {
     }
 
     /**
-     * Goes back to the loginpage
+     * Goes back to the login page
      */
     @FXML
-    public void logout() {
-        try {
-            mainController.refreshEventsList();
-
-            mainController.showLoginPage();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        }
+    void logout() {
+        mainController.refreshEventsList();
+        mainController.showLoginPage();
     }
 
     /**

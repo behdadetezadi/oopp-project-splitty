@@ -229,35 +229,10 @@ public class AddExpenseController implements LanguageChangeListener{
     }
     /**
      * Handles the action to undo the last added expense.
-     * @param event The action event triggered by clicking the Undo button.
      */
     @FXML
-    private void handleUndoAction(ActionEvent event) {
-        UndoableCommand undoneCommand = undoManager.undoLastCommand();
-
-        if (undoManager.getExecutedCommands().isEmpty()) {
-            expenseDescription.clear();
-            amountPaid.clear();
-            undoButton.setDisable(true);
-            return;
-        }
-        UndoableCommand lastCommand = undoManager.getExecutedCommands().peek();
-        if (lastCommand instanceof AddExpenseCommand addExpenseCommand) {
-            Expense lastExpense = addExpenseCommand.getAddedExpense();
-            if (lastExpense != null) {
-                expenseDescription.setText(lastExpense.getCategory());
-                amountPaid.setText(String.valueOf(lastExpense.getAmount()));
-            }
-        }
-    }
-
-
-    /**
-     * overloaded method to be used by keyboard shortcuts
-     */
-    @FXML
-    public void handleUndoAction() {
-        UndoableCommand undoneCommand = undoManager.undoLastCommand();
+    void handleUndoAction() {
+        undoManager.undoLastCommand();
 
         if (undoManager.getExecutedCommands().isEmpty()) {
             expenseDescription.clear();
@@ -301,7 +276,7 @@ public class AddExpenseController implements LanguageChangeListener{
      * switches to the event overview
      */
     @FXML
-    public void switchToEventOverviewScene() {
+    void switchToEventOverviewScene() {
         mainController.showEventOverview(this.event);
 
     }
