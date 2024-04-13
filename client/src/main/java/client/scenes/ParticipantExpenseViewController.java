@@ -164,7 +164,18 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
     }
 
     private String formatExpenseForDisplay(Expense expense) {
-        return String.format("%s: %.2f", expense.getCategory(), expense.getAmount());
+        return String.format("%s: $%.2f (%s)",
+                expense.getCategory(),
+                expense.getAmount(),
+                getLocalisedTag(expense.getExpenseType()));
+    }
+
+    String getLocalisedTag(String tag) {
+        return tagKeysToLocalized.entrySet().stream()
+                .filter(entry -> entry.getKey().equals(tag))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(tag);
     }
 
     public void initializeExpensesForParticipant(Long participantId) {
@@ -173,7 +184,7 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
         expensesListView.getItems().clear();
         if (expenses.isEmpty()) {
             expensesListView.getItems().add(resourceBundle.getString("noExpensesRecorded"));
-            sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"), "0.00"));
+            AnimationUtil.animateText(sumOfExpensesLabel, String.format(resourceBundle.getString("total"), "0.00"));
         } else {
             double sumOfExpenses = 0;
             for (Expense expense : expenses) {
@@ -181,7 +192,7 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
                 expensesListView.getItems().add(expenseDisplay);
                 sumOfExpenses += expense.getAmount();
             }
-            sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"), String.format("%.2f", sumOfExpenses)));
+            AnimationUtil.animateText(sumOfExpensesLabel, String.format(resourceBundle.getString("total"), String.format("%.2f", sumOfExpenses)));
         }
 
         expensesListView.setCellFactory(listView -> new ListCell<String>() {
