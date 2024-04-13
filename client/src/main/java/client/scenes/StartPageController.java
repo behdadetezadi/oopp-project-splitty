@@ -1,10 +1,7 @@
 package client.scenes;
 
 import client.Language;
-import client.utils.AnimationUtil;
-import client.utils.LanguageChangeListener;
-import client.utils.LanguageUtils;
-import client.utils.ServerUtils;
+import client.utils.*;
 import commons.Event;
 import jakarta.inject.Inject;
 import javafx.animation.PauseTransition;
@@ -56,9 +53,9 @@ public class StartPageController implements LanguageChangeListener {
     private ResourceBundle resourceBundle;
     private Locale activeLocale;
 
-    private Stage primaryStage;
-    private MainController mainController;
-    private ObservableList<Event> events = FXCollections.observableArrayList();
+    private final Stage primaryStage;
+    private final MainController mainController;
+    private final ObservableList<Event> events = FXCollections.observableArrayList();
 
     /**
      *
@@ -141,9 +138,7 @@ public class StartPageController implements LanguageChangeListener {
                 removeButton.setGraphic(removeImage);
 
                 // Remove the event from the list when remove button is pressed
-                removeButton.setOnAction(removeEvent -> {
-                    events.remove(selectedEvent);
-                });
+                removeButton.setOnAction(removeEvent -> events.remove(selectedEvent));
 
                 // HBox with label and the button
                 HBox cellBox = new HBox(eventNameLabel, removeButton);
@@ -232,8 +227,8 @@ public class StartPageController implements LanguageChangeListener {
             }
         }
         languageComboBox.setItems(FXCollections.observableArrayList(languages));
-        languageComboBox.setCellFactory(listView -> new StartPageController.LanguageListCell());
-        languageComboBox.setButtonCell(new StartPageController.LanguageListCell());
+        languageComboBox.setCellFactory(listView -> new LanguageListCell());
+        languageComboBox.setButtonCell(new LanguageListCell());
     }
 
     /**
@@ -267,23 +262,11 @@ public class StartPageController implements LanguageChangeListener {
                 recentEventsList.setItems(events);
                 mainController.showEventOverview(event);
             } else {
-                showErrorAlert(resourceBundle.getString("Invalid_invite_code._Please_try_again."));
+                AlertUtils.showErrorAlert("Error", "Error", resourceBundle.getString("Invalid_invite_code._Please_try_again."));
             }
         } catch (NumberFormatException e) {
-            showErrorAlert(resourceBundle.getString("Invalid_invite_code._Please_try_again."));
+            AlertUtils.showErrorAlert("Error", "Error", resourceBundle.getString("Invalid_invite_code._Please_try_again."));
         }
-    }
-
-    /**
-     *
-     * @param message message of the error
-     */
-    private void showErrorAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     /**
@@ -292,7 +275,7 @@ public class StartPageController implements LanguageChangeListener {
     public void createEvent() {
         String eventName = eventNameInput.getText();
         if (eventName.isEmpty()) {
-            showErrorAlert(resourceBundle.getString("Event_name_cannot_be_empty."));
+            AlertUtils.showErrorAlert("Error", "Error", resourceBundle.getString("Event_name_cannot_be_empty."));
             return;
         }
 
@@ -305,7 +288,7 @@ public class StartPageController implements LanguageChangeListener {
             recentEventsList.setItems(events);
             mainController.showEventOverview(createdEvent);
         } else {
-            showErrorAlert(resourceBundle.getString("Failed_to_create_event._Please_try_again."));
+            AlertUtils.showErrorAlert("Error", "Error", resourceBundle.getString("Failed_to_create_event._Please_try_again."));
         }
     }
 
@@ -315,9 +298,7 @@ public class StartPageController implements LanguageChangeListener {
     public void refreshEventsList() {
         new Thread(() -> {
             List<Event> serverEvents = ServerUtils.getAllEvents();
-            Platform.runLater(() -> {
-                events.removeIf(event -> !serverEvents.contains(event));
-            });
+            Platform.runLater(() -> events.removeIf(event -> !serverEvents.contains(event)));
         }).start();
     }
 
@@ -332,7 +313,7 @@ public class StartPageController implements LanguageChangeListener {
         }
     }
 
-    private class LanguageListCell extends ListCell<Language> {
+    private static class LanguageListCell extends ListCell<Language> {
         @Override
         protected void updateItem(Language item, boolean empty) {
             super.updateItem(item, empty);
