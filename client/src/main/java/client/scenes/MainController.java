@@ -251,11 +251,17 @@ public class MainController {
 
         expenseScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
                     final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+
+                    final KeyCombination undoCombination = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
                     public void handle(KeyEvent ke) {
 
                         if (goBackCombination.match(ke)) {
                             expenseCtrl.switchToEventOverviewScene();
                         }
+                        if (undoCombination.match(ke)) {
+                            expenseCtrl.handleUndoAction();
+                        }
+
                     }
                 }
         );

@@ -128,8 +128,7 @@ public class AddExpenseController implements LanguageChangeListener{
 
         addExpenseButton.setText(resourceBundle.getString("Add_expense"));
         cancelButton.setText(resourceBundle.getString("Cancel"));
-        cancelButton.setOnAction(this::handleCancelAction);
-        addExpenseButton.setOnAction(this::handleAddExpenseAction);
+
         amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
         addExpenseButton.getStyleClass().add("button-hover");
         cancelButton.getStyleClass().add("button-hover");
@@ -233,6 +232,30 @@ public class AddExpenseController implements LanguageChangeListener{
      */
     @FXML
     private void handleUndoAction(ActionEvent event) {
+        UndoableCommand undoneCommand = undoManager.undoLastCommand();
+
+        if (undoManager.getExecutedCommands().isEmpty()) {
+            expenseDescription.clear();
+            amountPaid.clear();
+            undoButton.setDisable(true);
+            return;
+        }
+        UndoableCommand lastCommand = undoManager.getExecutedCommands().peek();
+        if (lastCommand instanceof AddExpenseCommand addExpenseCommand) {
+            Expense lastExpense = addExpenseCommand.getAddedExpense();
+            if (lastExpense != null) {
+                expenseDescription.setText(lastExpense.getCategory());
+                amountPaid.setText(String.valueOf(lastExpense.getAmount()));
+            }
+        }
+    }
+
+
+    /**
+     * overloaded method to be used by keyboard shortcuts
+     */
+    @FXML
+    public void handleUndoAction() {
         UndoableCommand undoneCommand = undoManager.undoLastCommand();
 
         if (undoManager.getExecutedCommands().isEmpty()) {
