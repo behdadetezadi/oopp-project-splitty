@@ -57,6 +57,10 @@ public class MainController {
             KeyCode.C, KeyCombination.CONTROL_DOWN);
     private final KeyCombination joinEventCombination = new KeyCodeCombination(
             KeyCode.J, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination cycleRecentEventsCombination = new KeyCodeCombination(
+            KeyCode.E, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination joinSelectedEventCombination = new KeyCodeCombination(
+            KeyCode.ENTER, KeyCombination.CONTROL_DOWN);
     private final KeyCombination addExpenseCombination = new KeyCodeCombination(
             KeyCode.W, KeyCombination.CONTROL_DOWN);
     private final KeyCombination showSendInvitesCombination = new KeyCodeCombination(
@@ -117,6 +121,8 @@ public class MainController {
                 startPageController::logout,
                 new Pair<>(createEventCombination, startPageController::createEvent),
                 new Pair<>(joinEventCombination, startPageController::joinEvent),
+                new Pair<>(cycleRecentEventsCombination, startPageController::cycleThroughEvents),
+                new Pair<>(joinSelectedEventCombination, startPageController::joinSelectedEvent),
                 new Pair<>(switchLanguageCombination, startPageController::switchToNextLanguage)
         );
 
