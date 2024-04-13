@@ -207,7 +207,8 @@ public class MainController {
                     eventOverviewController.addExpense();
                 }
             }
-        });
+        }
+        );
     }
 
     /**
@@ -273,6 +274,19 @@ public class MainController {
         expenseOverviewController.setEvent(event);
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), expenseOverviewController);
         expenseOverviewController.initializeExpensesForEvent(event);
+
+        expenseOverviewScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            final KeyCombination showStatsCombination = new KeyCodeCombination(KeyCode.S,
+                    KeyCombination.CONTROL_DOWN);
+            public void handle(KeyEvent ke) {
+                if (showStatsCombination.match(ke)) {
+                    expenseOverviewController.switchToStatistics();
+                    ke.consume(); // <-- stops passing the event to next node
+                }
+
+            }
+        }
+        );
     }
 
     /**
