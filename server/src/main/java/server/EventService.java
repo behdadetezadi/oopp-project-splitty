@@ -347,10 +347,6 @@ public class EventService {
                 .filter(expense -> expense.getParticipant() != null && expense.getParticipant().getId() == participantId)
                 .collect(Collectors.toList());
 
-        if (filteredExpenses.isEmpty()) {
-            throw new NoSuchElementException("No expenses found for participant ID: " + participantId + " in event ID: " + eventId);
-        }
-
         return filteredExpenses;
     }
 }
