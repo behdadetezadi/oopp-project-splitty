@@ -3,6 +3,7 @@ package client.utils;
 import client.Language;
 import client.scenes.MainController;
 import client.scenes.StartPageController;
+import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 
@@ -29,12 +30,25 @@ public class LanguageUtils {
      */
     public static void switchLanguage(String language, LanguageChangeListener listener) {
         Locale locale = switch (language) {
-            case "English" -> Locale.ENGLISH;
             case "Deutsch" -> Locale.GERMAN;
             case "Nederlands" -> new Locale("nl");
             default -> Locale.ENGLISH;
         };
         loadLanguage(locale, listener);
+    }
+
+    /**
+     * Changes the language to the next one in the list, rolling over to the first after the last.
+     * @param currentLocale The current locale
+     * @param listener The LanguageChangeListener that will have its language switched
+     */
+    public static void switchToNextLanguage(Locale currentLocale, LanguageChangeListener listener) {
+        List<Locale> locales = Arrays.asList(Locale.ENGLISH, Locale.GERMAN, new Locale("nl"));
+        int currentLocaleIndex = locales.indexOf(currentLocale);
+        Locale nextLocale = (currentLocaleIndex == -1 || currentLocaleIndex == locales.size() - 1)
+                ? locales.get(0)
+                : locales.get(currentLocaleIndex + 1);
+        loadLanguage(nextLocale, listener);
     }
 
     /**
@@ -66,5 +80,31 @@ public class LanguageUtils {
             String selectedLanguage = languageComboBox.getValue().getName();
             switchLanguage(selectedLanguage, listener);
         });
+    }
+
+    /**
+     * Populate a ComboBox for language selection with the languages and flags
+     * @param activeLocale The locale to load the language resources for.
+     * @param languageComboBox The ComboBox to populate.
+     */
+    public static void populateLanguageComboBox(Locale activeLocale, ComboBox<Language> languageComboBox) {
+        String languageName = LanguageUtils.localeToLanguageName(activeLocale);
+        List<Language> languages = new ArrayList<>();
+        languages.add(new Language("English",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/english.png")))));
+        languages.add(new Language("Deutsch",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/german.png")))));
+        languages.add(new Language("Nederlands",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/flags/dutch.png")))));
+        for (Language language : languages) {
+            if (language.getName().equals(languageName)) {
+                languageComboBox.setValue(language);
+                break;
+            }
+        }
+        languageComboBox.setItems(FXCollections.observableArrayList(languages));
     }
 }

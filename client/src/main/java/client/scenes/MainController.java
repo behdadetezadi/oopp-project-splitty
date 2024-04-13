@@ -53,7 +53,7 @@ public class MainController {
     private Scene loginScene;
     private static final String LANGUAGE_PREFERENCE_KEY = "language";
     private final Locale locale = getStoredLanguagePreferenceOrDefault();
-    private final KeyCombination createEventCombination = new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination createEventCombination = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
     private final KeyCombination joinEventCombination = new KeyCodeCombination(KeyCode.J, KeyCombination.CONTROL_DOWN);
     private final KeyCombination addExpenseCombination = new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN);
     private final KeyCombination showStatsCombination = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
