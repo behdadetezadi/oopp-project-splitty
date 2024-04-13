@@ -53,13 +53,26 @@ public class StatsCtrl implements LanguageChangeListener {
     }
 
     /**
-     * Initialises the UI components and event handlers if an event is provided.
+     * Initialises the UI components with the right language.
      * This method is called automatically by JavaFX after loading the FXML file.
      */
-    public void initialize(Event event) {
-        this.event = event;
+    public void initialize() {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
+    }
+
+    /**
+     * Sets the current event
+     * @param event event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    /**
+     * initializes the pie chart and its functions
+     */
+    public void initializePieChart() {
         fillPieChart(event.getId());
         addEventHandlersToSlices();
     }
