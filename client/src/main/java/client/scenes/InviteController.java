@@ -66,9 +66,7 @@ public class InviteController implements LanguageChangeListener {
      * @return an array list containing all email addresses to be processed further
      */
     @FXML
-    ArrayList<String> handleSubmitButtonAction() {
-        Window owner = submitButton.getScene().getWindow();
-
+    public ArrayList<String> handleSubmitButtonAction() {
         if(emailsField.getText().isEmpty()) {
             AlertUtils.showErrorAlert("Form Error!", "Error",
                     "Please enter email addresses!");
@@ -76,25 +74,30 @@ public class InviteController implements LanguageChangeListener {
         }
 
         String emailAddressesAsString = emailsField.getText();
-        Scanner scanner = new Scanner(emailAddressesAsString);
-        ArrayList<String> emailAddresses = new ArrayList<>();
-        boolean flag = false; // hack. needs a better alternative
-        while(scanner.hasNext()) {
-            String temp = scanner.next();
-
-            if(!ValidationUtils.isValidEmail(temp)) {
-                AlertUtils.showErrorAlert("Invalid email!", "Error",
-                        temp + " is not a valid email address! " +
-                                "Email must be in a valid format (e.g., user@example.com).");
-                flag = true;
-            } else {
-                emailAddresses.add(temp);
+        ArrayList<String> result =  handleSubmitButtonActionLogic(emailAddressesAsString);
+        for (String s : result) {
+            if (!ValidationUtils.isValidEmail(s)) {
+                AlertUtils.showErrorAlert("Error: invalid email!", s, "is not a valid email address!");
+                return  null;
             }
         }
+        AlertUtils.showConfirmationAlert("Invites send!", "Invites sent successfully");
 
-        if (!flag) {
-            AlertUtils.showInformationAlert("Invites send!", "Information",
-                    "Invites sent successfully");
+        return result;
+
+    }
+
+
+    /**
+     * method that takes the logic part out of the handler of the submit button so that it can be tested
+     * @param emailAddressesAsString list containing all email addresses
+     */
+    public static ArrayList<String> handleSubmitButtonActionLogic(String emailAddressesAsString) {
+        Scanner scanner = new Scanner(emailAddressesAsString);
+        ArrayList<String> emailAddresses = new ArrayList<>();
+        while(scanner.hasNext()) {
+            String temp = scanner.next();
+            emailAddresses.add(temp);
         }
         return emailAddresses;
     }
@@ -158,7 +161,7 @@ public class InviteController implements LanguageChangeListener {
      *
      */
     @FXML
-    void handleBackButtonAction() {
+    public void handleBackButtonAction() {
         try {
             mainController.showEventOverview(event);
         } catch (IllegalStateException e) {
