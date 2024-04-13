@@ -58,7 +58,56 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
         this.mainController = mainController;
         this.event = event;
         this.undoManager = undoManager;
+        server.registerForExpenses("/topic/expense", event.getId(), this::addExpenseToUI);
+
     }
+    private void addExpenseToUI(Expense expense) {
+        if (expense.getEventId() == this.event.getId() && expense.getParticipant().getId() == this.selectedParticipantId) {
+            Platform.runLater(() -> {
+                updateExpenseListView(expense);
+                updateSumOfExpenses(expense.getAmount());
+            });
+        }
+    }
+
+    private void updateExpenseListView(Expense expense) {
+        String expenseDisplay = formatExpenseForDisplay(expense);
+        expensesListView.getItems().add(expenseDisplay);
+        expensesListView.setCellFactory(listView -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(item);
+                    Button editButton = new Button("Edit");
+                    Button deleteButton = new Button("Delete");
+                    editButton.setOnAction(e -> handleEditButton(expense));
+                    deleteButton.setOnAction(e -> handleDeleteButton(expense));
+                    HBox buttonsBox = new HBox(10, editButton, deleteButton);
+                    setGraphic(buttonsBox);
+                }
+            }
+        });
+    }
+
+
+    private void updateSumOfExpenses(double amount) {
+        try {
+            String text = sumOfExpensesLabel.getText();
+            double total = 0.0;
+            if (text != null && !text.isEmpty()) {
+                total = Double.parseDouble(text.split(": ")[1].trim());
+            }
+            sumOfExpensesLabel.setText("Total: " + String.format("%.2f", total + amount));
+        } catch (NumberFormatException e) {
+            System.err.println("Error updating expenses total: " + e.getMessage());
+        }
+    }
+
+
 
     /**
      * Initialize method
@@ -69,11 +118,14 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
         LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
         undoButton.setMnemonicParsing(true);
         undoButton.setOnAction(this::handleUndoAction);
+        initializeExpensesForParticipant(this.selectedParticipantId);
     }
 
     public void setEvent(Event event, long participantId) {
         this.event = event;
         this.selectedParticipantId = participantId;
+        initializeExpensesForParticipant(participantId);
+
     }
 
     /**

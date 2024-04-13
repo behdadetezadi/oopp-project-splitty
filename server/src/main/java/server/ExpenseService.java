@@ -90,9 +90,6 @@ public class ExpenseService {
             throw new IllegalArgumentException("Participant ID must be positive.");
         }
         List<Expense> expenses = expenseRepository.findAllByParticipantId(participantId);
-        if (expenses.isEmpty()) {
-            throw new NoSuchElementException("No expenses found for participant ID: " + participantId);
-        }
         return expenses;
     }
 
