@@ -179,6 +179,11 @@ public class MainController {
                 }
         );
     }
+    public void refreshEventsList() {
+        startPageController.refreshEventsList();
+    }
+
+
     /**
      * shows the StartPage
      */
@@ -189,7 +194,6 @@ public class MainController {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), startPageController);
         startPageController.setLanguageComboBox();
-        startPageController.refreshEventsList();
 
         startScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
                     final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
