@@ -165,6 +165,19 @@ public class MainController {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), adminController);
         adminController.fetchAndPopulateEvents();
+
+        adminScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+                    final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+
+                    public void handle(KeyEvent ke) {
+                        if (goBackCombination.match(ke)) {
+                            adminController.logout();
+                            ke.consume();
+                        }
+
+                    }
+                }
+        );
     }
     /**
      * shows the StartPage
@@ -177,6 +190,19 @@ public class MainController {
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), startPageController);
         startPageController.setLanguageComboBox();
         startPageController.refreshEventsList();
+
+        startScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+                    final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+
+                    public void handle(KeyEvent ke) {
+                        if (goBackCombination.match(ke)) {
+                            startPageController.logout();
+                            ke.consume();
+                        }
+
+                    }
+                }
+        );
     }
 
     /**
