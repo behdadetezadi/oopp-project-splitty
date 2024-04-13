@@ -80,38 +80,58 @@ public class MainController {
                            Pair<StatsCtrl, Parent> statsPair
                            )
     {
+        KeyCombination createEventCombination = new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN);
+        KeyCombination addExpenseCombination = new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN);
+        KeyCombination showStatsCombination = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
+        KeyCombination undoCombination = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
 
         this.primaryStage = primaryStage;
 
         this.startScene = new Scene(startPair.getValue());
         this.startPageController = startPair.getKey();
+        KeyboardUtils.addDefaultKeyboardShortcuts(startScene, startPageController::logout,
+                startPageController::createEvent, createEventCombination);
 
         this.eventOverviewScene = new Scene(eventOverviewPair.getValue());
         this.eventOverviewController = eventOverviewPair.getKey();
+        KeyboardUtils.addDefaultKeyboardShortcuts(eventOverviewScene,
+                eventOverviewController::goBackToStartPage, eventOverviewController::addExpense, addExpenseCombination);
 
         this.expenseScene = new Scene(expensePair.getValue());
         this.expenseCtrl = expensePair.getKey();
+        KeyboardUtils.addDefaultKeyboardShortcuts(expenseScene,
+                expenseCtrl::switchToEventOverviewScene, expenseCtrl::handleUndoAction, undoCombination);
 
         this.participantExpenseViewScene=new Scene(participantExpenseViewControllerPair.getValue());
         this.participantExpenseViewController=participantExpenseViewControllerPair.getKey();
+        KeyboardUtils.addDefaultKeyboardShortcuts(participantExpenseViewScene,
+                participantExpenseViewController::switchToEventOverviewScene,
+                participantExpenseViewController::handleUndoAction, undoCombination);
 
         this.expenseOverviewScene=new Scene(expenseOverviewControllerPair.getValue());
         this.expenseOverviewController=expenseOverviewControllerPair.getKey();
+        KeyboardUtils.addDefaultKeyboardShortcuts(expenseOverviewScene,
+                expenseOverviewController::switchToEventOverviewScene,
+                expenseOverviewController::switchToStatistics, showStatsCombination);
 
         this.tableOfParticipantsScene = new Scene(tableOfParticipantsControllerPair.getValue());
         this.tableOfParticipantsController = tableOfParticipantsControllerPair.getKey();
+        KeyboardUtils.addSimpleBackShortcut(tableOfParticipantsScene, tableOfParticipantsController::handleBackButton);
 
         this.inviteScene = new Scene(inviteControllerPair.getValue());
         this.inviteController =  inviteControllerPair.getKey();
+        KeyboardUtils.addSimpleBackShortcut(inviteScene, inviteController::handleBackButtonAction);
 
         this.adminScene = new Scene(adminControllerPair.getValue());
         this.adminController = adminControllerPair.getKey();
+        KeyboardUtils.addSimpleBackShortcut(adminScene, adminController::logout);
 
         this.loginScene = new Scene(loginControllerPair.getValue());
         this.loginController = loginControllerPair.getKey();
 
         this.statisticsScene = new Scene(statsPair.getValue());
         this.statsController = statsPair.getKey();
+        KeyboardUtils.addSimpleBackShortcut(statisticsScene, statsController::switchToExpenseOverviewScene);
 
         // Show initial scene
         showLoginPage();
@@ -162,10 +182,9 @@ public class MainController {
     public void showAdminPage() {
         primaryStage.setTitle("Admin Page");
         primaryStage.setScene(adminScene);
-        // Loads the active locale, sets the resource bundle, updates the UI, and adds keyboard shortcuts
+        // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), adminController);
         adminController.fetchAndPopulateEvents();
-        KeyboardUtils.addSimpleBackShortcut(adminScene, adminController::logout);
     }
 
     /**
@@ -183,12 +202,9 @@ public class MainController {
         primaryStage.setTitle("Start Page");
         startPageController.clearTextFields();
         primaryStage.setScene(startScene);
-        // Loads the active locale, sets the resource bundle, updates the UI, and adds keyboard shortcuts
+        // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), startPageController);
         startPageController.setLanguageComboBox();
-        KeyCombination createEventCombination = new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN);
-        KeyboardUtils.addDefaultKeyboardShortcuts(startScene, startPageController::logout,
-                startPageController::createEvent, createEventCombination);
     }
 
     /**
@@ -200,12 +216,9 @@ public class MainController {
         primaryStage.setScene(eventOverviewScene);
         eventOverviewController.setEvent(event);
         eventOverviewController.refreshParticipants();
-        // Loads the active locale, sets the resource bundle, updates the UI, and adds keyboard shortcuts
+        // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), eventOverviewController);
         eventOverviewController.setLanguageComboBox();
-        KeyCombination addExpenseCombination = new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN);
-        KeyboardUtils.addDefaultKeyboardShortcuts(eventOverviewScene,
-                eventOverviewController::goBackToStartPage, eventOverviewController::addExpense, addExpenseCombination);
     }
 
     /**
@@ -218,11 +231,8 @@ public class MainController {
         expenseCtrl.clearTextFields();
         primaryStage.setScene(expenseScene);
         expenseCtrl.setEvent(event, participantId);
-        // Loads the active locale, sets the resource bundle, updates the UI, and adds keyboard shortcuts
+        // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), expenseCtrl);
-        KeyCombination undoCombination = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
-        KeyboardUtils.addDefaultKeyboardShortcuts(expenseScene,
-                expenseCtrl::switchToEventOverviewScene, expenseCtrl::handleUndoAction, undoCombination);
     }
 
     /**
@@ -233,10 +243,8 @@ public class MainController {
         primaryStage.setTitle("Participants");
         primaryStage.setScene(tableOfParticipantsScene);
         tableOfParticipantsController.setEvent(event);
-        // Loads the active locale, sets the resource bundle, updates the UI, and adds keyboard shortcuts
+        // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), tableOfParticipantsController);
-        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), tableOfParticipantsController);
-        KeyboardUtils.addSimpleBackShortcut(tableOfParticipantsScene, tableOfParticipantsController::handleBackButton);
     }
 
     /**
@@ -247,11 +255,8 @@ public class MainController {
         primaryStage.setTitle("InvitePage");
         primaryStage.setScene(inviteScene);
         inviteController.setEvent(event);
-        // Loads the active locale, sets the resource bundle, updates the UI, and adds keyboard shortcuts
+        // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), inviteController);
-        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), inviteController);
-        KeyboardUtils.addSimpleBackShortcut(inviteScene, inviteController::handleBackButtonAction);
-
     }
 
     /**
@@ -263,13 +268,9 @@ public class MainController {
         primaryStage.setTitle("Participant Expenses Overview");
         primaryStage.setScene(participantExpenseViewScene);
         participantExpenseViewController.setEvent(event,participantId);
-        // Loads the active locale, sets the resource bundle, updates the UI, and adds keyboard shortcuts
+        // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), participantExpenseViewController);
         participantExpenseViewController.initializeExpensesForParticipant(participantId);
-        KeyCombination undoCombination = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
-        KeyboardUtils.addDefaultKeyboardShortcuts(participantExpenseViewScene,
-                participantExpenseViewController::switchToEventOverviewScene,
-                participantExpenseViewController::handleUndoAction, undoCombination);
     }
 
     /**
@@ -279,14 +280,10 @@ public class MainController {
     public void showExpenseOverview(Event event) {
         primaryStage.setTitle("Expenses Overview");
         primaryStage.setScene(expenseOverviewScene);
-        // Loads the active locale, sets the resource bundle, updates the UI, and adds keyboard shortcuts
+        // Loads the active locale, sets the resource bundle, and updates the UI
         expenseOverviewController.setEvent(event);
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), expenseOverviewController);
         expenseOverviewController.initializeExpensesForEvent(event);
-        KeyCombination showStatsCombination = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
-        KeyboardUtils.addDefaultKeyboardShortcuts(expenseOverviewScene,
-                expenseOverviewController::switchToEventOverviewScene,
-                expenseOverviewController::switchToStatistics, showStatsCombination);
     }
 
     /**
@@ -297,10 +294,9 @@ public class MainController {
     {
         primaryStage.setTitle("Statistics");
         primaryStage.setScene(statisticsScene);
-        // Loads the active locale, sets the resource bundle, updates the UI, and adds keyboard shortcuts
+        // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), statsController);
         statsController.initialize(event);
-        KeyboardUtils.addSimpleBackShortcut(statisticsScene, statsController::switchToExpenseOverviewScene);
     }
     /**
      * get the updated participant list of the selected event.
