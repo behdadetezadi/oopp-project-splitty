@@ -251,6 +251,30 @@ public class AddExpenseController implements LanguageChangeListener{
         }
     }
 
+
+    /**
+     * overloaded method to be used by keyboard shortcuts
+     */
+    @FXML
+    public void handleUndoAction() {
+        UndoableCommand undoneCommand = undoManager.undoLastCommand();
+
+        if (undoManager.getExecutedCommands().isEmpty()) {
+            expenseDescription.clear();
+            amountPaid.clear();
+            undoButton.setDisable(true);
+            return;
+        }
+        UndoableCommand lastCommand = undoManager.getExecutedCommands().peek();
+        if (lastCommand instanceof AddExpenseCommand addExpenseCommand) {
+            Expense lastExpense = addExpenseCommand.getAddedExpense();
+            if (lastExpense != null) {
+                expenseDescription.setText(lastExpense.getCategory());
+                amountPaid.setText(String.valueOf(lastExpense.getAmount()));
+            }
+        }
+    }
+
     /**
      * Cancel button handler
      * If you press the button, it will ask you for confirmation
@@ -277,7 +301,7 @@ public class AddExpenseController implements LanguageChangeListener{
      * switches to the event overview
      */
     @FXML
-    private void switchToEventOverviewScene() {
+    public void switchToEventOverviewScene() {
         mainController.showEventOverview(this.event);
 
     }

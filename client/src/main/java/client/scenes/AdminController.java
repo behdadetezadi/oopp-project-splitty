@@ -365,6 +365,8 @@ public class AdminController implements LanguageChangeListener {
     @FXML
     public void logout() {
         try {
+            mainController.refreshEventsList();
+
             mainController.showLoginPage();
         } catch (IllegalStateException e) {
             e.printStackTrace();
