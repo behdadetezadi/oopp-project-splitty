@@ -431,7 +431,7 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
             }
 
             // handle custom tag creation
-            DialogUtils.otherTagInputDialog(tagComboBox, resourceBundle);
+            DialogUtils.otherTagInputDialog(tagComboBox, () -> resourceBundle);
 
             Map<String, Control> formFields = new HashMap<>();
 

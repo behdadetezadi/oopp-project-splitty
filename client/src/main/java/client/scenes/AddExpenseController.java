@@ -79,7 +79,7 @@ public class AddExpenseController implements LanguageChangeListener{
         addExpenseButton.getStyleClass().add("button-hover");
         cancelButton.getStyleClass().add("button-hover");
 
-        DialogUtils.otherTagInputDialog(comboBox, resourceBundle);
+        DialogUtils.otherTagInputDialog(comboBox, () -> resourceBundle);
         undoButton.setMnemonicParsing(true);
     }
 
