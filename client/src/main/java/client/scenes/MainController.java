@@ -359,20 +359,6 @@ public class MainController {
         primaryStage.setTitle("Statistics");
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), statsController);
-        statisticsScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
-                    final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
-
-                    public void handle(KeyEvent ke) {
-                        if (goBackCombination.match(ke)) {
-                            statsController.switchToExpenseOverviewScene();
-                            ke.consume(); // <-- stops passing the event to next node
-                        }
-
-                    }
-                }
-        );
-
-
     }
 
     /**
