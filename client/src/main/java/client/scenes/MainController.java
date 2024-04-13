@@ -3,8 +3,13 @@ package client.scenes;
 import client.utils.LanguageUtils;
 import commons.Event;
 import commons.Participant;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -47,7 +52,7 @@ public class MainController {
     private LoginController loginController;
     private Scene loginScene;
     private static final String LANGUAGE_PREFERENCE_KEY = "language";
-    private Locale locale = getStoredLanguagePreferenceOrDefault();
+    private final Locale locale = getStoredLanguagePreferenceOrDefault();
 
     /**
      * initializer method for mainController
@@ -160,7 +165,25 @@ public class MainController {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), adminController);
         adminController.fetchAndPopulateEvents();
+
+        adminScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
+                    final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+
+                    public void handle(KeyEvent ke) {
+                        if (goBackCombination.match(ke)) {
+                            adminController.logout();
+                            ke.consume();
+                        }
+
+                    }
+                }
+        );
     }
+    public void refreshEventsList() {
+        startPageController.refreshEventsList();
+    }
+
+
     /**
      * shows the StartPage
      */
@@ -171,7 +194,25 @@ public class MainController {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), startPageController);
         startPageController.setLanguageComboBox();
-        startPageController.refreshEventsList();
+
+        startScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
+                    final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+                    final KeyCombination createEventCombination = new KeyCodeCombination(KeyCode.Q,
+                            KeyCombination.ALT_DOWN);
+
+                    public void handle(KeyEvent ke) {
+                        if (goBackCombination.match(ke)) {
+                            startPageController.logout();
+                            ke.consume();
+                        }
+                        else if (createEventCombination.match(ke)) {
+                            startPageController.createEvent();
+                            ke.consume();
+                        }
+
+                    }
+                }
+        );
     }
 
     /**
@@ -186,6 +227,23 @@ public class MainController {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), eventOverviewController);
         eventOverviewController.setLanguageComboBox();
+
+
+        eventOverviewScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
+            final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+            final KeyCombination addExpenseCombination = new KeyCodeCombination(KeyCode.A,
+                    KeyCombination.CONTROL_DOWN);
+            public void handle(KeyEvent ke) {
+                if (goBackCombination.match(ke)) {
+                    eventOverviewController.goBackToStartPage();
+                    ke.consume(); // <-- stops passing the event to next node
+                }
+                if (addExpenseCombination.match(ke)) {
+                    eventOverviewController.addExpense();
+                }
+            }
+        }
+        );
     }
 
     /**
@@ -200,6 +258,23 @@ public class MainController {
         expenseCtrl.setEvent(event, participantId);
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), expenseCtrl);
+
+        expenseScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
+                    final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+
+                    final KeyCombination undoCombination = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
+                    public void handle(KeyEvent ke) {
+
+                        if (goBackCombination.match(ke)) {
+                            expenseCtrl.switchToEventOverviewScene();
+                        }
+                        if (undoCombination.match(ke)) {
+                            expenseCtrl.handleUndoAction();
+                        }
+
+                    }
+                }
+        );
     }
 
     /**
@@ -212,6 +287,17 @@ public class MainController {
         tableOfParticipantsController.setEvent(event);
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), tableOfParticipantsController);
+
+        tableOfParticipantsScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
+                    final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+                    public void handle(KeyEvent ke) {
+
+                        if (goBackCombination.match(ke)) {
+                            tableOfParticipantsController.handleBackButton();
+                        }
+                    }
+                }
+        );
     }
 
     /**
@@ -224,6 +310,17 @@ public class MainController {
         inviteController.setEvent(event);
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), inviteController);
+        inviteScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
+                    final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+                    public void handle(KeyEvent ke) {
+
+                        if (goBackCombination.match(ke)) {
+                            inviteController.handleBackButtonAction();
+                        }
+                    }
+                }
+        );
+
     }
 
     /**
@@ -238,6 +335,23 @@ public class MainController {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), participantExpenseViewController);
         participantExpenseViewController.initializeExpensesForParticipant(participantId);
+
+        participantExpenseViewScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
+                    final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+                    final KeyCombination undoCombination = new KeyCodeCombination(KeyCode.Z,
+                            KeyCombination.CONTROL_DOWN);
+                    public void handle(KeyEvent ke) {
+
+                        if (goBackCombination.match(ke)) {
+                            participantExpenseViewController.switchToEventOverviewScene();
+                        }
+                        if (undoCombination.match(ke)) {
+                            participantExpenseViewController.handleUndoAction();
+                        }
+                    }
+
+                }
+        );
     }
 
     /**
@@ -251,6 +365,27 @@ public class MainController {
         expenseOverviewController.setEvent(event);
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), expenseOverviewController);
         expenseOverviewController.initializeExpensesForEvent(event);
+
+
+
+
+
+        expenseOverviewScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
+            final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+            final KeyCombination showStatsCombination = new KeyCodeCombination(KeyCode.S,
+                    KeyCombination.ALT_DOWN);
+            public void handle(KeyEvent ke) {
+                if (showStatsCombination.match(ke)) {
+                    expenseOverviewController.switchToStatistics();
+                    ke.consume(); // <-- stops passing the event to next node
+                }
+                if (goBackCombination.match(ke)) {
+                    expenseOverviewController.switchToEventOverviewScene();
+                }
+
+            }
+        }
+        );
     }
 
     /**
@@ -264,6 +399,20 @@ public class MainController {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), statsController);
         statsController.initialize(event);
+        statisticsScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
+                    final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+
+                    public void handle(KeyEvent ke) {
+                        if (goBackCombination.match(ke)) {
+                            statsController.switchToExpenseOverviewScene();
+                            ke.consume(); // <-- stops passing the event to next node
+                        }
+
+                    }
+                }
+        );
+
+
     }
     /**
      * get the updated participant list of the selected event.
@@ -272,5 +421,15 @@ public class MainController {
      */
     public List<Participant> getUpdatedParticipantList(Event event) {
         return tableOfParticipantsController.getUpdatedParticipant(event);
+    }
+
+
+    /**
+     * getter for locale. needed for checkstyle.
+     * @return users locale
+     */
+
+    public Locale getLocale() {
+        return locale;
     }
 }

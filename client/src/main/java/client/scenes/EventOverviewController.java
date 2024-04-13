@@ -221,7 +221,12 @@ public class EventOverviewController implements LanguageChangeListener {
     }
 
     @FXML
-    private void goBackToStartPage(ActionEvent event) {
+    void goBackToStartPage(ActionEvent event) {
+        mainController.showStartPage();
+    }
+
+    @FXML
+    void goBackToStartPage() {
         mainController.showStartPage();
     }
 
@@ -349,6 +354,24 @@ public class EventOverviewController implements LanguageChangeListener {
         } else {
             throw new IllegalStateException();
         }
+    }
+
+
+    /**
+     * overloaded version of addExpense to be used by keyboard shortcuts
+     */
+    @FXML
+    public void addExpense() {
+
+            ParticipantOption selectedParticipantOption = participantDropdown.getSelectionModel().getSelectedItem();
+            if(selectedParticipantOption != null) {
+                Long selectedParticipantId = selectedParticipantOption.getId();
+                mainController.showAddExpense(this.event, selectedParticipantId);
+            } else {
+                AlertUtils.showErrorAlert("Select participant", "Error",
+                        resourceBundle.getString("Please_select_for_which_participant_you_want_to_add_an_expense."));
+            }
+
     }
 
     /**

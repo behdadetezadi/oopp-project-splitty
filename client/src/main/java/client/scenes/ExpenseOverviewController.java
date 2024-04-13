@@ -145,7 +145,7 @@ public class ExpenseOverviewController implements LanguageChangeListener {
      * method to switch to the event overview page
      */
     @FXML
-    private void switchToEventOverviewScene() {
+    public void switchToEventOverviewScene() {
         mainController.showEventOverview(event);
     }
 
@@ -153,7 +153,7 @@ public class ExpenseOverviewController implements LanguageChangeListener {
      * method to switch to the stats page
      */
     @FXML
-    private void switchToStatistics() {
+    public void switchToStatistics() {
         mainController.showStatistics(event);
     }
 
