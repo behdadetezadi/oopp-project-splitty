@@ -14,6 +14,7 @@ import javafx.util.Pair;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.prefs.Preferences;
 
 /**
@@ -52,6 +53,13 @@ public class MainController {
     private Scene loginScene;
     private static final String LANGUAGE_PREFERENCE_KEY = "language";
     private final Locale locale = getStoredLanguagePreferenceOrDefault();
+    private final KeyCombination createEventCombination = new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination joinEventCombination = new KeyCodeCombination(KeyCode.J, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination addExpenseCombination = new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination showStatsCombination = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination undoCombination = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination loginAsUserCombination = new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination loginAsAdminCombination = new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN);
 
     /**
      * initializer method for mainController
@@ -80,58 +88,75 @@ public class MainController {
                            Pair<StatsCtrl, Parent> statsPair
                            )
     {
-        KeyCombination createEventCombination = new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN);
-        KeyCombination addExpenseCombination = new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN);
-        KeyCombination showStatsCombination = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
-        KeyCombination undoCombination = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
-
         this.primaryStage = primaryStage;
 
         this.startScene = new Scene(startPair.getValue());
         this.startPageController = startPair.getKey();
-        KeyboardUtils.addDefaultKeyboardShortcuts(startScene, startPageController::logout,
-                startPageController::createEvent, createEventCombination);
+        KeyboardUtils.addKeyboardShortcuts(startScene,
+                startPageController::logout,
+                new Pair<>(createEventCombination, startPageController::createEvent),
+                new Pair<>(joinEventCombination, startPageController::joinEvent)
+        );
 
         this.eventOverviewScene = new Scene(eventOverviewPair.getValue());
         this.eventOverviewController = eventOverviewPair.getKey();
-        KeyboardUtils.addDefaultKeyboardShortcuts(eventOverviewScene,
-                eventOverviewController::goBackToStartPage, eventOverviewController::addExpense, addExpenseCombination);
+        KeyboardUtils.addKeyboardShortcuts(eventOverviewScene,
+                eventOverviewController::goBackToStartPage,
+                new Pair<>(addExpenseCombination, eventOverviewController::addExpense)
+        );
 
         this.expenseScene = new Scene(expensePair.getValue());
         this.expenseCtrl = expensePair.getKey();
-        KeyboardUtils.addDefaultKeyboardShortcuts(expenseScene,
-                expenseCtrl::switchToEventOverviewScene, expenseCtrl::handleUndoAction, undoCombination);
+        KeyboardUtils.addKeyboardShortcuts(expenseScene,
+                expenseCtrl::switchToEventOverviewScene,
+                new Pair<>(undoCombination, expenseCtrl::handleUndoAction)
+        );
 
-        this.participantExpenseViewScene=new Scene(participantExpenseViewControllerPair.getValue());
-        this.participantExpenseViewController=participantExpenseViewControllerPair.getKey();
-        KeyboardUtils.addDefaultKeyboardShortcuts(participantExpenseViewScene,
+        this.participantExpenseViewScene = new Scene(participantExpenseViewControllerPair.getValue());
+        this.participantExpenseViewController = participantExpenseViewControllerPair.getKey();
+        KeyboardUtils.addKeyboardShortcuts(participantExpenseViewScene,
                 participantExpenseViewController::switchToEventOverviewScene,
-                participantExpenseViewController::handleUndoAction, undoCombination);
+                new Pair<>(undoCombination, participantExpenseViewController::handleUndoAction)
+        );
 
-        this.expenseOverviewScene=new Scene(expenseOverviewControllerPair.getValue());
-        this.expenseOverviewController=expenseOverviewControllerPair.getKey();
-        KeyboardUtils.addDefaultKeyboardShortcuts(expenseOverviewScene,
+        this.expenseOverviewScene = new Scene(expenseOverviewControllerPair.getValue());
+        this.expenseOverviewController = expenseOverviewControllerPair.getKey();
+        KeyboardUtils.addKeyboardShortcuts(expenseOverviewScene,
                 expenseOverviewController::switchToEventOverviewScene,
-                expenseOverviewController::switchToStatistics, showStatsCombination);
+                new Pair<>(showStatsCombination, expenseOverviewController::switchToStatistics)
+        );
 
         this.tableOfParticipantsScene = new Scene(tableOfParticipantsControllerPair.getValue());
         this.tableOfParticipantsController = tableOfParticipantsControllerPair.getKey();
-        KeyboardUtils.addSimpleBackShortcut(tableOfParticipantsScene, tableOfParticipantsController::handleBackButton);
+        KeyboardUtils.addKeyboardShortcuts(tableOfParticipantsScene,
+                tableOfParticipantsController::handleBackButton
+        );
 
         this.inviteScene = new Scene(inviteControllerPair.getValue());
         this.inviteController =  inviteControllerPair.getKey();
-        KeyboardUtils.addSimpleBackShortcut(inviteScene, inviteController::handleBackButtonAction);
+        KeyboardUtils.addKeyboardShortcuts(inviteScene,
+                inviteController::handleBackButtonAction
+        );
 
         this.adminScene = new Scene(adminControllerPair.getValue());
         this.adminController = adminControllerPair.getKey();
-        KeyboardUtils.addSimpleBackShortcut(adminScene, adminController::logout);
+        KeyboardUtils.addKeyboardShortcuts(adminScene,
+                adminController::logout
+        );
 
         this.loginScene = new Scene(loginControllerPair.getValue());
         this.loginController = loginControllerPair.getKey();
+        KeyboardUtils.addKeyboardShortcuts(loginScene,
+                null,
+                new Pair<>(loginAsUserCombination, loginController::handleUserLogin),
+                new Pair<>(loginAsAdminCombination, loginController::handleAdminLoginPrompt)
+        );
 
         this.statisticsScene = new Scene(statsPair.getValue());
         this.statsController = statsPair.getKey();
-        KeyboardUtils.addSimpleBackShortcut(statisticsScene, statsController::switchToExpenseOverviewScene);
+        KeyboardUtils.addKeyboardShortcuts(statisticsScene,
+                statsController::switchToExpenseOverviewScene
+        );
 
         // Show initial scene
         showLoginPage();

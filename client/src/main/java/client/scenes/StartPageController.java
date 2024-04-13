@@ -260,6 +260,7 @@ public class StartPageController implements LanguageChangeListener {
     public void joinEvent() {
         String inviteCode = codeInput.getText();
         try {
+            Long.parseLong(inviteCode);
             Event event = ServerUtils.getEventByInviteCode(inviteCode);
 
             if (event != null) {

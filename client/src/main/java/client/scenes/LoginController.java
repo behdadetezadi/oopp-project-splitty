@@ -130,7 +130,7 @@ public class LoginController implements LanguageChangeListener{
      * Transitions to the start page upon user login action.
      */
     @FXML
-    private void handleUserLogin() {
+    public void handleUserLogin() {
         mainController.showStartPage();
     }
 
@@ -138,7 +138,7 @@ public class LoginController implements LanguageChangeListener{
      * Displays admin login prompt and processes authentication.
      */
     @FXML
-    private void handleAdminLoginPrompt() {
+    public void handleAdminLoginPrompt() {
         TextInputDialog passwordDialog = new TextInputDialog();
         passwordDialog.setTitle("Admin Login");
         passwordDialog.setHeaderText("Admin Authentication");
