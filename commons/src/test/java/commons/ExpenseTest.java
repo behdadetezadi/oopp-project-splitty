@@ -1,6 +1,5 @@
 package commons;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -266,6 +265,21 @@ class ExpenseTest {
         assertEquals(expectedId, expenseWithId.getId());
         assertEquals(expectedEventId, expenseWithId.getEventId());
     }
+
+    @Test
+    void setIdTest() {
+        Expense e = new Expense();
+        e.setId(12);
+        assertEquals(12, e.getId());
+    }
+
+    @Test
+    void toStringTest() {
+        Expense e = new Expense();
+
+        assertEquals(e.toString(), e.toString());
+    }
+
 
 
 }

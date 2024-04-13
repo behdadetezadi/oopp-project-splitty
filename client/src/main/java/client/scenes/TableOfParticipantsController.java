@@ -176,7 +176,7 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * switching back to the event overview page
      */
     @FXML
-    public void handleBackButton() {
+    void handleBackButton() {
         mainController.showEventOverview(event);
     }
 

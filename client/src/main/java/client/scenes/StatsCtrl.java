@@ -141,7 +141,7 @@ public class StatsCtrl implements LanguageChangeListener {
      * switch to expenseOverview
      */
     @FXML
-    public void switchToExpenseOverviewScene() {
+    void switchToExpenseOverviewScene() {
         mainController.showExpenseOverview(event);
     }
 
