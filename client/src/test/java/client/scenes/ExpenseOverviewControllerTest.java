@@ -16,6 +16,14 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExpenseOverviewControllerTest {
+    @Test
+    void tagLanguageSwitch() {
+        ExpenseOverviewController eoc = new ExpenseOverviewController(null, null, null, null);
+        String expenseType = "testType";
+        assertEquals(expenseType, eoc.tagLanguageSwitch(expenseType));
+
+
+    }
 
 //    @Test
 //    void testFormatExpenseForDisplay() {
