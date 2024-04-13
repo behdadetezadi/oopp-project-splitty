@@ -198,14 +198,14 @@ public class MainController {
         startScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
                     final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
                     final KeyCombination createEventCombination = new KeyCodeCombination(KeyCode.Q,
-                            KeyCombination.CONTROL_DOWN);
+                            KeyCombination.ALT_DOWN);
 
                     public void handle(KeyEvent ke) {
                         if (goBackCombination.match(ke)) {
                             startPageController.logout();
                             ke.consume();
                         }
-                        if (createEventCombination.match(ke)) {
+                        else if (createEventCombination.match(ke)) {
                             startPageController.createEvent();
                             ke.consume();
                         }
@@ -373,7 +373,7 @@ public class MainController {
         expenseOverviewScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
             final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
             final KeyCombination showStatsCombination = new KeyCodeCombination(KeyCode.S,
-                    KeyCombination.CONTROL_DOWN);
+                    KeyCombination.ALT_DOWN);
             public void handle(KeyEvent ke) {
                 if (showStatsCombination.match(ke)) {
                     expenseOverviewController.switchToStatistics();
