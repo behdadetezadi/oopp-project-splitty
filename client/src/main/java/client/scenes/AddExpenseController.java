@@ -7,6 +7,7 @@ import client.utils.undoable.UndoableCommand;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
+import commons.ExpenseRequest;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -201,17 +202,18 @@ public class AddExpenseController implements LanguageChangeListener{
             Expense newExpense = new Expense(ServerUtils.findParticipantById(selectedParticipantId), category,
                     amountValue, event.getId());
             newExpense.setExpenseType(selectedTag);
-            addedExpenseCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> Platform.runLater(() -> {
-                if (expense != null) {
-                    Platform.runLater(() -> undoButton.setDisable(false));
-                    AlertUtils.showInformationAlert(resourceBundle.getString("Expense_Added"), "Information",
-                            resourceBundle.getString("The_expense_has_been_successfully_added."));
-                    Platform.runLater(() -> undoButton.setDisable(false));
-                } else {
-                    AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Unexpected_Error"),
-                            resourceBundle.getString("An_unexpected_error_occurred"));
-                }
-            }), resourceBundle);
+            addedExpenseCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> {
+                Platform.runLater(() -> {
+                    if (expense != null) {
+                        undoButton.setDisable(false);
+                        AlertUtils.showInformationAlert(resourceBundle.getString("Expense_Added"), "Information",
+                                resourceBundle.getString("The_expense_has_been_successfully_added."));
+                    } else {
+                        AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Unexpected_Error"),
+                                resourceBundle.getString("An_unexpected_error_occurred"));
+                    }
+                });
+            }, resourceBundle);
             undoManager.executeCommand(addedExpenseCommand);
         } catch (NumberFormatException e) {
             AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_Amount"), resourceBundle.getString("error"),

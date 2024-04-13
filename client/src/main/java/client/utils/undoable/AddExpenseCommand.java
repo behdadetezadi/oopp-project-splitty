@@ -24,6 +24,7 @@ public class AddExpenseCommand implements UndoableCommand {
     }
 
     private ResourceBundle resourceBundle;
+    private ServerUtils server = new ServerUtils();
 
     /**
      * Constructs an {@code AddExpenseCommand} with the necessary information to add an expense.
@@ -56,6 +57,7 @@ public class AddExpenseCommand implements UndoableCommand {
                         eventId,
                         addedExpense.getExpenseType()
                 );
+                server.send("/topic/expense",savedExpense);
 
                 if (savedExpense != null && savedExpense.getId() != 0) {
 

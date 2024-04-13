@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -38,7 +39,28 @@ public class ExpenseOverviewController implements LanguageChangeListener {
         this.server = server;
         this.mainController = mainController;
         this.event = event;
+        server.registerForExpenses("/topic/expense", event.getId(), this::addExpenseToUI);
     }
+
+    private void addExpenseToUI(Expense expense) {
+        Platform.runLater(() -> {
+            String expenseDisplay = formatExpenseForDisplay(expense, expensesListView.getItems().size() + 1);
+            expensesListView.getItems().add(expenseDisplay);
+            updateSumOfExpenses(expense.getAmount());
+        });
+    }
+
+    private void updateSumOfExpenses(double amount) {
+        if (sumOfExpensesLabel.getText() != null && !sumOfExpensesLabel.getText().isEmpty()) {
+            String currentTotal = sumOfExpensesLabel.getText().substring(resourceBundle.getString("total").length()).trim();
+            double total = Double.parseDouble(currentTotal) + amount;
+            sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"), String.format("%.2f", total)));
+        } else {
+            sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"), String.format("%.2f", amount)));
+        }
+    }
+
+
 
     /**
      * Initialize method
@@ -47,6 +69,8 @@ public class ExpenseOverviewController implements LanguageChangeListener {
     public void initialize() {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
+        initializeExpensesForEvent(this.event);
+
     }
     /**
      * Set the event and initialize expenses
@@ -121,7 +145,6 @@ public class ExpenseOverviewController implements LanguageChangeListener {
 
         return displayBuilder.toString();
     }
-//    }
 
     /**
      * makes sure the language switch works with the tags
