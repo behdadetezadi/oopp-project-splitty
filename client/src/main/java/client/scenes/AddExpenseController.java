@@ -81,7 +81,6 @@ public class AddExpenseController implements LanguageChangeListener{
 
         DialogUtils.otherTagInputDialog(comboBox, resourceBundle);
         undoButton.setMnemonicParsing(true);
-        undoButton.setOnAction(this::handleUndoAction);
     }
 
     /**

@@ -291,12 +291,9 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
      */
     @FXML
     void handleUndoAction() {
-        UndoableCommand undoneCommand = undoManager.undoLastCommand();
+        undoManager.undoLastCommand();
+        undoButton.setDisable(true);
         initializeExpensesForParticipant(selectedParticipantId);
-
-        if (undoneCommand == null) {
-            undoButton.setDisable(true);
-        }
     }
 
 
