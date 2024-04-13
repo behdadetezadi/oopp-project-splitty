@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ParticipantOptionTest {
+class ParticipantOptionTest {
 
     @Test
     public void participantOptionTest() {
@@ -12,7 +12,6 @@ public class ParticipantOptionTest {
         assertEquals(21, p.getId());
         assertEquals("Eliot", p.toString());
     }
-
 
 
 }
