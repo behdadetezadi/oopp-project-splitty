@@ -52,7 +52,7 @@ public class MainController {
     private LoginController loginController;
     private Scene loginScene;
     private static final String LANGUAGE_PREFERENCE_KEY = "language";
-    private Locale locale = getStoredLanguagePreferenceOrDefault();
+    private final Locale locale = getStoredLanguagePreferenceOrDefault();
 
     /**
      * initializer method for mainController
@@ -166,7 +166,7 @@ public class MainController {
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), adminController);
         adminController.fetchAndPopulateEvents();
 
-        adminScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+        adminScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
                     final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
 
                     public void handle(KeyEvent ke) {
@@ -191,7 +191,7 @@ public class MainController {
         startPageController.setLanguageComboBox();
         startPageController.refreshEventsList();
 
-        startScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+        startScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
                     final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
 
                     public void handle(KeyEvent ke) {
@@ -219,7 +219,7 @@ public class MainController {
         eventOverviewController.setLanguageComboBox();
 
 
-        eventOverviewScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+        eventOverviewScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
             final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
             final KeyCombination addExpenseCombination = new KeyCodeCombination(KeyCode.A,
                     KeyCombination.CONTROL_DOWN);
@@ -249,7 +249,7 @@ public class MainController {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), expenseCtrl);
 
-        expenseScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+        expenseScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
                     final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
 
                     final KeyCombination undoCombination = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
@@ -278,7 +278,7 @@ public class MainController {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), tableOfParticipantsController);
 
-        tableOfParticipantsScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+        tableOfParticipantsScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
                     final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
                     public void handle(KeyEvent ke) {
 
@@ -300,7 +300,7 @@ public class MainController {
         inviteController.setEvent(event);
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), inviteController);
-        inviteScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+        inviteScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
                     final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
                     public void handle(KeyEvent ke) {
 
@@ -326,7 +326,7 @@ public class MainController {
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), participantExpenseViewController);
         participantExpenseViewController.initializeExpensesForParticipant(participantId);
 
-        participantExpenseViewScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+        participantExpenseViewScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
                     final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
                     final KeyCombination undoCombination = new KeyCodeCombination(KeyCode.Z,
                             KeyCombination.CONTROL_DOWN);
@@ -360,7 +360,7 @@ public class MainController {
 
 
 
-        expenseOverviewScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+        expenseOverviewScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
             final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
             final KeyCombination showStatsCombination = new KeyCodeCombination(KeyCode.S,
                     KeyCombination.CONTROL_DOWN);
@@ -397,5 +397,15 @@ public class MainController {
      */
     public List<Participant> getUpdatedParticipantList(Event event) {
         return tableOfParticipantsController.getUpdatedParticipant(event);
+    }
+
+
+    /**
+     * getter for locale. needed for checkstyle.
+     * @return users locale
+     */
+
+    public Locale getLocale() {
+        return locale;
     }
 }
