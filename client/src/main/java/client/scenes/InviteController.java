@@ -75,29 +75,36 @@ public class InviteController implements LanguageChangeListener {
             return null;
         }
 
-        String emailAddressesAsString = emailsField.getText();
-        Scanner scanner = new Scanner(emailAddressesAsString);
-        ArrayList<String> emailAddresses = new ArrayList<>();
-        boolean flag = false; // hack. needs a better alternative
-        while(scanner.hasNext()) {
-            String temp = scanner.next();
 
-            if(!ValidationUtils.isValidEmail(temp)) {
-                AlertUtils.showErrorAlert("Invalid email!", "Error",
-                        temp + " is not a valid email address! " +
-                                "Email must be in a valid format (e.g., user@example.com).");
-                flag = true;
-            } else {
-                emailAddresses.add(temp);
+        String emailAddressesAsString = emailsField.getText();
+        ArrayList<String> result =  handleSubmitButtonActionLogic(emailAddressesAsString);
+        for (String s : result) {
+            if (!ValidationUtils.isValidEmail(s)) {
+                AlertUtils.showErrorAlert("Error: invalid email!", s, "is not a valid email address!");
+                return  null;
             }
         }
+        AlertUtils.showConfirmationAlert("Invites send!", "Invites sent successfully");
 
-        if (!flag) {
-            AlertUtils.showInformationAlert("Invites send!", "Information",
-                    "Invites sent successfully");
+        return result;
+
+    }
+
+
+    /**
+     * method that takes the logic part out of the handler of the submit button so that it can be tested
+     * @param emailAddressesAsString list containing all email addresses
+     */
+    public static ArrayList<String> handleSubmitButtonActionLogic(String emailAddressesAsString) {
+        Scanner scanner = new Scanner(emailAddressesAsString);
+        ArrayList<String> emailAddresses = new ArrayList<>();
+        while(scanner.hasNext()) {
+            String temp = scanner.next();
+            emailAddresses.add(temp);
         }
         return emailAddresses;
     }
+
 
     /**
      * method that sets title and invite code according to passed event
