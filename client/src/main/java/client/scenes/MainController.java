@@ -193,10 +193,16 @@ public class MainController {
 
         startScene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<>() {
                     final KeyCombination goBackCombination = new KeyCodeCombination(KeyCode.ESCAPE);
+                    final KeyCombination createEventCombination = new KeyCodeCombination(KeyCode.Q,
+                            KeyCombination.CONTROL_DOWN);
 
                     public void handle(KeyEvent ke) {
                         if (goBackCombination.match(ke)) {
                             startPageController.logout();
+                            ke.consume();
+                        }
+                        if (createEventCombination.match(ke)) {
+                            startPageController.createEvent();
                             ke.consume();
                         }
 
