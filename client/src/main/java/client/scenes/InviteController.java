@@ -66,7 +66,7 @@ public class InviteController implements LanguageChangeListener {
      * @return an array list containing all email addresses to be processed further
      */
     @FXML
-    public ArrayList<String> handleSubmitButtonAction() {
+    ArrayList<String> handleSubmitButtonAction() {
         if(emailsField.getText().isEmpty()) {
             AlertUtils.showErrorAlert("Form Error!", "Error",
                     "Please enter email addresses!");
@@ -81,7 +81,8 @@ public class InviteController implements LanguageChangeListener {
                 return  null;
             }
         }
-        AlertUtils.showConfirmationAlert("Invites send!", "Invites sent successfully");
+        AlertUtils.showInformationAlert("Invites send!", "Information",
+                "Invites sent successfully");
 
         return result;
 
@@ -91,8 +92,9 @@ public class InviteController implements LanguageChangeListener {
     /**
      * method that takes the logic part out of the handler of the submit button so that it can be tested
      * @param emailAddressesAsString list containing all email addresses
+     * @return list of email addresses
      */
-    public static ArrayList<String> handleSubmitButtonActionLogic(String emailAddressesAsString) {
+    static ArrayList<String> handleSubmitButtonActionLogic(String emailAddressesAsString) {
         Scanner scanner = new Scanner(emailAddressesAsString);
         ArrayList<String> emailAddresses = new ArrayList<>();
         while(scanner.hasNext()) {
@@ -158,16 +160,10 @@ public class InviteController implements LanguageChangeListener {
 
     /**
      * handler of the button that takes you back to the overview scene
-     *
      */
     @FXML
-    public void handleBackButtonAction() {
-        try {
-            mainController.showEventOverview(event);
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-
-        }
+    void handleBackButtonAction() {
+        mainController.showEventOverview(event);
     }
 
     /**

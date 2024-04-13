@@ -247,6 +247,7 @@ public class StartPageController implements LanguageChangeListener {
     /**
      * join Meeting
      */
+    @FXML
     void joinEvent() {
         String inviteCode = codeInput.getText();
         try {
@@ -280,6 +281,7 @@ public class StartPageController implements LanguageChangeListener {
     /**
      * create an Event
      */
+    @FXML
     void createEvent() {
         String eventName = eventNameInput.getText();
         if (eventName.isEmpty()) {
@@ -316,6 +318,7 @@ public class StartPageController implements LanguageChangeListener {
     /**
      * goes back to the login page
      */
+    @FXML
     void logout() {
         try {
             mainController.showLoginPage();
