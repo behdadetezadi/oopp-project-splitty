@@ -13,17 +13,18 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import javax.swing.*;
+import java.util.*;
 
 public class ExpenseOverviewController implements LanguageChangeListener {
     @FXML
     private Button backButton;
     @FXML
-    private ListView<String> expensesListView; // Assuming this ListView is defined in your FXML
+    private ListView<String> expensesListView;
     @FXML
     private Label sumOfExpensesLabel;
+    @FXML
+    private Button statisticsButton;
     private ServerUtils server;
     private MainController mainController;
     private Stage primaryStage;
@@ -47,6 +48,13 @@ public class ExpenseOverviewController implements LanguageChangeListener {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
     }
+    /**
+     * Set the event and initialize expenses
+     * @param event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
+    }
 
     /**
      * sets the resource bundle
@@ -55,6 +63,7 @@ public class ExpenseOverviewController implements LanguageChangeListener {
     @Override
     public void setResourceBundle(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;
+
     }
 
     /**
@@ -80,6 +89,7 @@ public class ExpenseOverviewController implements LanguageChangeListener {
      */
     public void updateUIElements() {
         backButton.setText(resourceBundle.getString("back"));
+        statisticsButton.setText(resourceBundle.getString("Show_Statistics"));
     }
 
     /**
@@ -96,6 +106,8 @@ public class ExpenseOverviewController implements LanguageChangeListener {
         String expenseTemplate = resourceBundle.getString("expenseDetail");
         StringBuilder displayBuilder = new StringBuilder(String.format(expenseTemplate, expenseNumber, expense.getParticipant().getFirstName(), expense.getAmount(), expense.getCategory()));
 
+        displayBuilder.append(String.format(resourceBundle.getString("tagTitle"),this.tagLanguageSwitch(expense.getExpenseType())));
+        displayBuilder.append(resourceBundle.getString("DebtDetail"));
         String participantOwesTemplate = resourceBundle.getString("participantOwes");
         for (Participant participant : mainController.getUpdatedParticipantList(event)) {
             if (!participant.equals(expense.getParticipant())) {
@@ -109,17 +121,49 @@ public class ExpenseOverviewController implements LanguageChangeListener {
 
         return displayBuilder.toString();
     }
+//    }
 
+    /**
+     * makes sure the language switch works with the tags
+     * @param expenseType the tag
+     * @return the string in the right language
+     */
+    public String tagLanguageSwitch(String expenseType) {
+        switch (expenseType) {
+            case "Food":
+                return resourceBundle.getString("tagFood");
+            case "EntranceFees":
+                return resourceBundle.getString("tagEntranceFees");
+            case "Travel":
+                return resourceBundle.getString("tagTravel");
+            default:
+                return expenseType;
+        }
+    }
+
+    /**
+     * method to switch to the event overview page
+     */
     @FXML
     private void switchToEventOverviewScene() {
         mainController.showEventOverview(event);
-
     }
 
+    /**
+     * method to switch to the stats page
+     */
+    @FXML
+    private void switchToStatistics() {
+        mainController.showStatistics(event);
+    }
+
+    /**
+     * initialises the expenses for an event
+     * @param event the event
+     */
     public void initializeExpensesForEvent(Event event) {
-        this.event = event;
         try {
-            List<Expense> expenses = server.getExpensesForEvent(this.event.getId());
+            List<Expense> expenses = server.getExpensesForEvent(event.getId());
             expensesListView.getItems().clear(); // Clear existing items
             double sumOfExpenses = 0;
             for (int i=0;i<expenses.size();i++) {
@@ -136,26 +180,11 @@ public class ExpenseOverviewController implements LanguageChangeListener {
         } catch (RuntimeException ex) {
             // Handle case where no expenses are found
             expensesListView.getItems().clear();
-            expensesListView.getItems().add("No expenses recorded yet.");
-            sumOfExpensesLabel.setText("Total: $0.00");
+            expensesListView.getItems().add(String.format(resourceBundle.getString("NoExpense")));
+            sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total")));
         }
     }
 
-    public ListView<String> getExpensesListView() {
-        return expensesListView;
-    }
-
-    public Label getSumOfExpensesLabel() {
-        return sumOfExpensesLabel;
-    }
-
-    public void setExpensesListView(ListView<String> expensesListView) {
-        this.expensesListView = expensesListView;
-    }
-
-    public void setSumOfExpensesLabel(Label sumOfExpensesLabel) {
-        this.sumOfExpensesLabel = sumOfExpensesLabel;
-    }
 }
 
 

@@ -14,9 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-import java.util.Locale;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 
@@ -40,7 +38,7 @@ public class AddExpenseController implements LanguageChangeListener{
     private Label participantLabel;
     @FXML
     private ComboBox<String> comboBox;
-    private String[] tags = {"Food", "Entrance fees", "Travel", "Other"};
+    private String[] tags = {"Food", "EntranceFees", "Travel", "Other"};
     @FXML
     private Button undoButton;
     private Event event;
@@ -48,9 +46,9 @@ public class AddExpenseController implements LanguageChangeListener{
     private AddExpenseCommand addedExpenseCommand;
     private UndoManager undoManager;
 
-
+    private Map<String, String> tagToEnglishMap = new HashMap<>();
     /**
-     *
+     * constructor
      * @param primaryStage primary stage
      * @param server server
      * @param mainController mainController
@@ -70,40 +68,10 @@ public class AddExpenseController implements LanguageChangeListener{
      * initialize method
      */
     @FXML
-    public void initialize() {
+    public void initialize(Event event) {
+        this.event = event;
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
-
-        cancelButton.setOnAction(this::handleCancelAction);
-        addExpenseButton.setOnAction(this::handleAddExpenseAction);
-        amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
-        addExpenseButton.getStyleClass().add("button-hover");
-        cancelButton.getStyleClass().add("button-hover");
-
-        for (String tag : tags) {
-            if (!comboBox.getItems().contains(tag)) {
-                comboBox.getItems().add(tag);
-            }
-        }
-        comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if ("Other".equals(newValue)) {
-                TextInputDialog dialog = new TextInputDialog();
-                dialog.setTitle("New Tag");
-                dialog.setHeaderText("Enter a new tag:");
-                dialog.setContentText("Tag:");
-                String cssPath = this.getClass().getResource("/styles.css").toExternalForm();
-                dialog.getDialogPane().getScene().getStylesheets().add(cssPath);
-                Optional<String> result = dialog.showAndWait();
-                result.ifPresent(tag -> {
-                    if (!tag.isEmpty() && !comboBox.getItems().contains(tag)) {
-                        comboBox.getItems().add(tag);
-                        comboBox.getSelectionModel().select(tag);
-                    }
-                });
-            }
-        });
-        undoButton.setMnemonicParsing(true);
-        undoButton.setOnAction(this::handleUndoAction);
     }
 
 
@@ -151,11 +119,46 @@ public class AddExpenseController implements LanguageChangeListener{
      */
     public void updateUIElements() {
         AnimationUtil.animateText(expenseFor, resourceBundle.getString("Add_Expense_for"));
-        AnimationUtil.animateText(participantLabel, resourceBundle.getString("participant"));
+        AnimationUtil.animateText(participantLabel,ServerUtils.getParticipant(selectedParticipantId).getFirstName()
+                 + " " + ServerUtils.getParticipant(selectedParticipantId).getLastName());
         AnimationUtil.animateText(expenseDescription, resourceBundle.getString("Expense"));
         AnimationUtil.animateText(amountPaid, resourceBundle.getString("Amount_paid"));
         AnimationUtil.animateText(cancelButton, resourceBundle.getString("Cancel"));
         AnimationUtil.animateText(addExpenseButton, resourceBundle.getString("Add_expense"));
+
+        addExpenseButton.setText(resourceBundle.getString("Add_expense"));
+        cancelButton.setText(resourceBundle.getString("Cancel"));
+        cancelButton.setOnAction(this::handleCancelAction);
+        addExpenseButton.setOnAction(this::handleAddExpenseAction);
+        amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
+        addExpenseButton.getStyleClass().add("button-hover");
+        cancelButton.getStyleClass().add("button-hover");
+
+        comboBox.getItems().clear();
+        comboBox.getItems().addAll(
+                resourceBundle.getString("tagFood"),
+                resourceBundle.getString("tagEntranceFees"),
+                resourceBundle.getString("tagTravel"),
+                resourceBundle.getString("tagOther")
+        );
+
+        comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && newValue.equals(resourceBundle.getString("tagOther"))) {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle(resourceBundle.getString("New_Tag"));
+                dialog.setHeaderText(resourceBundle.getString("Enter_new_tag"));
+                dialog.setContentText(resourceBundle.getString("Tag") + ":");
+                String cssPath = this.getClass().getResource("/styles.css").toExternalForm();
+                dialog.getDialogPane().getScene().getStylesheets().add(cssPath);
+                Optional<String> result = dialog.showAndWait();
+                result.ifPresent(tag -> {
+                    if (!tag.isEmpty() && !comboBox.getItems().contains(tag)) {
+                        comboBox.getItems().add(tag);
+                        comboBox.getSelectionModel().select(tag);
+                    }
+                });
+            }
+        });
     }
 
     /**

@@ -15,9 +15,14 @@
     <center>
         <AnchorPane>
             <VBox alignment="CENTER" layoutX="29.0" layoutY="-41.0" prefHeight="453.0" prefWidth="543.0" spacing="10.0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
-                <Label fx:id="expenseFor" prefHeight="38.0" prefWidth="151.0" text="%Add_Expense_for" />
-                <Label fx:id="participantLabel" prefHeight="16.0" prefWidth="160.0" text="%participant" />
-                <TextField fx:id="expenseDescription" promptText="%Category" />
+                <HBox alignment="CENTER" spacing="10">
+                    <Label fx:id="expenseFor" prefHeight="38.0" prefWidth="151.0" text="%Add_Expense_for" />
+                </HBox>
+                <HBox alignment="CENTER" spacing="10">
+
+                <Label fx:id="participantLabel" prefHeight="16.0" prefWidth="160.0" text="participant" />
+                </HBox>
+            <TextField fx:id="expenseDescription" promptText="%Category" />
                 <TextField fx:id="amountPaid" promptText="%Amount_paid" />
                 <ComboBox fx:id="comboBox" prefHeight="30.0" minWidth="75.0" promptText="%Tag" />
                 <HBox alignment="CENTER" spacing="10.0">

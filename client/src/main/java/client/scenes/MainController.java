@@ -31,6 +31,9 @@ public class MainController {
     private Scene participantExpenseViewScene;
     private ExpenseOverviewController expenseOverviewController;
     private Scene expenseOverviewScene;
+    private StatsCtrl statsController;
+
+    private Scene statisticsScene;
 
     private TableOfParticipantsController tableOfParticipantsController;
     private Scene tableOfParticipantsScene;
@@ -68,7 +71,9 @@ public class MainController {
                            Pair<TableOfParticipantsController, Parent> tableOfParticipantsControllerPair,
                            Pair<InviteController, Parent> inviteControllerPair,
                            Pair<LoginController, Parent> loginControllerPair,
-                           Pair<AdminController, Parent> adminControllerPair)
+                           Pair<AdminController, Parent> adminControllerPair,
+                           Pair<StatsCtrl, Parent> statsPair
+                           )
     {
 
         this.primaryStage = primaryStage;
@@ -99,6 +104,9 @@ public class MainController {
 
         this.loginScene = new Scene(loginControllerPair.getValue());
         this.loginController = loginControllerPair.getKey();
+
+        this.statisticsScene = new Scene(statsPair.getValue());
+        this.statsController = statsPair.getKey();
 
         // Show initial scene
         showLoginPage();
@@ -240,8 +248,22 @@ public class MainController {
         primaryStage.setTitle("Expenses Overview");
         primaryStage.setScene(expenseOverviewScene);
         // Loads the active locale, sets the resource bundle, and updates the UI
+        expenseOverviewController.setEvent(event);
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), expenseOverviewController);
         expenseOverviewController.initializeExpensesForEvent(event);
+    }
+
+    /**
+     * Shows the expense overview
+     * @param event The event to show overview for.
+     */
+    public void showStatistics(Event event)
+    {
+        primaryStage.setTitle("Statistics");
+        primaryStage.setScene(statisticsScene);
+        // Loads the active locale, sets the resource bundle, and updates the UI
+        LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), statsController);
+        statsController.initialize(event);
     }
     /**
      * get the updated participant list of the selected event.
