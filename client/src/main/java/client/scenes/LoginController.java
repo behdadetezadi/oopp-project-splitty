@@ -1,31 +1,24 @@
 package client.scenes;
 
-import client.utils.ServerUtils;
 import client.Language;
-import client.utils.AnimationUtil;
-import client.utils.LanguageChangeListener;
-import client.utils.AlertUtils;
-import client.utils.LanguageUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import javafx.scene.control.ComboBox;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.*;
 
 public class LoginController implements LanguageChangeListener{
     private ResourceBundle resourceBundle;
     private Locale activeLocale;
-    private Stage primaryStage;
+    private final Stage primaryStage;
     private MainController mainController;
     private String adminPassword;
     @FXML
@@ -140,10 +133,10 @@ public class LoginController implements LanguageChangeListener{
     @FXML
     private void handleAdminLoginPrompt() {
         TextInputDialog passwordDialog = new TextInputDialog();
-        passwordDialog.setTitle("Admin Login");
-        passwordDialog.setHeaderText("Admin Authentication");
-        passwordDialog.setContentText("Please enter admin password:");
-        String cssPath = this.getClass().getResource("/styles.css").toExternalForm();
+        passwordDialog.setTitle(resourceBundle.getString("Admin_Login"));
+        passwordDialog.setHeaderText(resourceBundle.getString("Admin_Authentication"));
+        passwordDialog.setContentText(resourceBundle.getString("Please_enter_admin_password"));
+        String cssPath = Objects.requireNonNull(this.getClass().getResource("/styles.css")).toExternalForm();
         passwordDialog.getDialogPane().getScene().getStylesheets().add(cssPath);
 
         Optional<String> result = passwordDialog.showAndWait();
@@ -151,7 +144,7 @@ public class LoginController implements LanguageChangeListener{
             if (password.equals(adminPassword)) {
                 mainController.showAdminPage();
             } else {
-                AlertUtils.showErrorAlert("Invalid Password", "Error", "The password you have entered is incorrect, please try again.");
+                AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_Password"), "Error", resourceBundle.getString("InvalidPassword"));
             }
         });
     }
