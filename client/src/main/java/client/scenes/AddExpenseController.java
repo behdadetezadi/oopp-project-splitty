@@ -16,12 +16,10 @@ import javafx.stage.Stage;
 
 import java.util.*;
 
-
-
 public class AddExpenseController implements LanguageChangeListener{
-    private ServerUtils server;
-    private MainController mainController;
-    private Stage primaryStage;
+    private final ServerUtils server;
+    private final MainController mainController;
+    private final Stage primaryStage;
     private Locale activeLocale;
     private ResourceBundle resourceBundle;
     @FXML
@@ -38,15 +36,13 @@ public class AddExpenseController implements LanguageChangeListener{
     private Label participantLabel;
     @FXML
     private ComboBox<String> comboBox;
-    private String[] tags = {"Food", "EntranceFees", "Travel", "Other"};
     @FXML
     private Button undoButton;
     private Event event;
     private long selectedParticipantId;
     private AddExpenseCommand addedExpenseCommand;
-    private UndoManager undoManager;
+    private final UndoManager undoManager;
 
-    private Map<String, String> tagToEnglishMap = new HashMap<>();
     /**
      * constructor
      * @param primaryStage primary stage
@@ -148,7 +144,7 @@ public class AddExpenseController implements LanguageChangeListener{
                 dialog.setTitle(resourceBundle.getString("New_Tag"));
                 dialog.setHeaderText(resourceBundle.getString("Enter_new_tag"));
                 dialog.setContentText(resourceBundle.getString("Tag") + ":");
-                String cssPath = this.getClass().getResource("/styles.css").toExternalForm();
+                String cssPath = Objects.requireNonNull(this.getClass().getResource("/styles.css")).toExternalForm();
                 dialog.getDialogPane().getScene().getStylesheets().add(cssPath);
                 Optional<String> result = dialog.showAndWait();
                 result.ifPresent(tag -> {
@@ -205,26 +201,24 @@ public class AddExpenseController implements LanguageChangeListener{
             Expense newExpense = new Expense(ServerUtils.findParticipantById(selectedParticipantId), category,
                     amountValue, event.getId());
             newExpense.setExpenseType(selectedTag);
-            addedExpenseCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> {
-                Platform.runLater(() -> {
-                    if (expense != null) {
-                        Platform.runLater(() -> undoButton.setDisable(false));
-                        AlertUtils.showInformationAlert(resourceBundle.getString("Expense_Added"), "Information",
-                                resourceBundle.getString("The_expense_has_been_successfully_added."));
-                        Platform.runLater(() -> {
-                            undoButton.setDisable(false);
-                        });
-                    } else {
-                        AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Unexpected_Error"),
-                                resourceBundle.getString("An_unexpected_error_occurred"));
-                    }
-                });
-            }, resourceBundle);
+            addedExpenseCommand = new AddExpenseCommand(newExpense, event.getId(), expense -> Platform.runLater(() -> {
+                if (expense != null) {
+                    Platform.runLater(() -> undoButton.setDisable(false));
+                    AlertUtils.showInformationAlert(resourceBundle.getString("Expense_Added"), "Information",
+                            resourceBundle.getString("The_expense_has_been_successfully_added."));
+                    Platform.runLater(() -> undoButton.setDisable(false));
+                } else {
+                    AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Unexpected_Error"),
+                            resourceBundle.getString("An_unexpected_error_occurred"));
+                }
+            }), resourceBundle);
             undoManager.executeCommand(addedExpenseCommand);
         } catch (NumberFormatException e) {
-            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_Amount"), resourceBundle.getString("error"), resourceBundle.getString("Please_enter_a_valid_amount"));
+            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_Amount"), resourceBundle.getString("error"),
+                    resourceBundle.getString("Please_enter_a_valid_amount"));
         } catch (RuntimeException e) {
-            AlertUtils.showErrorAlert(resourceBundle.getString("Unexpected_Error"), resourceBundle.getString("error"), resourceBundle.getString("An_unexpected_error_occurred") + e.getMessage());
+            AlertUtils.showErrorAlert(resourceBundle.getString("Unexpected_Error"), resourceBundle.getString("error"),
+                    resourceBundle.getString("An_unexpected_error_occurred") + e.getMessage());
         }
     }
     /**
@@ -259,15 +253,9 @@ public class AddExpenseController implements LanguageChangeListener{
      */
     @FXML
     public void handleCancelAction(ActionEvent event) {
-        if (event.getSource() instanceof Button) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Cancel add expense");
-            alert.setHeaderText(null);
-            alert.setContentText(resourceBundle.getString("Are_you_sure_you_want_to_cancel?"));
-            if (alert.showAndWait().get() == ButtonType.OK) {
-                // Switch to the EventOverview scene using MainController
-                mainController.showEventOverview(this.event); // You may need to pass the event object if required
-            }
+        if (AlertUtils.showConfirmationAlert(resourceBundle.getString("CancelAddExpense"),
+                resourceBundle.getString("Are_you_sure_you_want_to_cancel?"))) {
+            mainController.showEventOverview(this.event);
         } else {
             throw new IllegalStateException();
         }
