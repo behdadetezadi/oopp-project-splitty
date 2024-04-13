@@ -60,6 +60,7 @@ public class MainController {
     private final KeyCombination undoCombination = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
     private final KeyCombination loginAsUserCombination = new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN);
     private final KeyCombination loginAsAdminCombination = new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination switchLanguageCombination = new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN);
 
     /**
      * initializer method for mainController
@@ -95,14 +96,16 @@ public class MainController {
         KeyboardUtils.addKeyboardShortcuts(startScene,
                 startPageController::logout,
                 new Pair<>(createEventCombination, startPageController::createEvent),
-                new Pair<>(joinEventCombination, startPageController::joinEvent)
+                new Pair<>(joinEventCombination, startPageController::joinEvent),
+                new Pair<>(switchLanguageCombination, startPageController::switchToNextLanguage)
         );
 
         this.eventOverviewScene = new Scene(eventOverviewPair.getValue());
         this.eventOverviewController = eventOverviewPair.getKey();
         KeyboardUtils.addKeyboardShortcuts(eventOverviewScene,
                 eventOverviewController::goBackToStartPage,
-                new Pair<>(addExpenseCombination, eventOverviewController::addExpense)
+                new Pair<>(addExpenseCombination, eventOverviewController::addExpense),
+                new Pair<>(switchLanguageCombination, eventOverviewController::switchToNextLanguage)
         );
 
         this.expenseScene = new Scene(expensePair.getValue());
@@ -149,7 +152,8 @@ public class MainController {
         KeyboardUtils.addKeyboardShortcuts(loginScene,
                 null,
                 new Pair<>(loginAsUserCombination, loginController::handleUserLogin),
-                new Pair<>(loginAsAdminCombination, loginController::handleAdminLoginPrompt)
+                new Pair<>(loginAsAdminCombination, loginController::handleAdminLoginPrompt),
+                new Pair<>(switchLanguageCombination, loginController::switchToNextLanguage)
         );
 
         this.statisticsScene = new Scene(statsPair.getValue());

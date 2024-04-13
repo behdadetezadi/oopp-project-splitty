@@ -41,14 +41,23 @@ public class LanguageUtils {
      * Changes the language to the next one in the list, rolling over to the first after the last.
      * @param currentLocale The current locale
      * @param listener The LanguageChangeListener that will have its language switched
+     * @param languageComboBox The ComboBox to change
      */
-    public static void switchToNextLanguage(Locale currentLocale, LanguageChangeListener listener) {
+    public static void switchToNextLanguage(Locale currentLocale, LanguageChangeListener listener,
+                                            ComboBox<Language> languageComboBox) {
         List<Locale> locales = Arrays.asList(Locale.ENGLISH, Locale.GERMAN, new Locale("nl"));
         int currentLocaleIndex = locales.indexOf(currentLocale);
         Locale nextLocale = (currentLocaleIndex == -1 || currentLocaleIndex == locales.size() - 1)
                 ? locales.get(0)
                 : locales.get(currentLocaleIndex + 1);
         loadLanguage(nextLocale, listener);
+        String nextLanguageName = localeToLanguageName(nextLocale);
+        for (Language lang : languageComboBox.getItems()) {
+            if (lang.getName().equals(nextLanguageName)) {
+                languageComboBox.setValue(lang);
+                break;
+            }
+        }
     }
 
     /**

@@ -220,6 +220,13 @@ public class StartPageController implements LanguageChangeListener {
     }
 
     /**
+     * Switches the language to the next
+     */
+    public void switchToNextLanguage() {
+        LanguageUtils.switchToNextLanguage(activeLocale, this, languageComboBox);
+    }
+
+    /**
      * clears the textfield when you go to this page
      */
     public void clearTextFields() {

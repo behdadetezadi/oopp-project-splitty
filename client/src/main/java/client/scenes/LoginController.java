@@ -110,6 +110,13 @@ public class LoginController implements LanguageChangeListener{
     }
 
     /**
+     * Switches the language to the next
+     */
+    public void switchToNextLanguage() {
+        LanguageUtils.switchToNextLanguage(activeLocale, this, languageComboBox);
+    }
+
+    /**
      * Transitions to the start page upon user login action.
      */
     @FXML

@@ -152,6 +152,13 @@ public class EventOverviewController implements LanguageChangeListener {
     }
 
     /**
+     * Switches the language to the next
+     */
+    public void switchToNextLanguage() {
+        LanguageUtils.switchToNextLanguage(activeLocale, this, languageComboBox);
+    }
+
+    /**
      * show expenses of selected participant
      * @param event the targeted event
      */
