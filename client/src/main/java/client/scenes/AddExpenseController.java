@@ -256,7 +256,7 @@ public class AddExpenseController implements LanguageChangeListener{
      * overloaded method to be used by keyboard shortcuts
      */
     @FXML
-    public void handleUndoAction() {
+    void handleUndoAction() {
         UndoableCommand undoneCommand = undoManager.undoLastCommand();
 
         if (undoManager.getExecutedCommands().isEmpty()) {
@@ -301,7 +301,7 @@ public class AddExpenseController implements LanguageChangeListener{
      * switches to the event overview
      */
     @FXML
-    public void switchToEventOverviewScene() {
+    void switchToEventOverviewScene() {
         mainController.showEventOverview(this.event);
 
     }

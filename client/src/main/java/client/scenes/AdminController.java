@@ -363,7 +363,7 @@ public class AdminController implements LanguageChangeListener {
      * Goes back to the loginpage
      */
     @FXML
-    public void logout() {
+    void logout() {
         try {
             mainController.refreshEventsList();
 

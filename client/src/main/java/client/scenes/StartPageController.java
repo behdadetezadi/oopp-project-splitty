@@ -222,7 +222,7 @@ public class StartPageController implements LanguageChangeListener {
     /**
      * Switches the language to the next
      */
-    public void switchToNextLanguage() {
+    void switchToNextLanguage() {
         LanguageUtils.switchToNextLanguage(activeLocale, this, languageComboBox);
     }
 
@@ -247,7 +247,7 @@ public class StartPageController implements LanguageChangeListener {
     /**
      * join Meeting
      */
-    public void joinEvent() {
+    void joinEvent() {
         String inviteCode = codeInput.getText();
         try {
             Long.parseLong(inviteCode);
@@ -280,7 +280,7 @@ public class StartPageController implements LanguageChangeListener {
     /**
      * create an Event
      */
-    public void createEvent() {
+    void createEvent() {
         String eventName = eventNameInput.getText();
         if (eventName.isEmpty()) {
             showErrorAlert(resourceBundle.getString("Event_name_cannot_be_empty."));
@@ -316,7 +316,7 @@ public class StartPageController implements LanguageChangeListener {
     /**
      * goes back to the login page
      */
-    public void logout() {
+    void logout() {
         try {
             mainController.showLoginPage();
         } catch (IllegalStateException e) {

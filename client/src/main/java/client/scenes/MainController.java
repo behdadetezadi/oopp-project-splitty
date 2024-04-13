@@ -53,14 +53,34 @@ public class MainController {
     private Scene loginScene;
     private static final String LANGUAGE_PREFERENCE_KEY = "language";
     private final Locale locale = getStoredLanguagePreferenceOrDefault();
-    private final KeyCombination createEventCombination = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
-    private final KeyCombination joinEventCombination = new KeyCodeCombination(KeyCode.J, KeyCombination.CONTROL_DOWN);
-    private final KeyCombination addExpenseCombination = new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN);
-    private final KeyCombination showStatsCombination = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
-    private final KeyCombination undoCombination = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
-    private final KeyCombination loginAsUserCombination = new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN);
-    private final KeyCombination loginAsAdminCombination = new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN);
-    private final KeyCombination switchLanguageCombination = new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination createEventCombination = new KeyCodeCombination(
+            KeyCode.C, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination joinEventCombination = new KeyCodeCombination(
+            KeyCode.J, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination addExpenseCombination = new KeyCodeCombination(
+            KeyCode.W, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination showSendInvitesCombination = new KeyCodeCombination(
+            KeyCode.I, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination changeTitleCombination = new KeyCodeCombination(
+            KeyCode.T, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination showParticipantsCombination = new KeyCodeCombination(
+            KeyCode.P, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination showAllExpensesCombination = new KeyCodeCombination(
+            KeyCode.Q, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination showParticipantExpensesCombination = new KeyCodeCombination(
+            KeyCode.E, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination showStatsCombination = new KeyCodeCombination(
+            KeyCode.S, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination undoCombination = new KeyCodeCombination(
+            KeyCode.Z, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination loginAsUserCombination = new KeyCodeCombination(
+            KeyCode.U, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination loginAsAdminCombination = new KeyCodeCombination(
+            KeyCode.A, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination switchLanguageCombination = new KeyCodeCombination(
+            KeyCode.L, KeyCombination.CONTROL_DOWN);
+    private final KeyCombination sendInvitesCombination = new KeyCodeCombination(
+            KeyCode.S, KeyCombination.CONTROL_DOWN);
 
     /**
      * initializer method for mainController
@@ -104,7 +124,12 @@ public class MainController {
         this.eventOverviewController = eventOverviewPair.getKey();
         KeyboardUtils.addKeyboardShortcuts(eventOverviewScene,
                 eventOverviewController::goBackToStartPage,
+                new Pair<>(showSendInvitesCombination, eventOverviewController::sendInvites),
+                new Pair<>(changeTitleCombination, eventOverviewController::editTitle),
+                new Pair<>(showParticipantsCombination, eventOverviewController::showParticipants),
+                new Pair<>(showAllExpensesCombination, eventOverviewController::showAllExpensesOverview),
                 new Pair<>(addExpenseCombination, eventOverviewController::addExpense),
+                new Pair<>(showParticipantExpensesCombination, eventOverviewController::showExpensesForSelectedParticipant),
                 new Pair<>(switchLanguageCombination, eventOverviewController::switchToNextLanguage)
         );
 
@@ -138,7 +163,8 @@ public class MainController {
         this.inviteScene = new Scene(inviteControllerPair.getValue());
         this.inviteController =  inviteControllerPair.getKey();
         KeyboardUtils.addKeyboardShortcuts(inviteScene,
-                inviteController::handleBackButtonAction
+                inviteController::handleBackButtonAction,
+                new Pair<>(sendInvitesCombination, inviteController::handleSubmitButtonAction)
         );
 
         this.adminScene = new Scene(adminControllerPair.getValue());

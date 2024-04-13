@@ -66,7 +66,7 @@ public class InviteController implements LanguageChangeListener {
      * @return an array list containing all email addresses to be processed further
      */
     @FXML
-    public ArrayList<String> handleSubmitButtonAction() {
+    ArrayList<String> handleSubmitButtonAction() {
         Window owner = submitButton.getScene().getWindow();
 
         if(emailsField.getText().isEmpty()) {
@@ -158,7 +158,7 @@ public class InviteController implements LanguageChangeListener {
      *
      */
     @FXML
-    public void handleBackButtonAction() {
+    void handleBackButtonAction() {
         try {
             mainController.showEventOverview(event);
         } catch (IllegalStateException e) {

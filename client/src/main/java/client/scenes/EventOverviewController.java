@@ -96,7 +96,6 @@ public class EventOverviewController implements LanguageChangeListener {
         showExpensesButton.getStyleClass().add("button-hover");
         backToMain.getStyleClass().add("button-hover");
         showAllExpensesButton.getStyleClass().add("button-hover");
-        showExpensesButton.setOnAction(this::showExpensesForSelectedParticipant);
     }
 
     /**
@@ -154,29 +153,29 @@ public class EventOverviewController implements LanguageChangeListener {
     /**
      * Switches the language to the next
      */
-    public void switchToNextLanguage() {
+    void switchToNextLanguage() {
         LanguageUtils.switchToNextLanguage(activeLocale, this, languageComboBox);
     }
 
     /**
      * show expenses of selected participant
-     * @param event the targeted event
      */
     @FXML
-    private void showExpensesForSelectedParticipant(ActionEvent event) {
+    void showExpensesForSelectedParticipant() {
         ParticipantOption selectedParticipantOption = participantDropdown.getSelectionModel().getSelectedItem();
         if (selectedParticipantOption != null) {
             Long selectedParticipantId = selectedParticipantOption.getId();
             mainController.showParticipantExpensesOverview(this.event, selectedParticipantId);
         } else {
-            AlertUtils.showErrorAlert("Select participant", "Error", resourceBundle.getString("Please_select_a_participant_to_show_expenses"));
+            AlertUtils.showErrorAlert("Select participant",
+                    "Error", resourceBundle.getString("Please_select_a_participant_to_show_expenses"));
         }
     }
     /**
      * show expenses overview of the event
      */
     @FXML
-    private void showAllExpensesOverview() {
+    void showAllExpensesOverview() {
         mainController.showExpenseOverview(this.event);
     }
 
@@ -237,7 +236,7 @@ public class EventOverviewController implements LanguageChangeListener {
     /**
      * Edit the title directly in the label
      */
-    private void editTitle() {
+    void editTitle() {
         TextInputDialog dialog = new TextInputDialog(titleLabel.getText());
         dialog.setTitle(resourceBundle.getString("Edit_Title"));
         dialog.setHeaderText(null);
@@ -277,7 +276,7 @@ public class EventOverviewController implements LanguageChangeListener {
      * method to switch over to the participant scene when clicked upon
      */
     @FXML
-    private void showParticipants() {
+    void showParticipants() {
         try {
             mainController.showTableOfParticipants(this.event);
 
@@ -315,7 +314,7 @@ public class EventOverviewController implements LanguageChangeListener {
      * sendInvites method
      */
     @FXML
-    public void sendInvites() {
+    void sendInvites() {
 
         try {
             mainController.showInvitePage(this.event);
@@ -325,43 +324,19 @@ public class EventOverviewController implements LanguageChangeListener {
         }
     }
 
-    //TODO
     /**
-     *
-     * @param event Action event?
+     * Shows the page for adding expenses to the selected participant
      */
     @FXML
-    public void addExpense(ActionEvent event) {
-        if (event.getSource() instanceof Button) {
-            ParticipantOption selectedParticipantOption = participantDropdown.getSelectionModel().getSelectedItem();
-            if(selectedParticipantOption != null) {
-                Long selectedParticipantId = selectedParticipantOption.getId();
-                mainController.showAddExpense(this.event, selectedParticipantId);
-            } else {
-                AlertUtils.showErrorAlert("Select participant", "Error",
-                        resourceBundle.getString("Please_select_for_which_participant_you_want_to_add_an_expense."));
-            }
+    void addExpense() {
+        ParticipantOption selectedParticipantOption = participantDropdown.getSelectionModel().getSelectedItem();
+        if(selectedParticipantOption != null) {
+            Long selectedParticipantId = selectedParticipantOption.getId();
+            mainController.showAddExpense(this.event, selectedParticipantId);
         } else {
-            throw new IllegalStateException();
+            AlertUtils.showErrorAlert("Select participant", "Error",
+                    resourceBundle.getString("Please_select_for_which_participant_you_want_to_add_an_expense."));
         }
-    }
-
-
-    /**
-     * overloaded version of addExpense to be used by keyboard shortcuts
-     */
-    @FXML
-    public void addExpense() {
-
-            ParticipantOption selectedParticipantOption = participantDropdown.getSelectionModel().getSelectedItem();
-            if(selectedParticipantOption != null) {
-                Long selectedParticipantId = selectedParticipantOption.getId();
-                mainController.showAddExpense(this.event, selectedParticipantId);
-            } else {
-                AlertUtils.showErrorAlert("Select participant", "Error",
-                        resourceBundle.getString("Please_select_for_which_participant_you_want_to_add_an_expense."));
-            }
-
     }
 
     /**
