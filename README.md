@@ -1,9 +1,43 @@
 # Splitty
 This is our implementation of Splitty.
 
-# Instructions on how to execute this project:
+### Instructions on how to execute this project:
 
-You run the server first, and then you run the client.
+Follow these simple steps to run the server and client components of our project.
+
+### Server
+
+1. **Run the Server**:
+    - Navigate to the server's main class directory:
+      ```
+      server/src/main/java/server
+      ```
+    - Execute `Main.java`:
+      ```
+      java Main.java
+      ```
+
+### Client
+
+2. **Run the Client with JavaFX**:
+    - Navigate to the client's main class directory:
+      ```
+      client/src/main/java/client
+      ```
+    - Set the VM options for JavaFX. Be sure to replace the module path with your own JavaFX SDK path:
+      ```
+      java --module-path "YOUR_JAVAFX_SDK_PATH\lib" --add-modules javafx.controls,javafx.fxml Main.java
+      ```
+    - Example with a specific path:
+      ```
+      java --module-path "C:\Users\Default\Downloads\javafx-sdk-21.0.2\lib" --add-modules javafx.controls,javafx.fxml Main.java
+      ```
+   - Execute `Main.java`:
+     ```
+     java Main.java
+     ```
+
+Make sure to replace `"YOUR_JAVAFX_SDK_PATH\lib"` in the VM options with the path to your JavaFX SDK's `lib` directory.
 
 **Login Page:**
 
@@ -19,6 +53,7 @@ Here, you have the ability to either create a new event or join an existing even
 
 The Recent Events List gets populated as you navigate through events in runtime and is initially empty since there is no login in compliance with the basic requirements.
 By clicking on the events in this list you can navigate to them faster.
+
 **USER FEATURES**
 
 
@@ -59,6 +94,7 @@ You can sort the event by clicking on the column headers of what you want to sor
 
 
 **WEBSOCKETS AND LONG-POLLING**
+
 The backend implementation for both of these lies on server/src/main/server/api/EventController.
 Whichever method has @MessageMapping annotation on top works with websockets (except for the method for updating event title which was not completed).
 The addParticipant() method in the backend uses long polling to add a participant. The respective logic for both websockets and long-polling is also continued in the server utils method at client/src/main/java/client/utils/ServerUtils.
@@ -86,7 +122,7 @@ The default language is set to english but through runtime the language choice p
 In addition, language choice persists through restarts.
 
 **Statistics page:**
-This page shows a pie chart containing the amount of money spent per tag, and also shows the total amount of money spent on the event
+This page can be accessed through the expense overview and shows a pie chart containing the amount of money spent per tag, and also shows the total amount of money spent on the event
 
 
 **Send Invitation code to email:**
@@ -112,42 +148,46 @@ It supports mutiple undo for both pages.
 
 # Keyboard Shortcut Navigations:
 
-Ctrl + C: Create a new event
+`Ctrl + C`: Create a new event
 
-Ctrl + J: Join an existing event
+`Ctrl + J`: Join an existing event
 
-Ctrl + E: Cycle through recent events
+`Ctrl + E`: Cycle through recent events
 
-Ctrl + Enter: Join the selected event from a list
+`Ctrl + Enter`: Join the selected event from a list
 
-Ctrl + W: Add an expense to the event
+`Ctrl + Q`: Display all expenses from the event
 
-Ctrl + I: Display page for sending invitations
+`Ctrl + W`: Add an expense for the selected participant
 
-Ctrl + T: Change the title of the event
+`Ctrl + E`: View all expenses for the selected participant
 
-Ctrl + P: Display event participants
+`Ctrl + I`: Display page for sending invitations
 
-Ctrl + Q: Display all expenses from the event
+`Ctrl + S`: Send invitations to participants
 
-Ctrl + S: Send invitations to participants
+`Ctrl + T`: Change the title of the event
 
-Ctrl + S: Display statistics in the expenses overview
+`Ctrl + P`: Display event participants
 
-Ctrl + Z: Undo the last action
+`Ctrl + S`: Display statistics in the expenses overview
 
-Ctrl + U: Log in as a regular user
+`Ctrl + Z`: Undo the last action
 
-Ctrl + A: Log in as an administrator
+`Ctrl + U`: Log in as a regular user
 
-Ctrl + L: Switch between the languages of the application
+`Ctrl + A`: Log in as an administrator
 
-ESCAPE: Go back to the previous page
+`Ctrl + L`: Switch between the languages of the application
+
+`ESCAPE`: Go back to the previous page
 
 
 # Extra Notes
 
-The user can change and modify the application.properties file in the project home directory (same directory as this readme files) in order to connect to a splitty server of their choice.
+When you hover over the title, or the plus and minus in the participant overview, it will show you a tooltip.
+
+The user can change and modify the application.properties file in the project home directory (same directory as this readme file) in order to connect to a splitty server of their choice.
 (Naturally the server should exist and running)
 (Like the email.properties, initially the file was located in resource section of the client but was refactored to a more accessible location based on last TA meeting's feedback)
 
