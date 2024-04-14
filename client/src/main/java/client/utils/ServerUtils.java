@@ -59,6 +59,13 @@ public class ServerUtils {
 	private static final String SERVER = splittyConfig.getSplittyServerUrl();
 
 
+	/**
+	 * getter for Server
+	 * @return  server url
+	 */
+	public static String getSERVER() {
+		return SERVER;
+	}
 
 	public static Event getEventByInviteCode(String inviteCode) {
 
@@ -312,6 +319,10 @@ public class ServerUtils {
 			throw new RuntimeException("Error fetching expenses for event: " + e.getMessage());
 		}
 	}
+
+
+
+
 
 	/**
 	 * adds a participant
