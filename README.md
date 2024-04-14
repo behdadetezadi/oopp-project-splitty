@@ -73,7 +73,7 @@ Moreover, deleting a participant using websockets removes the opportunity of ano
 
 # Extensions and HCI features implementation list:
 
-Live Language Switch
+**Live Language Switch**
 
 Live Language Switch is available in Login page, Start page and Event Overview Page.
 
