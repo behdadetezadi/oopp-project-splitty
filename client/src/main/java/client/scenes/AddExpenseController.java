@@ -75,9 +75,6 @@ public class AddExpenseController implements LanguageChangeListener{
 
         cancelButton.setOnAction(this::handleCancelAction);
         addExpenseButton.setOnAction(this::handleAddExpenseAction);
-        amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
-        addExpenseButton.getStyleClass().add("button-hover");
-        cancelButton.getStyleClass().add("button-hover");
 
         DialogUtils.otherTagInputDialog(comboBox, () -> resourceBundle);
         undoButton.setMnemonicParsing(true);
@@ -134,14 +131,12 @@ public class AddExpenseController implements LanguageChangeListener{
 
         TagUtils.initializeTagLanguageMapping(resourceBundle, tagKeysToLocalized);
         TagUtils.initializeTagsComboBox(resourceBundle, comboBox, tagKeysToLocalized);
+
         // animate participant name, if participant exists
         if(selectedParticipantId != 0) {
             AnimationUtil.animateText(participantLabel, ServerUtils.getParticipant(selectedParticipantId).getFirstName()
                     + " " + ServerUtils.getParticipant(selectedParticipantId).getLastName());
         }
-        amountPaid.addEventFilter(KeyEvent.KEY_TYPED, this::validateAmountInput);
-        addExpenseButton.getStyleClass().add("button-hover");
-        cancelButton.getStyleClass().add("button-hover");
     }
 
     /**
