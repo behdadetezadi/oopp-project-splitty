@@ -3,6 +3,7 @@ package client.scenes;
 import client.utils.LanguageChangeListener;
 import client.utils.LanguageUtils;
 import client.utils.ServerUtils;
+import client.utils.TagUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
@@ -32,6 +33,7 @@ public class ExpenseOverviewController implements LanguageChangeListener {
     private Event event;
     private ResourceBundle resourceBundle;
     private Locale activeLocale;
+    private Map<String, String> tagKeysToLocalized = new HashMap<>();
 
     @Inject
     public ExpenseOverviewController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
@@ -55,7 +57,8 @@ public class ExpenseOverviewController implements LanguageChangeListener {
 
     private void updateSumOfExpenses(double amount) {
         if (sumOfExpensesLabel.getText() != null && !sumOfExpensesLabel.getText().isEmpty()) {
-            String currentTotal = sumOfExpensesLabel.getText().substring(resourceBundle.getString("total").length()).trim();
+            String currentTotal = sumOfExpensesLabel.getText()
+                    .substring(resourceBundle.getString("total").length()-2).trim();
             double total = Double.parseDouble(currentTotal) + amount;
             sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"), String.format("%.2f", total)));
         } else {
@@ -115,6 +118,7 @@ public class ExpenseOverviewController implements LanguageChangeListener {
      * updates the UI elements with the selected language
      */
     public void updateUIElements() {
+        TagUtils.initializeTagLanguageMapping(resourceBundle, tagKeysToLocalized);
         backButton.setText(resourceBundle.getString("back"));
         statisticsButton.setText(resourceBundle.getString("Show_Statistics"));
     }
@@ -133,7 +137,7 @@ public class ExpenseOverviewController implements LanguageChangeListener {
         String expenseTemplate = resourceBundle.getString("expenseDetail");
         StringBuilder displayBuilder = new StringBuilder(String.format(expenseTemplate, expenseNumber, expense.getParticipant().getFirstName(), expense.getAmount(), expense.getCategory()));
 
-        displayBuilder.append(String.format(resourceBundle.getString("tagTitle"), this.tagLanguageSwitch(expense.getExpenseType())));
+        displayBuilder.append(String.format(resourceBundle.getString("tagTitle"),getLocalisedTag(expense.getExpenseType())));
         displayBuilder.append(resourceBundle.getString("DebtDetail"));
         String participantOwesTemplate = resourceBundle.getString("participantOwes");
 
@@ -151,23 +155,12 @@ public class ExpenseOverviewController implements LanguageChangeListener {
         return displayBuilder.toString();
     }
 
-
-    /**
-     * makes sure the language switch works with the tags
-     * @param expenseType the tag
-     * @return the string in the right language
-     */
-    public String tagLanguageSwitch(String expenseType) {
-        switch (expenseType) {
-            case "Food":
-                return resourceBundle.getString("tagFood");
-            case "EntranceFees":
-                return resourceBundle.getString("tagEntranceFees");
-            case "Travel":
-                return resourceBundle.getString("tagTravel");
-            default:
-                return expenseType;
-        }
+    String getLocalisedTag(String tag) {
+        return tagKeysToLocalized.entrySet().stream()
+            .filter(entry -> entry.getKey().equals(tag))
+            .map(Map.Entry::getValue)
+            .findFirst()
+            .orElse(tag);
     }
 
     /**
@@ -192,7 +185,7 @@ public class ExpenseOverviewController implements LanguageChangeListener {
      */
     public void initializeExpensesForEvent(Event event) {
         try {
-            List<Expense> expenses = server.getExpensesForEvent(event.getId());
+            List<Expense> expenses = ServerUtils.getExpensesForEvent(event.getId());
             expensesListView.getItems().clear(); // Clear existing items
             double sumOfExpenses = 0;
             for (int i=0;i<expenses.size();i++) {

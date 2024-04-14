@@ -218,3 +218,34 @@
     -fx-font-weight: bold;
     -fx-padding: 20px;
 }
+
+.chart-legend {
+    -fx-background-color: black;
+    -fx-text-fill: lime;
+    -fx-border-color: lime;
+    -fx-border-width: 2;
+    -fx-padding: 5;
+}
+
+.chart-pie {
+    -fx-border-color: derive(-fx-pie-color, -40%);
+    -fx-border-width: 1px;
+}
+
+.chart-pie-label-line {
+    -fx-stroke: green;
+    -fx-fill: green;
+}
+
+.chart-pie-label {
+    -fx-fill: lime;
+    -fx-font-size: 1em;
+}
+
+.chart-legend-item {
+    -fx-text-fill: lime !important;
+}
+
+.chart-legend-item .label {
+    -fx-text-fill: lime !important;
+}

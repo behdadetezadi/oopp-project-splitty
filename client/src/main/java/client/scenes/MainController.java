@@ -353,12 +353,14 @@ public class MainController {
      */
     public void showStatistics(Event event)
     {
-        primaryStage.setTitle("Statistics");
+        statsController.setEvent(event);
+        statsController.initializePieChart();
         primaryStage.setScene(statisticsScene);
+        primaryStage.setTitle("Statistics");
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(getStoredLanguagePreferenceOrDefault(), statsController);
-        statsController.initialize(event);
     }
+
     /**
      * get the updated participant list of the selected event.
      * @param event The event to show list for.

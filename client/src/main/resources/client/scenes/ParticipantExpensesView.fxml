@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.HBox?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="client.scenes.ParticipantExpenseViewController"
-            stylesheets="@/styles.css"
-            prefHeight="335.0"
-            prefWidth="594.0">
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="335.0" prefWidth="594.0" stylesheets="@/styles.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.2-ea" fx:controller="client.scenes.ParticipantExpenseViewController">
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
     <top>
-        <Button text="%back" fx:id="backButton" onAction="#switchToEventOverviewScene" BorderPane.alignment="TOP_LEFT" />
+        <Button fx:id="backButton" onAction="#switchToEventOverviewScene" text="%back" BorderPane.alignment="TOP_LEFT">
+         <BorderPane.margin>
+            <Insets bottom="10.0" />
+         </BorderPane.margin></Button>
     </top>
     <center>
-        <ListView fx:id="expensesListView" BorderPane.alignment="CENTER"/>
+        <ListView fx:id="expensesListView" BorderPane.alignment="CENTER" />
     </center>
     <bottom>
         <HBox alignment="CENTER_RIGHT" spacing="10">
-            <Button fx:id="undoButton" text="Undo" onAction="#handleUndoAction" disable="true"/>
-            <Label fx:id="sumOfExpensesLabel"/>
+            <Button fx:id="undoButton" disable="true" onAction="#handleUndoAction" text="Undo">
+            <HBox.margin>
+               <Insets top="10.0" />
+            </HBox.margin></Button>
+            <Label fx:id="sumOfExpensesLabel" />
         </HBox>
     </bottom>
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20" />
+        <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
 </BorderPane>
