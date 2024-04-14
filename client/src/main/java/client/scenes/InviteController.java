@@ -90,7 +90,7 @@ public class InviteController implements LanguageChangeListener {
     @FXML
     public void handleSubmitButtonAction() {
         if (emailsField.getText().isEmpty()) {
-            AlertUtils.showErrorAlert("Form Error!", "Error", "Please enter email addresses!");
+            AlertUtils.showErrorAlert(resourceBundle.getString("FormError"), resourceBundle.getString("error"), resourceBundle.getString("FormErrorContent"));
             return;
         }
 
@@ -101,8 +101,8 @@ public class InviteController implements LanguageChangeListener {
             String temp = scanner.next();
 
             if (!ValidationUtils.isValidEmail(temp)) {
-                AlertUtils.showErrorAlert("Invalid email!", "Error", temp + " is not a valid email address! " +
-                        "Email must be in a valid format (e.g., user@example.com).");
+                AlertUtils.showErrorAlert(resourceBundle.getString("InvalidEmail"), resourceBundle.getString("error"), temp + " "+resourceBundle.getString("InvalidEmailContent")+
+                "   "+ resourceBundle.getString("InvalidEmailContinue"));
                 return;
             } else {
                 emailAddresses.add(temp);
@@ -117,12 +117,12 @@ public class InviteController implements LanguageChangeListener {
         String password = emailProps.getProperty("mail.smtp.password");
 
         // Compose email content
-        String subject = "Invitation to Event";
-        String message = "Dear Participant,\n\n"
-                + "You have been invited to an event. Please find your invite code below:\n\n"
-                + "Invite Code: " + event.getInviteCode() + "\n\n"
-                + "Instructions: Go to your splitty and check out the event! \n\n"
-                + "Best regards,\n "+ username;
+        String subject = resourceBundle.getString("InvitationHeader");
+        String message =  resourceBundle.getString("InvitationComponent1")+"\n\n"
+                + resourceBundle.getString("InvitationComponent2")+"\n\n"
+                + resourceBundle.getString("InvitationComponent3")+" "+ event.getInviteCode() + "\n\n"
+                + resourceBundle.getString("InvitationComponent4")+" "+"\n\n"
+                + resourceBundle.getString("InvitationComponent5")+"\n "+ username;
 
         // Send emails
         for (String emailAddress : emailAddresses) {
@@ -130,11 +130,11 @@ public class InviteController implements LanguageChangeListener {
                 EmailUtils.sendEmail(host, port, username, password, emailAddress, subject, message);
             } catch (MessagingException e) {
                 e.printStackTrace();
-                AlertUtils.showErrorAlert("Email Error!", "Error", "Failed to send email to " + emailAddress);
+                AlertUtils.showErrorAlert(resourceBundle.getString("EmailError"), resourceBundle.getString("error"), resourceBundle.getString("EmailErrorContent")+" "+ emailAddress);
                 return;
             }
         }
-        AlertUtils.showInformationAlert("Invites sent!", "Information", "Invites sent successfully");
+        AlertUtils.showInformationAlert(resourceBundle.getString("InvitationConfirm"), resourceBundle.getString("InformationHeader"), resourceBundle.getString("InvitationSucceed"));
     }
     /**
      * method that sets title and invite code according to passed event
@@ -208,8 +208,7 @@ public class InviteController implements LanguageChangeListener {
                 this.inviteCode.getText()
         );
         clipboard.setContent(content);
-        AlertUtils.showInformationAlert("Invite code copied!",
-                "copied the following invite code: ",
+        AlertUtils.showInformationAlert(resourceBundle.getString("CopyConfirm"),resourceBundle.getString("CopyDetails")+" ",
                 this.inviteCode.getText());
     }
 }
