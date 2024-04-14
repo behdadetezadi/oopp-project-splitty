@@ -57,7 +57,8 @@ public class ExpenseOverviewController implements LanguageChangeListener {
 
     private void updateSumOfExpenses(double amount) {
         if (sumOfExpensesLabel.getText() != null && !sumOfExpensesLabel.getText().isEmpty()) {
-            String currentTotal = sumOfExpensesLabel.getText().substring(resourceBundle.getString("total").length()).trim();
+            String currentTotal = sumOfExpensesLabel.getText()
+                    .substring(resourceBundle.getString("total").length()-2).trim();
             double total = Double.parseDouble(currentTotal) + amount;
             sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"), String.format("%.2f", total)));
         } else {

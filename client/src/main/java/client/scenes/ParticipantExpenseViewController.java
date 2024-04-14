@@ -98,9 +98,11 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
             String text = sumOfExpensesLabel.getText();
             double total = 0.0;
             if (text != null && !text.isEmpty()) {
-                total = Double.parseDouble(text.split(": ")[1].trim());
+                total = Double.parseDouble(sumOfExpensesLabel.getText()
+                        .substring(resourceBundle.getString("total").length()-2).trim());
             }
-            sumOfExpensesLabel.setText("Total: " + String.format("%.2f", total + amount));
+            sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"),
+                    String.format("%.2f", total + amount)));
         } catch (NumberFormatException e) {
             System.err.println("Error updating expenses total: " + e.getMessage());
         }
@@ -244,22 +246,22 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
     @FXML
     private void handleDeleteButton(Expense expense) {
         if (AlertUtils.showConfirmationAlert(resourceBundle.getString("deleteExpense"),
-                resourceBundle.getString("confirmDeleteExpense"))) {
-                try {
-                    deleteExpenseCommand = new DeleteExpenseCommand(expense, event.getId(), (result, actionType) -> {
-                        if (result != null) {
+            resourceBundle.getString("confirmDeleteExpense"))) {
+            try {
+                deleteExpenseCommand = new DeleteExpenseCommand(expense, event.getId(), (result, actionType) -> {
+                    if (result != null) {
 
-                            updateUI(result, actionType);
-                        } else {
-                            AlertUtils.showErrorAlert(resourceBundle.getString("errorTitle"),
-                                    resourceBundle.getString("errorTitle"), resourceBundle.getString("deleteExpenseFail"));
-                        }
-                    }, resourceBundle);
-                    undoManager.executeCommand(deleteExpenseCommand);
-                } catch (Exception e) {
-                    AlertUtils.showErrorAlert(resourceBundle.getString("errorTitle"), resourceBundle.getString("errorTitle"),
-                            resourceBundle.getString("deleteExpenseFail") + e.getMessage());
-                }
+                        updateUI(result, actionType);
+                    } else {
+                        AlertUtils.showErrorAlert(resourceBundle.getString("errorTitle"),
+                                resourceBundle.getString("errorTitle"), resourceBundle.getString("deleteExpenseFail"));
+                    }
+                }, resourceBundle);
+                undoManager.executeCommand(deleteExpenseCommand);
+            } catch (Exception e) {
+                AlertUtils.showErrorAlert(resourceBundle.getString("errorTitle"), resourceBundle.getString("errorTitle"),
+                        resourceBundle.getString("deleteExpenseFail") + e.getMessage());
+            }
         }
     }
 
@@ -340,11 +342,11 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
      */
     private void updateExpense(Expense expense) {
         Expense originalExpense = getOriginalExpense(expense.getId(),event.getId());
-         editExpenseCommand = new EditExpenseCommand(originalExpense, expense, event.getId(), result -> Platform.runLater(() -> {
-             initializeExpensesForParticipant(selectedParticipantId);
-             AlertUtils.showInformationAlert(resourceBundle.getString("expenseSaved"),
-                     resourceBundle.getString("expenseSaved"), resourceBundle.getString("expenseSavedSuccess"));
-         }), resourceBundle);
+        editExpenseCommand = new EditExpenseCommand(originalExpense, expense, event.getId(), result -> Platform.runLater(() -> {
+            initializeExpensesForParticipant(selectedParticipantId);
+            AlertUtils.showInformationAlert(resourceBundle.getString("expenseSaved"),
+                resourceBundle.getString("expenseSaved"), resourceBundle.getString("expenseSavedSuccess"));
+        }), resourceBundle);
         undoManager.executeCommand(editExpenseCommand);
         undoButton.setDisable(false);
     }

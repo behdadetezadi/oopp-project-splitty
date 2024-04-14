@@ -204,8 +204,8 @@ public class AddExpenseController implements LanguageChangeListener{
             }, resourceBundle);
             undoManager.executeCommand(addedExpenseCommand);
         } catch (NumberFormatException e) {
-            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_Amount"), resourceBundle.getString("error"),
-                    resourceBundle.getString("Please_enter_a_valid_amount"));
+            AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_amount"), resourceBundle.getString("error"),
+                    resourceBundle.getString("Please_enter_a_valid_number_for_the_amount."));
         } catch (RuntimeException e) {
             AlertUtils.showErrorAlert(resourceBundle.getString("Unexpected_Error"), resourceBundle.getString("error"),
                     resourceBundle.getString("An_unexpected_error_occurred") + e.getMessage());
