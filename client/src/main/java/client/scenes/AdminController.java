@@ -369,7 +369,7 @@ public class AdminController implements LanguageChangeListener {
                     AlertUtils.showInformationAlert(resourceBundle.getString("success"),
                             resourceBundle.getString("eventImportedAdded"),
                             resourceBundle.getString("eventSuccessfullyImportedAdded"));
-                } catch (IOException nestedEx) {
+                } catch (Exception nestedEx) {
                     AlertUtils.showErrorAlert(resourceBundle.getString("error"),
                             resourceBundle.getString("importFailed"),
                             resourceBundle.getString("failedImportEvents"));
@@ -385,17 +385,20 @@ public class AdminController implements LanguageChangeListener {
     }
 
     private void addImportedEvent(Event importedEvent) {
-        Event addedEvent = ServerUtils.addEvent(importedEvent);
-        if (addedEvent != null) {
-            Platform.runLater(() -> {
-                eventData.add(addedEvent);
-                eventsTable.setItems(eventData);
-            });
-        } else {
-            AlertUtils.showErrorAlert(resourceBundle.getString("error"),
-                    resourceBundle.getString("addEventFailed"),
-                    resourceBundle.getString("eventImportedNotAdded"));
-
+        try {
+            Event addedEvent = ServerUtils.addEvent(importedEvent);
+            if (addedEvent != null) {
+                Platform.runLater(() -> {
+                    eventData.add(addedEvent);
+                    eventsTable.setItems(eventData);
+                });
+            } else {
+                AlertUtils.showErrorAlert(resourceBundle.getString("error"),
+                        resourceBundle.getString("addEventFailed"),
+                        resourceBundle.getString("eventImportedNotAdded"));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Event could not be added");
         }
     }
 
