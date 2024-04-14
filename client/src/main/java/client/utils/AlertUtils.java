@@ -4,6 +4,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Region;
+import javafx.scene.text.Text;
 
 import java.util.Optional;
 
@@ -74,6 +77,8 @@ public class AlertUtils {
         dialogPane.getStylesheets().add(
                 AlertUtils.class.getResource("/styles.css").toExternalForm()
         );
+        dialogPane.setPrefHeight(250);
+        dialogPane.setMinHeight(Region.USE_PREF_SIZE);
         dialogPane.getStyleClass().add("myDialog");
         Optional<ButtonType> response = confirmDialog.showAndWait();
         return response.filter(buttonType -> buttonType == ButtonType.YES).isPresent();

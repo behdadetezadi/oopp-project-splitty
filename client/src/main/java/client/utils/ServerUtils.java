@@ -356,11 +356,15 @@ public class ServerUtils {
      * @return event
      */
     public static Event addEvent(Event event) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(SERVER).path("api/events")
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .post(Entity.entity(event, APPLICATION_JSON), Event.class);
+        try {
+            return ClientBuilder.newClient(new ClientConfig())
+                    .target(SERVER).path("api/events")
+                    .request(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
+                    .post(Entity.entity(event, APPLICATION_JSON), Event.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Error adding event: " + e.getMessage());
+        }
     }
 
 

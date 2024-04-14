@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.inject.Inject;
 import commons.Event;
+import commons.Expense;
+import commons.Participant;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -216,8 +218,8 @@ public class AdminController implements LanguageChangeListener {
      */
     @FXML
     private void deleteEvent(Event event) {
-        boolean userConfirmed = AlertUtils.showConfirmationAlert("Confirm Deletion",
-                "Are you sure you want to delete this event?");
+        boolean userConfirmed = AlertUtils.showConfirmationAlert(resourceBundle.getString("confirmDeletion"),
+                resourceBundle.getString("confirmDeleteEvent"));
 
         if (!userConfirmed) {
             return;
@@ -229,11 +231,15 @@ public class AdminController implements LanguageChangeListener {
                 if (success) {
                     eventData.remove(event);
                     eventsTable.setItems(eventData);
-                    AlertUtils.showInformationAlert("Success", "Event Deleted",
-                            "The event has been successfully deleted.");
+                    AlertUtils.showInformationAlert(resourceBundle.getString("success"),
+                            resourceBundle.getString("eventDeleted"),
+                            resourceBundle.getString("eventDeletedSuccess"));
+
                 } else {
-                    AlertUtils.showErrorAlert("Error", "Deletion Failed",
-                            "Failed to delete the event.");
+                    AlertUtils.showErrorAlert(resourceBundle.getString("error"),
+                            resourceBundle.getString("deletionFailed"),
+                            resourceBundle.getString("eventDeleteFail"));
+
                 }
             });
         }).start();
@@ -262,11 +268,19 @@ public class AdminController implements LanguageChangeListener {
 
         try {
             objectMapper.writeValue(outputFile, event);
-            AlertUtils.showInformationAlert("Event Exported!", "Exported to:", outputFile.getAbsolutePath());
+            AlertUtils.showInformationAlert(resourceBundle.getString("eventExported"),
+                    resourceBundle.getString("exportedTo"), outputFile.getAbsolutePath());
+
         } catch (FileNotFoundException e) {
-            AlertUtils.showErrorAlert("Error", "Directory Not Found", "The specified directory does not exist.");
+            AlertUtils.showErrorAlert(resourceBundle.getString("error"),
+                    resourceBundle.getString("directoryNotFound"),
+                    resourceBundle.getString("directoryNotExist"));
+
         } catch (IOException e) {
-            AlertUtils.showErrorAlert("Error", "Export Failed", "Failed to export the event. " + e.getMessage());
+            AlertUtils.showErrorAlert(resourceBundle.getString("error"),
+                    resourceBundle.getString("exportFailed"),
+                    resourceBundle.getString("failedExportEvent") + e.getMessage());
+
         }
     }
 
@@ -281,13 +295,23 @@ public class AdminController implements LanguageChangeListener {
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-        File outputFile = new File(System.getProperty("user.home") + File.separator + "AllEvents.json");
+        String folderName = "splitty_files";
+        File outputFolder = new File(System.getProperty("user.home") + File.separator + folderName);
+        if (!outputFolder.exists()) {
+            outputFolder.mkdirs();
+        }
+
+        File outputFile = new File(System.getProperty("user.home")
+                + File.separator + folderName + File.separator + "AllEvents.json");
 
         try {
             objectMapper.writeValue(outputFile, eventData);
-            AlertUtils.showInformationAlert("All Events Exported!", "Exported to:", outputFile.getAbsolutePath());
+            AlertUtils.showInformationAlert(resourceBundle.getString("allEventsExported"),
+                    resourceBundle.getString("exportedTo"), outputFile.getAbsolutePath());
         } catch (IOException e) {
-            AlertUtils.showErrorAlert("Error", "Export Failed", "Failed to export all events. " + e.getMessage());
+            AlertUtils.showErrorAlert(resourceBundle.getString("error"),
+                    resourceBundle.getString("exportFailedAll"),
+                    resourceBundle.getString("failedExportAllEvents") + e.getMessage());
         }
     }
 
@@ -306,11 +330,17 @@ public class AdminController implements LanguageChangeListener {
         dialog.initModality(Modality.APPLICATION_MODAL);
         VBox dialogVbox = new VBox(20);
         dialogVbox.setAlignment(Pos.CENTER);
-        Label label = new Label("Please enter file path: ");
+        Label label = new Label(resourceBundle.getString("enterFilePath"));
         dialogVbox.getChildren().add(label);
-        TextField textField = new TextField();
+        String defaultPath = System.getProperty("user.home") + File.separator + "splitty_files" + File.separator;
+        TextField textField = new TextField(defaultPath);
         dialogVbox.getChildren().add(textField);
-        Button button = new Button("Submit");
+        // Set cursor at the end of the text in the TextField
+        Platform.runLater(() -> {
+            textField.requestFocus();
+            textField.positionCaret(textField.getText().length());
+        });
+        Button button = new Button(resourceBundle.getString("Import"));
         button.setDefaultButton(true);
 
         button.setOnAction(e -> {
@@ -318,7 +348,10 @@ public class AdminController implements LanguageChangeListener {
             File file = new File(filepath);
 
             if (!file.exists()) {
-                AlertUtils.showErrorAlert("Error", "File not found", "The specified file could not be found.");
+                AlertUtils.showErrorAlert(resourceBundle.getString("error"),
+                        resourceBundle.getString("fileNotFound"),
+                        resourceBundle.getString("specifiedFileNotFound"));
+
                 return;
             }
 
@@ -326,43 +359,64 @@ public class AdminController implements LanguageChangeListener {
                 List<Event> importedEvents = objectMapper.readValue(file, new TypeReference<>() {});
                 importedEvents.forEach(this::addImportedEvent);
                 dialog.close();
-                AlertUtils.showInformationAlert("Success", "Events Imported and Added",
-                        "The events have been successfully imported and added to the server.");
+                AlertUtils.showInformationAlert(resourceBundle.getString("success"),
+                        resourceBundle.getString("eventsImportedAdded"),
+                        resourceBundle.getString("eventsSuccessfullyImportedAdded"));
             } catch (IOException ex) {
                 // If reading as a list fails, try reading as a single event
                 try {
                     Event importedEvent = objectMapper.readValue(file, Event.class);
                     addImportedEvent(importedEvent);
                     dialog.close();
-                    AlertUtils.showInformationAlert("Success", "Event Imported and Added",
-                            "The event has been successfully imported and added to the server.");
-                } catch (IOException nestedEx) {
-                    nestedEx.printStackTrace();
-                    AlertUtils.showErrorAlert("Error", "Import Failed",
-                            "Failed to import the event(s) from the specified file.");
+                    AlertUtils.showInformationAlert(resourceBundle.getString("success"),
+                            resourceBundle.getString("eventImportedAdded"),
+                            resourceBundle.getString("eventSuccessfullyImportedAdded"));
+                } catch (Exception nestedEx) {
+                    AlertUtils.showErrorAlert(resourceBundle.getString("error"),
+                            resourceBundle.getString("importFailed"),
+                            resourceBundle.getString("failedImportEvents"));
                 }
             }
         });
 
         dialogVbox.getChildren().add(button);
-        Scene dialogScene = new Scene(dialogVbox, 300, 150);
+        Scene dialogScene = new Scene(dialogVbox, 400, 200);
         dialogScene.getStylesheets().add(AlertUtils.class.getResource("/styles.css").toExternalForm());
         dialog.setScene(dialogScene);
         dialog.show();
     }
 
     private void addImportedEvent(Event importedEvent) {
-        Event addedEvent = ServerUtils.addEvent(importedEvent);
-        if (addedEvent != null) {
-            Platform.runLater(() -> {
-                eventData.add(addedEvent);
-                eventsTable.setItems(eventData);
-            });
-        } else {
-            AlertUtils.showErrorAlert("Error", "Add Event Failed",
-                    "The event was imported but could not be added to the server.");
+        try {
+            Event addedEvent = ServerUtils.addEvent(importedEvent);
+            if (addedEvent != null) {
+                long newEventId = addedEvent.getId();
+
+                for (Participant participant : addedEvent.getPeople()) {
+                    participant.getEventIds().removeIf(id -> id == importedEvent.getId());
+                    participant.getEventIds().add(newEventId);
+                    ServerUtils.updateParticipant(newEventId, participant.getId(), participant);
+                }
+
+                for (Expense expense : addedEvent.getExpenses()) {
+                    expense.setEventId(newEventId);
+                    ServerUtils.updateExpense(expense.getId(), expense, newEventId);
+                }
+
+                Platform.runLater(() -> {
+                    eventData.add(addedEvent);
+                    eventsTable.setItems(eventData);
+                });
+            } else {
+                AlertUtils.showErrorAlert(resourceBundle.getString("error"),
+                        resourceBundle.getString("addEventFailed"),
+                        resourceBundle.getString("eventImportedNotAdded"));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Event could not be added: " + e.getMessage(), e);
         }
     }
+
 
     /**
      * Goes back to the login page
@@ -378,8 +432,8 @@ public class AdminController implements LanguageChangeListener {
      */
     @FXML
     public void deleteAllEvents() {
-        boolean userConfirmed = AlertUtils.showConfirmationAlert("Confirm Delete All",
-                "Are you sure you want to delete all events from the server? This operation cannot be reverted.");
+        boolean userConfirmed = AlertUtils.showConfirmationAlert(resourceBundle.getString("confirmDeleteAll"),
+                resourceBundle.getString("confirmDeleteAllEvents"));
 
         if (!userConfirmed) {
             return;
@@ -391,11 +445,13 @@ public class AdminController implements LanguageChangeListener {
                 if (success) {
                     eventData.clear();
                     eventsTable.setItems(eventData);
-                    AlertUtils.showInformationAlert("Success", "All Events Deleted",
-                            "All events have been successfully deleted.");
+                    AlertUtils.showInformationAlert(resourceBundle.getString("success"),
+                            resourceBundle.getString("allEventsDeleted"),
+                            resourceBundle.getString("allEventsSuccessfullyDeleted"));
                 } else {
-                    AlertUtils.showErrorAlert("Error", "Deletion Failed",
-                            "Failed to delete all events.");
+                    AlertUtils.showErrorAlert(resourceBundle.getString("error"),
+                            resourceBundle.getString("deletionFailed"),
+                            resourceBundle.getString("failedDeleteAllEvents"));
                 }
             });
         }).start();

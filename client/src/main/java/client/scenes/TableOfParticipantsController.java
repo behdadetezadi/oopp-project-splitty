@@ -204,7 +204,8 @@ public class TableOfParticipantsController implements LanguageChangeListener {
     @FXML
     private void handleEditButton() {
         if (participants.isEmpty()) {
-            AlertUtils.showErrorAlert("Error", "No Participants Found",
+            AlertUtils.showErrorAlert(resourceBundle.getString("error"),
+                    resourceBundle.getString("noParticipantsFound"),
                     resourceBundle.getString("There_are_no_participants_to_edit."));
             return;
         }
@@ -222,7 +223,7 @@ public class TableOfParticipantsController implements LanguageChangeListener {
     private void handleDeleteButton() {
         Participant selectedParticipant = getSelectedParticipant();
         if (selectedParticipant != null) {
-            boolean confirmation = AlertUtils.showConfirmationAlert("Remove participant",
+            boolean confirmation = AlertUtils.showConfirmationAlert(resourceBundle.getString("Remove_Participant"),
                     resourceBundle.getString("Are_you_sure_you_want_to_remove")+ " " + selectedParticipant.getFirstName()
                             + " " + selectedParticipant.getLastName() + "?");
             if (confirmation) {
@@ -319,7 +320,8 @@ public class TableOfParticipantsController implements LanguageChangeListener {
             if (addedParticipant != null) {
                 participants.add(addedParticipant);
                 setupPagination();
-                AlertUtils.showInformationAlert("Success", "Participant Added",
+                AlertUtils.showInformationAlert(resourceBundle.getString("success"),
+                        resourceBundle.getString("Participant_Added"),
                         resourceBundle.getString("Participant_was_successfully_added."));
             }}
     }
@@ -336,7 +338,8 @@ public class TableOfParticipantsController implements LanguageChangeListener {
         server.send("app/participants",participant);
         if (isUpdated) {
             refreshParticipantDetails(participant);
-            AlertUtils.showInformationAlert("Success", "Participant Updated",
+            AlertUtils.showInformationAlert(resourceBundle.getString("success"),
+                    resourceBundle.getString("Participant_Updated"),
                     resourceBundle.getString("Participant_details_were_successfully_updated."));
         }
     }
@@ -373,7 +376,8 @@ public class TableOfParticipantsController implements LanguageChangeListener {
         if (isDeleted) {
             participants.remove(participant);
             setupPagination();
-            AlertUtils.showInformationAlert("Success", "Participant Removed",
+            AlertUtils.showInformationAlert(resourceBundle.getString("success"),
+                    resourceBundle.getString("Participant_Removed"),
                     resourceBundle.getString("Participant_was_successfully_removed."));
         }
     }
