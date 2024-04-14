@@ -30,7 +30,8 @@ public class TagUtils {
      * @param comboBox combo box to fill
      * @param tagKeysToLocalized localised tags
      */
-    public static void initializeTagsComboBox(ResourceBundle resourceBundle, ComboBox<String> comboBox, Map<String, String> tagKeysToLocalized) {
+    public static void initializeTagsComboBox(ResourceBundle resourceBundle,
+                                              ComboBox<String> comboBox, Map<String, String> tagKeysToLocalized) {
         comboBox.getItems().clear();
         comboBox.getItems().add(tagKeysToLocalized.get(TagUtils.TAG_FOOD));
         comboBox.getItems().add(tagKeysToLocalized.get(TagUtils.TAG_ENTRANCE_FEES));

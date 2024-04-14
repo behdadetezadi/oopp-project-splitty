@@ -1,8 +1,6 @@
 package client.utils;
 
 import client.Language;
-import client.scenes.MainController;
-import client.scenes.StartPageController;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
@@ -107,7 +105,8 @@ public class LanguageUtils {
         Set<String> keys = bundle.keySet();
         String languageKey = "yourLanguageKey";
         String folderName = "splitty_files"; // Name of the folder
-        String filePath = System.getProperty("user.home") + File.separator + folderName + File.separator + "message_" + languageKey + ".properties";
+        String filePath = System.getProperty("user.home")
+                + File.separator + folderName + File.separator + "message_" + languageKey + ".properties";
 
         try {
 
@@ -117,7 +116,8 @@ public class LanguageUtils {
             }
 
             try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
-                writer.println("# Instructions: Fill in the translations for each key below and send your file to the developer via email.\n" +
+                writer.println("# Instructions: Fill in the translations for each key below and send your file" +
+                        " to the developer via email.\n" +
                         "#After inspection your language will be added to the application\n"+
                         "#please make sure to change the term yourLanguageKey to the respective locale code.\n"
                         + "#in language. key fill in the languages display name according to its own locale");

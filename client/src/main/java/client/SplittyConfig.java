@@ -9,6 +9,10 @@ import java.util.Properties;
 public class SplittyConfig {
     private String splittyServerUrl;
     private String splittyWebsocketUrl;
+
+    /**
+     * Loads the config and the server/websocket URL
+     */
     public SplittyConfig() {
         loadProperties();
         generateWebsocketUrl();
@@ -22,7 +26,8 @@ public class SplittyConfig {
             splittyServerUrl = properties.getProperty("splitty.server.url").trim();
             splittyWebsocketUrl = properties.getProperty("splitty.websocket.url").trim();
         } catch (IOException e) {
-            AlertUtils.showErrorAlert("Server Error", "File not Fonund", "Cannot Find application.properties please check the file in the root of the project");
+            AlertUtils.showErrorAlert("Server Error", "File not Fonund",
+                    "Cannot Find application.properties please check the file in the root of the project");
         }
     }
 
@@ -36,9 +41,18 @@ public class SplittyConfig {
         }
     }
 
+    /**
+     * Server URL getter
+     * @return Splitty Server URL
+     */
     public String getSplittyServerUrl() {
         return splittyServerUrl;
     }
+
+    /**
+     * Websocket URL getter
+     * @return Splitty Websocket URL
+     */
     public String getSplittyWebsocketUrl(){
         return splittyWebsocketUrl;
     }

@@ -263,10 +263,12 @@ public class StartPageController implements LanguageChangeListener {
                 recentEventsList.setItems(events);
                 mainController.showEventOverview(event);
             } else {
-                AlertUtils.showErrorAlert("Error", "Error", resourceBundle.getString("Invalid_invite_code._Please_try_again."));
+                AlertUtils.showErrorAlert("Error", "Error",
+                        resourceBundle.getString("Invalid_invite_code._Please_try_again."));
             }
         } catch (NumberFormatException e) {
-            AlertUtils.showErrorAlert("Error", "Error", resourceBundle.getString("Invalid_invite_code._Please_try_again."));
+            AlertUtils.showErrorAlert("Error", "Error",
+                    resourceBundle.getString("Invalid_invite_code._Please_try_again."));
         }
     }
 
@@ -290,7 +292,8 @@ public class StartPageController implements LanguageChangeListener {
             recentEventsList.setItems(events);
             mainController.showEventOverview(createdEvent);
         } else {
-            AlertUtils.showErrorAlert("Error", "Error", resourceBundle.getString("Failed_to_create_event._Please_try_again."));
+            AlertUtils.showErrorAlert("Error", "Error",
+                    resourceBundle.getString("Failed_to_create_event._Please_try_again."));
         }
     }
 

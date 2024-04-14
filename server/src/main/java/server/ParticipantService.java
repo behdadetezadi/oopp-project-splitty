@@ -197,6 +197,12 @@ public class ParticipantService {
         }
     }
 
+    /**
+     * Updated participant
+     * @param participantId participant ID
+     * @param updatedParticipantInfo Information for updated participant
+     * @return Participant
+     */
     public Participant updateParticipant(Long participantId, Participant updatedParticipantInfo) {
         Participant participant = participantRepository.findById(participantId)
                 .orElseThrow(() -> new IllegalArgumentException("Participant not found"));

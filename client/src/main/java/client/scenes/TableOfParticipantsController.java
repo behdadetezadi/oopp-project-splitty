@@ -168,6 +168,10 @@ public class TableOfParticipantsController implements LanguageChangeListener {
             }
         });
     }
+
+    /**
+     * Stops the ExecutorService
+     */
     public void stop(){
         server.stop();
     }
@@ -190,8 +194,8 @@ public class TableOfParticipantsController implements LanguageChangeListener {
 
         Participant newParticipant = new Participant("", "", "", "", "",
                 "", new HashMap<>(), new HashMap<>(), eventIds, "");
-        editParticipant(newParticipant, "Add New Participant", resourceBundle.getString("Enter_details_for_the_new_participant."),
-                this::addParticipant);
+        editParticipant(newParticipant, "Add New Participant",
+                resourceBundle.getString("Enter_details_for_the_new_participant."), this::addParticipant);
     }
 
     /**
@@ -222,7 +226,8 @@ public class TableOfParticipantsController implements LanguageChangeListener {
                     resourceBundle.getString("Are_you_sure_you_want_to_remove")+ " " + selectedParticipant.getFirstName()
                             + " " + selectedParticipant.getLastName() + "?");
             if (confirmation) {
-                ParticipantDeletionRequest request = new ParticipantDeletionRequest(event.getId(), selectedParticipant.getId());
+                ParticipantDeletionRequest request = new ParticipantDeletionRequest(event.getId(),
+                        selectedParticipant.getId());
 
                 server.send("/app/participantDeletion", request);
                 deleteParticipant(selectedParticipant);
@@ -449,13 +454,20 @@ public class TableOfParticipantsController implements LanguageChangeListener {
      * Formats the details of a participant for display.
      * @param participant The {@link Participant} whose details are to be formatted.
      * @return A formatted string containing the participant's details.
+     * @param resourceBundle local resource bundle
      */
     public String formatParticipantDetails(Participant participant, ResourceBundle resourceBundle) {
-        String getUsername = Optional.ofNullable(participant.getUsername()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("userNotProvided"));
-        String getEmail = Optional.ofNullable(participant.getEmail()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("emailNotProvided"));
-        String getIban = Optional.ofNullable(participant.getIban()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("ibanNotProvided"));
-        String getBic = Optional.ofNullable(participant.getBic()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("bicNotProvided"));
-        String getLanguageChoice = Optional.ofNullable(participant.getLanguageChoice()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("languageNotProvided"));
+        String getUsername = Optional.ofNullable(
+                participant.getUsername()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("userNotProvided"));
+        String getEmail = Optional.ofNullable(
+                participant.getEmail()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("emailNotProvided"));
+        String getIban = Optional.ofNullable(
+                participant.getIban()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("ibanNotProvided"));
+        String getBic = Optional.ofNullable(
+                participant.getBic()).filter(s -> !s.isEmpty()).orElse( resourceBundle.getString("bicNotProvided"));
+        String getLanguageChoice = Optional.ofNullable(
+                participant.getLanguageChoice()).filter(
+                        s -> !s.isEmpty()).orElse(resourceBundle.getString("languageNotProvided"));
         return String.format("""
                     %s: %s
                     %s: %s
@@ -621,6 +633,12 @@ public class TableOfParticipantsController implements LanguageChangeListener {
         }
 
     }
+
+    /**
+     * Gets the updated participant
+     * @param event event
+     * @return updated participant
+     */
     public List<Participant>getUpdatedParticipant(Event event)
     {
         return participants;

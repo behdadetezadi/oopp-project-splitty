@@ -7,8 +7,6 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Pair;
 
-import java.util.Optional;
-
 public class KeyboardUtils {
     /**
      * Adds flexible keyboard shortcuts to a specified scene

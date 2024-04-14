@@ -16,15 +16,14 @@
 package client;
 
 import client.scenes.*;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import javafx.application.Application;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.google.inject.Guice.createInjector;
 
@@ -41,27 +40,41 @@ public class Main extends Application {
      * the application scene can be set.
      * Applications may create other stages, if needed, but they will not be
      * primary stages.
-     * @throws Exception if there is an exception
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
+        Map<String, Pair<?, Parent>> groupedPairs = new HashMap<>();
 
+        // Load FXML pages and controllers
         var startPage = FXML.load(StartPageController.class, "client", "scenes", "StartPage.fxml");
         var overviewPage = FXML.load(EventOverviewController.class, "client", "scenes", "EventOverview.fxml");
         var expensePage = FXML.load(AddExpenseController.class, "client", "scenes", "AddExpense.fxml");
-        var participantExpenseViewPage = FXML.load(ParticipantExpenseViewController.class, "client", "scenes", "ParticipantExpensesView.fxml");
+        var participantExpenseViewPage = FXML.load(ParticipantExpenseViewController.class, "client", "scenes",
+                "ParticipantExpensesView.fxml");
         var expenseOverviewPage = FXML.load(ExpenseOverviewController.class,"client", "scenes","ExpenseOverview.fxml");
         var participantsPage = FXML.load(TableOfParticipantsController.class,"client", "scenes", "TableOfParticipants.fxml");
         var invitePage = FXML.load(InviteController.class, "client", "scenes", "inviteScene.fxml");
         var adminPage = FXML.load(AdminController.class, "client", "scenes", "AdminOverview.fxml");
         var loginPage = FXML.load(LoginController.class, "client", "scenes", "LoginPage.fxml");
-        var mainController = INJECTOR.getInstance(MainController.class);
         var statsPage = FXML.load(StatsCtrl.class, "client", "scenes", "Statistics.fxml");
+
+        // Group pairs
+        groupedPairs.put("startPage", startPage);
+        groupedPairs.put("overviewPage", overviewPage);
+        groupedPairs.put("expensePage", expensePage);
+        groupedPairs.put("participantExpenseViewPage", participantExpenseViewPage);
+        groupedPairs.put("expenseOverviewPage", expenseOverviewPage);
+        groupedPairs.put("participantsPage", participantsPage);
+        groupedPairs.put("invitePage", invitePage);
+        groupedPairs.put("loginPage", loginPage);
+        groupedPairs.put("adminPage", adminPage);
+        groupedPairs.put("statsPage", statsPage);
+
+        var mainController = INJECTOR.getInstance(MainController.class);
 
         loginPage.getKey().setMainController(mainController);
 
-        mainController.initialize(primaryStage, startPage, overviewPage, expensePage, participantExpenseViewPage,
-                expenseOverviewPage, participantsPage, invitePage, loginPage, adminPage, statsPage);
+        mainController.initialize(primaryStage, groupedPairs);
 
         primaryStage.setOnCloseRequest(e -> {
             participantsPage.getKey().stop();

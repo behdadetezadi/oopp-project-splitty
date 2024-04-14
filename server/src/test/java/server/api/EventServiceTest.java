@@ -167,22 +167,6 @@ class EventServiceTest {
         verify(eventRepository, times(1)).participantsOfEventByInviteCode(1L);
     }
 
-// TODO this is currently failing do this after the websockets
-//
-//    @Test
-//    void removeParticipantFromEventTest() {
-//        Event event = new Event();
-//        event.setId(1L);
-//        Participant participant = new Participant();
-//        participant.setId(1L);
-//        event.setPeople(Arrays.asList(participant));
-//        when(eventRepository.findById(anyLong())).thenReturn(Optional.of(event));
-//        eventService.removeParticipantFromEvent(1L, 1L);
-//
-//        verify(eventRepository).save(event);
-//        assertEquals(0, event.getPeople().size());
-//    }
-
     @Test
     void addParticipantToEventSuccessfully() {
         when(eventRepository.findById(anyLong())).thenReturn(Optional.of(event));
@@ -203,19 +187,6 @@ class EventServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> eventService.addParticipantToEvent(1L, participant));
     }
-
-// TODO this is currently failing
-//
-//    @Test
-//    void removeParticipantFromEventSuccessfully() {
-//        event.setPeople(Arrays.asList(participant));
-//        when(eventRepository.findById(anyLong())).thenReturn(Optional.of(event));
-//
-//        eventService.removeParticipantFromEvent(event.getId(), participant.getId());
-//
-//        assertTrue(event.getPeople().isEmpty());
-//        verify(eventRepository).save(event);
-//    }
 
     @Test
     void removeParticipantFromEventEventNotFound() {
@@ -430,23 +401,6 @@ class EventServiceTest {
         Assertions.assertEquals(expense, result);
         Assertions.assertTrue(event.getExpenses().contains(expense));
     }
-
-    // TODO commented out because otherwise build gradlew fails
-//    @Test
-//    void testRemoveExpenseFromEventSuccess() {
-//        Event event = new Event();
-//        Expense expense = new Expense();
-//        expense.setId(1L);
-//        expense.setEventId(event.getId());
-//
-//        when(eventRepository.findById(anyLong())).thenReturn(Optional.of(event));
-//        when(expenseRepository.findById(anyLong())).thenReturn(Optional.of(expense));
-//        eventService.removeExpenseFromEvent(1L, 1L);
-//
-//        assertFalse(event.getExpenses().contains(expense));
-//        verify(eventRepository, times(1)).save(event);
-//        verify(expenseRepository, times(1)).save(expense);
-//    }
 
     @Test
     public void testUpdateExpenseInEvent() {

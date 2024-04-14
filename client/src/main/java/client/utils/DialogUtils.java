@@ -20,7 +20,8 @@ public class DialogUtils {
             ResourceBundle resourceBundle = resourceBundleSupplier.get();  // Get the current ResourceBundle
             if (newValue != null && newValue.equals(resourceBundle.getString("Other"))) {
                 TextInputDialog dialog = new TextInputDialog();
-                String cssPath = Objects.requireNonNull(ParticipantExpenseViewController.class.getResource("/styles.css")).toExternalForm();
+                String cssPath = Objects.requireNonNull(ParticipantExpenseViewController.class.getResource("/styles.css"))
+                        .toExternalForm();
                 dialog.getDialogPane().getStylesheets().add(cssPath);
 
                 dialog.setTitle(resourceBundle.getString("New_Tag"));

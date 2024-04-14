@@ -3,18 +3,14 @@ package client.scenes;
 import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
-import commons.Participant;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
@@ -75,22 +71,21 @@ public class InviteController implements LanguageChangeListener {
         try (FileInputStream input = new FileInputStream("email.properties")) {
             properties.load(input);
         } catch (IOException ex) {
-            AlertUtils.showErrorAlert("IO Error", "No Properties File!", "the email.properties file was not fount in the root directory of the application");
-            ex.printStackTrace();
+            AlertUtils.showErrorAlert("IO Error", "No Properties File!",
+                    "the email.properties file was not fount in the root directory of the application");
         }
         return properties;
     }
 
 
     /**
-     * handler for the submit button.
-     *
-     * @return an array list containing all email addresses to be processed further
+     * handler for the submit button
      */
     @FXML
     public void handleSubmitButtonAction() {
         if (emailsField.getText().isEmpty()) {
-            AlertUtils.showErrorAlert(resourceBundle.getString("FormError"), resourceBundle.getString("error"), resourceBundle.getString("FormErrorContent"));
+            AlertUtils.showErrorAlert(resourceBundle.getString("FormError"),
+                    resourceBundle.getString("error"), resourceBundle.getString("FormErrorContent"));
             return;
         }
 
@@ -101,8 +96,10 @@ public class InviteController implements LanguageChangeListener {
             String temp = scanner.next();
 
             if (!ValidationUtils.isValidEmail(temp)) {
-                AlertUtils.showErrorAlert(resourceBundle.getString("InvalidEmail"), resourceBundle.getString("error"), temp + " "+resourceBundle.getString("InvalidEmailContent")+
-                " "+ resourceBundle.getString("InvalidEmailContinue"));
+                AlertUtils.showErrorAlert(resourceBundle.getString("InvalidEmail"),
+                        resourceBundle.getString("error"),
+                        temp + " "+resourceBundle.getString("InvalidEmailContent")
+                                + " "+resourceBundle.getString("InvalidEmailContinue"));
                 return;
             } else {
                 emailAddresses.add(temp);
@@ -130,12 +127,13 @@ public class InviteController implements LanguageChangeListener {
             try {
                 EmailUtils.sendEmail(host, port, username, password, emailAddress, subject, message);
             } catch (MessagingException e) {
-                e.printStackTrace();
-                AlertUtils.showErrorAlert(resourceBundle.getString("EmailError"), resourceBundle.getString("error"), resourceBundle.getString("EmailErrorContent")+" "+ emailAddress);
+                AlertUtils.showErrorAlert(resourceBundle.getString("EmailError"),
+                        resourceBundle.getString("error"), resourceBundle.getString("EmailErrorContent")+" "+ emailAddress);
                 return;
             }
         }
-        AlertUtils.showInformationAlert(resourceBundle.getString("InvitationConfirm"), resourceBundle.getString("InformationHeader"), resourceBundle.getString("InvitationSucceed"));
+        AlertUtils.showInformationAlert(resourceBundle.getString("InvitationConfirm"),
+                resourceBundle.getString("InformationHeader"), resourceBundle.getString("InvitationSucceed"));
     }
     /**
      * method that sets title and invite code according to passed event
@@ -185,7 +183,8 @@ public class InviteController implements LanguageChangeListener {
      */
     public void updateUIElements() {
         AnimationUtil.animateText(textBeforeCode, resourceBundle.getString("Give_people_the_following_invite_Code"));
-        AnimationUtil.animateText(invitePeople, resourceBundle.getString("Invite_the_following_people_by_email_(one_address_per_line)"));
+        AnimationUtil.animateText(invitePeople,
+                resourceBundle.getString("Invite_the_following_people_by_email_(one_address_per_line)"));
         emailsField.setPromptText(resourceBundle.getString("emails_go_here"));
         AnimationUtil.animateText(backButton, resourceBundle.getString("back"));
         AnimationUtil.animateText(submitButton, resourceBundle.getString("Send_Invites"));

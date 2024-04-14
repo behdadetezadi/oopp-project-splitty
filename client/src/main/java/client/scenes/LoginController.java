@@ -3,7 +3,6 @@ package client.scenes;
 import client.Language;
 import client.utils.*;
 import com.google.inject.Inject;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -134,7 +133,8 @@ public class LoginController implements LanguageChangeListener{
             if (password.equals(adminPassword)) {
                 mainController.showAdminPage();
             } else {
-                AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_Password"), "Error", resourceBundle.getString("InvalidPassword"));
+                AlertUtils.showErrorAlert(resourceBundle.getString("Invalid_Password"),
+                        "Error", resourceBundle.getString("InvalidPassword"));
             }
         });
     }

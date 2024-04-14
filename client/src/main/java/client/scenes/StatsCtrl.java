@@ -13,7 +13,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.text.DecimalFormat;
@@ -117,10 +116,12 @@ public class StatsCtrl implements LanguageChangeListener {
             String tag = expense.getExpenseType();
             if (tag != null) {
                 String localizedTag = tagKeysToLocalized.getOrDefault(tag, tag);
-                tagAndExpense.put(localizedTag, tagAndExpense.getOrDefault(localizedTag, 0.0) + expense.getAmount());
+                tagAndExpense.put(localizedTag, tagAndExpense.getOrDefault(localizedTag, 0.0)
+                        + expense.getAmount());
             } else {
                 String otherTagLocalized = tagKeysToLocalized.get(TagUtils.TAG_OTHER);
-                tagAndExpense.put(otherTagLocalized, tagAndExpense.getOrDefault(otherTagLocalized, 0.0) + expense.getAmount());
+                tagAndExpense.put(otherTagLocalized, tagAndExpense.getOrDefault(otherTagLocalized, 0.0)
+                        + expense.getAmount());
             }
         }
         return tagAndExpense;

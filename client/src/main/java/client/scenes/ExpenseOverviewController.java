@@ -35,6 +35,13 @@ public class ExpenseOverviewController implements LanguageChangeListener {
     private Locale activeLocale;
     private Map<String, String> tagKeysToLocalized = new HashMap<>();
 
+    /**
+     * constructor for ExpenseOverviewController that will be injected
+     * @param primaryStage Stage
+     * @param server ServerUtils
+     * @param mainController MainController
+     * @param event Event
+     */
     @Inject
     public ExpenseOverviewController(Stage primaryStage, ServerUtils server, MainController mainController, Event event) {
         this.primaryStage = primaryStage;
@@ -135,7 +142,8 @@ public class ExpenseOverviewController implements LanguageChangeListener {
 
         // Using ResourceBundle for localized strings
         String expenseTemplate = resourceBundle.getString("expenseDetail");
-        StringBuilder displayBuilder = new StringBuilder(String.format(expenseTemplate, expenseNumber, expense.getParticipant().getFirstName(), expense.getAmount(), expense.getCategory()));
+        StringBuilder displayBuilder = new StringBuilder(String.format(expenseTemplate,
+                expenseNumber, expense.getParticipant().getFirstName(), expense.getAmount(), expense.getCategory()));
 
         displayBuilder.append(String.format(resourceBundle.getString("tagTitle"),getLocalisedTag(expense.getExpenseType())));
         displayBuilder.append(resourceBundle.getString("DebtDetail"));
@@ -144,7 +152,8 @@ public class ExpenseOverviewController implements LanguageChangeListener {
         if (numberOfParticipants > 1) {
             for (Participant participant : mainController.getUpdatedParticipantList(event)) {
                 if (!participant.equals(expense.getParticipant())) {
-                    displayBuilder.append(String.format(participantOwesTemplate, participant.getFirstName(), amountOwedPerParticipant));
+                    displayBuilder.append(String.format(participantOwesTemplate,
+                            participant.getFirstName(), amountOwedPerParticipant));
                 }
             }
         } else {
@@ -198,7 +207,8 @@ public class ExpenseOverviewController implements LanguageChangeListener {
                     sumOfExpenses += expenses.get(i).getAmount();
                 }
             }
-            sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"), String.format("%.2f", sumOfExpenses)));
+            sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"),
+                    String.format("%.2f", sumOfExpenses)));
         } catch (RuntimeException ex) {
             // Handle case where no expenses are found
             expensesListView.getItems().clear();
