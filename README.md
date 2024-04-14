@@ -5,7 +5,7 @@ This is our implementation of Splitty.
 
 You run the server first, and then you run the client.
 
- **Login Page:**
+**Login Page:**
 
 This is the first page you will see.
 
@@ -17,6 +17,8 @@ You have the option to click on a user login or an admin login.
 **Start Page:**
 Here, you have the ability to either create a new event or join an existing event through a unique invite code.
 
+The Recent Events List gets populated as you navigate through events in runtime and is initially empty since there is no login in compliance with the basic requirements.
+By clicking on the events in this list you can navigate to them faster.
 **USER FEATURES**
 
 
@@ -45,6 +47,7 @@ Add Expense instruction:
 Show Expense instruction:
 - This only shows the expenses for a participant. You can modify or delete them here.
 
+The user can also change the event's title and copy the invite code in this page.
 
 **ADMIN FEATURES**
 
@@ -57,7 +60,7 @@ You can sort the event by clicking on the column headers of what you want to sor
 
 **WEBSOCKETS AND LONG-POLLING**
 The backend implementation for both of these lies on server/src/main/server/api/EventController.
-Whichever method has @MessageMapping annotation on top works with websockets (with the exception of the method for updating event title which was not completed).
+Whichever method has @MessageMapping annotation on top works with websockets (except for the method for updating event title which was not completed).
 The addParticipant() method in the backend uses long polling to add a participant. The respective logic for both websockets and long-polling is also continued in the server utils method at client/src/main/java/client/utils/ServerUtils.
 
 Moreover, in the tableOfParticipantsController in the client side uses long-polling for addition of participants and modification/deletion.
@@ -72,7 +75,7 @@ Moreover, deleting a participant using websockets removes the opportunity of ano
 
 Live Language Switch
 
-Live Language Switch is available in Login page, Start page and Event Ovrerview Page.
+Live Language Switch is available in Login page, Start page and Event Overview Page.
 
 Current Live Language Switch fully supports three languages (Dutch, German, English) but it is very flexible the user can download the keys of the words to translate (via download template option) and fill them in with the desired language and email them to the developers and the developers can easily include that language in the switch.
 
@@ -80,7 +83,7 @@ The template file is made and opened automatically a folder called splitty_files
 
 The default language is set to english but through runtime the language choice persists (until changed in one of the three mentioned pages)
 
-In addition language choice persists through restarts.
+In addition, language choice persists through restarts.
 
 **Statistics page:**
 
@@ -95,7 +98,7 @@ The email should support current smtp requirements (for example for gmail accoun
 
 In case of any changes for smtp hosts user can use their own smtp host and port.
 
-We use SSL and StartTLS enables properties for the mail server.
+We use SSL and StartTLS enabled properties for the mail server.
 
 
 **Undo button:**
