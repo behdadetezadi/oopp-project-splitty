@@ -1,7 +1,75 @@
 # OOPP Template Project
 
 
-keyboard shortcut navigation:
+
+
+# Instructions on how to execute this project:
+
+ **Login Page:**
+
+By clicking User Login:
+
+
+By clicking Admin Login:
+
+
+
+**Start Page:**
+
+
+
+
+**Event Overview Page:**
+
+Send Invites instruction:
+
+
+Show Participants instructions:
+
+
+Show All Expense instruction:
+
+
+Select Participant instruction:
+
+
+Add Expense instruction:
+
+
+Show Expense instruction:
+
+
+
+
+# long-polling/webSockets Implementation
+
+
+
+
+
+
+
+
+
+
+
+
+# Extensions and HCI features implementation list:
+
+**Statistics page:**
+
+
+
+**Send Invitation code to email:**
+
+
+
+**Undo button:**
+
+
+
+
+# keyboard shortcut navigation:
 
 Ctrl + C: Create a new event
 
@@ -34,4 +102,6 @@ Ctrl + A: Log in as an administrator
 Ctrl + L: Switch between the languages of the application
 
 ESCAPE: Go back to the previous page
+
+
 
