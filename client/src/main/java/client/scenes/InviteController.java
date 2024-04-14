@@ -102,7 +102,7 @@ public class InviteController implements LanguageChangeListener {
 
             if (!ValidationUtils.isValidEmail(temp)) {
                 AlertUtils.showErrorAlert(resourceBundle.getString("InvalidEmail"), resourceBundle.getString("error"), temp + " "+resourceBundle.getString("InvalidEmailContent")+
-                "   "+ resourceBundle.getString("InvalidEmailContinue"));
+                " "+ resourceBundle.getString("InvalidEmailContinue"));
                 return;
             } else {
                 emailAddresses.add(temp);
