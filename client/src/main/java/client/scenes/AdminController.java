@@ -253,7 +253,12 @@ public class AdminController implements LanguageChangeListener {
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         String safeFileName = event.getTitle().replaceAll("[^a-zA-Z0-9.-]", "_");
-        File outputFile = new File(System.getProperty("user.home") + File.separator + safeFileName + ".json");
+        String folderName = "splitty_files";
+        File outputFolder = new File(System.getProperty("user.home") + File.separator + folderName);
+        if (!outputFolder.exists()) {
+            outputFolder.mkdirs();
+        }
+        File outputFile = new File(outputFolder, safeFileName + ".json");
 
         try {
             objectMapper.writeValue(outputFile, event);

@@ -7,7 +7,15 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 
+import java.awt.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
+import java.util.List;
+
+import static client.utils.AlertUtils.showErrorAlert;
 
 public class LanguageUtils {
     /**
@@ -29,6 +37,10 @@ public class LanguageUtils {
      * @param listener The listener that will have its language switched.
      */
     public static void switchLanguage(String language, LanguageChangeListener listener) {
+        if(language.equals("Download Template")){
+            generateTemplateFile(Locale.ENGLISH);
+            return;
+        }
         Locale locale = switch (language) {
             case "Deutsch" -> Locale.GERMAN;
             case "Nederlands" -> new Locale("nl");
@@ -36,7 +48,6 @@ public class LanguageUtils {
         };
         loadLanguage(locale, listener);
     }
-
     /**
      * Changes the language to the next one in the list, rolling over to the first after the last.
      * @param currentLocale The current locale
@@ -91,6 +102,45 @@ public class LanguageUtils {
         });
     }
 
+    private static void generateTemplateFile(Locale locale) {
+        ResourceBundle bundle = ResourceBundle.getBundle("message", locale);
+        Set<String> keys = bundle.keySet();
+        String languageKey = "yourLanguageKey";
+        String folderName = "splitty_files"; // Name of the folder
+        String filePath = System.getProperty("user.home") + File.separator + folderName + File.separator + "message_" + languageKey + ".properties";
+
+        try {
+
+            File folder = new File(System.getProperty("user.home") + File.separator + folderName);
+            if (!folder.exists()) {
+                folder.mkdirs(); // Create the folder and any necessary parent folders
+            }
+
+            try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+                writer.println("# Instructions: Fill in the translations for each key below and send your file to the developer via email.\n" +
+                        "#After inspection your language will be added to the application\n"+
+                        "#please make sure to change the term yourLanguageKey to the respective locale code.\n"
+                        + "#in language. key fill in the languages display name according to its own locale");
+                writer.println();
+
+                for (String key : keys) {
+                    writer.println(key + "=");
+                }
+            } catch (IOException e) {
+                showErrorAlert("File Error", "IO Error", "Error making and writing the file");
+            }
+
+            try {
+                File file = new File(filePath);
+                Desktop.getDesktop().open(file);
+            } catch (IOException e) {
+                showErrorAlert("File Error", "IO Error", "Error reading the file");
+            }
+        } catch (Exception e) {
+            showErrorAlert("File Error", "IO Error", "Error making and writing the file");
+        }
+    }
+
     /**
      * Populate a ComboBox for language selection with the languages and flags
      * @param activeLocale The locale to load the language resources for.
@@ -108,6 +158,9 @@ public class LanguageUtils {
         languages.add(new Language("Nederlands",
                 new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
                         .getResourceAsStream("images/flags/dutch.png")))));
+        languages.add(new Language("Download Template",
+                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
+                        .getResourceAsStream("images/download.png")))));
         for (Language language : languages) {
             if (language.getName().equals(languageName)) {
                 languageComboBox.setValue(language);
