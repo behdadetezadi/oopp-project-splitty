@@ -12,6 +12,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.*;
 
 public class InviteController implements LanguageChangeListener {
@@ -58,7 +63,24 @@ public class InviteController implements LanguageChangeListener {
     public void initialize() {
         // Loads the active locale, sets the resource bundle, and updates the UI
         LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
+
     }
+
+    /**
+     * Load email properties from a properties file.
+     * @return Properties object containing email properties
+     */
+    private Properties loadEmailPropertiesFromFile() {
+        Properties properties = new Properties();
+        try (FileInputStream input = new FileInputStream("email.properties")) {
+            properties.load(input);
+        } catch (IOException ex) {
+            AlertUtils.showErrorAlert("IO Error", "No Properties File!", "the email.properties file was not fount in the root directory of the application");
+            ex.printStackTrace();
+        }
+        return properties;
+    }
+
 
     /**
      * handler for the submit button.
@@ -66,44 +88,54 @@ public class InviteController implements LanguageChangeListener {
      * @return an array list containing all email addresses to be processed further
      */
     @FXML
-    ArrayList<String> handleSubmitButtonAction() {
-        if(emailsField.getText().isEmpty()) {
-            AlertUtils.showErrorAlert("Form Error!", "Error",
-                    "Please enter email addresses!");
-            return null;
+    public void handleSubmitButtonAction() {
+        if (emailsField.getText().isEmpty()) {
+            AlertUtils.showErrorAlert("Form Error!", "Error", "Please enter email addresses!");
+            return;
         }
 
+        ArrayList<String> emailAddresses = new ArrayList<>();
         String emailAddressesAsString = emailsField.getText();
-        ArrayList<String> result =  handleSubmitButtonActionLogic(emailAddressesAsString);
-        for (String s : result) {
-            if (!ValidationUtils.isValidEmail(s)) {
-                AlertUtils.showErrorAlert("Error: invalid email!", s, "is not a valid email address!");
-                return  null;
+        Scanner scanner = new Scanner(emailAddressesAsString);
+        while (scanner.hasNext()) {
+            String temp = scanner.next();
+
+            if (!ValidationUtils.isValidEmail(temp)) {
+                AlertUtils.showErrorAlert("Invalid email!", "Error", temp + " is not a valid email address! " +
+                        "Email must be in a valid format (e.g., user@example.com).");
+                return;
+            } else {
+                emailAddresses.add(temp);
             }
         }
-        AlertUtils.showInformationAlert("Invites send!", "Information",
-                "Invites sent successfully");
 
-        return result;
+        // Get email credentials from properties file
+        Properties emailProps = loadEmailPropertiesFromFile();
+        String host = emailProps.getProperty("mail.smtp.host");
+        int port = Integer.parseInt(emailProps.getProperty("mail.smtp.port"));
+        String username = emailProps.getProperty("mail.smtp.username");
+        String password = emailProps.getProperty("mail.smtp.password");
 
-    }
+        // Compose email content
+        String subject = "Invitation to Event";
+        String message = "Dear Participant,\n\n"
+                + "You have been invited to an event. Please find your invite code below:\n\n"
+                + "Invite Code: " + event.getInviteCode() + "\n\n"
+                + "Instructions: Go to your splitty and check out the event! \n\n"
+                + "Best regards,\n "+ username;
 
-
-    /**
-     * method that takes the logic part out of the handler of the submit button so that it can be tested
-     * @param emailAddressesAsString list containing all email addresses
-     * @return list of email addresses
-     */
-    static ArrayList<String> handleSubmitButtonActionLogic(String emailAddressesAsString) {
-        Scanner scanner = new Scanner(emailAddressesAsString);
-        ArrayList<String> emailAddresses = new ArrayList<>();
-        while(scanner.hasNext()) {
-            String temp = scanner.next();
-            emailAddresses.add(temp);
+        // Send emails
+        for (String emailAddress : emailAddresses) {
+            try {
+                EmailUtils.sendEmail(host, port, username, password, emailAddress, subject, message);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+                AlertUtils.showErrorAlert("Email Error!", "Error", "Failed to send email to " + emailAddress);
+                return;
+            }
         }
-        return emailAddresses;
+        AlertUtils.showInformationAlert("Invites sent!", "Information", "Invites sent successfully");
     }
-
     /**
      * method that sets title and invite code according to passed event
      * @param newEvent the event
