@@ -122,6 +122,7 @@ public class InviteController implements LanguageChangeListener {
                 + resourceBundle.getString("InvitationComponent2")+"\n\n"
                 + resourceBundle.getString("InvitationComponent3")+" "+ event.getInviteCode() + "\n\n"
                 + resourceBundle.getString("InvitationComponent4")+" "+"\n\n"
+                + resourceBundle.getString("InvitationComponentServer") + ServerUtils.getSERVER() + "\n\n"
                 + resourceBundle.getString("InvitationComponent5")+"\n "+ username;
 
         // Send emails
