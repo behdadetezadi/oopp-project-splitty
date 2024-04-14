@@ -167,8 +167,9 @@ public class EventOverviewController implements LanguageChangeListener {
             Long selectedParticipantId = selectedParticipantOption.getId();
             mainController.showParticipantExpensesOverview(this.event, selectedParticipantId);
         } else {
-            AlertUtils.showErrorAlert("Select participant",
-                    "Error", resourceBundle.getString("Please_select_a_participant_to_show_expenses"));
+            AlertUtils.showErrorAlert(resourceBundle.getString("selectParticipant"),
+                    resourceBundle.getString("error"),
+                    resourceBundle.getString("Please_select_a_participant_to_show_expenses"));
         }
     }
     /**
@@ -318,8 +319,8 @@ public class EventOverviewController implements LanguageChangeListener {
                 this.inviteCode.getText()
         );
         clipboard.setContent(content);
-        AlertUtils.showInformationAlert("Invite code copied!",
-                "copied the following invitecode: ",
+        AlertUtils.showInformationAlert(resourceBundle.getString("inviteCodeCopied"),
+                resourceBundle.getString("copiedInviteCode"),
                 this.inviteCode.getText());
     }
 
@@ -332,8 +333,8 @@ public class EventOverviewController implements LanguageChangeListener {
             mainController.showTableOfParticipants(this.event);
 
         } catch (IllegalStateException e) {
-            AlertUtils.showErrorAlert("Failed to Load",
-                    "Error", resourceBundle.getString("Failed_to_load_the_participant_scene"));
+            AlertUtils.showErrorAlert(resourceBundle.getString("failedToLoad"),
+                    resourceBundle.getString("error"), resourceBundle.getString("Failed_to_load_the_participant_scene"));
         }
     }
 
@@ -370,8 +371,8 @@ public class EventOverviewController implements LanguageChangeListener {
         try {
             mainController.showInvitePage(this.event);
         } catch (IllegalStateException e) {
-            AlertUtils.showErrorAlert("Failed to Load",
-                    "Error", resourceBundle.getString("Failed_to_load_the_invite_scene"));
+            AlertUtils.showErrorAlert(resourceBundle.getString("failedToLoad"),
+                    resourceBundle.getString("error"), resourceBundle.getString("Failed_to_load_the_invite_scene"));
         }
     }
 
@@ -385,7 +386,8 @@ public class EventOverviewController implements LanguageChangeListener {
             Long selectedParticipantId = selectedParticipantOption.getId();
             mainController.showAddExpense(this.event, selectedParticipantId);
         } else {
-            AlertUtils.showErrorAlert("Select participant", "Error",
+            AlertUtils.showErrorAlert(resourceBundle.getString("selectParticipant"),
+                    resourceBundle.getString("error"),
                     resourceBundle.getString("Please_select_for_which_participant_you_want_to_add_an_expense."));
         }
     }

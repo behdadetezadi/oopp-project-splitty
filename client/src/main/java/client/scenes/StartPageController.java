@@ -263,11 +263,11 @@ public class StartPageController implements LanguageChangeListener {
                 recentEventsList.setItems(events);
                 mainController.showEventOverview(event);
             } else {
-                AlertUtils.showErrorAlert("Error", "Error",
+                AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("error"),
                         resourceBundle.getString("Invalid_invite_code._Please_try_again."));
             }
         } catch (NumberFormatException e) {
-            AlertUtils.showErrorAlert("Error", "Error",
+            AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("error"),
                     resourceBundle.getString("Invalid_invite_code._Please_try_again."));
         }
     }
@@ -279,7 +279,8 @@ public class StartPageController implements LanguageChangeListener {
     void createEvent() {
         String eventName = eventNameInput.getText();
         if (eventName.isEmpty()) {
-            AlertUtils.showErrorAlert("Error", "Error", resourceBundle.getString("Event_name_cannot_be_empty."));
+            AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("error"),
+                    resourceBundle.getString("Event_name_cannot_be_empty."));
             return;
         }
 
@@ -292,7 +293,7 @@ public class StartPageController implements LanguageChangeListener {
             recentEventsList.setItems(events);
             mainController.showEventOverview(createdEvent);
         } else {
-            AlertUtils.showErrorAlert("Error", "Error",
+            AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("error"),
                     resourceBundle.getString("Failed_to_create_event._Please_try_again."));
         }
     }

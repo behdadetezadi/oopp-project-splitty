@@ -71,8 +71,9 @@ public class InviteController implements LanguageChangeListener {
         try (FileInputStream input = new FileInputStream("email.properties")) {
             properties.load(input);
         } catch (IOException ex) {
-            AlertUtils.showErrorAlert("IO Error", "No Properties File!",
-                    "the email.properties file was not fount in the root directory of the application");
+            AlertUtils.showErrorAlert(resourceBundle.getString("ioError"),
+                    resourceBundle.getString("noPropertiesFile"),
+                    resourceBundle.getString("emailPropertiesNotFound"));
         }
         return properties;
     }
@@ -208,7 +209,8 @@ public class InviteController implements LanguageChangeListener {
                 this.inviteCode.getText()
         );
         clipboard.setContent(content);
-        AlertUtils.showInformationAlert(resourceBundle.getString("CopyConfirm"),resourceBundle.getString("CopyDetails")+" ",
+        AlertUtils.showInformationAlert(resourceBundle.getString("inviteCodeCopied"),
+                resourceBundle.getString("copiedInviteCode")+" ",
                 this.inviteCode.getText());
     }
 }
