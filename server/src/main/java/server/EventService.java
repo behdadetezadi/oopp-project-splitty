@@ -64,23 +64,6 @@ public class EventService {
         }
     }
 
-
- //TODO
-//    /**
-//     * update an event
-//     * @param eventId long number
-//     * @param event Event
-//     * @return Event
-//     */
-//    public Event updateEvent(long eventId, Event event) {
-//        if (!events.containsKey(eventId)) {
-//            throw new IllegalArgumentException("Event not found with ID: " + eventId);
-//        }
-//        event.setId(eventId);
-//        events.put(eventId, event);
-//        return event;
-//    }
-
     /**
      * delete event
      * @param id long number
