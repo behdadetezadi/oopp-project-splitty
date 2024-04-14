@@ -102,32 +102,6 @@ public class LanguageUtils {
         });
     }
 
-    /**
-     * Populate a ComboBox for language selection with the languages and flags
-     * @param activeLocale The locale to load the language resources for.
-     * @param languageComboBox The ComboBox to populate.
-     */
-    public static void populateLanguageComboBox(Locale activeLocale, ComboBox<Language> languageComboBox) {
-        String languageName = LanguageUtils.localeToLanguageName(activeLocale);
-        List<Language> languages = new ArrayList<>();
-        languages.add(new Language("English",
-                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
-                        .getResourceAsStream("images/flags/english.png")))));
-        languages.add(new Language("Deutsch",
-                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
-                        .getResourceAsStream("images/flags/german.png")))));
-        languages.add(new Language("Nederlands",
-                new Image(Objects.requireNonNull(LanguageUtils.class.getClassLoader()
-                        .getResourceAsStream("images/flags/dutch.png")))));
-        for (Language language : languages) {
-            if (language.getName().equals(languageName)) {
-                languageComboBox.setValue(language);
-                break;
-            }
-        }
-        languageComboBox.setItems(FXCollections.observableArrayList(languages));
-    }
-
     private static void generateTemplateFile(Locale locale) {
         ResourceBundle bundle = ResourceBundle.getBundle("message", locale);
         Set<String> keys = bundle.keySet();
