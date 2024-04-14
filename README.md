@@ -86,7 +86,7 @@ The default language is set to english but through runtime the language choice p
 In addition, language choice persists through restarts.
 
 **Statistics page:**
-
+This page shows a pie chart containing the amount of money spent per tag, and also shows the total amount of money spent on the event
 
 
 **Send Invitation code to email:**
