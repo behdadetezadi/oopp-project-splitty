@@ -187,6 +187,12 @@ public class EventOverviewController implements LanguageChangeListener {
      */
     public void setEvent(Event event) {
         this.event = event;
+//        ServerUtils.registerForUpdates(event.getId(), participant -> {
+//            Platform.runLater(() -> {
+//                updateParticipant(participant);
+//            });
+//        });
+
 
         server.registerForEventUpdates("/topic/eventTitle", event.getId(), null, event1 -> {
             Platform.runLater(() -> {
@@ -208,11 +214,6 @@ public class EventOverviewController implements LanguageChangeListener {
         loadParticipants();
         initializeParticipants();
         animateEventTitle();
-        ServerUtils.registerForUpdates(event.getId(), participant -> {
-            Platform.runLater(() -> {
-                updateParticipant(participant);
-            });
-        });
 
 
         server.registerForMessages("/topic/participantDeletion", event.getId(), null, p -> {
