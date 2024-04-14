@@ -133,21 +133,24 @@ public class ExpenseOverviewController implements LanguageChangeListener {
         String expenseTemplate = resourceBundle.getString("expenseDetail");
         StringBuilder displayBuilder = new StringBuilder(String.format(expenseTemplate, expenseNumber, expense.getParticipant().getFirstName(), expense.getAmount(), expense.getCategory()));
 
-        displayBuilder.append(String.format(resourceBundle.getString("tagTitle"),this.tagLanguageSwitch(expense.getExpenseType())));
+        displayBuilder.append(String.format(resourceBundle.getString("tagTitle"), this.tagLanguageSwitch(expense.getExpenseType())));
         displayBuilder.append(resourceBundle.getString("DebtDetail"));
         String participantOwesTemplate = resourceBundle.getString("participantOwes");
-        for (Participant participant : mainController.getUpdatedParticipantList(event)) {
-            if (!participant.equals(expense.getParticipant())) {
-                displayBuilder.append(String.format(participantOwesTemplate, participant.getFirstName(), amountOwedPerParticipant));
+
+        if (numberOfParticipants > 1) {
+            for (Participant participant : mainController.getUpdatedParticipantList(event)) {
+                if (!participant.equals(expense.getParticipant())) {
+                    displayBuilder.append(String.format(participantOwesTemplate, participant.getFirstName(), amountOwedPerParticipant));
+                }
             }
-            if(numberOfParticipants==1) {
-                String noOneOwesMessage = resourceBundle.getString("expenseFullyCovered");
-                displayBuilder.append(noOneOwesMessage);
-            }
+        } else {
+            String noOneOwesMessage = resourceBundle.getString("expenseFullyCovered");
+            displayBuilder.append(noOneOwesMessage);
         }
 
         return displayBuilder.toString();
     }
+
 
     /**
      * makes sure the language switch works with the tags
