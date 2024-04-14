@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.inject.Inject;
 import commons.Event;
+import commons.Expense;
+import commons.Participant;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -388,6 +390,19 @@ public class AdminController implements LanguageChangeListener {
         try {
             Event addedEvent = ServerUtils.addEvent(importedEvent);
             if (addedEvent != null) {
+                long newEventId = addedEvent.getId();
+
+                for (Participant participant : addedEvent.getPeople()) {
+                    participant.getEventIds().removeIf(id -> id == importedEvent.getId());
+                    participant.getEventIds().add(newEventId);
+                    ServerUtils.updateParticipant(newEventId, participant.getId(), participant);
+                }
+
+                for (Expense expense : addedEvent.getExpenses()) {
+                    expense.setEventId(newEventId);
+                    ServerUtils.updateExpense(expense.getId(), expense, newEventId);
+                }
+
                 Platform.runLater(() -> {
                     eventData.add(addedEvent);
                     eventsTable.setItems(eventData);
@@ -398,9 +413,10 @@ public class AdminController implements LanguageChangeListener {
                         resourceBundle.getString("eventImportedNotAdded"));
             }
         } catch (Exception e) {
-            throw new RuntimeException("Event could not be added");
+            throw new RuntimeException("Event could not be added: " + e.getMessage(), e);
         }
     }
+
 
     /**
      * Goes back to the login page
