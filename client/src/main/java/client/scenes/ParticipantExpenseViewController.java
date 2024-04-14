@@ -4,7 +4,6 @@ import client.utils.*;
 import client.utils.undoable.DeleteExpenseCommand;
 import client.utils.undoable.EditExpenseCommand;
 import client.utils.undoable.UndoManager;
-import client.utils.undoable.UndoableCommand;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
@@ -48,8 +47,17 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
     private BiConsumer<Expense, String> updateUI;
     private Map<String, String> tagKeysToLocalized = new HashMap<>();
 
+    /**
+     * Constructor for ParticipantExpenseViewController with injection
+     * @param primaryStage Stage
+     * @param server ServerUtils
+     * @param mainController MainController
+     * @param event Event
+     * @param undoManager UndoManager
+     */
     @Inject
-    public ParticipantExpenseViewController(Stage primaryStage, ServerUtils server, MainController mainController, Event event,UndoManager undoManager) {
+    public ParticipantExpenseViewController(Stage primaryStage, ServerUtils server,
+                                            MainController mainController, Event event,UndoManager undoManager) {
         this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
@@ -60,7 +68,8 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
     }
     private void addExpenseToUI(Expense expense) {
         Platform.runLater(() -> {
-            if (!expensesListView.getItems().isEmpty() && expensesListView.getItems().get(0).equals(resourceBundle.getString("noExpensesRecorded"))) {
+            if (!expensesListView.getItems().isEmpty() && expensesListView.getItems()
+                    .get(0).equals(resourceBundle.getString("noExpensesRecorded"))) {
                 expensesListView.getItems().clear();
             }
             updateExpenseListView(expense);
@@ -72,7 +81,7 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
     private void updateExpenseListView(Expense expense) {
         String expenseDisplay = formatExpenseForDisplay(expense);
         expensesListView.getItems().add(expenseDisplay);
-        expensesListView.setCellFactory(listView -> new ListCell<String>() {
+        expensesListView.setCellFactory(listView -> new ListCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -122,11 +131,15 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
         initializeExpensesForParticipant(this.selectedParticipantId);
     }
 
+    /**
+     * Sets the current event
+     * @param event Event
+     * @param participantId participant ID
+     */
     public void setEvent(Event event, long participantId) {
         this.event = event;
         this.selectedParticipantId = participantId;
         initializeExpensesForParticipant(participantId);
-
     }
 
     /**
@@ -180,6 +193,10 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
                 .orElse(tag);
     }
 
+    /**
+     * Initializes expenses for a participant
+     * @param participantId Long
+     */
     public void initializeExpensesForParticipant(Long participantId) {
         List<Expense> expenses = ServerUtils.getExpensesForParticipant(participantId);
 
@@ -194,7 +211,8 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
                 expensesListView.getItems().add(expenseDisplay);
                 sumOfExpenses += expense.getAmount();
             }
-            AnimationUtil.animateText(sumOfExpensesLabel, String.format(resourceBundle.getString("total"), String.format("%.2f", sumOfExpenses)));
+            AnimationUtil.animateText(sumOfExpensesLabel,
+                    String.format(resourceBundle.getString("total"), String.format("%.2f", sumOfExpenses)));
         }
 
         expensesListView.setCellFactory(listView -> new ListCell<String>() {
@@ -211,8 +229,10 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
                     } else {
                         Button editButton = new Button(resourceBundle.getString("edit"));
                         Button deleteButton = new Button(resourceBundle.getString("delete"));
-                        editButton.setOnAction(e -> handleEditButton(getExpenseFromListView(getIndex(), selectedParticipantId)));
-                        deleteButton.setOnAction(e -> handleDeleteButton(getExpenseFromListView(getIndex(), selectedParticipantId)));
+                        editButton.setOnAction(e -> handleEditButton(getExpenseFromListView(getIndex(),
+                                selectedParticipantId)));
+                        deleteButton.setOnAction(e -> handleDeleteButton(getExpenseFromListView(getIndex(),
+                                selectedParticipantId)));
                         HBox buttonsBox = new HBox(editButton, deleteButton);
                         buttonsBox.setSpacing(10);
                         setGraphic(buttonsBox);
@@ -274,9 +294,11 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
     public void updateUI(Expense expense, String actionType) {
         Platform.runLater(() -> {
             if (actionType.equals("deleted")) {
-                AlertUtils.showSuccessAlert(resourceBundle.getString("expenseDeletedTitle"), null, resourceBundle.getString("expenseDeletedSuccess"));
+                AlertUtils.showSuccessAlert(resourceBundle.getString("expenseDeletedTitle"),
+                        null, resourceBundle.getString("expenseDeletedSuccess"));
             } else if (actionType.equals("undone")) {
-                AlertUtils.showSuccessAlert(resourceBundle.getString("undoSuccessTitle"), null, resourceBundle.getString("undoExpenseSuccess"));
+                AlertUtils.showSuccessAlert(resourceBundle.getString("undoSuccessTitle"),
+                        null, resourceBundle.getString("undoExpenseSuccess"));
             }
             initializeExpensesForParticipant(selectedParticipantId);
             undoButton.setDisable(false);
@@ -342,11 +364,12 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
      */
     private void updateExpense(Expense expense) {
         Expense originalExpense = getOriginalExpense(expense.getId(),event.getId());
-        editExpenseCommand = new EditExpenseCommand(originalExpense, expense, event.getId(), result -> Platform.runLater(() -> {
-            initializeExpensesForParticipant(selectedParticipantId);
-            AlertUtils.showInformationAlert(resourceBundle.getString("expenseSaved"),
-                resourceBundle.getString("expenseSaved"), resourceBundle.getString("expenseSavedSuccess"));
-        }), resourceBundle);
+        editExpenseCommand = new EditExpenseCommand(originalExpense, expense, event.getId(),
+                result -> Platform.runLater(() -> {
+                    initializeExpensesForParticipant(selectedParticipantId);
+                    AlertUtils.showInformationAlert(resourceBundle.getString("expenseSaved"),
+                        resourceBundle.getString("expenseSaved"), resourceBundle.getString("expenseSavedSuccess"));
+                }), resourceBundle);
         undoManager.executeCommand(editExpenseCommand);
         undoButton.setDisable(false);
     }
@@ -420,7 +443,8 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
          * @param expense The {@link Expense} whose details are to be used as initial form values.
          * @return A {@link Pair} containing the form as a {@link GridPane} and a map of form fields.
          */
-        static Pair<GridPane, Map<String, Control>> createExpenseForm(Expense expense, ResourceBundle resourceBundle, Map<String, String> tagKeysToLocalized) {
+        static Pair<GridPane, Map<String, Control>> createExpenseForm(Expense expense, ResourceBundle resourceBundle,
+                                                                      Map<String, String> tagKeysToLocalized) {
             GridPane grid = new GridPane();
             grid.setAlignment(Pos.CENTER);
             grid.setHgap(10);
@@ -480,7 +504,8 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
          * @param expense The original participant.
          * @return A new {@link Expense} instance with details extracted from the form fields.
          */
-        static Expense extractExpenseFromForm(Map<String, Control> formFields, Expense expense, Map<String, String> tagKeysToLocalized) {
+        static Expense extractExpenseFromForm(Map<String, Control> formFields,
+                                              Expense expense, Map<String, String> tagKeysToLocalized) {
             String category = ((TextField) formFields.get("Category")).getText();
             String amount = ((TextField) formFields.get("Amount")).getText();
             String tag = ((ComboBox<String>) formFields.get("Tag")).getValue();
@@ -498,8 +523,17 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
         }
     }
 
+    /**
+     * Validator
+     */
     @FunctionalInterface
     public interface Validator {
+        /**
+         * Validates the given amount and category
+         * @param amount The amount
+         * @param category The category
+         * @return A list of error messages indicating the validation results. An empty list indicates no errors.
+         */
         List<String> validate(String amount, String category);
     }
 

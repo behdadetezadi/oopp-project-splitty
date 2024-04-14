@@ -6,7 +6,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
@@ -41,6 +40,7 @@ public class Expense {
      * @param date when the expense was made
      * @param splittingOption shows a list of people that are included in the splitting option
      * @param expenseType the type of category the expense belongs to
+     * @param eventId event ID
      */
     public Expense(Participant participant, String category, double amount, String currency,
                     String date, List<Participant> splittingOption, String expenseType, Long eventId) {
@@ -59,6 +59,7 @@ public class Expense {
      * @param participant the participant
      * @param category the category
      * @param amount the amount paid
+     * @param eventId event ID
      */
     public Expense(Participant participant, String category, double amount,long eventId) {
         this.participant = participant;

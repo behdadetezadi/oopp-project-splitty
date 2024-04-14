@@ -15,7 +15,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -254,7 +253,8 @@ public class EventOverviewController implements LanguageChangeListener {
             }
         }
         if (!found) {
-            options.add(new ParticipantOption(participant.getId(), participant.getFirstName() + " " + participant.getLastName()));
+            options.add(new ParticipantOption(participant.getId()
+                    , participant.getFirstName() + " " + participant.getLastName()));
         }
         participantDropdown.setItems(null);
         participantDropdown.setItems(options);
@@ -332,8 +332,8 @@ public class EventOverviewController implements LanguageChangeListener {
             mainController.showTableOfParticipants(this.event);
 
         } catch (IllegalStateException e) {
-            e.printStackTrace();
-            AlertUtils.showErrorAlert("Failed to Load", "Error", resourceBundle.getString("Failed_to_load_the_participant_scene"));
+            AlertUtils.showErrorAlert("Failed to Load",
+                    "Error", resourceBundle.getString("Failed_to_load_the_participant_scene"));
         }
     }
 
@@ -370,8 +370,8 @@ public class EventOverviewController implements LanguageChangeListener {
         try {
             mainController.showInvitePage(this.event);
         } catch (IllegalStateException e) {
-            e.printStackTrace();
-            AlertUtils.showErrorAlert("Failed to Load", "Error", resourceBundle.getString("Failed_to_load_the_invite_scene"));
+            AlertUtils.showErrorAlert("Failed to Load",
+                    "Error", resourceBundle.getString("Failed_to_load_the_invite_scene"));
         }
     }
 

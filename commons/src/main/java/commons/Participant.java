@@ -62,7 +62,8 @@ public class Participant {
      * @param bic the bic
      * @param languageChoice the choice of language
      */
-    public Participant(String username, String firstName, String lastName, String email, String iban, String bic, String languageChoice) {
+    public Participant(String username, String firstName, String lastName,
+                       String email, String iban, String bic, String languageChoice) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -122,7 +123,7 @@ public class Participant {
      * @param email the email
      * @param iban the iban
      * @param bic the bic
-     * @param payedAmount the payed amount
+     * @param payedAmount the paid amount
      * @param eventIds ids of events where participant is participating in
      * @param languageChoice the participants language choice */
     public Participant(long id, String username, String firstName,
@@ -321,18 +322,20 @@ public class Participant {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Participant that)) return false;
-        if (id != that.id) return false;
-        if (!Objects.equals(username, that.username)) return false;
-        if (!Objects.equals(firstName, that.firstName)) return false;
-        if (!Objects.equals(lastName, that.lastName)) return false;
-        if (!Objects.equals(email, that.email)) return false;
-        if (!Objects.equals(iban, that.iban)) return false;
-        if (!Objects.equals(bic, that.bic)) return false;
-        if (!Objects.equals(owedAmount, that.owedAmount)) return false;
-        if (!Objects.equals(payedAmount, that.payedAmount)) return false;
-        if (!Objects.equals(eventIds, that.eventIds)) return false;
-        return Objects.equals(languageChoice, that.languageChoice);
+
+        return id == that.id &&
+                Objects.equals(username, that.username) &&
+                Objects.equals(firstName, that.firstName) &&
+                Objects.equals(lastName, that.lastName) &&
+                Objects.equals(email, that.email) &&
+                Objects.equals(iban, that.iban) &&
+                Objects.equals(bic, that.bic) &&
+                Objects.equals(owedAmount, that.owedAmount) &&
+                Objects.equals(payedAmount, that.payedAmount) &&
+                Objects.equals(eventIds, that.eventIds) &&
+                Objects.equals(languageChoice, that.languageChoice);
     }
+
 
     /**
      * private int hashcode
@@ -340,18 +343,8 @@ public class Participant {
      */
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (username != null ? username.hashCode() : 0);
-        result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
-        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (iban != null ? iban.hashCode() : 0);
-        result = 31 * result + (bic != null ? bic.hashCode() : 0);
-        result = 31 * result + (owedAmount != null ? owedAmount.hashCode() : 0);
-        result = 31 * result + (payedAmount != null ? payedAmount.hashCode() : 0);
-        result = 31 * result + (eventIds != null ? eventIds.hashCode() : 0);
-        result = 31 * result + (languageChoice != null ? languageChoice.hashCode() : 0);
-        return result;
+        return Objects.hash(id, username, firstName, lastName, email, iban,
+                bic, owedAmount, payedAmount, eventIds, languageChoice);
     }
 
     /**
@@ -455,14 +448,26 @@ public class Participant {
         return totalPaid;
     }
 
+    /**
+     * ID setter
+     * @param id long
+     */
     public void setId(long id) {
         this.id = id;
     }
 
+    /**
+     * First name setter
+     * @param firstName String
+     */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
+    /**
+     * Last name setter
+     * @param lastName String
+     */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }

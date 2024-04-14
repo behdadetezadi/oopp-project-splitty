@@ -28,6 +28,7 @@ public class ExpenseRequest {
     }
     /**
      * setter for event id
+     * @param eventId long
      */
     public void setEventId(long eventId) {
         this.eventId = eventId;
@@ -41,6 +42,7 @@ public class ExpenseRequest {
     }
     /**
      * Setter for expense
+     * @param expense Expense
      */
     public void setExpense(Expense expense) {
         this.expense = expense;

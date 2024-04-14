@@ -7,7 +7,6 @@ import client.utils.undoable.UndoableCommand;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
-import commons.ExpenseRequest;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -56,7 +55,8 @@ public class AddExpenseController implements LanguageChangeListener{
      * @param undoManager undo manager
      */
     @Inject
-    public AddExpenseController(Stage primaryStage, ServerUtils server, MainController mainController, Event event, UndoManager undoManager) {
+    public AddExpenseController(Stage primaryStage, ServerUtils server,
+                                MainController mainController, Event event, UndoManager undoManager) {
         this.primaryStage = primaryStage;
         this.server = server;
         this.mainController = mainController;
@@ -197,7 +197,8 @@ public class AddExpenseController implements LanguageChangeListener{
                         AlertUtils.showInformationAlert(resourceBundle.getString("Expense_Added"), "Information",
                                 resourceBundle.getString("The_expense_has_been_successfully_added."));
                     } else {
-                        AlertUtils.showErrorAlert(resourceBundle.getString("error"), resourceBundle.getString("Unexpected_Error"),
+                        AlertUtils.showErrorAlert(resourceBundle.getString("error"),
+                                resourceBundle.getString("Unexpected_Error"),
                                 resourceBundle.getString("An_unexpected_error_occurred"));
                     }
                 });

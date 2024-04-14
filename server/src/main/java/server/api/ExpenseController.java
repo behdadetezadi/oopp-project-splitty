@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.ExpenseService;
 import server.database.ExpenseRepository;
-import server.database.ParticipantRepository;
 
 import java.util.List;
 
@@ -20,10 +19,10 @@ public class ExpenseController {
     /**
      * dependency injection through constructor
      * @param expenseService the ExpenseService
+     * @param db ExpenseRepository
      */
     @Autowired
-    public ExpenseController(ExpenseService expenseService, ExpenseRepository db)
-    {
+    public ExpenseController(ExpenseService expenseService, ExpenseRepository db) {
         this.expenseService = expenseService;
         this.db=db;
     }
@@ -33,16 +32,16 @@ public class ExpenseController {
      * @param expense the expense to be added
      * @return ResponseEntity<Void> ok or bad request
      */
-   @PostMapping("/")
-   public ResponseEntity<Void> add(@RequestBody Expense expense) {
-       if (expense == null || expense.getParticipant() == null ||
-               expense.getParticipant().getFirstName() == null ||
-               expense.getParticipant().getLastName() == null) {
-           return ResponseEntity.badRequest().build();
-       }
-       expenseService.createExpense(expense);
-       return ResponseEntity.ok().build();
-   }
+    @PostMapping("/")
+    public ResponseEntity<Void> add(@RequestBody Expense expense) {
+        if (expense == null || expense.getParticipant() == null ||
+            expense.getParticipant().getFirstName() == null ||
+            expense.getParticipant().getLastName() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        expenseService.createExpense(expense);
+        return ResponseEntity.ok().build();
+    }
 
     /**
      * get all the expenses

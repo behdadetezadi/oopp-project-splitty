@@ -23,6 +23,7 @@ public class DebtController {
     /**
      * dependency injection through constructor
      * @param debtService DebtService
+     * @param db DebtRepository
      */
     @Autowired
     public DebtController(DebtService debtService, DebtRepository db) {

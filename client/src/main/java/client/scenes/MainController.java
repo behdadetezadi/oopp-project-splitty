@@ -14,7 +14,7 @@ import javafx.util.Pair;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
+import java.util.Map;
 import java.util.prefs.Preferences;
 
 /**
@@ -22,33 +22,24 @@ import java.util.prefs.Preferences;
  */
 public class MainController {
     private Stage primaryStage;
-
     private Scene startScene;
     private StartPageController startPageController;
-
     private Scene eventOverviewScene;
     private EventOverviewController eventOverviewController;
-
     private AddExpenseController expenseCtrl;
     private Scene expenseScene;
-
     private ParticipantExpenseViewController participantExpenseViewController;
     private Scene participantExpenseViewScene;
     private ExpenseOverviewController expenseOverviewController;
     private Scene expenseOverviewScene;
     private StatsCtrl statsController;
-
     private Scene statisticsScene;
-
     private TableOfParticipantsController tableOfParticipantsController;
     private Scene tableOfParticipantsScene;
-
     private InviteController inviteController;
     private Scene inviteScene;
-
     private AdminController adminController;
     private Scene adminScene;
-
     private LoginController loginController;
     private Scene loginScene;
     private static final String LANGUAGE_PREFERENCE_KEY = "language";
@@ -89,34 +80,44 @@ public class MainController {
     /**
      * initializer method for mainController
      * @param primaryStage primary stage
-     * @param startPair startPage pair
-     * @param eventOverviewPair eventOverviewPage pair
-     * @param expensePair expensePage pair
-     * @param participantExpenseViewControllerPair participantExpenseViewController Pair
-     * @param expenseOverviewControllerPair expenseOverviewScene Pair
-     * @param tableOfParticipantsControllerPair table of participants page pair
-     * @param inviteControllerPair invitePage pair
-     * @param loginControllerPair adminController pair
-     * @param adminControllerPair adminController pair
-     * @param statsPair statisticController pair
+     * @param groupedPairs map with pairs of controllers
      */
-    public void initialize(Stage primaryStage,
-                           Pair<StartPageController, Parent> startPair,
-                           Pair<EventOverviewController, Parent> eventOverviewPair,
-                           Pair<AddExpenseController, Parent> expensePair,
-                           Pair<ParticipantExpenseViewController, Parent> participantExpenseViewControllerPair,
-                           Pair<ExpenseOverviewController,Parent>expenseOverviewControllerPair,
-                           Pair<TableOfParticipantsController, Parent> tableOfParticipantsControllerPair,
-                           Pair<InviteController, Parent> inviteControllerPair,
-                           Pair<LoginController, Parent> loginControllerPair,
-                           Pair<AdminController, Parent> adminControllerPair,
-                           Pair<StatsCtrl, Parent> statsPair
-                           )
-    {
+    public void initialize(Stage primaryStage, Map<String, Pair<?, Parent>> groupedPairs) {
         this.primaryStage = primaryStage;
 
-        this.startScene = new Scene(startPair.getValue());
-        this.startPageController = startPair.getKey();
+        // Extract and set up each scene and controller
+        this.startScene = new Scene(groupedPairs.get("startPage").getValue());
+        this.startPageController = (StartPageController) groupedPairs.get("startPage").getKey();
+
+        this.eventOverviewScene = new Scene(groupedPairs.get("overviewPage").getValue());
+        this.eventOverviewController = (EventOverviewController) groupedPairs.get("overviewPage").getKey();
+
+        this.expenseScene = new Scene(groupedPairs.get("expensePage").getValue());
+        this.expenseCtrl = (AddExpenseController) groupedPairs.get("expensePage").getKey();
+
+        this.participantExpenseViewScene = new Scene(groupedPairs.get("participantExpenseViewPage").getValue());
+        this.participantExpenseViewController = (ParticipantExpenseViewController) groupedPairs
+                .get("participantExpenseViewPage").getKey();
+
+        this.expenseOverviewScene = new Scene(groupedPairs.get("expenseOverviewPage").getValue());
+        this.expenseOverviewController = (ExpenseOverviewController) groupedPairs.get("expenseOverviewPage").getKey();
+
+        this.tableOfParticipantsScene = new Scene(groupedPairs.get("participantsPage").getValue());
+        this.tableOfParticipantsController = (TableOfParticipantsController) groupedPairs.get("participantsPage").getKey();
+
+        this.inviteScene = new Scene(groupedPairs.get("invitePage").getValue());
+        this.inviteController = (InviteController) groupedPairs.get("invitePage").getKey();
+
+        this.loginScene = new Scene(groupedPairs.get("loginPage").getValue());
+        this.loginController = (LoginController) groupedPairs.get("loginPage").getKey();
+
+        this.adminScene = new Scene(groupedPairs.get("adminPage").getValue());
+        this.adminController = (AdminController) groupedPairs.get("adminPage").getKey();
+
+        this.statisticsScene = new Scene(groupedPairs.get("statsPage").getValue());
+        this.statsController = (StatsCtrl) groupedPairs.get("statsPage").getKey();
+
+        // Setup all keyboard shortcuts
         KeyboardUtils.addKeyboardShortcuts(startScene,
                 startPageController::logout,
                 new Pair<>(createEventCombination, startPageController::createEvent),
@@ -126,8 +127,6 @@ public class MainController {
                 new Pair<>(switchLanguageCombination, startPageController::switchToNextLanguage)
         );
 
-        this.eventOverviewScene = new Scene(eventOverviewPair.getValue());
-        this.eventOverviewController = eventOverviewPair.getKey();
         KeyboardUtils.addKeyboardShortcuts(eventOverviewScene,
                 eventOverviewController::goBackToStartPage,
                 new Pair<>(showSendInvitesCombination, eventOverviewController::sendInvites),
@@ -139,48 +138,34 @@ public class MainController {
                 new Pair<>(switchLanguageCombination, eventOverviewController::switchToNextLanguage)
         );
 
-        this.expenseScene = new Scene(expensePair.getValue());
-        this.expenseCtrl = expensePair.getKey();
         KeyboardUtils.addKeyboardShortcuts(expenseScene,
                 expenseCtrl::switchToEventOverviewScene,
                 new Pair<>(undoCombination, expenseCtrl::handleUndoAction)
         );
 
-        this.participantExpenseViewScene = new Scene(participantExpenseViewControllerPair.getValue());
-        this.participantExpenseViewController = participantExpenseViewControllerPair.getKey();
         KeyboardUtils.addKeyboardShortcuts(participantExpenseViewScene,
                 participantExpenseViewController::switchToEventOverviewScene,
                 new Pair<>(undoCombination, participantExpenseViewController::handleUndoAction)
         );
 
-        this.expenseOverviewScene = new Scene(expenseOverviewControllerPair.getValue());
-        this.expenseOverviewController = expenseOverviewControllerPair.getKey();
         KeyboardUtils.addKeyboardShortcuts(expenseOverviewScene,
                 expenseOverviewController::switchToEventOverviewScene,
                 new Pair<>(showStatsCombination, expenseOverviewController::switchToStatistics)
         );
 
-        this.tableOfParticipantsScene = new Scene(tableOfParticipantsControllerPair.getValue());
-        this.tableOfParticipantsController = tableOfParticipantsControllerPair.getKey();
         KeyboardUtils.addKeyboardShortcuts(tableOfParticipantsScene,
                 tableOfParticipantsController::handleBackButton
         );
 
-        this.inviteScene = new Scene(inviteControllerPair.getValue());
-        this.inviteController =  inviteControllerPair.getKey();
         KeyboardUtils.addKeyboardShortcuts(inviteScene,
                 inviteController::handleBackButtonAction,
                 new Pair<>(sendInvitesCombination, inviteController::handleSubmitButtonAction)
         );
 
-        this.adminScene = new Scene(adminControllerPair.getValue());
-        this.adminController = adminControllerPair.getKey();
         KeyboardUtils.addKeyboardShortcuts(adminScene,
                 adminController::logout
         );
 
-        this.loginScene = new Scene(loginControllerPair.getValue());
-        this.loginController = loginControllerPair.getKey();
         KeyboardUtils.addKeyboardShortcuts(loginScene,
                 null,
                 new Pair<>(loginAsUserCombination, loginController::handleUserLogin),
@@ -188,8 +173,6 @@ public class MainController {
                 new Pair<>(switchLanguageCombination, loginController::switchToNextLanguage)
         );
 
-        this.statisticsScene = new Scene(statsPair.getValue());
-        this.statsController = statsPair.getKey();
         KeyboardUtils.addKeyboardShortcuts(statisticsScene,
                 statsController::switchToExpenseOverviewScene
         );

@@ -16,7 +16,9 @@ public class EmailUtils {
      * @param message message content
      * @throws MessagingException exception for handling
      */
-    public static void sendEmail(String host, int port, final String username, final String password, String toAddress, String subject, String message) throws MessagingException {
+    public static void sendEmail(String host, int port, final String username,
+                                 final String password, String toAddress, String subject,
+                                 String message) throws MessagingException {
         // Set up mail server properties
         Properties properties = new Properties();
         properties.put("mail.smtp.ssl.enable", "true");

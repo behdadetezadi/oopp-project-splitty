@@ -32,7 +32,6 @@ public class EventController {
      * Event Controller
      * @param eventService Event service
      */
-
     @Autowired
     public EventController(EventService eventService) {
         this.eventService = eventService;
@@ -82,7 +81,6 @@ public class EventController {
      * @param inviteCode the invite code
      * @return the event
      */
-
     @GetMapping("/inviteCode/{inviteCode}")
     public Event getEventByInviteCode(@PathVariable Long inviteCode) {
         return eventService.getEventByInviteCode(inviteCode);
@@ -158,8 +156,8 @@ public class EventController {
     /**
      * websocket method for updating participant titles
      * @param payload map
+     * @return event
      */
-
     @MessageMapping("/eventTitle")
     @SendTo("/topic/eventTitle")
     public Event updateEventByTitleWebsockets(Map<String, Object> payload){
@@ -180,6 +178,11 @@ public class EventController {
         return ResponseEntity.ok(participants);
     }
 
+    /**
+     * Returns updates about participants by event ID with long polling.
+     * @param id the event ID to fetch participant updates for
+     * @return a deferred result wrapped in a ResponseEntity containing participant updates or no content
+     */
     @GetMapping("/{id}/participants/updates")
     public DeferredResult<ResponseEntity<Participant>> getParticipantUpdatesByEventId(@PathVariable Long id) {
         var noContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -190,6 +193,13 @@ public class EventController {
         return res;
 
     }
+
+    /**
+     * Adds a participant to an event and notifies listeners.
+     * @param eventId the ID of the event
+     * @param participant the participant to add
+     * @return a ResponseEntity containing the added participant or a notFound status
+     */
     @PostMapping("/{eventId}/participants")
     public ResponseEntity<Participant> addParticipant(@PathVariable long eventId, @RequestBody Participant participant) {
         Participant addedParticipant = eventService.addParticipantToEvent(eventId, participant);
@@ -201,6 +211,12 @@ public class EventController {
         }
     }
 
+    /**
+     * Removes a participant from an event, including all related expenses.
+     * @param eventId the ID of the event
+     * @param participantId the ID of the participant to remove
+     * @return an OK ResponseEntity if successful
+     */
     @DeleteMapping("/{eventId}/participants/{participantId}")
     public ResponseEntity<Void> removeParticipant(@PathVariable long eventId, @PathVariable long participantId)
     {
@@ -214,17 +230,31 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * WebSockets endpoint to handle participant deletion.
+     * @param request the ParticipantDeletionRequest containing event and participant IDs
+     * @return the removed participant
+     */
     @MessageMapping("/participantDeletion")
     @SendTo("/topic/participantDeletion")
     public Participant removeParticipantWebSockets(ParticipantDeletionRequest request){
         return eventService.removeParticipantFromEvent(request.getEventId(), request.getParticipantId());
     }
+
+    /**
+     * Updates a participant's details in an event.
+     * @param eventId the ID of the event
+     * @param participantId the ID of the participant to update
+     * @param participantDetails the updated details of the participant
+     * @return a ResponseEntity containing the updated participant or error status
+     */
     @PutMapping("/{eventId}/participants/{participantId}")
     public ResponseEntity<Participant> updateParticipantInEvent(@PathVariable Long eventId,
                                                                 @PathVariable Long participantId,
                                                                 @RequestBody Participant participantDetails) {
         try {
-            Participant updatedParticipant = eventService.updateParticipantInEvent(eventId, participantId, participantDetails);
+            Participant updatedParticipant = eventService
+                    .updateParticipantInEvent(eventId, participantId, participantDetails);
             template.convertAndSend("/topic/participants", updatedParticipant);
             return ResponseEntity.ok(updatedParticipant);
         } catch (IllegalArgumentException e) {
@@ -234,6 +264,12 @@ public class EventController {
         }
     }
 
+    /**
+     * WebSockets endpoint to update participant details.
+     * @param eventId the event ID
+     * @param participantId the participant ID
+     * @param participantDetails the new details for the participant
+     */
     @MessageMapping("/participants")
     @SendTo("/topic/participants")
     public void updateParticipantWebSockets( @PathVariable Long eventId,
@@ -273,6 +309,10 @@ public class EventController {
         }
     }
 
+    /**
+     * WebSockets endpoint to add an expense to an event.
+     * @param expenseRequest contains the details of the expense and event ID
+     */
     @MessageMapping("/expense")
     @SendTo("/topic/expense")
     public void addExpenseWS(ExpenseRequest expenseRequest){
@@ -280,7 +320,6 @@ public class EventController {
         Expense expense = expenseRequest.getExpense();
         addExpense(eventId,expense);
     }
-
 
     /**
      * deletes an expense from an event
@@ -319,5 +358,4 @@ public class EventController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
 }

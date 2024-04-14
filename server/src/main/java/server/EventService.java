@@ -29,7 +29,8 @@ public class EventService {
      * @param participantRepository participant repo
      * @param expenseRepository the expense repository
      */
-    public EventService(EventRepository eventRepository, ParticipantRepository participantRepository, ExpenseRepository expenseRepository) {
+    public EventService(EventRepository eventRepository, ParticipantRepository participantRepository,
+                        ExpenseRepository expenseRepository) {
         this.eventRepository = eventRepository;
         this.participantRepository=participantRepository;
         this.expenseRepository = expenseRepository;
@@ -217,6 +218,7 @@ public class EventService {
      * remove participant from an event
      * @param eventId long
      * @param participantId long
+     * @return participant
      */
     @Transactional
     public Participant removeParticipantFromEvent(long eventId, long participantId) {
@@ -330,6 +332,13 @@ public class EventService {
 
         return expenseRepository.save(expenseDetails);
     }
+
+    /**
+     * filters expenses by participant id
+     * @param eventId event ID
+     * @param participantId participant ID
+     * @return list of filtered expenses by participant id
+     */
     public List<Expense> filterByParticipantId(Long eventId, long participantId) {
         if (eventId == null || eventId < 0) {
             throw new IllegalArgumentException("Event ID must be positive and not null.");

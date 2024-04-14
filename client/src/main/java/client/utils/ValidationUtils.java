@@ -1,8 +1,5 @@
 package client.utils;
-import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyEvent;
-
-import java.util.Optional;
 
 public class ValidationUtils {
     /**

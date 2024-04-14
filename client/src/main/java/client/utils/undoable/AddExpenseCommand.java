@@ -19,6 +19,10 @@ public class AddExpenseCommand implements UndoableCommand {
     private Expense addedExpense;
     private Consumer<Expense> updateUI;
 
+    /**
+     * Getter for the added expense
+     * @return The Expense that was added
+     */
     public Expense getAddedExpense() {
         return addedExpense;
     }
@@ -88,17 +92,18 @@ public class AddExpenseCommand implements UndoableCommand {
                 // Execute this on the JavaFX Application Thread
                 Platform.runLater(() -> {
                     // Show success alert
-                    AlertUtils.showSuccessAlert(resourceBundle.getString("undoSuccessTitle"), null, resourceBundle.getString("undoExpenseSuccess"));
+                    AlertUtils.showSuccessAlert(resourceBundle.getString("undoSuccessTitle"),
+                            null, resourceBundle.getString("undoExpenseSuccess"));
                 });
 
             }
             catch (RuntimeException e)
             {
-                e.printStackTrace();
                 Platform.runLater(() ->
                 {
                     // Show error alert if undo operation fails
-                    AlertUtils.showErrorAlert(resourceBundle.getString("undoFailedTitle"), null, resourceBundle.getString("undoExpenseFailure"));
+                    AlertUtils.showErrorAlert(resourceBundle.getString("undoFailedTitle"),
+                            null, resourceBundle.getString("undoExpenseFailure"));
                 });
 
             }
