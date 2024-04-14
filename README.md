@@ -102,7 +102,11 @@ We use SSL and StartTLS enabled properties for the mail server.
 
 
 **Undo button:**
+This undo button shows in both Add Expense page and Show Expense page.
+It supports undo operation for all the expense related operations including add,delete and edit.
 
+When user click the button in Add Expense page,the text field while shows the last added expense's information,or empty field if no expense be added before.
+It supports mutiple undo for both pages.
 
 
 
