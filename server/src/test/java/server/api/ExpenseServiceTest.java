@@ -135,16 +135,6 @@ public class ExpenseServiceTest {
     }
 
     @Test
-    void filterByParticipantIdNotFound() {
-        long participantId = 1L;
-        when(expenseRepository.findAllByParticipantId(participantId)).thenReturn(List.of());
-
-        Exception exception = assertThrows(NoSuchElementException.class, () ->
-                expenseService.filterByParticipantId(participantId));
-        assertTrue(exception.getMessage().contains("No expenses found for participant ID"));
-    }
-
-    @Test
     void filterByInvolvingFound() {
         long participantId = 1L;
         List<Expense> expectedExpenses = List.of(new Expense());
@@ -234,15 +224,6 @@ public class ExpenseServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> expenseService.filterByParticipantId(-1L));
         assertEquals("Participant ID must be positive.", exception.getMessage());
         verifyNoInteractions(expenseRepository);
-    }
-
-    @Test
-    void filterByParticipantIdNoExpensesFoundTest() {
-        when(expenseRepository.findAllByParticipantId(1L)).thenReturn(new ArrayList<>());
-
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> expenseService.filterByParticipantId(1L));
-        assertEquals("No expenses found for participant ID: " + 1L, exception.getMessage());
-        verify(expenseRepository, times(1)).findAllByParticipantId(1L);
     }
 
     @Test

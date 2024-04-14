@@ -640,7 +640,26 @@ public class ServerUtils {
 				consumer.accept((Event) payload);
 			}
 		});
+	}
 
+	/**
+	 * Websocket subscription to expenses
+	 * @param dest String as destination
+	 * @param eventId long
+	 * @param consumer Expense
+	 */
+	public void registerForExpenses(String dest, Long eventId, Consumer<Expense> consumer){
+		session.subscribe(dest, new StompFrameHandler() {
+			@Override
+			public Type getPayloadType(StompHeaders headers) {
+				return Expense.class;
+			}
+
+			@Override
+			public void handleFrame(StompHeaders headers, Object payload) {
+				consumer.accept((Expense) payload);
+			}
+		});
 	}
 
 }

@@ -1,9 +1,6 @@
 package server.api;
 
-import commons.Event;
-import commons.Expense;
-import commons.Participant;
-import commons.ParticipantDeletionRequest;
+import commons.*;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -275,6 +272,15 @@ public class EventController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    @MessageMapping("/expense")
+    @SendTo("/topic/expense")
+    public void addExpenseWS(ExpenseRequest expenseRequest){
+        long eventId = expenseRequest.getEventId();
+        Expense expense = expenseRequest.getExpense();
+        addExpense(eventId,expense);
+    }
+
 
     /**
      * deletes an expense from an event

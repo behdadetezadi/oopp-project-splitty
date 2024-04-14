@@ -96,6 +96,7 @@ public class EventOverviewController implements LanguageChangeListener {
         showExpensesButton.getStyleClass().add("button-hover");
         backToMain.getStyleClass().add("button-hover");
         showAllExpensesButton.getStyleClass().add("button-hover");
+
     }
 
     /**
@@ -186,6 +187,12 @@ public class EventOverviewController implements LanguageChangeListener {
      */
     public void setEvent(Event event) {
         this.event = event;
+//        ServerUtils.registerForUpdates(event.getId(), participant -> {
+//            Platform.runLater(() -> {
+//                updateParticipant(participant);
+//            });
+//        });
+
 
         server.registerForEventUpdates("/topic/eventTitle", event.getId(), null, event1 -> {
             Platform.runLater(() -> {
@@ -207,6 +214,50 @@ public class EventOverviewController implements LanguageChangeListener {
         loadParticipants();
         initializeParticipants();
         animateEventTitle();
+
+
+        server.registerForMessages("/topic/participantDeletion", event.getId(), null, p -> {
+            Platform.runLater(() -> {
+                removeParticipant(p.getId());
+
+            });
+        });
+    }
+
+    /**
+     * removes participant for second client on different thread
+     * @param participantId long
+     */
+    private void removeParticipant(Long participantId) {
+        ObservableList<ParticipantOption> options = participantDropdown.getItems();
+        if (options != null) {
+            options.removeIf(option -> option.getId().equals(participantId));
+            participantDropdown.setItems(null);
+            participantDropdown.setItems(options);
+        }
+    }
+
+    /**
+     * adds participant to dropbox on a client on different thread through websockets
+     * @param participant Participant
+     */
+    private void updateParticipant(Participant participant) {
+        ObservableList<ParticipantOption> options = participantDropdown.getItems();
+        boolean found = false;
+        for (int i = 0; i < options.size(); i++) {
+            ParticipantOption option = options.get(i);
+            if (option.getId() == participant.getId()) {
+                options.set(i, new ParticipantOption(participant.getId(),
+                        participant.getFirstName() + " " + participant.getLastName()));
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            options.add(new ParticipantOption(participant.getId(), participant.getFirstName() + " " + participant.getLastName()));
+        }
+        participantDropdown.setItems(null);
+        participantDropdown.setItems(options);
     }
 
     @FXML

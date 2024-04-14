@@ -336,19 +336,26 @@ public class TableOfParticipantsController implements LanguageChangeListener {
         }
     }
 
+    /**
+     * handles participant updates when adding/mpdifying participants
+     * @param updatedParticipant Participant
+     */
     private void handleParticipantUpdates(Participant updatedParticipant) {
-        Platform.runLater(() -> {
-            OptionalInt indexOpt = IntStream.range(0, participants.size())
-                    .filter(i -> participants.get(i).getId()==(updatedParticipant.getId()))
-                    .findFirst();
+        if (updatedParticipant.getEventIds().contains(event.getId())) {
 
-            if (indexOpt.isPresent()) {
-                participants.set(indexOpt.getAsInt(), updatedParticipant);
-            } else {
-                participants.add(updatedParticipant);
-            }
-            setupPagination();
-        });
+            Platform.runLater(() -> {
+                OptionalInt indexOpt = IntStream.range(0, participants.size())
+                        .filter(i -> participants.get(i).getId() == (updatedParticipant.getId()))
+                        .findFirst();
+
+                if (indexOpt.isPresent()) {
+                    participants.set(indexOpt.getAsInt(), updatedParticipant);
+                } else {
+                    participants.add(updatedParticipant);
+                }
+                setupPagination();
+            });
+        }
     }
 
 

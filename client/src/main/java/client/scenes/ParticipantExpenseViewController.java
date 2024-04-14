@@ -58,7 +58,58 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
         this.mainController = mainController;
         this.event = event;
         this.undoManager = undoManager;
+        server.registerForExpenses("/topic/expense", event.getId(), this::addExpenseToUI);
+
     }
+    private void addExpenseToUI(Expense expense) {
+        Platform.runLater(() -> {
+            if (!expensesListView.getItems().isEmpty() && expensesListView.getItems().get(0).equals(resourceBundle.getString("noExpensesRecorded"))) {
+                expensesListView.getItems().clear();
+            }
+            updateExpenseListView(expense);
+            updateSumOfExpenses(expense.getAmount());
+        });
+    }
+
+
+    private void updateExpenseListView(Expense expense) {
+        String expenseDisplay = formatExpenseForDisplay(expense);
+        expensesListView.getItems().add(expenseDisplay);
+        expensesListView.setCellFactory(listView -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(item);
+                    Button editButton = new Button("Edit");
+                    Button deleteButton = new Button("Delete");
+                    editButton.setOnAction(e -> handleEditButton(expense));
+                    deleteButton.setOnAction(e -> handleDeleteButton(expense));
+                    HBox buttonsBox = new HBox(10, editButton, deleteButton);
+                    setGraphic(buttonsBox);
+                }
+            }
+        });
+    }
+
+
+    private void updateSumOfExpenses(double amount) {
+        try {
+            String text = sumOfExpensesLabel.getText();
+            double total = 0.0;
+            if (text != null && !text.isEmpty()) {
+                total = Double.parseDouble(text.split(": ")[1].trim());
+            }
+            sumOfExpensesLabel.setText("Total: " + String.format("%.2f", total + amount));
+        } catch (NumberFormatException e) {
+            System.err.println("Error updating expenses total: " + e.getMessage());
+        }
+    }
+
+
 
     /**
      * Initialize method
@@ -69,11 +120,14 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
         LanguageUtils.loadLanguage(mainController.getStoredLanguagePreferenceOrDefault(), this);
         undoButton.setMnemonicParsing(true);
         undoButton.setOnAction(this::handleUndoAction);
+        initializeExpensesForParticipant(this.selectedParticipantId);
     }
 
     public void setEvent(Event event, long participantId) {
         this.event = event;
         this.selectedParticipantId = participantId;
+        initializeExpensesForParticipant(participantId);
+
     }
 
     /**
@@ -132,7 +186,7 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
             sumOfExpensesLabel.setText(String.format(resourceBundle.getString("total"), String.format("%.2f", sumOfExpenses)));
         }
 
-        expensesListView.setCellFactory(listView -> new ListCell<>() {
+        expensesListView.setCellFactory(listView -> new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -141,17 +195,16 @@ public class ParticipantExpenseViewController implements LanguageChangeListener 
                     setGraphic(null);
                 } else {
                     setText(item);
-                    Expense expense = getExpenseFromListView(getIndex(), participantId);
-                    if (expense != null && !item.equals(resourceBundle.getString("noExpensesRecorded"))) {
+                    if (item.equals(resourceBundle.getString("noExpensesRecorded"))) {
+                        setGraphic(null);
+                    } else {
                         Button editButton = new Button(resourceBundle.getString("edit"));
                         Button deleteButton = new Button(resourceBundle.getString("delete"));
-                        editButton.setOnAction(event -> handleEditButton(expense));
-                        deleteButton.setOnAction(event -> handleDeleteButton(expense));
+                        editButton.setOnAction(e -> handleEditButton(getExpenseFromListView(getIndex(), selectedParticipantId)));
+                        deleteButton.setOnAction(e -> handleDeleteButton(getExpenseFromListView(getIndex(), selectedParticipantId)));
                         HBox buttonsBox = new HBox(editButton, deleteButton);
                         buttonsBox.setSpacing(10);
                         setGraphic(buttonsBox);
-                    } else {
-                        setGraphic(null);
                     }
                 }
             }
