@@ -168,6 +168,7 @@ public class InviteController implements LanguageChangeListener {
     @Override
     public void setActiveLocale(Locale locale) {
         this.activeLocale = locale;
+        int[] arr = {1,2};
     }
 
     /**
